@@ -129,6 +129,43 @@
         </button>
       </div>
     </Modal>
+    <!-- Modal Como Funciona -->
+    <Modal
+      v-model="showHowItWorksModal"
+      title="Como Funciona o Concierge"
+    >
+      <div class="space-y-8 py-4">
+        <!-- Step 1 -->
+        <div class="relative pl-8 border-l-2 border-white/10 group">
+          <div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-surface-dark border-2 border-primary shadow-[0_0_10px_rgba(244,37,244,0.5)] group-hover:scale-125 transition-transform"></div>
+          <h3 class="text-white text-lg font-bold mb-2">1. Escolha o Serviço</h3>
+          <p class="text-gray-400 text-sm">Navegue por nossa curadoria de serviços premium. De abertura de empresas a vistos e marketing, selecionamos apenas os melhores parceiros.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="relative pl-8 border-l-2 border-white/10 group">
+          <div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-surface-dark border-2 border-secondary shadow-[0_0_10px_rgba(0,243,255,0.5)] group-hover:scale-125 transition-transform"></div>
+          <h3 class="text-white text-lg font-bold mb-2">2. Solicite com um Clique</h3>
+          <p class="text-gray-400 text-sm">Interessou? Clique em solicitar. Não cobramos nada antecipadamente. Nossa equipe conecta você diretamente ao especialista.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="relative pl-8 border-l-2 border-transparent group">
+          <div class="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_15px_rgba(255,255,255,0.5)] group-hover:scale-125 transition-transform"></div>
+          <h3 class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary text-lg font-bold mb-2">3. Aproveite os Benefícios</h3>
+          <p class="text-gray-400 text-sm">Como membro da 323 Network, você garante descontos exclusivos e atendimento prioritário VIP em todos os parceiros.</p>
+        </div>
+
+        <div class="pt-4 flex justify-center">
+          <button 
+            @click="showHowItWorksModal = false"
+            class="px-8 py-2 rounded-full border border-white/10 hover:bg-white/5 text-white text-sm transition-colors"
+          >
+            Entendi, vamos começar!
+          </button>
+        </div>
+      </div>
+    </Modal>
   </AppLayout>
 </template>
 
@@ -146,6 +183,7 @@ const services = ref<any[]>([])
 const activeFilter = ref('all')
 
 const showRequestModal = ref(false)
+const showHowItWorksModal = ref(false)
 const selectedService = ref<any>(null)
 const requestMessage = ref('')
 const submitting = ref(false)
@@ -257,11 +295,12 @@ function exploreServices() {
 }
 
 function howItWorks() {
-  // TODO: Implementar
+  showHowItWorksModal.value = true
 }
 
 function contactSupport() {
-  // TODO: Implementar
+  const message = encodeURIComponent('Olá! Sou membro da 323 Network e preciso de ajuda com um serviço personalizado.')
+  window.open(`https://wa.me/5511999999999?text=${message}`, '_blank')
 }
 </script>
 
