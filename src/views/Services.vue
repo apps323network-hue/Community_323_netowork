@@ -2,8 +2,20 @@
   <AppLayout>
     <div class="space-y-8 w-full">
       <!-- Hero Section -->
-      <div class="relative overflow-hidden rounded-2xl border border-white/5">
-        <div class="absolute inset-0 bg-cover bg-center z-0" style='background-image: linear-gradient(to right, rgba(10, 4, 15, 0.95) 0%, rgba(10, 4, 15, 0.7) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuALfXL1KTlc_1eSX81JItIX5qshZk2hpi-9nqP0N2E00hURq_KtHJFfdx0E9VDYim_MzvsfNn3GHutoZA884R1TGD0PBAk2Tjz_UKAVLX1TSbJXR1g_fYFLgdCKqCojHSwjnIX1CG8w3HQPj8XvVJLuKXkMDbkwPk1FhR-xJ1D-Xk-wTV1gdIGI0OlWvXd09ClVIuZs6FJCTj9B3KpnSRhTmaQWkuI1-89s1KS_wJgsJgR5p_UFp_9MLJ3BqReHx-KUHbyjGIbORsas");'></div>
+      <div class="relative overflow-hidden rounded-2xl border border-white/5 bg-[#0a040f]">
+        <!-- FlickeringGrid Background -->
+        <FlickeringGrid
+          :squareSize="4"
+          :gridGap="6"
+          :flickerChance="0.3"
+          color="rgb(244, 37, 244)"
+          :maxOpacity="0.2"
+          class="absolute inset-0 z-0"
+        />
+        
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-r from-[#0a040f]/95 via-[#0a040f]/80 to-[#0a040f]/60 z-[1]"></div>
+        
         <div class="relative z-10 flex flex-col gap-6 px-6 py-16 md:px-12 md:py-20 text-center md:text-left items-center md:items-start">
           <div class="flex flex-col gap-3 max-w-2xl">
             <div class="inline-flex items-center gap-2 self-center md:self-start px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm shadow-[0_0_15px_rgba(0,243,255,0.1)]">
@@ -176,6 +188,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import ServiceCard from '@/components/features/services/ServiceCard.vue'
 import TestimonialCard from '@/components/features/services/TestimonialCard.vue'
 import Modal from '@/components/ui/Modal.vue'
+import FlickeringGrid from '@/components/ui/FlickeringGrid.vue'
 
 const { supabase } = useSupabase()
 const loading = ref(true)
