@@ -416,12 +416,12 @@ function handleShare(postId: string) {
   console.log('Share post:', postId)
 }
 
-function handleEditComment(commentId: string, postId: string) {
+function handleEditComment(commentId: string) {
   // Implementar edição de comentário se necessário
-  console.log('Edit comment:', commentId, postId)
+  console.log('Edit comment:', commentId)
 }
 
-async function handleDeleteComment(commentId: string, postId: string) {
+async function handleDeleteComment(commentId: string) {
   await removeComment(commentId)
   // Recarregar comentários do post se necessário
 }
@@ -431,7 +431,7 @@ function handleDeletePost(postId: string) {
   console.log('Delete post:', postId)
 }
 
-function handleCommentAdded(postId: string) {
+function handleCommentAdded(_postId: string) {
   // Recarregar posts para atualizar contagem de comentários
   loadMemberPosts()
 }

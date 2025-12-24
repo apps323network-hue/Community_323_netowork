@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, onMounted } from 'vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import BadgeDisplay from '@/components/ui/BadgeDisplay.vue'
 import { useBookmarks } from '@/composables/useBookmarks'

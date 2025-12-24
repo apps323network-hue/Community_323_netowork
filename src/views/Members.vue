@@ -246,7 +246,7 @@ function loadMore() {
   fetchMembers(filters.value, nextPage)
 }
 
-async function handleBookmarkChanged(memberId: string, isBookmarked: boolean) {
+async function handleBookmarkChanged(_memberId: string, _isBookmarked: boolean) {
   // Recarregar membros em destaque quando um bookmark mudar
   await loadFeaturedMembers()
 }
