@@ -1,13 +1,13 @@
 <template>
-  <header class="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-gray-800/50 shadow-sm">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20">
+  <header class="lg:sticky lg:top-0 z-50 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-gray-800/50 shadow-sm">
+    <nav class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20">
         <!-- Logo -->
-        <RouterLink to="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
-          <div class="text-3xl font-black tracking-tighter flex items-center transform group-hover:scale-105 transition-transform">
-            <span class="text-primary dark:text-secondary">(323</span>
-            <span class="material-icons-outlined text-primary dark:text-secondary mx-1 animate-pulse" style="font-size: 1.2em;">play_arrow</span>
-            <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary font-black">NETWORK</span>
+        <RouterLink to="/" class="flex-shrink-0 flex items-center gap-1 sm:gap-2 cursor-pointer group min-w-0">
+          <div class="text-xl sm:text-2xl md:text-3xl font-black tracking-tighter flex items-center transform group-hover:scale-105 transition-transform">
+            <span class="text-primary dark:text-secondary whitespace-nowrap">(323</span>
+            <span class="material-icons-outlined text-primary dark:text-secondary mx-0.5 sm:mx-1 animate-pulse" style="font-size: 0.9em; font-size: clamp(0.9em, 1.2em, 1.2em);">play_arrow</span>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary font-black whitespace-nowrap">NETWORK</span>
           </div>
         </RouterLink>
         
@@ -93,29 +93,29 @@
         </div>
         
         <!-- User Menu -->
-        <div class="hidden md:flex items-center gap-5">
+        <div class="hidden md:flex items-center gap-3 lg:gap-5">
           <button
-            class="hidden md:flex p-2 rounded-full text-slate-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors"
+            class="hidden md:flex p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors"
             @click="toggleTheme"
             :title="theme === 'dark' ? 'Modo claro' : 'Modo escuro'"
           >
-            <span class="material-icons-outlined">{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</span>
+            <span class="material-icons-outlined text-lg sm:text-xl">{{ theme === 'dark' ? 'light_mode' : 'dark_mode' }}</span>
           </button>
-          <button class="relative p-2 rounded-full text-slate-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors group">
-            <span class="material-icons-outlined">notifications</span>
-            <span v-if="hasNotifications" class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-primary ring-2 ring-white dark:ring-surface-dark animate-pulse"></span>
+          <button class="relative p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors group">
+            <span class="material-icons-outlined text-lg sm:text-xl">notifications</span>
+            <span v-if="hasNotifications" class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 block h-2 w-2 rounded-full bg-primary ring-2 ring-white dark:ring-surface-dark animate-pulse"></span>
           </button>
           <div class="relative group cursor-pointer" ref="userMenuContainer">
-            <div class="flex items-center gap-3" @click.stop="toggleUserMenu">
+            <div class="flex items-center gap-2 lg:gap-3" @click.stop="toggleUserMenu">
               <div class="relative">
                 <div class="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
                 <Avatar :src="userAvatar" :name="userName" size="md" class="relative border-2 border-white dark:border-surface-dark" />
               </div>
-              <div class="text-left hidden lg:block">
-                <p class="text-sm font-bold text-white dark:text-white group-hover:text-primary dark:group-hover:text-secondary transition-colors">
+              <div class="text-left hidden lg:block min-w-0">
+                <p class="text-sm font-bold text-white dark:text-white group-hover:text-primary dark:group-hover:text-secondary transition-colors truncate">
                   {{ userDisplayName }}
                 </p>
-                <p class="text-xs text-gray-400 dark:text-gray-400">{{ userTitle }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-400 truncate">{{ userTitle }}</p>
               </div>
             </div>
             
@@ -153,16 +153,6 @@
               </div>
             </Transition>
           </div>
-        </div>
-        
-        <!-- Mobile menu button -->
-        <div class="md:hidden -mr-2 flex">
-          <button
-            class="inline-flex items-center justify-center p-2 rounded-md text-primary dark:text-secondary hover:text-white hover:bg-gray-800 focus:outline-none"
-            type="button"
-          >
-            <span class="material-icons-outlined">menu</span>
-          </button>
         </div>
       </div>
     </nav>

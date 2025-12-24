@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usePlans } from '@/composables/usePlans'
+import { useUserStore } from '@/stores/user'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -44,6 +45,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Events.vue'),
   },
   {
+    path: '/eventos/:id',
+    name: 'EventDetail',
+    component: () => import('@/views/EventDetail.vue'),
+  },
+  {
+    path: '/eventos/calendario',
+    name: 'EventCalendar',
+    component: () => import('@/views/EventCalendar.vue'),
+  },
+  {
     path: '/servicos',
     name: 'Services',
     component: () => import('@/views/Services.vue'),
@@ -69,6 +80,18 @@ const routes: RouteRecordRaw[] = [
     name: 'Upgrade',
     component: () => import('@/views/Upgrade.vue'),
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/eventos',
+    name: 'AdminEvents',
+    component: () => import('@/views/admin/AdminEvents.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/parceiro/eventos',
+    name: 'PartnerEvents',
+    component: () => import('@/views/partner/PartnerEvents.vue'),
+    meta: { requiresAuth: true, requiresRole: 'partner' },
   },
 ]
 
@@ -108,6 +131,34 @@ router.beforeEach(async (to, _from, next) => {
     if (!hasPlanAccessTo(requiresPlan as any)) {
       next({ name: 'Upgrade', query: { redirect: to.fullPath } })
       return
+    }
+  }
+
+  // Verificar se precisa de role específico
+  const requiresRole = to.matched.some(record => record.meta.requiresRole) ?
+    (to.matched.find(record => record.meta.requiresRole)?.meta.requiresRole as string) : undefined
+
+  if (requiresRole && authStore.user) {
+    const userStore = useUserStore()
+    
+    // Se profile não estiver carregado, buscar
+    if (!userStore.profile) {
+      await userStore.fetchProfile(authStore.user.id)
+    }
+
+    const userRole = userStore.profile?.role || 'user'
+    
+    // Admin pode acessar tudo
+    if (userRole !== 'admin') {
+      // Verificar se tem a role necessária
+      if (requiresRole === 'admin' && userRole !== 'admin') {
+        next({ name: 'Home' })
+        return
+      }
+      if (requiresRole === 'partner' && userRole !== 'partner' && userRole !== 'admin') {
+        next({ name: 'Home' })
+        return
+      }
     }
   }
 

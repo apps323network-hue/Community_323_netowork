@@ -1,5 +1,5 @@
 <template>
-  <aside class="sticky top-20 h-fit space-y-6">
+  <aside class="lg:sticky lg:top-20 h-fit space-y-6">
     <!-- Próximos Eventos Card -->
     <div class="border-gradient-blue-pink rounded-xl p-5 shadow-xl bg-surface-dark relative overflow-hidden">
       <div class="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full blur-xl"></div>
@@ -28,7 +28,7 @@
         </div>
       </div>
       <RouterLink
-        to="/eventos"
+        to="/eventos/calendario"
         class="w-full mt-6 py-2 text-xs font-bold text-center text-secondary border border-gray-700 hover:border-secondary hover:bg-secondary/5 rounded-lg transition-all uppercase tracking-wider block"
       >
         Ver Calendário

@@ -1,5 +1,5 @@
 <template>
-  <aside class="sticky top-20 h-fit space-y-6">
+  <aside class="lg:sticky lg:top-20 h-fit space-y-6">
     <!-- Profile Card -->
     <div class="bg-surface-dark dark:bg-surface-dark rounded-xl p-6 relative overflow-hidden shadow-xl border-t border-gray-100 dark:border-gray-800 group">
       <!-- Neon glow effects -->

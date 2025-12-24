@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <HomeLayout>
     <div class="space-y-8 w-full">
       <!-- Post Form -->
       <PostForm @post-created="handlePostCreated" @event-created="handleEventCreated" />
@@ -59,7 +59,7 @@
         </div>
       </div>
     </div>
-  </AppLayout>
+  </HomeLayout>
 </template>
 
 <script setup lang="ts">
@@ -67,7 +67,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePosts } from '@/composables/usePosts'
 import { supabase } from '@/lib/supabase'
-import AppLayout from '@/components/layout/AppLayout.vue'
+import HomeLayout from '@/components/layout/HomeLayout.vue'
 import PostForm from '@/components/features/feed/PostForm.vue'
 import PostCard from '@/components/features/feed/PostCard.vue'
 import CommentForm from '@/components/features/feed/CommentForm.vue'

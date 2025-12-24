@@ -395,6 +395,7 @@ async function handleCreateEvent() {
         tipo: eventForm.value.tipo,
         local: eventForm.value.tipo === 'presencial' ? eventForm.value.local : null,
         image_url: eventImageUrl || null,
+        status: 'pending', // Sempre criar como pending
         created_by: authStore.user?.id,
       })
       .select()
