@@ -74,6 +74,15 @@
             <span class="material-icons-outlined text-xl">person_add</span>
           </button>
         </div>
+        <div 
+          v-if="featuredMembers.length === 0" 
+          class="text-center py-4 text-xs text-gray-500"
+        >
+          <p>Nenhum membro em destaque.</p>
+          <RouterLink to="/membros" class="text-primary hover:underline mt-1 block">
+            Explorar membros
+          </RouterLink>
+        </div>
       </div>
     </div>
 
@@ -107,6 +116,7 @@ import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import Avatar from '@/components/ui/Avatar.vue'
+import { useBookmarks } from '@/composables/useBookmarks'
 
 interface Event {
   id: string
@@ -180,53 +190,23 @@ async function loadUpcomingEvents() {
   }
 }
 
+
+const { fetchBookmarkedMembers } = useBookmarks()
+
 async function loadFeaturedMembers() {
   try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, nome, area_atuacao, avatar_url')
-      .not('nome', 'is', null)
-      .limit(2)
-
-    if (error) throw error
-
-    featuredMembers.value = (data || []).map(member => ({
-      ...member,
-      isOnline: Math.random() > 0.5 // Simular status online (pode ser implementado depois)
+    const members = await fetchBookmarkedMembers()
+    
+    featuredMembers.value = members.map(member => ({
+      id: member.id,
+      nome: member.nome,
+      area_atuacao: member.area_atuacao || 'Membro da Comunidade',
+      avatar_url: member.avatar_url,
+      isOnline: false // Status online real não implementado ainda
     }))
-
-    // Se não houver membros, usar dados de fallback
-    if (featuredMembers.value.length === 0) {
-      featuredMembers.value = [
-        {
-          id: '1',
-          nome: 'Lucas Santos',
-          area_atuacao: 'Advogado',
-          isOnline: true
-        },
-        {
-          id: '2',
-          nome: 'Ana Costa',
-          area_atuacao: 'Influencer'
-        }
-      ]
-    }
   } catch (error) {
     console.error('Error loading featured members:', error)
-    // Fallback data
-    featuredMembers.value = [
-      {
-        id: '1',
-        nome: 'Lucas Santos',
-        area_atuacao: 'Advogado',
-        isOnline: true
-      },
-      {
-        id: '2',
-        nome: 'Ana Costa',
-        area_atuacao: 'Influencer'
-      }
-    ]
+    featuredMembers.value = []
   }
 }
 
