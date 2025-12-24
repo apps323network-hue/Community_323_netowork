@@ -8,7 +8,7 @@ export function useBadges() {
 
   const userBadge = computed<Badge>(() => {
     if (!userStore.profile?.badge) return BADGES.Free
-    return getBadgeById(userStore.profile.badge)
+    return getBadgeById(userStore.profile.badge) || BADGES.Free
   })
 
   const badgeType = computed<BadgeType>(() => {
@@ -23,7 +23,7 @@ export function useBadges() {
   function getBadgeDisplayName(badgeId?: string): string {
     if (!badgeId) return BADGES.Free.name
     const badge = getBadgeById(badgeId)
-    return badge.name
+    return badge?.name || BADGES.Free.name
   }
 
   return {

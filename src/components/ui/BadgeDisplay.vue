@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getBadgeById } from '@/types/badges'
+import { getBadgeById, BADGES } from '@/types/badges'
 import type { Badge } from '@/types/badges'
 
 interface Props {
@@ -31,8 +31,11 @@ const props = withDefaults(defineProps<Props>(), {
 
 const badge = computed<Badge>(() => {
   if (props.badge) return props.badge
-  if (props.badgeId) return getBadgeById(props.badgeId)
-  return getBadgeById('Free')
+  if (props.badgeId) {
+    const foundBadge = getBadgeById(props.badgeId)
+    if (foundBadge) return foundBadge
+  }
+  return BADGES.Free
 })
 
 const badgeClasses = computed(() => {

@@ -78,11 +78,12 @@ const router = createRouter({
 })
 
 // Guard de autenticação
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
-  const requiresPlan = to.matched.some(record => record.meta.requiresPlan) as string | undefined
+  const requiresPlan = to.matched.some(record => record.meta.requiresPlan) ?
+    (to.matched.find(record => record.meta.requiresPlan)?.meta.requiresPlan as string) : undefined
 
   // Páginas públicas que podem ser acessadas mesmo logado (forgot-password, reset-password)
   const publicPages = ['/forgot-password', '/reset-password']

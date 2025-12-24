@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 defineEmits<{
@@ -78,6 +78,6 @@ defineEmits<{
 }>()
 
 const authStore = useAuthStore()
-const route = useRoute()
+
 const userName = computed(() => authStore.user?.email?.split('@')[0] || 'Usuário')
 </script>

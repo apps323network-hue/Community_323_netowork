@@ -4,7 +4,7 @@
     :class="locked ? 'opacity-60' : ''"
   >
     <!-- Locked Overlay -->
-    <BenefitLocked v-if="locked" :required-plan="requiredPlan" @upgrade="$emit('upgrade')" />
+    <BenefitLocked v-if="locked" :required-plan="requiredPlan || 'Member'" @upgrade="$emit('upgrade')" />
 
     <div class="flex justify-between items-start">
       <div

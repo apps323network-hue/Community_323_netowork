@@ -25,7 +25,7 @@ interface Props {
   src?: string
   alt?: string
   name?: string
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
   border?: boolean
 }
 
@@ -64,6 +64,7 @@ const avatarClasses = computed(() => {
     md: 'w-10 h-10 text-sm',
     lg: 'w-16 h-16 text-lg',
     xl: 'w-32 h-32 text-2xl',
+    '2xl': 'w-40 h-40 text-3xl',
   }
 
   return [

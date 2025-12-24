@@ -59,6 +59,6 @@ export function getBadgeById(id: string): Badge | null {
 
 export function getBadgeColor(badgeId: string): string {
   const badge = getBadgeById(badgeId)
-  return badge.color
+  return badge?.color || 'gray'
 }
 

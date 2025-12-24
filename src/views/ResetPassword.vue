@@ -157,14 +157,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter, RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button.vue'
+import { RouterLink } from 'vue-router'
 
-const route = useRoute()
 const authStore = useAuthStore()
-const router = useRouter()
 const password = ref('')
 const confirmPassword = ref('')
 const passwordUpdated = ref(false)

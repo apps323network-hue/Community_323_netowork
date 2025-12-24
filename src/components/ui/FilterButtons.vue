@@ -5,7 +5,7 @@
       :key="filter.id"
       :class="[
         'flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full px-5 transition-all',
-        activeFilter === filter.id
+        modelValue === filter.id
           ? 'bg-primary text-white shadow-[0_0_15px_rgba(244,37,244,0.4)] hover:scale-105'
           : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:border-secondary hover:text-secondary-dark dark:hover:text-secondary text-slate-600 dark:text-gray-400 shadow-sm'
       ]"

@@ -30,7 +30,7 @@ interface Props {
   activeFilter: PostType | 'all'
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 defineEmits<{
   'filter-change': [filter: PostType | 'all']

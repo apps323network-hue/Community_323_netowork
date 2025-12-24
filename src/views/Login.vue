@@ -329,15 +329,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter, useRoute, RouterLink } from 'vue-router'
+import { ref, onUnmounted } from 'vue'
+import { useRoute, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button.vue'
 import Select from '@/components/ui/Select.vue'
 import Modal from '@/components/ui/Modal.vue'
 
-const router = useRouter()
+
 const route = useRoute()
 const authStore = useAuthStore()
 

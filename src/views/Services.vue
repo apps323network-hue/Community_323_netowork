@@ -172,7 +172,7 @@ const services = [
     description: 'Abra sua conta Business nos principais bancos americanos sem precisar viajar. 100% digital.',
     icon: 'account_balance',
     category: 'finance',
-    badge: { text: 'Popular', variant: 'primary' },
+    badge: { text: 'Popular', variant: 'primary' } as const,
   },
   {
     id: 3,
@@ -204,7 +204,7 @@ const services = [
     description: 'Acesso a jantares exclusivos, meetups e grupos de mastermind com empresários de sucesso.',
     icon: 'hub',
     category: 'mentoring',
-    badge: { text: 'Novo', variant: 'secondary' },
+    badge: { text: 'Novo', variant: 'secondary' } as const,
   },
 ]
 

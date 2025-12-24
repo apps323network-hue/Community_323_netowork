@@ -171,13 +171,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { RouterLink, useRouter, useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { useTheme } from '@/composables/useTheme'
 import Avatar from '@/components/ui/Avatar.vue'
 
-const router = useRouter()
+
 const route = useRoute()
 const authStore = useAuthStore()
 const { theme, toggleTheme } = useTheme()
