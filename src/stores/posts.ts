@@ -43,6 +43,10 @@ export const usePostStore = defineStore('posts', () => {
         query = query.ilike('conteudo', `%${filters.search}%`)
       }
 
+      if (filters.user_id) {
+        query = query.eq('user_id', filters.user_id)
+      }
+
       const { data, error: queryError } = await query
 
       if (queryError) throw queryError
