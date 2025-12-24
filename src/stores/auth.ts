@@ -7,6 +7,7 @@ import type { User } from '@supabase/supabase-js'
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const loading = ref(false)
+  const initialized = ref(false)
   const error = ref<string | null>(null)
 
   const isAuthenticated = computed(() => !!user.value)
@@ -149,8 +150,8 @@ export const useAuthStore = defineStore('auth', () => {
         const userStore = useUserStore()
         await userStore.fetchProfile(session.user.id)
       }
-    } catch (err: any) {
-      console.error('Error checking session:', err)
+    } finally {
+      initialized.value = true
     }
   }
 
@@ -230,6 +231,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     error,
     isAuthenticated,
+    initialized,
     signIn,
     signUp,
     signOut,

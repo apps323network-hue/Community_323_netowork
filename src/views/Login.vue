@@ -1,13 +1,26 @@
 <template>
-  <div class="flex min-h-screen relative bg-background-dark text-slate-100 font-sans antialiased selection:bg-primary selection:text-white">
+  <div
+    class="flex min-h-screen relative bg-background-dark text-slate-100 font-sans antialiased selection:bg-primary selection:text-white"
+  >
     <!-- Left Side - Image/Logo -->
-    <div class="hidden lg:flex w-1/2 relative overflow-hidden bg-background-dark items-center justify-center p-12 border-r border-slate-800/50">
-      <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0"></div>
-      <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-secondary/20 rounded-full mix-blend-screen filter blur-[120px] animate-glow z-0"></div>
-      <div class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/20 rounded-full mix-blend-screen filter blur-[120px] animate-glow z-0" style="animation-delay: 2.5s;"></div>
+    <div
+      class="hidden lg:flex w-1/2 relative overflow-hidden bg-background-dark items-center justify-center p-12 border-r border-slate-800/50"
+    >
+      <div
+        class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0"
+      ></div>
+      <div
+        class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-secondary/20 rounded-full mix-blend-screen filter blur-[120px] animate-glow z-0"
+      ></div>
+      <div
+        class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-primary/20 rounded-full mix-blend-screen filter blur-[120px] animate-glow z-0"
+        style="animation-delay: 2.5s"
+      ></div>
       <div class="relative z-10 flex flex-col items-center text-center max-w-lg">
         <div class="mb-10 p-6 rounded-3xl glass shadow-2xl relative group">
-          <div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+          <div
+            class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"
+          ></div>
           <div class="relative bg-black/40 rounded-2xl p-4">
             <img
               alt="323 Network Logo"
@@ -17,19 +30,29 @@
           </div>
         </div>
         <h1 class="text-5xl font-black text-white mb-6 leading-tight tracking-tight">
-          Conectando o Brasil <br/>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-secondary neon-text">nos EUA</span>
+          Conectando o Brasil <br />
+          <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-secondary neon-text"
+            >nos EUA</span
+          >
         </h1>
         <p class="text-slate-400 text-lg leading-relaxed mb-10 max-w-md">
-          A plataforma definitiva para artistas, empreendedores e profissionais. Expanda seus negócios e construa sua comunidade.
+          A plataforma definitiva para artistas, empreendedores e profissionais. Expanda seus
+          negócios e construa sua comunidade.
         </p>
       </div>
     </div>
 
     <!-- Right Side - Form -->
-    <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 bg-background-dark relative overflow-hidden">
-      <div class="lg:hidden absolute top-[-20%] left-[-20%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px]"></div>
-      <div class="lg:hidden absolute bottom-[-20%] right-[-20%] w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px]"></div>
+    <div
+      class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 bg-background-dark relative overflow-hidden"
+    >
+      <div
+        class="lg:hidden absolute top-[-20%] left-[-20%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px]"
+      ></div>
+      <div
+        class="lg:hidden absolute bottom-[-20%] right-[-20%] w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px]"
+      ></div>
       <div class="w-full max-w-md space-y-8 relative z-10">
         <!-- Tabs -->
         <div class="flex justify-center mb-8 border-b border-slate-800 pb-1 relative">
@@ -39,7 +62,7 @@
                 'pb-3 text-lg transition-all duration-300 relative',
                 activeTab === 'login'
                   ? 'text-primary border-b-2 border-primary font-bold'
-                  : 'text-slate-500 hover:text-slate-300 border-b-2 border-transparent font-medium'
+                  : 'text-slate-500 hover:text-slate-300 border-b-2 border-transparent font-medium',
               ]"
               @click="activeTab = 'login'"
             >
@@ -50,7 +73,7 @@
                 'pb-3 text-lg transition-all duration-300',
                 activeTab === 'register'
                   ? 'text-primary border-b-2 border-primary font-bold'
-                  : 'text-slate-500 hover:text-slate-300 border-b-2 border-transparent font-medium'
+                  : 'text-slate-500 hover:text-slate-300 border-b-2 border-transparent font-medium',
               ]"
               @click="activeTab = 'register'"
             >
@@ -65,7 +88,11 @@
             {{ activeTab === 'login' ? 'Bem-vindo de volta' : 'Junte-se a nós' }}
           </h2>
           <p class="mt-2 text-sm text-slate-400">
-            {{ activeTab === 'login' ? 'Acesse sua conta para conectar-se.' : 'Crie sua conta e comece a expandir sua rede.' }}
+            {{
+              activeTab === 'login'
+                ? 'Acesse sua conta para conectar-se.'
+                : 'Crie sua conta e comece a expandir sua rede.'
+            }}
           </p>
         </div>
 
@@ -77,11 +104,23 @@
         >
           <div class="space-y-5">
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-2" for="email">Email ou Usuário</label>
+              <label class="block text-sm font-semibold text-slate-300 mb-2" for="email"
+                >Email ou Usuário</label
+              >
               <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-slate-500 group-focus-within:text-primary transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  <svg
+                    class="h-5 w-5 text-slate-500 group-focus-within:text-primary transition-colors duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
                   </svg>
                 </div>
                 <input
@@ -94,11 +133,23 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-2" for="password">Senha</label>
+              <label class="block text-sm font-semibold text-slate-300 mb-2" for="password"
+                >Senha</label
+              >
               <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-slate-500 group-focus-within:text-secondary transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  <svg
+                    class="h-5 w-5 text-slate-500 group-focus-within:text-secondary transition-colors duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    ></path>
                   </svg>
                 </div>
                 <input
@@ -114,7 +165,7 @@
                   <RouterLink
                     :to="{
                       name: 'ForgotPassword',
-                      query: loginForm.email ? { email: loginForm.email } : {}
+                      query: loginForm.email ? { email: loginForm.email } : {},
                     }"
                     class="font-medium text-primary hover:text-cyan-300 transition-colors hover:shadow-[0_0_10px_rgba(6,182,212,0.5)]"
                     @click.stop
@@ -141,7 +192,9 @@
           <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-semibold text-slate-300 mb-1" for="first-name">Nome</label>
+                <label class="block text-sm font-semibold text-slate-300 mb-1" for="first-name"
+                  >Nome</label
+                >
                 <input
                   id="first-name"
                   v-model="registerForm.firstName"
@@ -151,7 +204,9 @@
                 />
               </div>
               <div>
-                <label class="block text-sm font-semibold text-slate-300 mb-1" for="last-name">Sobrenome</label>
+                <label class="block text-sm font-semibold text-slate-300 mb-1" for="last-name"
+                  >Sobrenome</label
+                >
                 <input
                   id="last-name"
                   v-model="registerForm.lastName"
@@ -162,7 +217,9 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-1" for="reg-email">Email Profissional</label>
+              <label class="block text-sm font-semibold text-slate-300 mb-1" for="reg-email"
+                >Email Profissional</label
+              >
               <input
                 id="reg-email"
                 v-model="registerForm.email"
@@ -172,7 +229,9 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-1" for="reg-password">Senha</label>
+              <label class="block text-sm font-semibold text-slate-300 mb-1" for="reg-password"
+                >Senha</label
+              >
               <input
                 id="reg-password"
                 v-model="registerForm.password"
@@ -182,7 +241,9 @@
               />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-1" for="role">Eu sou...</label>
+              <label class="block text-sm font-semibold text-slate-300 mb-1" for="role"
+                >Eu sou...</label
+              >
               <Select
                 id="role"
                 v-model="registerForm.role"
@@ -197,7 +258,11 @@
             </Button>
           </div>
           <div class="text-xs text-center text-slate-500 mt-4">
-            Ao se registrar, você concorda com nossos <a class="underline hover:text-primary transition-colors" href="#">Termos</a> e <a class="underline hover:text-primary transition-colors" href="#">Política de Privacidade</a>.
+            Ao se registrar, você concorda com nossos
+            <a class="underline hover:text-primary transition-colors" href="#">Termos</a> e
+            <a class="underline hover:text-primary transition-colors" href="#"
+              >Política de Privacidade</a
+            >.
           </div>
         </form>
 
@@ -217,32 +282,33 @@
             <p class="text-slate-600 dark:text-gray-400 mb-4 leading-relaxed">
               {{ loginErrorModal.message }}
             </p>
-            <div v-if="loginErrorModal.isEmailNotConfirmed" class="bg-slate-50 dark:bg-surface-lighter rounded-lg p-4 mb-6">
+            <div
+              v-if="loginErrorModal.isEmailNotConfirmed"
+              class="bg-slate-50 dark:bg-surface-lighter rounded-lg p-4 mb-6"
+            >
               <p class="text-sm text-slate-600 dark:text-gray-400 leading-relaxed">
-                <span class="material-symbols-outlined text-sm align-middle mr-1 text-primary">info</span>
-                <strong>O que fazer agora?</strong><br/>
-                Verifique sua caixa de entrada e clique no link de confirmação que enviamos. 
-                Se não encontrar o email, verifique também sua pasta de spam.
+                <span class="material-symbols-outlined text-sm align-middle mr-1 text-primary"
+                  >info</span
+                >
+                <strong>O que fazer agora?</strong><br />
+                Verifique sua caixa de entrada e clique no link de confirmação que enviamos. Se não
+                encontrar o email, verifique também sua pasta de spam.
               </p>
             </div>
           </div>
           <template #footer>
             <div class="flex gap-3 w-full">
-              <Button 
-                v-if="loginErrorModal.isEmailNotConfirmed" 
-                variant="outline" 
-                size="sm" 
-                full-width 
-                @click="resendConfirmationEmail" 
+              <Button
+                v-if="loginErrorModal.isEmailNotConfirmed"
+                variant="outline"
+                size="sm"
+                full-width
+                @click="resendConfirmationEmail"
                 :loading="resendingEmail"
                 :disabled="resendCooldown > 0"
               >
-                <span v-if="resendCooldown > 0">
-                  Aguarde {{ resendCooldown }}s
-                </span>
-                <span v-else>
-                  Reenviar Email de Confirmação
-                </span>
+                <span v-if="resendCooldown > 0"> Aguarde {{ resendCooldown }}s </span>
+                <span v-else> Reenviar Email de Confirmação </span>
               </Button>
               <Button variant="primary" size="sm" full-width @click="closeLoginErrorModal">
                 Entendi
@@ -265,16 +331,18 @@
               Conta criada com sucesso!
             </h3>
             <p class="text-slate-600 dark:text-gray-400 mb-4 leading-relaxed">
-              Enviamos um email de verificação para <strong class="text-slate-900 dark:text-white">{{ registerForm.email }}</strong>
+              Enviamos um email de verificação para
+              <strong class="text-slate-900 dark:text-white">{{ registerForm.email }}</strong>
             </p>
             <p class="text-sm text-slate-500 dark:text-gray-500 mb-6 leading-relaxed">
-              Por favor, verifique sua caixa de entrada e clique no link de confirmação para ativar sua conta. 
-              Se não encontrar o email, verifique também sua pasta de spam.
+              Por favor, verifique sua caixa de entrada e clique no link de confirmação para ativar
+              sua conta. Se não encontrar o email, verifique também sua pasta de spam.
             </p>
             <div class="bg-slate-50 dark:bg-surface-lighter rounded-lg p-4 mb-6">
               <p class="text-xs text-slate-600 dark:text-gray-400">
                 <span class="material-symbols-outlined text-sm align-middle mr-1">info</span>
-                <strong>Importante:</strong> Você precisará verificar seu email antes de fazer login pela primeira vez.
+                <strong>Importante:</strong> Você precisará verificar seu email antes de fazer login
+                pela primeira vez.
               </p>
             </div>
           </div>
@@ -320,9 +388,7 @@
         -->
       </div>
       <div class="absolute bottom-6 w-full text-center">
-        <p class="text-xs text-slate-600">
-          © 2025 (323) Network. Todos os direitos reservados.
-        </p>
+        <p class="text-xs text-slate-600">© 2025 (323) Network. Todos os direitos reservados.</p>
       </div>
     </div>
   </div>
@@ -330,21 +396,19 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button.vue'
 import Select from '@/components/ui/Select.vue'
 import Modal from '@/components/ui/Modal.vue'
 
-
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 // Define a aba inicial baseado na rota
-const activeTab = ref<'login' | 'register'>(
-  route.name === 'Register' ? 'register' : 'login'
-)
+const activeTab = ref<'login' | 'register'>(route.name === 'Register' ? 'register' : 'login')
 const loading = ref(false)
 const showEmailVerificationModal = ref(false)
 const showLoginErrorModal = ref(false)
@@ -381,33 +445,33 @@ const roleOptions = [
 async function handleLogin() {
   const startTime = performance.now()
   console.log('[LOGIN] Iniciando login - timestamp:', new Date().toISOString())
-  
+
   loading.value = true
   try {
     const signInStartTime = performance.now()
     console.log('[LOGIN] Chamando authStore.signIn...')
-    
+
     // Usar o método do authStore que já atualiza o user automaticamente
     const result = await authStore.signIn(loginForm.value.email, loginForm.value.password)
-    
+
     const signInEndTime = performance.now()
     const signInDuration = signInEndTime - signInStartTime
     console.log(`[LOGIN] authStore.signIn completou em ${signInDuration.toFixed(2)}ms`)
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Erro ao fazer login')
     }
-    
+
     // Verificar se há redirect na query string
     const redirect = route.query.redirect as string
     const redirectTo = redirect || '/'
-    
+
     const redirectStartTime = performance.now()
     console.log(`[LOGIN] Redirecionando para: ${redirectTo}`)
-    
-    // Redirecionar imediatamente - o onAuthStateChange já atualizou o estado
-    window.location.href = redirectTo
-    
+
+    // Redirecionar usando Vue Router para evitar refresh da página
+    await router.push(redirectTo)
+
     const redirectEndTime = performance.now()
     const redirectDuration = redirectEndTime - redirectStartTime
     const totalDuration = redirectEndTime - startTime
@@ -418,14 +482,14 @@ async function handleLogin() {
     const errorDuration = errorTime - startTime
     console.error(`[LOGIN] Erro após ${errorDuration.toFixed(2)}ms:`, error)
     console.error('Login error:', error)
-    
+
     // Verificar se é erro de email não confirmado
-    const isEmailNotConfirmed = 
+    const isEmailNotConfirmed =
       error.message?.toLowerCase().includes('email not confirmed') ||
       error.message?.toLowerCase().includes('email não confirmado') ||
       error.message?.toLowerCase().includes('confirmation') ||
       error.status === 400
-    
+
     if (isEmailNotConfirmed) {
       loginErrorModal.value = {
         title: 'Email não confirmado',
@@ -436,12 +500,14 @@ async function handleLogin() {
     } else {
       loginErrorModal.value = {
         title: 'Erro ao fazer login',
-        message: error.message || 'Não foi possível fazer login. Verifique suas credenciais e tente novamente.',
+        message:
+          error.message ||
+          'Não foi possível fazer login. Verifique suas credenciais e tente novamente.',
         icon: 'error',
         isEmailNotConfirmed: false,
       }
     }
-    
+
     showLoginErrorModal.value = true
   } finally {
     loading.value = false
@@ -484,12 +550,12 @@ async function resendConfirmationEmail() {
         emailRedirectTo: `${window.location.origin}/`,
       },
     })
-    
+
     if (error) throw error
-    
+
     // Iniciar cooldown de 60 segundos
     startResendCooldown()
-    
+
     // Mostrar mensagem de sucesso
     loginErrorModal.value = {
       title: 'Email reenviado!',
@@ -501,7 +567,9 @@ async function resendConfirmationEmail() {
     console.error('Error resending confirmation:', error)
     loginErrorModal.value = {
       title: 'Erro ao reenviar email',
-      message: error.message || 'Não foi possível reenviar o email. Tente novamente mais tarde ou entre em contato com o suporte.',
+      message:
+        error.message ||
+        'Não foi possível reenviar o email. Tente novamente mais tarde ou entre em contato com o suporte.',
       icon: 'error',
       isEmailNotConfirmed: false,
     }
@@ -512,12 +580,12 @@ async function resendConfirmationEmail() {
 
 function startResendCooldown() {
   resendCooldown.value = 60
-  
+
   // Limpar timer anterior se existir
   if (resendCooldownTimer) {
     clearInterval(resendCooldownTimer)
   }
-  
+
   // Iniciar contagem regressiva
   resendCooldownTimer = setInterval(() => {
     resendCooldown.value--
@@ -551,7 +619,7 @@ async function handleRegister() {
       },
     })
     if (error) throw error
-    
+
     // Atualizar o perfil com a área de atuação após o signUp
     if (data.user) {
       try {
@@ -566,25 +634,23 @@ async function handleRegister() {
         // Se o perfil ainda não existe (trigger não executou), criar manualmente
         console.log('Tentando criar perfil manualmente:', profileError)
         try {
-          await supabase
-            .from('profiles')
-            .insert({
-              id: data.user.id,
-              nome: `${registerForm.value.firstName} ${registerForm.value.lastName}`,
-              area_atuacao: registerForm.value.role,
-              plano: 'Free',
-              badge: 'Free',
-            })
+          await supabase.from('profiles').insert({
+            id: data.user.id,
+            nome: `${registerForm.value.firstName} ${registerForm.value.lastName}`,
+            area_atuacao: registerForm.value.role,
+            plano: 'Free',
+            badge: 'Free',
+          })
         } catch (insertError) {
           console.error('Erro ao criar/atualizar perfil:', insertError)
           // Não bloquear o fluxo se houver erro no perfil
         }
       }
     }
-    
+
     // Mostrar modal de verificação de email
     showEmailVerificationModal.value = true
-    
+
     // Limpar formulário
     registerForm.value = {
       firstName: '',
@@ -628,8 +694,17 @@ async function handleOAuth(provider: 'google' | 'apple') {
 
 <style scoped>
 @keyframes pulse-glow {
-  0%, 100% { opacity: 0.8; filter: blur(40px); transform: scale(1); }
-  50% { opacity: 0.5; filter: blur(60px); transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.8;
+    filter: blur(40px);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    filter: blur(60px);
+    transform: scale(1.1);
+  }
 }
 .animate-glow {
   animation: pulse-glow 5s infinite;
