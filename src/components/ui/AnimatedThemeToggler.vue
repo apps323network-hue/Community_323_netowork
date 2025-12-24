@@ -35,7 +35,7 @@ onMounted(() => {
   })
 })
 
-const handleToggle = async (event: MouseEvent) => {
+const handleToggle = async () => {
   // Se o browser não suportar View Transitions, faz o toggle normal
   if (!(document as any).startViewTransition) {
     toggleTheme()

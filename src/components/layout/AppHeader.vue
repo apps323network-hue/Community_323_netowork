@@ -213,13 +213,12 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
-import { useTheme } from '@/composables/useTheme'
 import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
-const { theme } = useTheme() // removed toggleTheme as it's not used in this file anymore directly
+// Theme toggle is now handled by AnimatedThemeToggler component
 
 const showUserMenu = ref(false)
 const userMenuContainer = ref<HTMLElement | null>(null)
