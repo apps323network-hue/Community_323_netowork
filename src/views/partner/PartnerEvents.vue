@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePartner } from '@/composables/usePartner'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -58,12 +58,12 @@ const { myEvents, isPartner, fetchMyEvents, loading } = usePartner()
 const showForm = ref(false)
 const editingEvent = ref<Event | null>(null)
 
-async function handleEventCreated(event: Event) {
+async function handleEventCreated(_event: Event) {
   await fetchMyEvents()
   showForm.value = false
 }
 
-async function handleEventUpdated(event: Event) {
+async function handleEventUpdated(_event: Event) {
   await fetchMyEvents()
   showForm.value = false
   editingEvent.value = null

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import type { AdminEvent, EventStats, EventApprovalAction } from '@/types/admin'
@@ -22,7 +22,7 @@ export const useAdminStore = defineStore('admin', () => {
   // Verificar se usuário é admin
   async function checkIsAdmin(): Promise<boolean> {
     if (!authStore.user) return false
-    
+
     try {
       const { data, error: profileError } = await supabase
         .from('profiles')

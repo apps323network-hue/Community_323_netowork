@@ -84,16 +84,6 @@
           </div>
         </div>
 
-        <div class="p-3 border-t border-slate-100 dark:border-white/5 text-center bg-slate-50/50 dark:bg-surface-lighter/30">
-          <RouterLink
-            to="/configuracoes/notificacoes"
-            class="text-xs font-bold text-slate-500 hover:text-primary transition-colors inline-flex items-center gap-1"
-            @click="isOpen = false"
-          >
-            Ver todas as configurações
-            <span class="material-icons-outlined text-xs">arrow_forward</span>
-          </RouterLink>
-        </div>
       </div>
     </Transition>
   </div>
@@ -139,7 +129,7 @@ async function handleNotificationClick(notification: any) {
   
   // Redirecionar baseado no tipo de notificação
   if (notification.type === 'connection_request') {
-    router.push('/membros') // Ou para uma aba específica de solicitações
+    router.push('/conexoes')
   } else if (notification.type === 'post_like' && notification.metadata?.post_id) {
     router.push(`/?post=${notification.metadata.post_id}`)
   }

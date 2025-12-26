@@ -79,7 +79,13 @@ const route = useRoute()
 // Hide sidebars on Members, MemberProfile, Services, Benefits, and Profile pages
 // Also check if prop is passed
 const hideSidebars = computed(() => {
-  return props.hideSidebars || route.path === '/membros' || route.path.startsWith('/membros/') || route.path === '/servicos' || route.path === '/beneficios' || route.path === '/perfil'
+  return props.hideSidebars || 
+    route.path === '/membros' || 
+    route.path.startsWith('/membros/') || 
+    route.path === '/servicos' || 
+    route.path === '/beneficios' || 
+    route.path === '/perfil' ||
+    route.path === '/conexoes'
 })
 
 function handleEditProfile() {

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useAdminStore } from '@/stores/admin'
 import { useUserStore } from '@/stores/user'
-import type { AdminEvent, EventApprovalAction } from '@/types/admin'
+import type { EventApprovalAction } from '@/types/admin'
 import type { EventStatus } from '@/types/events'
 
 export function useAdmin() {
@@ -51,11 +51,11 @@ export function useAdmin() {
     stats: computed(() => adminStore.stats),
     loading: computed(() => adminStore.loading),
     error: computed(() => adminStore.error),
-    
+
     // Computed
     isAdmin,
     isPartner,
-    
+
     // Methods
     checkIsAdmin,
     loadPendingEvents,
