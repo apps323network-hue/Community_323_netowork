@@ -56,9 +56,26 @@ export function useConnections() {
         }
     }
 
+    async function getConnectionStatus(requesterId: string, responderId: string) {
+        try {
+            const { data, error } = await supabase
+                .from('connections')
+                .select('status')
+                .or(`and(requester_id.eq.${requesterId},responder_id.eq.${responderId}),and(requester_id.eq.${responderId},responder_id.eq.${requesterId})`)
+                .maybeSingle()
+
+            if (error) throw error
+            return data ? data.status : null
+        } catch (error) {
+            console.error('Error fetching connection status:', error)
+            return null
+        }
+    }
+
     return {
         loading,
         fetchConnectionsCount,
-        sendConnectionRequest
+        sendConnectionRequest,
+        getConnectionStatus
     }
 }

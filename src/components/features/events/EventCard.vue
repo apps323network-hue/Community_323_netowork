@@ -54,6 +54,7 @@
 import { computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
+import { toast } from 'vue-sonner'
 
 interface Event {
   id: string
@@ -81,10 +82,7 @@ const authStore = useAuthStore()
 const isOwnEvent = computed(() => authStore.user?.id === props.event.created_by)
 
 async function handleDelete() {
-  if (!confirm('Tem certeza que deseja deletar este evento? Esta ação não pode ser desfeita.')) {
-    return
-  }
-
+  // Sem confirm por solicitação do usuário
   try {
     const { error } = await supabase
       .from('events')
@@ -94,9 +92,10 @@ async function handleDelete() {
     if (error) throw error
 
     emit('deleted', props.event.id)
+    toast.success('Evento deletado com sucesso!')
   } catch (error) {
     console.error('Error deleting event:', error)
-    alert('Erro ao deletar evento. Tente novamente.')
+    toast.error('Erro ao deletar evento. Tente novamente.')
   }
 }
 </script>

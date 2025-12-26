@@ -145,6 +145,7 @@ import Card from '@/components/ui/Card.vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import Badge from '@/components/ui/Badge.vue'
 import PostComment from './PostComment.vue'
+import { toast } from 'vue-sonner'
 import type { Post } from '@/types/posts'
 
 interface Props {
@@ -223,17 +224,15 @@ function formatTime(date: string) {
 }
 
 async function handleDelete() {
-  if (!confirm('Tem certeza que deseja deletar este post? Esta ação não pode ser desfeita.')) {
-    return
-  }
-
+  // Simplificando sem confirm por enquanto, como solicitado pelo usuário
   try {
     await deletePost(props.post.id)
     emit('delete-post', props.post.id)
     showMenu.value = false
+    toast.success('Post deletado com sucesso!')
   } catch (error) {
     console.error('Error deleting post:', error)
-    alert('Erro ao deletar post. Tente novamente.')
+    toast.error('Erro ao deletar post. Tente novamente.')
   }
 }
 

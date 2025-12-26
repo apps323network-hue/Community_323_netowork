@@ -145,15 +145,7 @@
         <!-- User Menu -->
         <div class="hidden md:flex items-center gap-5">
           <AnimatedThemeToggler />
-          <button
-            class="relative p-2 rounded-full text-slate-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors group"
-          >
-            <span class="material-icons-outlined">notifications</span>
-            <span
-              v-if="hasNotifications"
-              class="absolute top-2 right-2 block h-2 w-2 rounded-full bg-primary ring-2 ring-white dark:ring-surface-dark animate-pulse"
-            ></span>
-          </button>
+          <NotificationsDropdown />
           <div class="relative group cursor-pointer" ref="userMenuContainer">
             <div class="flex items-center gap-3" @click.stop="toggleUserMenu">
               <div class="relative">
@@ -234,6 +226,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
+import NotificationsDropdown from '@/components/layout/NotificationsDropdown.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -250,7 +243,7 @@ const userAvatar = computed(
 )
 const userDisplayName = computed(() => userStore.profile?.nome || userName.value)
 const userTitle = computed(() => userStore.profile?.area_atuacao || 'Membro')
-const hasNotifications = computed(() => false) // TODO: implementar notificações
+const hasNotifications = computed(() => false) // Deprecated: No local use now, handled in component
 
 function toggleUserMenu() {
   showUserMenu.value = !showUserMenu.value
