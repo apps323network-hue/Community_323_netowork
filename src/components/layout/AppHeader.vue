@@ -1,8 +1,13 @@
 <template>
   <header
-    class="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-gray-800/50 shadow-sm"
+    class="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-gray-800/50 shadow-sm w-full"
   >
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav :class="[
+      'w-full mx-auto px-4 sm:px-6 lg:px-8',
+      (route.path === '/comunidade' || route.path.startsWith('/comunidade/') || route.path === '/servicos' || route.path === '/beneficios' || route.path === '/perfil')
+        ? 'max-w-[1400px]'
+        : 'max-w-7xl'
+    ]">
       <div class="flex items-center justify-between h-20">
         <!-- Logo -->
         <RouterLink to="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
@@ -45,17 +50,17 @@
               ></span>
             </RouterLink>
             <RouterLink
-              to="/membros"
+              to="/comunidade"
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="
-                route.path === '/membros'
+                route.path === '/comunidade'
                   ? 'text-white dark:text-white'
                   : 'text-gray-400 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
               "
             >
               Comunidade
               <span
-                v-if="route.path === '/membros'"
+                v-if="route.path === '/comunidade'"
                 class="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-secondary transform scale-x-100 transition-transform"
               ></span>
               <span
@@ -142,6 +147,11 @@
           </div>
         </div>
 
+        <!-- Mobile Theme Toggle -->
+        <div class="md:hidden flex items-center">
+          <AnimatedThemeToggler />
+        </div>
+
         <!-- User Menu -->
         <div class="hidden md:flex items-center gap-5">
           <AnimatedThemeToggler />
@@ -213,15 +223,6 @@
           </div>
         </div>
 
-        <!-- Mobile menu button -->
-        <div class="md:hidden -mr-2 flex">
-          <button
-            class="inline-flex items-center justify-center p-2 rounded-md text-primary dark:text-secondary hover:text-white hover:bg-gray-800 focus:outline-none"
-            type="button"
-          >
-            <span class="material-icons-outlined">menu</span>
-          </button>
-        </div>
       </div>
     </nav>
   </header>

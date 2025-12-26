@@ -36,13 +36,13 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresGuest: true },
   },
   {
-    path: '/membros',
+    path: '/comunidade',
     name: 'Members',
     component: () => import('@/views/Members.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/membros/:id',
+    path: '/comunidade/:id',
     name: 'MemberProfile',
     component: () => import('@/views/MemberProfile.vue'),
     meta: { requiresAuth: true },
@@ -121,6 +121,18 @@ const routes: RouteRecordRaw[] = [
     path: '/admin/eventos',
     name: 'AdminEvents',
     component: () => import('@/views/admin/AdminEvents.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/membros',
+    name: 'AdminMembers',
+    component: () => import('@/views/admin/AdminMembers.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/posts',
+    name: 'AdminPosts',
+    component: () => import('@/views/admin/AdminPosts.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
   {

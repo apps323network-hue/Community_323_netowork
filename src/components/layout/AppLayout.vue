@@ -3,7 +3,12 @@
     <AppHeader />
 
     <main
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:pl-0 lg:pr-8 py-8 flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)]"
+      :class="[
+        'mx-auto py-8 flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)]',
+        hideSidebars 
+          ? 'w-full px-4 sm:px-6 lg:px-8' 
+          : 'max-w-7xl px-4 sm:px-6 lg:pl-0 lg:pr-8'
+      ]"
     >
       <div :class="hideSidebars ? 'w-full' : 'grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12'">
         <!-- Sidebar Esquerda - Desktop -->
@@ -31,7 +36,7 @@
 
     <!-- Mobile Menu - Sempre visível -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-lg lg:hidden"
+      class="fixed bottom-0 left-0 right-0 z-50 bg-surface-dark border-t border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
     >
       <nav class="flex justify-around items-center h-16 px-2">
         <RouterLink
@@ -51,7 +56,7 @@
           >
             {{ item.icon }}
           </span>
-          <span class="text-[10px] mt-0.5 font-medium">{{ item.label }}</span>
+          <span class="text-[10px] mt-0.5 font-medium text-white/60 group-hover:text-primary" :class="$route.path === item.path ? 'text-primary' : ''">{{ item.label }}</span>
           <!-- Indicador ativo -->
           <span
             v-if="$route.path === item.path"
@@ -79,13 +84,7 @@ const route = useRoute()
 // Hide sidebars on Members, MemberProfile, Services, Benefits, and Profile pages
 // Also check if prop is passed
 const hideSidebars = computed(() => {
-  return props.hideSidebars || 
-    route.path === '/membros' || 
-    route.path.startsWith('/membros/') || 
-    route.path === '/servicos' || 
-    route.path === '/beneficios' || 
-    route.path === '/perfil' ||
-    route.path === '/conexoes'
+  return props.hideSidebars || route.path === '/comunidade' || route.path.startsWith('/comunidade/') || route.path === '/servicos' || route.path === '/beneficios' || route.path === '/perfil'
 })
 
 function handleEditProfile() {
@@ -94,7 +93,7 @@ function handleEditProfile() {
 
 const mobileMenuItems = [
   { path: '/', label: 'Home', icon: 'home' },
-  { path: '/membros', label: 'Membros', icon: 'people' },
+  { path: '/comunidade', label: 'Comunidade', icon: 'people' },
   { path: '/eventos', label: 'Eventos', icon: 'event' },
   { path: '/servicos', label: 'Serviços', icon: 'business_center' },
   { path: '/beneficios', label: 'Benefícios', icon: 'card_giftcard' },

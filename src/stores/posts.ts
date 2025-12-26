@@ -15,6 +15,24 @@ export const usePostStore = defineStore('posts', () => {
   const authStore = useAuthStore()
   const currentUserId = computed(() => authStore.user?.id)
 
+  // Verificar se usuário é admin
+  async function checkIsAdmin(): Promise<boolean> {
+    if (!authStore.user) return false
+
+    try {
+      const { data, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', authStore.user.id)
+        .single()
+
+      if (profileError) return false
+      return data?.role === 'admin'
+    } catch {
+      return false
+    }
+  }
+
   // Fetch posts with pagination and filters
   async function fetchPosts(filters: PostFilters = {}, reset = false) {
     if (reset) {
@@ -27,12 +45,20 @@ export const usePostStore = defineStore('posts', () => {
     error.value = null
 
     try {
+      // Verificar se é admin
+      const isAdminUser = await checkIsAdmin()
+
       let query = supabase
         .from('posts')
         .select('*')
         .order('fixado', { ascending: false })
         .order('created_at', { ascending: false })
         .range(currentPage.value * pageSize.value, (currentPage.value + 1) * pageSize.value - 1)
+
+      // Filtrar apenas posts aprovados se não for admin
+      if (!isAdminUser) {
+        query = query.eq('status', 'approved')
+      }
 
       // Apply filters
       if (filters.tipo && filters.tipo !== 'all') {
@@ -162,11 +188,21 @@ export const usePostStore = defineStore('posts', () => {
     error.value = null
 
     try {
-      const { data, error: queryError } = await supabase
+      // Verificar se é admin
+      const isAdminUser = await checkIsAdmin()
+
+      let query = supabase
         .from('posts')
         .select('*')
         .eq('id', postId)
-        .single()
+
+      // Se não for admin, filtrar apenas aprovados (mas RLS já faz isso)
+      // Deixar RLS fazer o trabalho, mas podemos adicionar filtro explícito aqui também
+      if (!isAdminUser) {
+        query = query.eq('status', 'approved')
+      }
+
+      const { data, error: queryError } = await query.single()
 
       if (queryError) throw queryError
 
@@ -242,6 +278,7 @@ export const usePostStore = defineStore('posts', () => {
           tipo: input.tipo,
           conteudo: input.conteudo,
           image_url: input.image_url || null,
+          status: 'pending', // Sempre criar como pending
         })
         .select('*')
         .single()
@@ -264,6 +301,7 @@ export const usePostStore = defineStore('posts', () => {
         image_url: data.image_url || undefined,
         created_at: data.created_at,
         updated_at: data.updated_at,
+        status: data.status || 'pending',
         author: profileData ? {
           id: profileData.id,
           nome: profileData.nome || 'Usuário',
@@ -278,8 +316,17 @@ export const usePostStore = defineStore('posts', () => {
         isLiked: false,
       }
 
-      // Add to beginning of posts array (optimistic update)
-      posts.value = [newPost, ...posts.value]
+      // Não adicionar à lista imediatamente se for pending (aguardar aprovação)
+      // Ou adicionar mas mostrar badge de "Aguardando aprovação"
+      // Por enquanto, vamos adicionar mas o RLS vai filtrar
+      if (newPost.status === 'pending') {
+        // Adicionar apenas se for o próprio usuário (ele pode ver seu próprio post pending)
+        if (currentUserId.value === data.user_id) {
+          posts.value = [newPost, ...posts.value]
+        }
+      } else {
+        posts.value = [newPost, ...posts.value]
+      }
 
       return newPost
     } catch (err: any) {

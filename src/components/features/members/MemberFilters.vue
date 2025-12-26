@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-4">
+  <div class="space-y-3 sm:space-y-4">
     <!-- Search Bar -->
     <div class="relative">
       <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -9,17 +9,17 @@
         v-model="searchQuery"
         type="text"
         placeholder="Buscar por nome, área ou cidade..."
-        class="block w-full pl-12 pr-4 py-3 border border-white/10 rounded-xl bg-surface-dark text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+        class="block w-full pl-11 sm:pl-12 pr-4 py-2.5 sm:py-3 border border-white/10 rounded-lg sm:rounded-xl bg-surface-dark text-white placeholder-gray-500 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
         @input="debouncedSearch"
       />
     </div>
 
     <!-- Filter Row -->
-    <div class="flex flex-wrap gap-3 items-center">
+    <div class="flex flex-wrap gap-2 sm:gap-3 items-center">
       <!-- Area Filter -->
       <select
         v-model="filters.area_atuacao"
-        class="px-4 py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+        class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all flex-1 sm:flex-none min-w-[140px]"
         @change="emitFilters"
       >
         <option value="">Todas as áreas</option>
@@ -33,14 +33,14 @@
         v-model="filters.cidade"
         type="text"
         placeholder="Cidade"
-        class="px-4 py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all w-32"
+        class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-xs sm:text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all w-28 sm:w-32 flex-1 sm:flex-none"
         @input="debouncedSearch"
       />
 
       <!-- Objetivo Filter -->
       <select
         v-model="filters.objetivo"
-        class="px-4 py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+        class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all flex-1 sm:flex-none min-w-[140px]"
         @change="emitFilters"
       >
         <option value="">Todos os objetivos</option>
@@ -52,7 +52,7 @@
       <!-- Plan Filter -->
       <select
         v-model="filters.plano"
-        class="px-4 py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+        class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-white/10 bg-surface-dark text-gray-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all flex-1 sm:flex-none min-w-[120px]"
         @change="emitFilters"
       >
         <option value="">Todos os planos</option>
@@ -93,7 +93,7 @@
       <!-- Clear Filters -->
       <button
         v-if="hasActiveFilters"
-        class="px-4 py-2.5 rounded-lg border border-red-500/30 text-red-500 text-sm font-medium hover:bg-red-500/10 transition-all"
+        class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-red-500/30 text-red-500 text-xs sm:text-sm font-medium hover:bg-red-500/10 transition-all w-full sm:w-auto"
         @click="clearFilters"
       >
         Limpar filtros

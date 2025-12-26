@@ -47,7 +47,7 @@
           class="flex items-center justify-between group"
         >
           <RouterLink 
-            :to="`/membros/${member.id}`"
+            :to="`/comunidade/${member.id}`"
             class="flex items-center gap-3 flex-grow member-link"
             style="text-decoration: none !important;"
           >
@@ -88,8 +88,8 @@
           class="text-center py-4 text-xs text-gray-500"
         >
           <p>Nenhum membro em destaque.</p>
-          <RouterLink to="/membros" class="text-primary hover:text-primary-hover mt-1 block">
-            Explorar membros
+          <RouterLink to="/comunidade" class="text-primary hover:text-primary-hover mt-1 block">
+            Explorar comunidade
           </RouterLink>
         </div>
       </div>

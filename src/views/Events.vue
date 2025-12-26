@@ -10,7 +10,7 @@
       />
 
       <!-- Filters and Search (Sticky apenas no desktop) -->
-      <section class="flex flex-col lg:flex-row gap-4 sm:gap-6 justify-between items-start lg:items-center lg:sticky lg:top-[69px] z-40 bg-background-dark/80 backdrop-blur-md py-3 sm:py-4 px-0 lg:-mx-10 lg:px-10 border-b border-white/5">
+      <section class="flex flex-col lg:flex-row gap-4 sm:gap-6 justify-between items-start lg:items-center lg:sticky lg:top-[69px] z-40 bg-background-dark py-3 sm:py-4 px-0 lg:-mx-10 lg:px-10 border-b border-white/5">
         <EventFilters :active-filter="activeFilter" @filter-change="handleFilterChange" />
         <EventSearch @search-change="handleSearchChange" />
       </section>

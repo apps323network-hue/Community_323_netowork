@@ -9,7 +9,7 @@
         <span class="material-icons text-[20px] group-hover:-translate-x-1 transition-transform"
           >arrow_back</span
         >
-        Voltar para membros
+        Voltar para comunidade
       </button>
 
       <!-- Loading State -->
@@ -347,9 +347,9 @@
         </p>
         <button
           class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-300 hover:to-blue-500 text-black font-bold transition-all shadow-glow-secondary hover:shadow-neon-blue"
-          @click="router.push('/membros')"
+          @click="router.push('/comunidade')"
         >
-          Ver todos os membros
+          Ver toda a comunidade
         </button>
       </div>
     </div>
