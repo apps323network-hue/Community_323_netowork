@@ -402,6 +402,7 @@ import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button.vue'
 import Select from '@/components/ui/Select.vue'
 import Modal from '@/components/ui/Modal.vue'
+import { toast } from 'vue-sonner'
 
 const route = useRoute()
 const router = useRouter()
@@ -661,7 +662,7 @@ async function handleRegister() {
     }
   } catch (error: any) {
     console.error('Register error:', error)
-    alert(error.message || 'Erro ao criar conta')
+    toast.error(error.message || 'Erro ao criar conta')
   } finally {
     loading.value = false
   }
@@ -686,7 +687,7 @@ async function handleOAuth(provider: 'google' | 'apple') {
     if (error) throw error
   } catch (error: any) {
     console.error('OAuth error:', error)
-    alert(error.message || 'Erro ao fazer login com OAuth')
+    toast.error(error.message || 'Erro ao fazer login com OAuth')
   }
 }
 */

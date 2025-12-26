@@ -103,10 +103,22 @@
               <!-- Action Buttons -->
               <div class="flex flex-wrap gap-3 pt-4">
                 <button
-                  class="flex items-center gap-2 px-8 py-3.5 rounded-xl border border-secondary/40 text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary transition-all shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-neon-blue font-bold"
+                  class="flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border font-bold transition-all min-w-[160px]"
+                  :class="[
+                    connectionStatus === 'accepted'
+                    ? 'border-green-500/40 text-green-500 bg-green-500/5 cursor-default'
+                    : connectionStatus === 'pending'
+                    ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/5 cursor-default'
+                    : 'border-secondary/40 text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-neon-blue'
+                  ]"
+                  @click="handleConnect"
+                  :disabled="requesting || !!connectionStatus"
                 >
-                  <span class="material-icons">person_add</span>
-                  Conectar
+                  <div v-if="requesting" class="w-5 h-5 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                  <template v-else>
+                    <span class="material-icons">{{ connectionStatus === 'accepted' ? 'check' : connectionStatus === 'pending' ? 'schedule' : 'person_add' }}</span>
+                    {{ connectionStatus === 'accepted' ? 'Conectado' : connectionStatus === 'pending' ? 'Pendente' : 'Conectar' }}
+                  </template>
                 </button>
                 <button
                   class="flex items-center gap-2 px-8 py-3.5 rounded-xl border border-gray-700 hover:border-secondary hover:bg-secondary/10 hover:text-secondary hover:shadow-neon-blue text-gray-400 transition-all duration-300 font-bold"
@@ -352,9 +364,12 @@ import Avatar from '@/components/ui/Avatar.vue'
 import BadgeDisplay from '@/components/ui/BadgeDisplay.vue'
 import PostCard from '@/components/features/feed/PostCard.vue'
 import CommentForm from '@/components/features/feed/CommentForm.vue'
-import { useMembers } from '@/composables/useMembers'
-import { usePosts } from '@/composables/usePosts'
 import { useBookmarks } from '@/composables/useBookmarks'
+import { useConnections } from '@/composables/useConnections'
+import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
+import { toast } from 'vue-sonner'
+import { sendConnectionRequestEmail } from '@/lib/emails'
 import type { Member } from '@/types/members'
 
 const route = useRoute()
@@ -362,9 +377,13 @@ const router = useRouter()
 const { fetchMemberById, loading, error } = useMembers()
 const { posts: memberPosts, loading: postsLoading, hasMore: postsHasMore, loadPosts, loadMorePosts, removeComment } = usePosts()
 const { isBookmarked: checkBookmarked, toggleBookmark, fetchBookmarks, loading: bookmarkLoading } = useBookmarks()
+const { sendConnectionRequest, getConnectionStatus } = useConnections()
+const authStore = useAuthStore()
 
 const member = ref<Member | null>(null)
 const expandedComments = ref(new Set<string>())
+const requesting = ref(false)
+const connectionStatus = ref<string | null>(null)
 
 const isBookmarked = computed(() => {
   if (!member.value) return false
@@ -378,6 +397,10 @@ onMounted(async () => {
     member.value = await fetchMemberById(id)
     if (member.value) {
       await loadMemberPosts()
+      // Verificar status de conexão
+      if (authStore.user) {
+        connectionStatus.value = await getConnectionStatus(authStore.user.id, member.value.id)
+      }
     }
   }
 })
@@ -401,6 +424,62 @@ async function handleLoadMorePosts() {
 async function handleToggleBookmark() {
   if (!member.value) return
   await toggleBookmark(member.value.id)
+}
+
+async function handleConnect() {
+  if (!authStore.user || !member.value) {
+    toast.error('Você precisa estar logado para conectar.')
+    return
+  }
+  
+  if (requesting.value || connectionStatus.value) return
+  requesting.value = true
+
+  try {
+    const { success, error } = await sendConnectionRequest(authStore.user.id, member.value.id)
+    
+    if (success) {
+      connectionStatus.value = 'pending'
+      
+      // 1. Notificação In-App
+      await supabase.from('notifications').insert({
+        user_id: member.value.id,
+        type: 'connection_request',
+        title: 'Nova solicitação de conexão',
+        content: `${authStore.user.user_metadata?.nome || 'Um membro'} quer se conectar com você.`,
+        metadata: { requester_id: authStore.user.id }
+      })
+
+      // 2. Notificação Email
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('email, nome')
+        .eq('id', member.value.id)
+        .single()
+
+      if (profile?.email) {
+        await sendConnectionRequestEmail(
+          profile.email,
+          profile.nome || 'Membro',
+          authStore.user.user_metadata?.nome || 'Um membro'
+        )
+      }
+
+      toast.success('Solicitação de conexão enviada!')
+    } else {
+      if (error === 'Request already exists') {
+        connectionStatus.value = 'pending'
+        toast.info('Solicitação já enviada anteriormente.')
+      } else {
+        toast.error('Erro ao conectar. Tente novamente.')
+      }
+    }
+  } catch (err) {
+    console.error(err)
+    toast.error('Erro ao processar solicitação.')
+  } finally {
+    requesting.value = false
+  }
 }
 
 function handleToggleComments(postId: string) {

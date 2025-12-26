@@ -218,6 +218,7 @@ import Modal from '@/components/ui/Modal.vue'
 import InteractiveGridPattern from '@/components/ui/InteractiveGridPattern.vue'
 import { useBenefits } from '@/composables/useBenefits'
 import { useUserStore } from '@/stores/user'
+import { toast } from 'vue-sonner'
 
 const { benefits, loading, fetchBenefits, fetchUserBenefits, claimBenefit, isBenefitClaimed, canClaimBenefit } = useBenefits()
 const userStore = useUserStore()
@@ -250,9 +251,9 @@ const otherBenefits = computed(() => {
 async function handleClaimBenefit(benefitId: string) {
   const success = await claimBenefit(benefitId)
   if (success) {
-    alert('Benefício resgatado com sucesso! Nossa equipe entrará em contato em breve.')
+    toast.success('Benefício resgatado com sucesso! Nossa equipe entrará em contato em breve.')
   } else {
-    alert('Erro ao resgatar benefício. Tente novamente.')
+    toast.error('Erro ao resgatar benefício. Tente novamente.')
   }
 }
 

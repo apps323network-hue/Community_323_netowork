@@ -189,6 +189,7 @@ import ServiceCard from '@/components/features/services/ServiceCard.vue'
 import TestimonialCard from '@/components/features/services/TestimonialCard.vue'
 import Modal from '@/components/ui/Modal.vue'
 import FlickeringGrid from '@/components/ui/FlickeringGrid.vue'
+import { toast } from 'vue-sonner'
 
 const { supabase } = useSupabase()
 const loading = ref(true)
@@ -272,7 +273,7 @@ async function submitRequest() {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      alert('Você precisa estar logado para solicitar um serviço.')
+      toast.error('Você precisa estar logado para solicitar um serviço.')
       return
     }
 
@@ -287,12 +288,12 @@ async function submitRequest() {
 
     if (error) throw error
 
-    alert('Solicitação enviada com sucesso! O parceiro entrará em contato em breve.')
+    toast.success('Solicitação enviada com sucesso! O parceiro entrará em contato em breve.')
     showRequestModal.value = false
     requestMessage.value = ''
   } catch (error) {
     console.error('Erro ao enviar solicitação:', error)
-    alert('Erro ao enviar solicitação. Tente novamente mais tarde.')
+    toast.error('Erro ao enviar solicitação. Tente novamente mais tarde.')
   } finally {
     submitting.value = false
   }
