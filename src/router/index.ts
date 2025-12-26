@@ -100,6 +100,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/conexoes',
+    name: 'Connections',
+    component: () => import('@/views/Connections.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/admin/eventos',
     name: 'AdminEvents',
     component: () => import('@/views/admin/AdminEvents.vue'),
@@ -121,7 +127,7 @@ const router = createRouter({
 // Guard de autenticação
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
-  
+
   // Aguardar inicialização do Firebase/Supabase se necessário
   if (!authStore.initialized) {
     // Criar uma promessa que resolve quando o store estiver inicializado
@@ -176,14 +182,14 @@ router.beforeEach(async (to, _from, next) => {
 
   if (requiresRole && authStore.user) {
     const userStore = useUserStore()
-    
+
     // Se profile não estiver carregado, buscar
     if (!userStore.profile) {
       await userStore.fetchProfile(authStore.user.id)
     }
 
     const userRole = userStore.profile?.role || 'user'
-    
+
     // Admin pode acessar tudo
     if (userRole !== 'admin') {
       // Verificar se tem a role necessária
