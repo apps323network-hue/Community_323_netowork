@@ -12,6 +12,7 @@
         @deleted="handleEventDeleted"
       />
 
+
       <!-- Loading State -->
       <div v-if="loading && posts.length === 0" class="space-y-4">
         <div v-for="i in 3" :key="i" class="bg-white dark:bg-surface-dark rounded-xl p-6 animate-pulse border border-slate-200 dark:border-white/10">
@@ -73,7 +74,7 @@ import PostCard from '@/components/features/feed/PostCard.vue'
 import CommentForm from '@/components/features/feed/CommentForm.vue'
 import EventCard from '@/components/features/events/EventCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
-import Button from '@/components/ui/Button.vue'
+import { toast } from 'vue-sonner'
 import type { PostFilters as PostFiltersType } from '@/types/posts'
 
 const {
@@ -125,6 +126,7 @@ async function loadFeaturedEvent() {
   }
 }
 
+
 function handleEventClick(eventId: string) {
   router.push(`/eventos/${eventId}`)
 }
@@ -166,7 +168,7 @@ async function handleShare(postId: string) {
     } else {
       // Fallback: copy to clipboard
       await navigator.clipboard.writeText(url)
-      alert('Link copiado para a área de transferência!')
+      toast.success('Link copiado para a área de transferência!')
     }
   } catch (error: any) {
     // User cancelled or error occurred
@@ -174,7 +176,7 @@ async function handleShare(postId: string) {
       // Fallback: copy to clipboard
       try {
         await navigator.clipboard.writeText(url)
-        alert('Link copiado para a área de transferência!')
+        toast.success('Link copiado para a área de transferência!')
       } catch (clipboardError) {
         console.error('Error copying to clipboard:', clipboardError)
       }
@@ -188,12 +190,12 @@ async function handleEditComment(commentId: string) {
 }
 
 async function handleDeleteComment(commentId: string) {
-  if (confirm('Tem certeza que deseja deletar este comentário?')) {
-    try {
-      await removeComment(commentId)
-    } catch (error) {
-      console.error('Error deleting comment:', error)
-    }
+  try {
+    await removeComment(commentId)
+    toast.success('Comentário deletado.')
+  } catch (error) {
+    console.error('Error deleting comment:', error)
+    toast.error('Erro ao deletar comentário.')
   }
 }
 
@@ -219,6 +221,7 @@ async function loadMore() {
 let observer: IntersectionObserver | null = null
 
 onMounted(async () => {
+  await loadPosts(filters.value, true)
   await loadPosts(filters.value, true)
   await loadFeaturedEvent()
 

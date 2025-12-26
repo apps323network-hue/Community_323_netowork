@@ -39,6 +39,7 @@ export interface PostFilters {
   tipo?: PostType | 'all'
   search?: string
   sortBy?: 'recent' | 'popular'
+  user_id?: string
 }
 
 export interface PostCreateInput {

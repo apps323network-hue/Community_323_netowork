@@ -87,6 +87,7 @@ import Button from '@/components/ui/Button.vue'
 import Badge from '@/components/ui/Badge.vue'
 import BadgeDisplay from '@/components/ui/BadgeDisplay.vue'
 import { usePlans } from '@/composables/usePlans'
+import { toast } from 'vue-sonner'
 import type { PlanType } from '@/types/plans'
 
 const { currentPlan, planDetails, upgradeTo, PLANS } = usePlans()
@@ -98,7 +99,7 @@ const availablePlans = computed(() => {
 function handleUpgrade(planId: PlanType) {
   upgradeTo(planId)
   // TODO: Integrar com sistema de pagamento
-  alert(`Upgrade para ${planId} - Integração de pagamento em desenvolvimento`)
+  toast.info(`Upgrade para ${planId} - Integração de pagamento em desenvolvimento`)
 }
 </script>
 

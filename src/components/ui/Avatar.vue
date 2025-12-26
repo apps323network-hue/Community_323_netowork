@@ -5,12 +5,12 @@
         v-if="shouldShowImage"
         :src="src"
         :alt="alt || name"
-        class="w-full h-full rounded-full object-cover"
+        :class="['w-full h-full object-cover', props.border ? 'rounded-full' : 'rounded-2xl']"
         @error="handleImageError"
       />
       <div
         v-else
-        class="w-full h-full rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold"
+        :class="['w-full h-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-white font-bold', props.border ? 'rounded-full' : 'rounded-2xl']"
       >
         {{ initials }}
       </div>
@@ -68,7 +68,8 @@ const avatarClasses = computed(() => {
   }
 
   return [
-    'relative flex-shrink-0 rounded-full',
+    'relative flex-shrink-0',
+    props.border ? 'rounded-full' : 'rounded-2xl',
     sizes[props.size],
   ].join(' ')
 })

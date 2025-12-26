@@ -11,19 +11,22 @@
     <!-- Post Header -->
     <div class="p-6 dark:p-6 flex justify-between items-start border-b border-slate-200 dark:border-gray-800">
       <div class="flex gap-3">
-        <div class="relative">
-          <div class="absolute -inset-0.5 bg-gradient-to-b from-primary to-purple-600 rounded-full blur opacity-50"></div>
+
+        <RouterLink :to="`/membros/${post.user_id}`" class="relative group no-underline">
+          <div class="absolute -inset-0.5 bg-gradient-to-b from-primary to-purple-600 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity"></div>
           <Avatar
             :src="authorAvatar"
             :name="authorName"
             size="md"
             class="relative border-2 border-white"
           />
-        </div>
+        </RouterLink>
         <div>
-          <h4 class="font-bold text-base text-gray-900 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors cursor-pointer">
-            {{ authorName }}
-          </h4>
+          <RouterLink :to="`/membros/${post.user_id}`" class="author-link" style="text-decoration: none !important;">
+            <h4 class="font-bold text-base text-gray-900 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors">
+              {{ authorName }}
+            </h4>
+          </RouterLink>
           <p class="text-xs text-gray-400">
             {{ authorRole }} • <span class="text-secondary">{{ formatTime(post.created_at) }}</span>
           </p>
@@ -142,6 +145,7 @@ import Card from '@/components/ui/Card.vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import Badge from '@/components/ui/Badge.vue'
 import PostComment from './PostComment.vue'
+import { toast } from 'vue-sonner'
 import type { Post } from '@/types/posts'
 
 interface Props {
@@ -220,17 +224,15 @@ function formatTime(date: string) {
 }
 
 async function handleDelete() {
-  if (!confirm('Tem certeza que deseja deletar este post? Esta ação não pode ser desfeita.')) {
-    return
-  }
-
+  // Simplificando sem confirm por enquanto, como solicitado pelo usuário
   try {
     await deletePost(props.post.id)
     emit('delete-post', props.post.id)
     showMenu.value = false
+    toast.success('Post deletado com sucesso!')
   } catch (error) {
     console.error('Error deleting post:', error)
-    alert('Erro ao deletar post. Tente novamente.')
+    toast.error('Erro ao deletar post. Tente novamente.')
   }
 }
 
@@ -248,4 +250,12 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
+
+<style scoped>
+.author-link, .author-link:hover, .author-link:focus, .author-link:active {
+  text-decoration: none !important;
+  border: none !important;
+  outline: none !important;
+}
+</style>
 

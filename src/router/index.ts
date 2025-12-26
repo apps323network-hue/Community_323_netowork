@@ -1,3 +1,4 @@
+import { watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
@@ -38,11 +39,19 @@ const routes: RouteRecordRaw[] = [
     path: '/membros',
     name: 'Members',
     component: () => import('@/views/Members.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/membros/:id',
+    name: 'MemberProfile',
+    component: () => import('@/views/MemberProfile.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/eventos',
     name: 'Events',
     component: () => import('@/views/Events.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/eventos/:id',
@@ -58,16 +67,25 @@ const routes: RouteRecordRaw[] = [
     path: '/servicos',
     name: 'Services',
     component: () => import('@/views/Services.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/meus-pedidos',
+    name: 'MyRequests',
+    component: () => import('@/views/MyRequests.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/vagas',
     name: 'Jobs',
     component: () => import('@/views/Jobs.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/beneficios',
     name: 'Benefits',
     component: () => import('@/views/Benefits.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/perfil',
@@ -103,6 +121,24 @@ const router = createRouter({
 // Guard de autenticação
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
+  
+  // Aguardar inicialização do Firebase/Supabase se necessário
+  if (!authStore.initialized) {
+    // Criar uma promessa que resolve quando o store estiver inicializado
+    await new Promise<void>((resolve) => {
+      const stop = watch(
+        () => authStore.initialized,
+        (val: boolean) => {
+          if (val) {
+            stop()
+            resolve()
+          }
+        },
+        { immediate: true }
+      )
+    })
+  }
+
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
   const requiresPlan = to.matched.some(record => record.meta.requiresPlan) ?

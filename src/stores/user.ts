@@ -13,10 +13,15 @@ export interface UserProfile {
   objetivo?: string
   whatsapp?: string
   linkedin?: string
+  instagram?: string
   avatar_url?: string
+  bio?: string
+  tags?: string[]
+  goals?: string[]
   plano?: 'Free' | 'Member' | 'Premium'
   badge?: string
-  role?: UserRole
+  is_public?: boolean
+  job_notifications?: boolean
   created_at?: string
   updated_at?: string
 }
@@ -28,30 +33,30 @@ export const useUserStore = defineStore('user', () => {
   async function fetchProfile(userId: string) {
     const fetchStartTime = performance.now()
     console.log(`[USER] fetchProfile iniciado para userId: ${userId}`)
-    
+
     loading.value = true
     try {
       const queryStartTime = performance.now()
       console.log('[USER] Executando query no Supabase...')
-      
+
       // Adicionar timeout de 5 segundos para evitar travamento
       const queryPromise = supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
-      
-      const timeoutPromise = new Promise((_, reject) => 
+
+      const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Timeout: fetchProfile demorou mais de 5 segundos')), 5000)
       )
-      
+
       const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as any
 
       const queryEndTime = performance.now()
       console.log(`[USER] Query completou em ${(queryEndTime - queryStartTime).toFixed(2)}ms`)
 
       if (error) throw error
-      
+
       profile.value = data
       const fetchEndTime = performance.now()
       console.log(`[USER] fetchProfile completou em ${(fetchEndTime - fetchStartTime).toFixed(2)}ms`)

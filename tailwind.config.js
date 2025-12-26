@@ -51,6 +51,28 @@ export default {
         'neon-gradient': 'linear-gradient(135deg, #f425f4 0%, #00f0ff 100%)',
         'neon-gradient-rev': 'linear-gradient(135deg, #00f0ff 0%, #f425f4 100%)',
       },
+      animation: {
+        "shimmer-slide": "shimmer-slide var(--speed) ease-in-out infinite alternate",
+        "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",
+      },
+      keyframes: {
+        "shimmer-slide": {
+          "0%": {
+            transform: "translate(-50%, 0)",
+          },
+          "100%": {
+            transform: "translate(50%, 0)",
+          },
+        },
+        "spin-around": {
+          "0%": {
+            transform: "translateZ(0) rotate(0)",
+          },
+          "100%": {
+            transform: "translateZ(0) rotate(360deg)",
+          },
+        },
+      },
     },
   },
   plugins: [],
