@@ -64,12 +64,12 @@
               ></div>
             </div>
             <div class="text-xs">
-              <p class="font-bold text-white group-hover:text-primary transition-colors">{{ member.nome }}</p>
+              <p class="font-bold text-white group-hover:text-primary transition-colors truncate">{{ member.nome }}</p>
               <p class="text-gray-500 truncate w-24">{{ member.area_atuacao }}</p>
             </div>
           </RouterLink>
           <button 
-            class="p-1.5 rounded-full transition-all flex items-center justify-center min-w-[32px] min-h-[32px]"
+            class="rounded-full transition-all flex items-center justify-center w-8 h-8 flex-shrink-0"
             :class="[
                 connectionStatuses[member.id] 
                 ? 'text-green-500 bg-green-500/10 cursor-default' 

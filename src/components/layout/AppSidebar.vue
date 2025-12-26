@@ -40,8 +40,24 @@
         <RouterLink
           to="/comunidade"
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-400 hover:bg-surface-lighter hover:text-white group transition-all"
+          :class="$route.path === '/membros' ? 'bg-surface-lighter text-white' : ''"
         >
-          <span class="material-icons-outlined mr-3 text-gray-500 group-hover:text-secondary transition-colors">groups</span>
+          <span class="material-icons-outlined mr-3 text-gray-500 group-hover:text-secondary transition-colors">people_outline</span>
+          Explorar Membros
+        </RouterLink>
+        <RouterLink
+          to="/conexoes"
+          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
+          :class="$route.path === '/conexoes' 
+            ? 'font-semibold bg-surface-lighter text-white border-l-4 border-secondary shadow-neon-blue/10' 
+            : 'text-gray-400 hover:bg-surface-lighter hover:text-white group'"
+        >
+          <span 
+            class="material-icons-outlined mr-3 transition-colors"
+            :class="$route.path === '/conexoes' ? 'text-secondary' : 'text-gray-500 group-hover:text-secondary'"
+          >
+            groups
+          </span>
           Minha Rede
         </RouterLink>
         <RouterLink

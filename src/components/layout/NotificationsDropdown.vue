@@ -84,16 +84,6 @@
           </div>
         </div>
 
-        <div class="p-3 border-t border-slate-100 dark:border-white/5 text-center bg-slate-50/50 dark:bg-surface-lighter/30">
-          <RouterLink
-            to="/configuracoes/notificacoes"
-            class="text-xs font-bold text-slate-500 hover:text-primary transition-colors inline-flex items-center gap-1"
-            @click="isOpen = false"
-          >
-            Ver todas as configurações
-            <span class="material-icons-outlined text-xs">arrow_forward</span>
-          </RouterLink>
-        </div>
       </div>
     </Transition>
   </div>

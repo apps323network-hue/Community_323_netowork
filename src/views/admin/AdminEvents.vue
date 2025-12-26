@@ -59,7 +59,7 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import EventStats from '@/components/admin/EventStats.vue'
 import AdminEventList from '@/components/admin/AdminEventList.vue'
 import EventApprovalModal from '@/components/admin/EventApprovalModal.vue'
-import type { AdminEvent, EventApprovalAction } from '@/types/admin'
+import type { AdminEvent } from '@/types/admin'
 import type { EventStatus } from '@/types/events'
 
 const router = useRouter()

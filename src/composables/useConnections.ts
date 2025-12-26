@@ -72,10 +72,63 @@ export function useConnections() {
         }
     }
 
+    async function fetchPendingRequests(userId: string) {
+        loading.value = true
+        try {
+            const { data, error } = await supabase
+                .from('connections')
+                .select(`
+                    id,
+                    requester_id,
+                    created_at,
+                    profiles:requester_id (
+                        id,
+                        nome,
+                        area_atuacao,
+                        avatar_url
+                    )
+                `)
+                .eq('responder_id', userId)
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false })
+
+            if (error) throw error
+            return data
+        } catch (error) {
+            console.error('Error fetching pending requests:', error)
+            return []
+        } finally {
+            loading.value = false
+        }
+    }
+
+    async function updateConnectionStatus(connectionId: string, status: 'accepted' | 'rejected') {
+        loading.value = true
+        try {
+            const { error } = await supabase
+                .from('connections')
+                .update({
+                    status,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', connectionId)
+
+            if (error) throw error
+            return { success: true }
+        } catch (error: any) {
+            console.error('Error updating connection status:', error)
+            return { success: false, error: error.message }
+        } finally {
+            loading.value = false
+        }
+    }
+
     return {
         loading,
         fetchConnectionsCount,
         sendConnectionRequest,
-        getConnectionStatus
+        getConnectionStatus,
+        fetchPendingRequests,
+        updateConnectionStatus
     }
 }

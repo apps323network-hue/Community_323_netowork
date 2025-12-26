@@ -187,8 +187,8 @@ function resetForm() {
   success.value = null
 }
 
-function handleImageSelect(event: Event) {
-  const target = event.target as HTMLInputElement
+function handleImageSelect(e: globalThis.Event) {
+  const target = e.target as HTMLInputElement
   const file = target.files?.[0]
   
   if (!file) return
@@ -247,13 +247,14 @@ async function handleSubmit() {
 
   try {
     // Upload image if selected
-    let imageUrl = form.value.image_url
+    let imageUrl: string | undefined = form.value.image_url
     if (imageFile.value) {
-      imageUrl = await uploadImage()
-      if (!imageUrl) {
+      const uploadedUrl = await uploadImage()
+      if (!uploadedUrl) {
         processing.value = false
         return
       }
+      imageUrl = uploadedUrl
     }
 
     const eventData: EventCreateInput = {

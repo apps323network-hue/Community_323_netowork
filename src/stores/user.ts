@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
-
 import type { UserRole } from '@/types/admin'
 
 export interface UserProfile {
@@ -22,6 +21,7 @@ export interface UserProfile {
   badge?: string
   is_public?: boolean
   job_notifications?: boolean
+  role?: UserRole
   created_at?: string
   updated_at?: string
 }

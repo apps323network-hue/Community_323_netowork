@@ -124,7 +124,7 @@ import EventListCard from '@/components/features/events/EventListCard.vue'
 import EventFilters from '@/components/features/events/EventFilters.vue'
 import EventSearch from '@/components/features/events/EventSearch.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
-import type { EventFilters as EventFiltersType, Event } from '@/types/events'
+import type { EventFilters as EventFiltersType } from '@/types/events'
 
 const router = useRouter()
 const {
