@@ -1,4 +1,5 @@
 export type PostType = 'networking' | 'ofereco_servico' | 'procuro_ajuda' | 'oportunidade'
+export type PostStatus = 'pending' | 'approved' | 'hidden' | 'removed' | 'spam'
 
 export interface PostAuthor {
   id: string
@@ -16,6 +17,13 @@ export interface Post {
   image_url?: string
   created_at: string
   updated_at: string
+  status?: PostStatus
+  approved_by?: string
+  approved_at?: string
+  rejection_reason?: string
+  strikes_added?: boolean
+  moderated_by?: string
+  moderated_at?: string
   // Joined data
   author?: PostAuthor
   likes_count?: number

@@ -77,7 +77,7 @@ function handleEditProfile() {
 
 const mobileMenuItems = [
   { path: '/', label: 'Home', icon: 'home' },
-  { path: '/membros', label: 'Membros', icon: 'people' },
+  { path: '/comunidade', label: 'Comunidade', icon: 'people' },
   { path: '/eventos', label: 'Eventos', icon: 'event' },
   { path: '/servicos', label: 'Serviços', icon: 'business_center' },
   { path: '/beneficios', label: 'Benefícios', icon: 'card_giftcard' },

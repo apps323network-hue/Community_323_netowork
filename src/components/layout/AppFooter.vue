@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 mt-auto py-4 sm:py-6 relative overflow-hidden">
+  <footer class="hidden lg:block bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 mt-auto py-4 sm:py-6 relative overflow-hidden">
     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-secondary to-transparent opacity-50"></div>
     
     <div class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 text-center relative z-10">

@@ -359,6 +359,16 @@ async function handleSubmit() {
     selectedImage.value = null
     selectedImageFile.value = null
 
+    // Mostrar mensagem de sucesso
+    if (newPost.status === 'pending') {
+      // Importar toast dinamicamente
+      const { toast } = await import('vue-sonner')
+      toast.success('Post criado! Aguardando aprovação do admin.', {
+        description: 'Seu post será revisado e publicado em breve.',
+        duration: 5000,
+      })
+    }
+
     // Emit event
     emit('post-created', newPost.id)
   } catch (err: any) {
