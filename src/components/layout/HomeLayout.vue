@@ -68,7 +68,8 @@ import AppRightSidebar from './AppRightSidebar.vue'
 import AppFooter from './AppFooter.vue'
 
 const router = useRouter()
-const route = useRoute()
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _route = useRoute() // Used via $route in template
 
 function handleEditProfile() {
   router.push('/perfil')

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
-import type { Event, EventConfirmation, EventFilters, EventCreateInput } from '@/types/events'
+import type { Event, EventFilters, EventCreateInput } from '@/types/events'
 
 export const useEventStore = defineStore('events', () => {
   const events = ref<Event[]>([])
@@ -18,7 +18,7 @@ export const useEventStore = defineStore('events', () => {
   // Verificar se usuário é admin
   async function checkIsAdmin(): Promise<boolean> {
     if (!authStore.user) return false
-    
+
     try {
       const { data, error: profileError } = await supabase
         .from('profiles')
@@ -103,7 +103,7 @@ export const useEventStore = defineStore('events', () => {
       confirmationsData?.forEach((conf: any) => {
         const count = confirmationsCountMap.get(conf.event_id) || 0
         confirmationsCountMap.set(conf.event_id, count + 1)
-        
+
         if (conf.user_id === currentUserId.value) {
           userConfirmationsSet.add(conf.event_id)
         }
@@ -133,7 +133,7 @@ export const useEventStore = defineStore('events', () => {
 
       // Sort by upcoming (default) or recent
       if (filtersParam.sortBy === 'recent') {
-        transformedEvents.sort((a, b) => 
+        transformedEvents.sort((a, b) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
       } else {
@@ -144,7 +144,7 @@ export const useEventStore = defineStore('events', () => {
           const dateB = new Date(b.data_hora)
           const aIsPast = dateA < now
           const bIsPast = dateB < now
-          
+
           if (aIsPast && !bIsPast) return 1
           if (!aIsPast && bIsPast) return -1
           return dateA.getTime() - dateB.getTime()
