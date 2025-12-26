@@ -149,7 +149,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{
+defineEmits<{
   approve: [postId: string]
   hide: [postId: string]
   remove: [postId: string]

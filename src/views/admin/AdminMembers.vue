@@ -81,7 +81,6 @@ import AdminPendingUsersList from '@/components/admin/AdminPendingUsersList.vue'
 import AdminUsersList from '@/components/admin/AdminUsersList.vue'
 import UserApprovalModal from '@/components/admin/UserApprovalModal.vue'
 import type { AdminUser } from '@/types/admin'
-import type { UserStatus } from '@/types/admin'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
@@ -187,22 +186,22 @@ function handleViewProfile(userId: string) {
   router.push(`/comunidade/${userId}`)
 }
 
-function handleSuspend(userId: string) {
+function handleSuspend(_userId: string) {
   // TODO: Implementar suspensão (Sprint 2)
   toast.info('Funcionalidade de suspensão será implementada em breve')
 }
 
-function handleBan(userId: string) {
+function handleBan(_userId: string) {
   // TODO: Implementar banimento (Sprint 2)
   toast.info('Funcionalidade de banimento será implementada em breve')
 }
 
-function handleUnsuspend(userId: string) {
+function handleUnsuspend(_userId: string) {
   // TODO: Implementar remoção de suspensão (Sprint 2)
   toast.info('Funcionalidade será implementada em breve')
 }
 
-function handleViewHistory(userId: string) {
+function handleViewHistory(_userId: string) {
   // TODO: Implementar visualização de histórico (Sprint 2)
   toast.info('Funcionalidade de histórico será implementada em breve')
 }

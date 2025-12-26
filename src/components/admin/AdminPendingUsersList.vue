@@ -82,7 +82,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { AdminUser } from '@/types/admin'
 import Avatar from '@/components/ui/Avatar.vue'
 
@@ -93,7 +92,7 @@ interface Props {
 
 defineProps<Props>()
 
-const emit = defineEmits<{
+defineEmits<{
   approve: [userId: string]
   reject: [userId: string]
   'view-profile': [userId: string]

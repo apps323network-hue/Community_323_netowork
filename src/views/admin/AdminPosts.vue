@@ -99,7 +99,6 @@ import PostModerationModal from '@/components/admin/PostModerationModal.vue'
 import AdminPostView from '@/components/admin/AdminPostView.vue'
 import Modal from '@/components/ui/Modal.vue'
 import type { AdminPost } from '@/types/admin'
-import type { PostStatus } from '@/types/posts'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()

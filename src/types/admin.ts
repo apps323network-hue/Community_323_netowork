@@ -35,6 +35,7 @@ export interface AdminUser {
   area_atuacao?: string
   cidade?: string
   pais?: string
+  avatar_url?: string
   status: UserStatus
   strikes: number
   approved_by?: string
@@ -55,6 +56,7 @@ export interface UserStats {
 }
 
 import type { Post, PostStatus } from './posts'
+export type { PostStatus }
 
 export interface AdminPost extends Post {
   status: PostStatus

@@ -161,19 +161,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { AdminPost } from '@/types/admin'
 import Avatar from '@/components/ui/Avatar.vue'
 import PostStatusBadge from '@/components/ui/PostStatusBadge.vue'
 
 interface Props {
-  post: AdminPost | null
+  post: AdminPost
 }
 
 defineProps<Props>()
 
-const emit = defineEmits<{
+defineEmits<{
   approve: [postId: string]
   hide: [postId: string]
   remove: [postId: string]

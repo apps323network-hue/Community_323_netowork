@@ -162,7 +162,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{
+defineEmits<{
   suspend: [userId: string]
   ban: [userId: string]
   unsuspend: [userId: string]

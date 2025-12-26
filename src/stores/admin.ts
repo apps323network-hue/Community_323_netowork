@@ -703,7 +703,7 @@ export const useAdminStore = defineStore('admin', () => {
   }
 
   // Adicionar strike ao usuário (função auxiliar)
-  async function addStrikeToUser(userId: string, reason: string) {
+  async function addStrikeToUser(userId: string, _reason: string) {
     if (!authStore.user) return
 
     try {
