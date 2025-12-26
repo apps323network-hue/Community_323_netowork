@@ -48,7 +48,8 @@
         >
           <RouterLink 
             :to="`/membros/${member.id}`"
-            class="flex items-center gap-3 flex-grow"
+            class="flex items-center gap-3 flex-grow member-link"
+            style="text-decoration: none !important;"
           >
             <div class="relative">
               <Avatar 
@@ -79,7 +80,7 @@
           class="text-center py-4 text-xs text-gray-500"
         >
           <p>Nenhum membro em destaque.</p>
-          <RouterLink to="/membros" class="text-primary hover:underline mt-1 block">
+          <RouterLink to="/membros" class="text-primary hover:text-primary-hover mt-1 block">
             Explorar membros
           </RouterLink>
         </div>
@@ -117,6 +118,8 @@ import { RouterLink } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import Avatar from '@/components/ui/Avatar.vue'
 import { useBookmarks } from '@/composables/useBookmarks'
+import { useConnections } from '@/composables/useConnections'
+import { useAuthStore } from '@/stores/auth'
 
 interface Event {
   id: string
@@ -215,9 +218,34 @@ function handleEventClick(eventId: string) {
   console.log('Event clicked:', eventId)
 }
 
-function handleFollowMember(memberId: string) {
-  // TODO: Implementar funcionalidade de seguir membro
-  console.log('Follow member:', memberId)
+
+
+const authStore = useAuthStore()
+const { sendConnectionRequest } = useConnections()
+const requesting = ref<Set<string>>(new Set())
+
+async function handleFollowMember(memberId: string) {
+  if (!authStore.user) return
+  
+  if (requesting.value.has(memberId)) return
+  requesting.value.add(memberId)
+
+  const { success, error } = await sendConnectionRequest(authStore.user.id, memberId)
+  
+  if (success) {
+    // Show visual feedback (could be a toast, but changing button state locally is quicker for now)
+    // Remove from featured list or change icon
+    alert('Solicitação de conexão enviada!')
+  } else {
+    if (error === 'Request already exists') {
+      alert('Solicitação já enviada anteriormente.')
+    } else {
+      console.error(error)
+      alert('Erro ao conectar.')
+    }
+  }
+  
+  requesting.value.delete(memberId)
 }
 
 function handleBusinessClick() {
@@ -231,12 +259,18 @@ onMounted(() => {
 })
 </script>
 
+
+
 <style scoped>
 .border-gradient-blue-pink {
   position: relative;
   border: 1px solid transparent;
   background: linear-gradient(#12121A, #12121A) padding-box,
               linear-gradient(to right, #00F0FF, #FF00AA) border-box;
+}
+
+.member-link, .member-link:hover, .member-link:focus, .member-link:active {
+  text-decoration: none !important;
 }
 </style>
 

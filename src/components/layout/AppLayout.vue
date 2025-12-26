@@ -57,12 +57,17 @@ import AppSidebar from './AppSidebar.vue'
 import AppRightSidebar from './AppRightSidebar.vue'
 import AppFooter from './AppFooter.vue'
 
+const props = defineProps<{
+  hideSidebars?: boolean
+}>()
+
 const router = useRouter()
 const route = useRoute()
 
-// Hide sidebars on Members, MemberProfile, Services, and Benefits pages
+// Hide sidebars on Members, MemberProfile, Services, Benefits, and Profile pages
+// Also check if prop is passed
 const hideSidebars = computed(() => {
-  return route.path === '/membros' || route.path.startsWith('/membros/') || route.path === '/servicos' || route.path === '/beneficios'
+  return props.hideSidebars || route.path === '/membros' || route.path.startsWith('/membros/') || route.path === '/servicos' || route.path === '/beneficios' || route.path === '/perfil'
 })
 
 function handleEditProfile() {

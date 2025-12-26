@@ -7,13 +7,8 @@
       <div class="absolute bottom-0 left-0 w-24 h-24 bg-secondary/10 blur-3xl rounded-full -ml-10 -mb-10 group-hover:bg-secondary/20 transition-all duration-500"></div>
       
       <div class="relative z-10">
-        <h2 class="text-xl font-bold mb-1 text-white">Olá, {{ userName }}! 👋</h2>
+        <h2 class="text-xl font-bold mb-1 text-white">Olá, {{ userName }}!</h2>
         <p class="text-sm text-gray-400 mb-6">Membro desde 2023</p>
-        
-        <div class="flex justify-between items-center bg-surface-lighter p-4 rounded-lg mb-6 border border-gray-800">
-          <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Profile Views</span>
-          <span class="text-secondary font-black text-lg text-glow-blue">1.2k</span>
-        </div>
         
         <button
           class="w-full bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-black font-bold py-2.5 px-4 rounded-lg transition-all shadow-lg shadow-secondary/10 hover:shadow-secondary/40"
