@@ -1,16 +1,14 @@
 <template>
-  <AppLayout>
-    <div class="w-full flex flex-col gap-6 sm:gap-8">
+  <AdminLayout>
+    <div class="w-full flex flex-col gap-8">
       <!-- Header -->
-      <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 justify-between items-start lg:items-center">
-        <div>
-          <h1 class="text-white text-2xl sm:text-3xl lg:text-4xl font-black mb-2">
-            Gestão de <span class="bg-clip-text text-transparent bg-neon-gradient">Membros</span>
-          </h1>
-          <p class="text-white/60 text-sm sm:text-base">
-            Aprove, rejeite e gerencie membros da comunidade
-          </p>
-        </div>
+      <div class="mb-6">
+        <h1 class="text-white text-4xl lg:text-5xl font-black mb-3">
+          Gestão de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Membros</span>
+        </h1>
+        <p class="text-white/60 text-lg">
+          Aprove, rejeite e gerencie membros da comunidade
+        </p>
       </div>
 
       <!-- Stats -->
@@ -68,14 +66,14 @@
         @reject="handleModalReject"
       />
     </div>
-  </AppLayout>
+    </AdminLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/admin'
-import AppLayout from '@/components/layout/AppLayout.vue'
+import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import UserStats from '@/components/admin/UserStats.vue'
 import AdminPendingUsersList from '@/components/admin/AdminPendingUsersList.vue'
 import AdminUsersList from '@/components/admin/AdminUsersList.vue'
@@ -222,6 +220,20 @@ onMounted(async () => {
 <style scoped>
 .bg-neon-gradient {
   background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
 }
 
 .no-scrollbar::-webkit-scrollbar {

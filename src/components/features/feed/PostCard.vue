@@ -22,11 +22,22 @@
           />
         </RouterLink>
         <div>
-          <RouterLink :to="`/comunidade/${post.user_id}`" class="author-link" style="text-decoration: none !important;">
-            <h4 class="font-bold text-base text-gray-900 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors">
-              {{ authorName }}
-            </h4>
-          </RouterLink>
+          <div class="flex items-center gap-2">
+            <RouterLink :to="`/comunidade/${post.user_id}`" class="author-link" style="text-decoration: none !important;">
+              <h4 class="font-bold text-base text-gray-900 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors">
+                {{ authorName }}
+              </h4>
+            </RouterLink>
+            <!-- Badge de post pendente (apenas para o próprio usuário) -->
+            <Badge 
+              v-if="isPendingPost" 
+              variant="warning" 
+              size="sm"
+            >
+              <span class="material-icons-outlined text-[10px] mr-1">schedule</span>
+              Pendente
+            </Badge>
+          </div>
           <p class="text-xs text-gray-400">
             {{ authorRole }} • <span class="text-secondary">{{ formatTime(post.created_at) }}</span>
           </p>
@@ -173,6 +184,21 @@ const showMenu = ref(false)
 const menuContainer = ref<HTMLElement | null>(null)
 
 const isOwnPost = computed(() => authStore.user?.id === props.post.user_id)
+
+// Debug: verificar status do post
+const isPendingPost = computed(() => {
+  const result = isOwnPost.value && props.post.status === 'pending'
+  // Log temporário para debug
+  if (isOwnPost.value) {
+    console.log('[PostCard] Post do próprio usuário:', {
+      postId: props.post.id,
+      status: props.post.status,
+      isOwnPost: isOwnPost.value,
+      shouldShowBadge: result
+    })
+  }
+  return result
+})
 
 // Computed for author display
 const authorName = computed(() => props.post.author?.nome || 'Usuário')

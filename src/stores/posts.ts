@@ -55,10 +55,12 @@ export const usePostStore = defineStore('posts', () => {
         .order('created_at', { ascending: false })
         .range(currentPage.value * pageSize.value, (currentPage.value + 1) * pageSize.value - 1)
 
-      // Filtrar apenas posts aprovados se não for admin
-      if (!isAdminUser) {
-        query = query.eq('status', 'approved')
-      }
+      // Não filtrar por status aqui - deixar a RLS fazer o trabalho
+      // A RLS já permite:
+      // - Admins veem todos os posts
+      // - Usuários veem apenas posts 'approved'
+      // - Criador pode ver seu próprio post mesmo se 'pending' ou 'hidden'
+      // Se filtrarmos aqui, podemos bloquear posts que a RLS permite ver
 
       // Apply filters
       if (filters.tipo && filters.tipo !== 'all') {
@@ -141,6 +143,7 @@ export const usePostStore = defineStore('posts', () => {
           image_url: post.image_url || undefined,
           created_at: post.created_at,
           updated_at: post.updated_at,
+          status: post.status || 'approved', // Incluir status do post
           author: profile ? {
             id: profile.id,
             nome: profile.nome || 'Usuário',
@@ -196,11 +199,8 @@ export const usePostStore = defineStore('posts', () => {
         .select('*')
         .eq('id', postId)
 
-      // Se não for admin, filtrar apenas aprovados (mas RLS já faz isso)
-      // Deixar RLS fazer o trabalho, mas podemos adicionar filtro explícito aqui também
-      if (!isAdminUser) {
-        query = query.eq('status', 'approved')
-      }
+      // Não filtrar por status aqui - deixar a RLS fazer o trabalho
+      // A RLS já permite que o criador veja seu próprio post mesmo se 'pending' ou 'hidden'
 
       const { data, error: queryError } = await query.single()
 
@@ -237,6 +237,7 @@ export const usePostStore = defineStore('posts', () => {
         fixado: data.fixado,
         created_at: data.created_at,
         updated_at: data.updated_at,
+        status: data.status || 'approved', // Incluir status do post
         author: profileData ? {
           id: profileData.id,
           nome: profileData.nome || 'Usuário',

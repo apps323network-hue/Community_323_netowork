@@ -69,7 +69,7 @@ export const useAdminStore = defineStore('admin', () => {
         .from('events')
         .select(`
           *,
-          creator:profiles!events_created_by_fkey(id, nome)
+          creator:profiles!created_by(id, nome)
         `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
@@ -99,7 +99,7 @@ export const useAdminStore = defineStore('admin', () => {
         .from('events')
         .select(`
           *,
-          creator:profiles!events_created_by_fkey(id, nome)
+          creator:profiles!created_by(id, nome)
         `)
         .order('created_at', { ascending: false })
 
@@ -445,7 +445,7 @@ export const useAdminStore = defineStore('admin', () => {
         .from('posts')
         .select(`
           *,
-          author:profiles!posts_user_id_fkey(id, nome, area_atuacao, avatar_url)
+          author:profiles!user_id(id, nome, area_atuacao, avatar_url)
         `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
@@ -476,7 +476,7 @@ export const useAdminStore = defineStore('admin', () => {
         .from('posts')
         .select(`
           *,
-          author:profiles!posts_user_id_fkey(id, nome, area_atuacao, avatar_url)
+          author:profiles!user_id(id, nome, area_atuacao, avatar_url)
         `)
         .order('created_at', { ascending: false })
 

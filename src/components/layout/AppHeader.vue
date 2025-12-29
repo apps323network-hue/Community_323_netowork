@@ -210,6 +210,17 @@
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     Meu Perfil
                   </RouterLink>
+                  <!-- Dashboard Admin (apenas para admins) -->
+                  <div v-if="isAdmin" class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
+                    <RouterLink
+                      to="/admin/membros"
+                      class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-primary dark:text-secondary hover:bg-primary/10 dark:hover:bg-secondary/10 transition-colors"
+                      @click="showUserMenu = false"
+                    >
+                      <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                      Dashboard Admin
+                    </RouterLink>
+                  </div>
                   <button
                     @click="handleLogout"
                     class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left"
@@ -230,7 +241,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import Avatar from '@/components/ui/Avatar.vue'
@@ -238,6 +249,7 @@ import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 import NotificationsDropdown from '@/components/layout/NotificationsDropdown.vue'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 // Theme toggle is now handled by AnimatedThemeToggler component
 
@@ -252,6 +264,7 @@ const userAvatar = computed(
 )
 const userDisplayName = computed(() => userStore.profile?.nome || userName.value)
 const userTitle = computed(() => userStore.profile?.area_atuacao || 'Membro')
+const isAdmin = computed(() => userStore.profile?.role === 'admin')
 
 function toggleUserMenu() {
   showUserMenu.value = !showUserMenu.value
@@ -260,26 +273,53 @@ function toggleUserMenu() {
 const isLoggingOut = ref(false)
 
 async function handleLogout() {
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AppHeader.vue:262',message:'handleLogout called',data:{isLoggingOut:isLoggingOut.value},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
+
   // Prevenir múltiplos cliques
   if (isLoggingOut.value) {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AppHeader.vue:266',message:'Logout already in progress, returning',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
     return
   }
 
   isLoggingOut.value = true
   showUserMenu.value = false
 
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AppHeader.vue:272',message:'Clearing auth state',data:{hasUser:!!authStore.user},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+  // #endregion
+
   // Limpar estado local imediatamente para feedback visual rápido
   authStore.user = null
   const userStore = useUserStore()
   userStore.clearProfile()
 
-  // Redirecionar imediatamente - o signOut pode acontecer em background
-  window.location.href = '/login'
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AppHeader.vue:277',message:'Calling signOut',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
 
-  // Tentar fazer signOut em background (não esperar)
-  authStore.signOut().catch(() => {
-    // Ignorar erros - já redirecionamos
-  })
+  // Fazer signOut primeiro
+  try {
+    await authStore.signOut()
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AppHeader.vue:282',message:'signOut completed, redirecting to login',data:{currentPath:route.path},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
+  } catch (err: any) {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AppHeader.vue:285',message:'signOut error, but redirecting anyway',data:{error:err?.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+    // #endregion
+    // Ignorar erros - vamos redirecionar mesmo assim
+  }
+
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'AppHeader.vue:290',message:'Redirecting to login page',data:{targetPath:'/login'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+  // #endregion
+
+  // Redirecionar para página de login usando router
+  router.push({ name: 'Login' })
 }
 
 function handleClickOutside(event: MouseEvent) {

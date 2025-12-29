@@ -17,11 +17,11 @@
     <p class="text-white/40 text-sm mt-2">Todos os usuários foram processados</p>
   </div>
 
-  <div v-else class="space-y-3 sm:space-y-4">
+  <div v-else class="space-y-4">
     <div
       v-for="user in users"
       :key="user.id"
-      class="bg-surface-card rounded-xl p-4 sm:p-6 border border-white/5 hover:border-white/10 transition-all"
+      class="bg-gradient-to-br from-surface-dark to-surface-darker rounded-2xl p-6 border-2 border-white/10 hover:border-primary/30 transition-all shadow-lg hover:shadow-xl hover:shadow-primary/10 group"
     >
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <!-- Avatar and Info -->
@@ -32,10 +32,10 @@
             size="lg"
           />
           <div class="flex-1 min-w-0">
-            <h3 class="text-white text-lg sm:text-xl font-bold mb-1 truncate">
+            <h3 class="text-white text-xl font-black mb-2 truncate">
               {{ user.nome || 'Usuário sem nome' }}
             </h3>
-            <div class="space-y-1 text-sm text-white/60">
+            <div class="space-y-2 text-sm text-white/70">
               <p v-if="user.area_atuacao" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-base">work</span>
                 <span class="truncate">{{ user.area_atuacao }}</span>
@@ -53,27 +53,27 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <button
-            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all text-sm sm:text-base"
+            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500/20 to-green-500/10 hover:from-green-500/30 hover:to-green-500/20 text-green-400 border-2 border-green-500/40 hover:border-green-500/60 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:shadow-green-500/20"
             @click="$emit('approve', user.id)"
           >
-            <span class="material-symbols-outlined text-base">check_circle</span>
-            <span class="hidden sm:inline">Aprovar</span>
+            <span class="material-symbols-outlined text-xl">check_circle</span>
+            <span>Aprovar</span>
           </button>
           <button
-            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all text-sm sm:text-base"
+            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500/20 to-red-500/10 hover:from-red-500/30 hover:to-red-500/20 text-red-400 border-2 border-red-500/40 hover:border-red-500/60 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:shadow-red-500/20"
             @click="$emit('reject', user.id)"
           >
-            <span class="material-symbols-outlined text-base">cancel</span>
-            <span class="hidden sm:inline">Rejeitar</span>
+            <span class="material-symbols-outlined text-xl">cancel</span>
+            <span>Rejeitar</span>
           </button>
           <button
-            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10 rounded-lg font-semibold transition-all text-sm sm:text-base"
+            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-white/5 to-white/0 hover:from-white/10 hover:to-white/5 text-white border-2 border-white/20 hover:border-white/30 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl"
             @click="$emit('view-profile', user.id)"
           >
-            <span class="material-symbols-outlined text-base">visibility</span>
-            <span class="hidden sm:inline">Ver Perfil</span>
+            <span class="material-symbols-outlined text-xl">visibility</span>
+            <span>Ver Perfil</span>
           </button>
         </div>
       </div>

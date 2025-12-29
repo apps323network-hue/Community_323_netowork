@@ -1,0 +1,98 @@
+<template>
+  <aside class="w-64 bg-surface-dark border-r border-white/10 h-full flex flex-col">
+    <!-- Navigation Menu -->
+    <nav class="flex-1 px-4 py-6 space-y-1">
+      <RouterLink
+        v-for="item in menuItems"
+        :key="item.path"
+        :to="item.path"
+        class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group"
+        :class="isActive(item.path)
+          ? 'bg-primary/20 text-primary border-l-4 border-primary shadow-lg shadow-primary/20'
+          : 'text-white/60 hover:text-white hover:bg-white/5'"
+        @click="handleClick"
+      >
+        <span class="material-symbols-outlined text-xl">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+        <span
+          v-if="item.badge && item.badge > 0"
+          class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold"
+          :class="item.badgeClass"
+        >
+          {{ item.badge }}
+        </span>
+      </RouterLink>
+    </nav>
+
+    <!-- Footer Info -->
+    <div class="px-4 py-4 border-t border-white/10">
+      <div class="text-xs text-white/40 text-center">
+        <p>Admin Dashboard</p>
+        <p class="mt-1">v1.0.0</p>
+      </div>
+    </div>
+  </aside>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import { useAdminStore } from '@/stores/admin'
+
+const route = useRoute()
+const adminStore = useAdminStore()
+
+// Carregar estatísticas para os badges
+onMounted(async () => {
+  await adminStore.fetchUserStats()
+  await adminStore.fetchPostStats()
+})
+
+const menuItems = computed(() => [
+  {
+    path: '/admin',
+    label: 'Overview',
+    icon: 'dashboard',
+    badge: undefined,
+    badgeClass: '',
+  },
+  {
+    path: '/admin/membros',
+    label: 'Membros',
+    icon: 'people',
+    badge: adminStore.userStats.pending > 0 ? adminStore.userStats.pending : undefined,
+    badgeClass: 'bg-yellow-500/20 text-yellow-400',
+  },
+  {
+    path: '/admin/posts',
+    label: 'Posts',
+    icon: 'article',
+    badge: adminStore.postStats.pending > 0 ? adminStore.postStats.pending : undefined,
+    badgeClass: 'bg-yellow-500/20 text-yellow-400',
+  },
+  {
+    path: '/admin/eventos',
+    label: 'Eventos',
+    icon: 'event',
+    badge: undefined,
+    badgeClass: '',
+  },
+])
+
+function isActive(path: string) {
+  if (path === '/admin') {
+    return route.path === '/admin'
+  }
+  return route.path === path || route.path.startsWith(path + '/')
+}
+
+function handleClick() {
+  // Fechar sidebar no mobile se necessário
+  emit('navigate')
+}
+
+const emit = defineEmits<{
+  navigate: []
+}>()
+</script>
+

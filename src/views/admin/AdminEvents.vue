@@ -1,16 +1,14 @@
 <template>
-  <AppLayout>
+  <AdminLayout>
     <div class="w-full flex flex-col gap-8">
       <!-- Header -->
-      <div class="flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center">
-        <div>
-          <h1 class="text-white text-3xl lg:text-4xl font-black mb-2">
-            Admin de <span class="bg-clip-text text-transparent bg-neon-gradient">Eventos</span>
-          </h1>
-          <p class="text-white/60">
-            Gerencie e aprove eventos da comunidade
-          </p>
-        </div>
+      <div class="mb-6">
+        <h1 class="text-white text-4xl lg:text-5xl font-black mb-3">
+          Admin de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Eventos</span>
+        </h1>
+        <p class="text-white/60 text-lg">
+          Gerencie e aprove eventos da comunidade
+        </p>
       </div>
 
       <!-- Stats -->
@@ -48,14 +46,14 @@
         @reject="handleModalReject"
       />
     </div>
-  </AppLayout>
+  </AdminLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdmin } from '@/composables/useAdmin'
-import AppLayout from '@/components/layout/AppLayout.vue'
+import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import EventStats from '@/components/admin/EventStats.vue'
 import AdminEventList from '@/components/admin/AdminEventList.vue'
 import EventApprovalModal from '@/components/admin/EventApprovalModal.vue'
@@ -166,6 +164,20 @@ onMounted(async () => {
 <style scoped>
 .bg-neon-gradient {
   background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
 }
 
 .shadow-neon-pink {

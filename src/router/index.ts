@@ -117,24 +117,30 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/PaymentCancel.vue'),
     meta: { requiresAuth: true },
   },
-  {
-    path: '/admin/eventos',
-    name: 'AdminEvents',
-    component: () => import('@/views/admin/AdminEvents.vue'),
-    meta: { requiresAuth: true, requiresRole: 'admin' },
-  },
-  {
-    path: '/admin/membros',
-    name: 'AdminMembers',
-    component: () => import('@/views/admin/AdminMembers.vue'),
-    meta: { requiresAuth: true, requiresRole: 'admin' },
-  },
-  {
-    path: '/admin/posts',
-    name: 'AdminPosts',
-    component: () => import('@/views/admin/AdminPosts.vue'),
-    meta: { requiresAuth: true, requiresRole: 'admin' },
-  },
+    {
+      path: '/admin',
+      name: 'AdminOverview',
+      component: () => import('@/views/admin/AdminOverview.vue'),
+      meta: { requiresAuth: true, requiresRole: 'admin' },
+    },
+    {
+      path: '/admin/eventos',
+      name: 'AdminEvents',
+      component: () => import('@/views/admin/AdminEvents.vue'),
+      meta: { requiresAuth: true, requiresRole: 'admin' },
+    },
+    {
+      path: '/admin/membros',
+      name: 'AdminMembers',
+      component: () => import('@/views/admin/AdminMembers.vue'),
+      meta: { requiresAuth: true, requiresRole: 'admin' },
+    },
+    {
+      path: '/admin/posts',
+      name: 'AdminPosts',
+      component: () => import('@/views/admin/AdminPosts.vue'),
+      meta: { requiresAuth: true, requiresRole: 'admin' },
+    },
   {
     path: '/parceiro/eventos',
     name: 'PartnerEvents',
@@ -149,7 +155,11 @@ const router = createRouter({
 })
 
 // Guard de autenticação
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to, from, next) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'router/index.ts:140',message:'Router guard triggered',data:{to:to.path,from:from.path,hasUser:!!useAuthStore().user},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'})}).catch(()=>{});
+  // #endregion
+
   const authStore = useAuthStore()
 
   // Aguardar inicialização do Firebase/Supabase se necessário
@@ -180,6 +190,9 @@ router.beforeEach(async (to, _from, next) => {
 
   // Verificar se precisa de autenticação
   if (requiresAuth && !authStore.user) {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'router/index.ts:171',message:'Redirecting to login (requiresAuth)',data:{to:to.path},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H'})}).catch(()=>{});
+    // #endregion
     next({ name: 'Login', query: { redirect: to.fullPath } })
     return
   }
@@ -187,6 +200,9 @@ router.beforeEach(async (to, _from, next) => {
   // Verificar se precisa ser guest (não logado)
   // Mas permitir acesso a páginas públicas mesmo se logado
   if (requiresGuest && authStore.user && !isPublicPage) {
+    // #region agent log
+    fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'router/index.ts:178',message:'Redirecting to home (requiresGuest)',data:{to:to.path},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
+    // #endregion
     next({ name: 'Home' })
     return
   }
@@ -227,6 +243,10 @@ router.beforeEach(async (to, _from, next) => {
       }
     }
   }
+
+  // #region agent log
+  fetch('http://127.0.0.1:7246/ingest/0e16ca07-47b3-4e57-90f8-e4c32947f7f6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'router/index.ts:219',message:'Router guard allowing navigation',data:{to:to.path},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'J'})}).catch(()=>{});
+  // #endregion
 
   next()
 })

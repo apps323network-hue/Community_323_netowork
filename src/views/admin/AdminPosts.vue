@@ -1,16 +1,14 @@
 <template>
-  <AppLayout>
+  <AdminLayout>
     <div class="w-full flex flex-col gap-6 sm:gap-8">
       <!-- Header -->
-      <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 justify-between items-start lg:items-center">
-        <div>
-          <h1 class="text-white text-2xl sm:text-3xl lg:text-4xl font-black mb-2">
-            Gestão de <span class="bg-clip-text text-transparent bg-neon-gradient">Posts</span>
-          </h1>
-          <p class="text-white/60 text-sm sm:text-base">
-            Aprove, oculte, remova e gerencie posts da comunidade
-          </p>
-        </div>
+      <div class="mb-6">
+        <h1 class="text-white text-4xl lg:text-5xl font-black mb-3">
+          Gestão de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Posts</span>
+        </h1>
+        <p class="text-white/60 text-lg">
+          Aprove, oculte, remova e gerencie posts da comunidade
+        </p>
       </div>
 
       <!-- Stats -->
@@ -84,14 +82,14 @@
         />
       </Modal>
     </div>
-  </AppLayout>
+    </AdminLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/admin'
-import AppLayout from '@/components/layout/AppLayout.vue'
+import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import PostStats from '@/components/admin/PostStats.vue'
 import AdminPendingPostsList from '@/components/admin/AdminPendingPostsList.vue'
 import AdminPostsList from '@/components/admin/AdminPostsList.vue'
@@ -307,8 +305,18 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.bg-neon-gradient {
-  background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
 }
 
 .no-scrollbar::-webkit-scrollbar {

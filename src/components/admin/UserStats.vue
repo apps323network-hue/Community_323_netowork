@@ -1,52 +1,70 @@
 <template>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-    <div class="bg-surface-card rounded-xl p-4 sm:p-6 border border-white/5">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-white/60 text-xs sm:text-sm font-medium">Total</span>
-        <span class="material-symbols-outlined text-white/40 text-lg sm:text-xl">people</span>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-white/70 text-sm font-medium">Total</span>
+        <div class="p-2 bg-white/5 rounded-lg">
+          <span class="material-symbols-outlined text-white/50 text-xl">people</span>
+        </div>
       </div>
-      <div class="text-2xl sm:text-3xl font-black text-white">{{ stats.total }}</div>
+      <div class="text-4xl font-black text-white mb-1">{{ stats.total }}</div>
+      <div class="text-xs text-white/40">Membros cadastrados</div>
     </div>
 
-    <div class="bg-surface-card rounded-xl p-4 sm:p-6 border border-yellow-500/20">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-yellow-400 text-xs sm:text-sm font-medium">Pendentes</span>
-        <span class="material-symbols-outlined text-yellow-400/60 text-lg sm:text-xl">schedule</span>
+    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-white/70 text-sm font-medium">Pendentes</span>
+        <div class="p-2 bg-white/5 rounded-lg">
+          <span class="material-symbols-outlined text-white/50 text-xl">schedule</span>
+        </div>
       </div>
-      <div class="text-2xl sm:text-3xl font-black text-yellow-400">{{ stats.pending }}</div>
-      <div v-if="stats.pending > 0" class="mt-1 text-[10px] sm:text-xs text-yellow-400/60">Requer atenção</div>
+      <div class="text-4xl font-black text-white mb-1">{{ stats.pending }}</div>
+      <div v-if="stats.pending > 0" class="text-xs text-yellow-400/70 font-medium">Requer atenção</div>
+      <div v-else class="text-xs text-white/40">Nenhum pendente</div>
     </div>
 
-    <div class="bg-surface-card rounded-xl p-4 sm:p-6 border border-green-500/20">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-green-400 text-xs sm:text-sm font-medium">Ativos</span>
-        <span class="material-symbols-outlined text-green-400/60 text-lg sm:text-xl">check_circle</span>
+    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-white/70 text-sm font-medium">Ativos</span>
+        <div class="p-2 bg-white/5 rounded-lg">
+          <span class="material-symbols-outlined text-white/50 text-xl">check_circle</span>
+        </div>
       </div>
-      <div class="text-2xl sm:text-3xl font-black text-green-400">{{ stats.active }}</div>
+      <div class="text-4xl font-black text-white mb-1">{{ stats.active }}</div>
+      <div class="text-xs text-white/40">Membros ativos</div>
     </div>
 
-    <div class="bg-surface-card rounded-xl p-4 sm:p-6 border border-blue-500/20">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-blue-400 text-xs sm:text-sm font-medium">Novos Hoje</span>
-        <span class="material-symbols-outlined text-blue-400/60 text-lg sm:text-xl">new_releases</span>
+    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-white/70 text-sm font-medium">Novos Hoje</span>
+        <div class="p-2 bg-white/5 rounded-lg">
+          <span class="material-symbols-outlined text-white/50 text-xl">new_releases</span>
+        </div>
       </div>
-      <div class="text-2xl sm:text-3xl font-black text-blue-400">{{ stats.newToday }}</div>
+      <div class="text-4xl font-black text-white mb-1">{{ stats.newToday }}</div>
+      <div class="text-xs text-white/40">Cadastros hoje</div>
     </div>
 
-    <div class="bg-surface-card rounded-xl p-4 sm:p-6 border border-orange-500/20">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-orange-400 text-xs sm:text-sm font-medium">Suspensos</span>
-        <span class="material-symbols-outlined text-orange-400/60 text-lg sm:text-xl">block</span>
+    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-white/70 text-sm font-medium">Suspensos</span>
+        <div class="p-2 bg-white/5 rounded-lg">
+          <span class="material-symbols-outlined text-white/50 text-xl">block</span>
+        </div>
       </div>
-      <div class="text-2xl sm:text-3xl font-black text-orange-400">{{ stats.suspended }}</div>
+      <div class="text-4xl font-black text-white mb-1">{{ stats.suspended }}</div>
+      <div class="text-xs text-white/40">Membros suspensos</div>
     </div>
 
-    <div class="bg-surface-card rounded-xl p-4 sm:p-6 border border-red-500/20">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-red-400 text-xs sm:text-sm font-medium">Banidos</span>
-        <span class="material-symbols-outlined text-red-400/60 text-lg sm:text-xl">cancel</span>
+    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-white/70 text-sm font-medium">Banidos</span>
+        <div class="p-2 bg-white/5 rounded-lg">
+          <span class="material-symbols-outlined text-white/50 text-xl">cancel</span>
+        </div>
       </div>
-      <div class="text-2xl sm:text-3xl font-black text-red-400">{{ stats.banned }}</div>
+      <div class="text-4xl font-black text-white mb-1">{{ stats.banned }}</div>
+      <div class="text-xs text-white/40">Membros banidos</div>
     </div>
   </div>
 </template>
