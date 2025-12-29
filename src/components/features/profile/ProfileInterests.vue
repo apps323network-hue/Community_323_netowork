@@ -4,9 +4,9 @@
       <div class="p-2 rounded-lg bg-primary/10 border border-primary/30">
         <span class="material-symbols-outlined text-primary">interests</span>
       </div>
-      Interesses & Tags
+      {{ t('profile.interestsTitle') }}
     </h3>
-    <p class="text-sm text-text-muted mb-4">Selecione tópicos para conectar com pessoas semelhantes.</p>
+    <p class="text-sm text-text-muted mb-4">{{ t('profile.interestsSubtitle') }}</p>
     <div class="flex flex-wrap gap-2 mb-4">
       <div
         v-for="(tag, index) in tags"
@@ -21,7 +21,7 @@
     </div>
     
     <div v-if="tags.length === 0" class="text-sm text-text-muted italic py-2 mb-2">
-      Nenhum interesse adicionado.
+      {{ t('profile.noInterests') }}
     </div>
     <div v-if="!readonly" class="mt-auto pt-2 group relative">
       <span class="absolute left-0 top-1/2 -translate-y-1/2 text-primary material-symbols-outlined text-[20px]">add</span>
@@ -29,7 +29,7 @@
         v-model="newTag"
         @keyup.enter="handleAddTag"
         type="text"
-        placeholder="Adicionar nova tag"
+        :placeholder="t('profile.addTagPlaceholder')"
         class="w-full bg-transparent border-0 border-b border-input-border focus:border-primary focus:ring-0 text-white placeholder-text-muted text-sm pl-7 py-2 transition-colors"
       />
     </div>
@@ -38,6 +38,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps<{
   tags: string[]

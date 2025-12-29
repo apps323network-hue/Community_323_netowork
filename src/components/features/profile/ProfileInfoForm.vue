@@ -5,13 +5,13 @@
         <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/30">
           <span class="material-symbols-outlined text-secondary">person</span>
         </div>
-        Informações Pessoais
+        {{ t('profile.personalInfo') }}
       </h3>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Full Name -->
       <label class="block space-y-2 group">
-        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">Nome Completo</span>
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.fullName') }}</span>
         <input
           :value="name"
           @input="$emit('update:name', ($event.target as HTMLInputElement).value)"
@@ -23,7 +23,7 @@
 
       <!-- Profession -->
       <label class="block space-y-2 group">
-        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">Área de Atuação</span>
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.areaOfWork') }}</span>
         <input
           :value="profession"
           @input="$emit('update:profession', ($event.target as HTMLInputElement).value)"
@@ -35,7 +35,7 @@
 
       <!-- City -->
       <label class="block space-y-2 group">
-        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">Cidade</span>
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.city') }}</span>
         <input
           :value="city"
           @input="$emit('update:city', ($event.target as HTMLInputElement).value)"
@@ -47,7 +47,7 @@
 
       <!-- State -->
       <label class="block space-y-2 group">
-        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">Estado</span>
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.state') }}</span>
         <input
           :value="state"
           @input="$emit('update:state', ($event.target as HTMLInputElement).value)"
@@ -59,7 +59,7 @@
 
       <!-- Bio -->
       <label class="block space-y-2 md:col-span-2 group">
-        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">Bio / Sobre</span>
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.bioPlaceholder') }}</span>
         <textarea
           :value="bio"
           @input="$emit('update:bio', ($event.target as HTMLTextAreaElement).value)"
@@ -74,6 +74,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps<{
   name: string
   profession: string

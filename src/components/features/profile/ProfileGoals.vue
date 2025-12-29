@@ -4,9 +4,9 @@
       <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/30">
         <span class="material-symbols-outlined text-secondary">flag</span>
       </div>
-      Objetivos
+      {{ t('profile.goalsTitle') }}
     </h3>
-    <p class="text-sm text-text-muted mb-4">O que você busca na comunidade?</p>
+    <p class="text-sm text-text-muted mb-4">{{ t('profile.goalsSubtitle') }}</p>
     <div class="space-y-3 mb-4">
       <div
         v-for="(goal, index) in goals"
@@ -23,7 +23,7 @@
       </div>
 
       <p v-if="goals.length === 0 && !isAdding" class="text-sm text-text-muted italic py-2">
-        Nenhum objetivo adicionado.
+        {{ t('profile.noGoals') }}
       </p>
 
       <!-- Inline Add Goal -->
@@ -32,7 +32,7 @@
           v-model="newGoal"
           @keyup.enter="handleAdd"
           @blur="handleBlur"
-          placeholder="Digite seu objetivo..."
+          :placeholder="t('profile.goalPlaceholder')"
           class="flex-1 bg-input-bg border-input-border focus:border-secondary focus:ring-0 text-white placeholder-text-muted text-sm px-4 py-2 rounded-lg transition-all"
           autofocus
         />
@@ -45,13 +45,16 @@
       class="mt-auto w-full py-3 rounded-xl border border-dashed border-input-border text-text-muted hover:text-white hover:border-secondary hover:bg-input-bg transition-all text-sm font-medium flex items-center justify-center gap-2 group"
     >
       <span class="material-symbols-outlined text-[20px] group-hover:text-secondary transition-colors">add_circle</span>
-      Adicionar Objetivo
+      {{ t('profile.addGoal') }}
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps<{
   goals: string[]

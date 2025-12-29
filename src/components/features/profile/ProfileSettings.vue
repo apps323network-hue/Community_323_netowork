@@ -2,14 +2,14 @@
   <div class="bg-surface-dark/80 backdrop-blur rounded-2xl p-6 border border-input-border">
     <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
       <span class="material-symbols-outlined text-text-muted">settings</span>
-      Configurações da Conta
+      {{ t('profile.settingsTitle') }}
     </h3>
     <div class="space-y-4">
       <!-- Public Profile Toggle -->
       <div class="flex items-center justify-between py-2 p-3 rounded-lg hover:bg-white/5 transition-colors">
         <div>
-          <p class="text-white font-medium text-sm">Perfil Público</p>
-          <p class="text-text-muted text-xs">Permitir que não-membros vejam seu resumo.</p>
+          <p class="text-white font-medium text-sm">{{ t('profile.publicProfile') }}</p>
+          <p class="text-text-muted text-xs">{{ t('profile.publicProfileDesc') }}</p>
         </div>
         <button
           @click="$emit('toggle-public')"
@@ -36,8 +36,8 @@
       <!-- Job Notifications Toggle -->
       <div class="flex items-center justify-between py-2 p-3 rounded-lg hover:bg-white/5 transition-colors">
         <div>
-          <p class="text-white font-medium text-sm">Receber notificações de Vagas</p>
-          <p class="text-text-muted text-xs">Emails semanais sobre novas oportunidades.</p>
+          <p class="text-white font-medium text-sm">{{ t('profile.jobNotifications') }}</p>
+          <p class="text-text-muted text-xs">{{ t('profile.jobNotificationsDesc') }}</p>
         </div>
         <button
           @click="$emit('toggle-notifications')"
@@ -63,6 +63,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
 defineProps<{
   isPublic?: boolean
   jobNotifications?: boolean

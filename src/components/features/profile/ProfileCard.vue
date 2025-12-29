@@ -34,12 +34,12 @@
       class="mt-3 flex items-center gap-1 bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-semibold border border-secondary/30 shadow-[0_0_8px_rgba(0,240,255,0.15)]"
     >
       <span class="material-symbols-outlined text-[14px]">verified</span>
-      <span>Verificado</span>
+      <span>{{ t('profile.verified') }}</span>
     </div>
 
     <!-- Member Info -->
     <p class="text-text-muted text-sm mt-4 px-2">
-      Membro desde {{ memberSince }} <br />
+      {{ t('profile.memberSince') }} {{ memberSince }} <br />
       {{ city }}{{ state ? `, ${state}` : '' }} • {{ country }}
     </p>
 
@@ -51,7 +51,7 @@
       <div class="flex items-center justify-between text-sm group/stat cursor-default">
         <span class="text-text-muted flex items-center gap-2 group-hover/stat:text-primary transition-colors">
           <span class="material-symbols-outlined text-[18px]">group</span>
-          Conexões
+          {{ t('profile.connections') }}
         </span>
         <span class="text-white font-medium">{{ connections }}</span>
       </div>
@@ -61,6 +61,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 interface Props {
   name: string

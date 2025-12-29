@@ -25,15 +25,15 @@
       <!-- Page Header -->
       <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
         <div>
-          <h1 class="text-3xl font-bold text-white tracking-tight">Meu Perfil</h1>
-          <p class="text-text-muted mt-1">Gerencie suas informações pessoais e visibilidade na rede.</p>
+          <h1 class="text-3xl font-bold text-white tracking-tight">{{ t('profile.previewTitle') }}</h1>
+          <p class="text-text-muted mt-1">{{ t('profile.previewSubtitle') }}</p>
         </div>
         <div class="flex gap-3">
           <button 
             @click="isPreviewMode = !isPreviewMode"
             class="px-5 py-2.5 rounded-full border border-input-border text-white font-semibold text-sm hover:border-secondary hover:text-secondary hover:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all"
           >
-            {{ isPreviewMode ? 'Voltar para Edição' : 'Ver como Público' }}
+            {{ isPreviewMode ? t('profile.backToEdit') : t('profile.viewAsPublic') }}
           </button>
           <button
             v-if="!isPreviewMode"
@@ -46,7 +46,7 @@
                 : 'bg-input-bg border border-input-border text-text-muted hover:text-white'
             ]"
           >
-            {{ saving ? 'Salvando...' : 'Salvar Alterações' }}
+            {{ saving ? t('profile.saving') : t('profile.saveChanges') }}
           </button>
         </div>
       </div>
@@ -115,7 +115,7 @@
           <!-- Mobile Sticky Footer -->
           <div v-if="!isPreviewMode" class="md:hidden sticky bottom-4 z-40 bg-surface-dark/90 backdrop-blur border border-[#492249] p-4 rounded-xl shadow-2xl flex gap-3">
             <button class="flex-1 py-3 rounded-full border border-input-border text-white font-bold text-sm">
-              Cancelar
+              {{ t('common.cancel') }}
             </button>
             <button
               @click="handleSave"
@@ -127,7 +127,7 @@
                   : 'bg-input-bg border border-input-border text-text-muted hover:text-white'
               ]"
             >
-              {{ saving ? 'Salvando...' : 'Salvar' }}
+              {{ saving ? t('profile.saving') : t('common.save') }}
             </button>
           </div>
         </div>
@@ -139,7 +139,7 @@
   <Transition name="fade">
     <div v-if="showAvatarModal" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div class="bg-surface-dark border border-input-border p-8 rounded-2xl w-full max-w-md shadow-2xl">
-        <h3 class="text-xl font-bold text-white mb-4">Editar Avatar</h3>
+        <h3 class="text-xl font-bold text-white mb-4">{{ t('profile.editAvatar') }}</h3>
         
         <div class="mb-6">
           <!-- Upload Area -->
@@ -157,12 +157,12 @@
             />
             <div v-if="isUploading" class="flex flex-col items-center">
               <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-secondary mb-2"></div>
-              <p class="text-sm text-text-muted">Enviando...</p>
+              <p class="text-sm text-text-muted">{{ t('profile.uploading') }}</p>
             </div>
             <template v-else>
               <span class="material-symbols-outlined text-4xl text-text-muted group-hover:text-secondary mb-2 transition-colors">cloud_upload</span>
-              <p class="text-sm text-text-muted group-hover:text-white transition-colors">Clique para fazer upload</p>
-              <p class="text-xs text-text-muted/50 mt-1">JPG, PNG ou GIF (Max. 2MB)</p>
+              <p class="text-sm text-text-muted group-hover:text-white transition-colors">{{ t('profile.clickToUpload') }}</p>
+              <p class="text-xs text-text-muted/50 mt-1">{{ t('profile.formatHint') }}</p>
             </template>
           </div>
 
@@ -183,32 +183,32 @@
               </button>
             </div>
             <p class="text-sm text-center text-text-muted mb-4 max-w-[250px] truncate">
-              Preview da nova imagem
+              {{ t('profile.newImagePreview') }}
             </p>
           </div>
         </div>
 
         <div v-if="!tempAvatarUrl" class="relative flex items-center gap-2 mb-6">
           <div class="h-px bg-input-border flex-1"></div>
-          <span class="text-xs text-text-muted uppercase font-medium">ou via URL</span>
+          <span class="text-xs text-text-muted uppercase font-medium">{{ t('profile.orViaUrl') }}</span>
           <div class="h-px bg-input-border flex-1"></div>
         </div>
 
         <input 
           v-if="!tempAvatarUrl"
           v-model="tempAvatarUrl" 
-          placeholder="https://exemplo.com/foto.jpg"
+          :placeholder="t('profile.urlPlaceholder')"
           class="w-full bg-input-bg border-input-border focus:border-secondary focus:ring-0 text-white px-4 py-3 rounded-xl mb-6 transition-all"
         />
 
         <div class="flex gap-4">
-          <button @click="showAvatarModal = false" class="flex-1 py-3 rounded-xl border border-input-border text-white font-bold hover:bg-white/5 transition-colors">Cancelar</button>
+          <button @click="showAvatarModal = false" class="flex-1 py-3 rounded-xl border border-input-border text-white font-bold hover:bg-white/5 transition-colors">{{ t('common.cancel') }}</button>
           <button 
             @click="confirmAvatar" 
             :disabled="!tempAvatarUrl"
             class="flex-1 py-3 rounded-xl bg-gradient-to-r from-secondary to-primary text-white font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Confirmar
+            {{ t('common.confirm') }}
           </button>
         </div>
       </div>
@@ -218,6 +218,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -232,6 +233,7 @@ import { supabase } from '@/lib/supabase'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
+const { t } = useI18n()
 
 const saving = ref(false)
 const statusMessage = ref('')
@@ -349,10 +351,10 @@ async function handleSave() {
     originalData.value = JSON.stringify(editableProfile)
     hasChanges.value = false
     
-    showStatus('Perfil atualizado com sucesso!')
+    showStatus(t('profile.profileUpdated'))
   } catch (error) {
     console.error('Error saving profile:', error)
-    showStatus('Erro ao salvar as alterações.', 'error')
+    showStatus(t('profile.saveError'), 'error')
   } finally {
     saving.value = false
   }
@@ -378,7 +380,7 @@ async function handleFileUpload(event: Event) {
 
   // Validate size (max 2MB)
   if (file.size > 2 * 1024 * 1024) {
-    showStatus('A imagem deve ter no máximo 2MB.', 'error')
+    showStatus(t('profile.maxSizeError'), 'error')
     return
   }
 
@@ -396,10 +398,10 @@ async function handleFileUpload(event: Event) {
       .getPublicUrl(filePath)
 
     tempAvatarUrl.value = publicUrl
-    showStatus('Imagem carregada com sucesso!', 'success')
+    showStatus(t('profile.imageUploaded'), 'success')
   } catch (error: any) {
     console.error('Error uploading avatar:', error.message)
-    showStatus('Erro ao fazer upload da imagem.', 'error')
+    showStatus(t('profile.uploadError'), 'error')
   } finally {
     isUploading.value = false
   }
