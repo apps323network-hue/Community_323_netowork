@@ -12,6 +12,7 @@ export interface Member {
   badge?: string
   created_at?: string
   updated_at?: string
+  email?: string
 }
 
 export interface MemberFilters {

@@ -50,9 +50,21 @@
     <!-- Action Buttons -->
     <div class="flex gap-1.5 sm:gap-2 md:gap-3 flex-shrink-0" @click.stop>
       <button
-        class="px-2.5 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 rounded-md sm:rounded-lg border border-secondary/40 text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary font-bold text-[10px] sm:text-xs md:text-sm tracking-wide transition-all shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-neon-blue whitespace-nowrap"
+        class="flex items-center gap-2 px-2.5 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 rounded-md sm:rounded-lg border font-bold text-[10px] sm:text-xs md:text-sm tracking-wide transition-all shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-neon-blue whitespace-nowrap"
+        :class="[
+          connectionStatus === 'accepted'
+          ? 'border-green-500/40 text-green-500 bg-green-500/5 cursor-default'
+          : connectionStatus === 'pending'
+          ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/5 cursor-default'
+          : 'border-secondary/40 text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary'
+        ]"
+        @click.stop="handleConnect"
+        :disabled="requesting || !!connectionStatus"
       >
-        Conectar
+        <div v-if="requesting" class="w-3 h-3 sm:w-4 sm:h-4 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
+        <template v-else>
+          {{ connectionStatus === 'accepted' ? 'Conectado' : connectionStatus === 'pending' ? 'Pendente' : 'Conectar' }}
+        </template>
       </button>
       <button
         :class="[
@@ -147,10 +159,23 @@
         <!-- Action Buttons -->
         <div class="flex gap-2 sm:gap-3">
           <button
-            class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all shadow-lg hover:shadow-neon-blue hover:scale-[1.02]"
-            @click.stop="$emit('view-profile', member.id)"
+            class="flex-1 flex items-center justify-center gap-2 font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all shadow-lg hover:shadow-neon-blue hover:scale-[1.02]"
+            :class="[
+              connectionStatus === 'accepted'
+              ? 'bg-green-500/10 text-green-500 border border-green-500/20 cursor-default shadow-none hover:shadow-none hover:scale-100'
+              : connectionStatus === 'pending'
+              ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 cursor-default shadow-none hover:shadow-none hover:scale-100'
+              : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white'
+            ]"
+            @click.stop="handleConnect"
+            :disabled="requesting || !!connectionStatus"
           >
-            Conectar
+            <div v-if="requesting" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <template v-else>
+               <span class="material-icons text-sm mr-1" v-if="connectionStatus === 'accepted'">check</span>
+               <span class="material-icons text-sm mr-1" v-if="connectionStatus === 'pending'">schedule</span>
+               {{ connectionStatus === 'accepted' ? 'Conectado' : connectionStatus === 'pending' ? 'Pendente' : 'Conectar' }}
+            </template>
           </button>
         </div>
       </div>
@@ -159,10 +184,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import BadgeDisplay from '@/components/ui/BadgeDisplay.vue'
 import { useBookmarks } from '@/composables/useBookmarks'
+import { useConnections } from '@/composables/useConnections'
+import { useAuthStore } from '@/stores/auth'
+import { supabase } from '@/lib/supabase'
+import { toast } from 'vue-sonner'
+import { sendConnectionRequestEmail } from '@/lib/emails'
 import type { Member } from '@/types/members'
 
 interface Props {
@@ -180,12 +210,20 @@ const emit = defineEmits<{
 }>()
 
 const { isBookmarked, toggleBookmark, fetchBookmarks, loading: bookmarkLoading } = useBookmarks()
+const { sendConnectionRequest, getConnectionStatus } = useConnections()
+const authStore = useAuthStore()
+
+const connectionStatus = ref<string | null>(null)
+const requesting = ref(false)
 
 const isBookmarkedComputed = computed(() => isBookmarked.value(props.member.id))
 
-// Buscar bookmarks quando o componente for montado
+// Buscar bookmarks e status de conexão quando o componente for montado
 onMounted(async () => {
   await fetchBookmarks()
+  if (authStore.user) {
+    connectionStatus.value = await getConnectionStatus(authStore.user.id, props.member.id)
+  }
 })
 
 async function handleToggleBookmark() {
@@ -194,6 +232,71 @@ async function handleToggleBookmark() {
   if (success) {
     // Emitir o novo estado (invertido do anterior)
     emit('bookmark-changed', props.member.id, !wasBookmarked)
+  }
+}
+
+async function handleConnect() {
+  if (!authStore.user) {
+    toast.error('Você precisa estar logado para conectar.')
+    return
+  }
+  
+  if (requesting.value || connectionStatus.value) return
+  requesting.value = true
+
+  try {
+    const { success, error } = await sendConnectionRequest(authStore.user.id, props.member.id)
+    
+    if (success) {
+      connectionStatus.value = 'pending'
+      
+      // 1. Notificação In-App
+      await supabase.from('notifications').insert({
+        user_id: props.member.id,
+        type: 'connection_request',
+        title: 'Nova solicitação de conexão',
+        content: `${authStore.user.user_metadata?.nome || 'Um membro'} quer se conectar com você.`,
+        metadata: { requester_id: authStore.user.id }
+      })
+
+      // 2. Notificação Email
+      // Precisamos buscar o email do membro alvo, pois o objeto `member` pode não ter (depende da query principal)
+      // Mas geralmente o objeto member já tem o que precisamos ou buscamos aqui. 
+      // O objeto `member` prop normalmente vem da view Members onde pegamos da tabela profiles.
+      // Se não tiver email, buscamos.
+      
+      let memberEmail = props.member.email
+      if (!memberEmail) {
+         const { data: profile } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('id', props.member.id)
+          .single()
+         memberEmail = profile?.email
+      }
+
+      if (memberEmail) {
+        await sendConnectionRequestEmail(
+          memberEmail,
+          props.member.nome || 'Membro',
+          authStore.user.user_metadata?.nome || 'Um membro'
+        )
+      }
+
+      toast.success('Solicitação de conexão enviada!')
+    } else {
+      if (error === 'Request already exists') {
+        connectionStatus.value = 'pending'
+        toast.info('Solicitação já enviada anteriormente.')
+      } else {
+        toast.error('Erro ao conectar. Tente novamente.')
+      }
+    }
+  } catch (err) {
+    console.error(err)
+    toast.error('Erro ao processar solicitação.')
+  } finally {
+    requesting.value = false
   }
 }
 </script>
