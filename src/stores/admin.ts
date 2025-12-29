@@ -1782,6 +1782,17 @@ export const useAdminStore = defineStore('admin', () => {
       // Recarregar lista e estatísticas
       await fetchReports()
       await fetchReportStats()
+
+      // Se foi removido conteúdo, emitir evento para atualizar feed
+      if (input.action === 'remove_content') {
+        // Disparar evento customizado para atualizar o feed
+        window.dispatchEvent(new CustomEvent('post-removed', { 
+          detail: { 
+            itemId: report.reported_item_id,
+            itemType: report.reported_item_type
+          } 
+        }))
+      }
     } catch (err: any) {
       error.value = err.message
       console.error('Error resolving report:', err)

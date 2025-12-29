@@ -10,7 +10,7 @@
     >
       <div
         v-if="modelValue"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
         @click.self="closeModal"
       >
         <!-- Backdrop -->
@@ -28,35 +28,36 @@
           <div
             v-if="modelValue"
             :class="[
-              'relative z-10 w-full max-w-lg rounded-2xl',
+              'relative z-10 w-full max-w-lg rounded-xl sm:rounded-2xl',
               'bg-white dark:bg-surface-dark',
               'border border-slate-200 dark:border-white/10',
               'shadow-2xl',
+              'max-h-[90vh] sm:max-h-[85vh] flex flex-col',
               sizeClasses
             ]"
           >
             <!-- Header -->
-            <div v-if="$slots.header || title" class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-white/10">
-              <h3 v-if="title" class="text-xl font-bold text-slate-900 dark:text-white">
+            <div v-if="$slots.header || title" class="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200 dark:border-white/10">
+              <h3 v-if="title" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white pr-2">
                 {{ title }}
               </h3>
               <slot name="header" />
               <button
                 v-if="closable"
-                class="ml-auto p-2 rounded-lg text-slate-400 hover:text-primary dark:hover:text-secondary transition-colors"
+                class="ml-auto p-2 rounded-lg text-slate-400 hover:text-primary dark:hover:text-secondary transition-colors flex-shrink-0 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                 @click="closeModal"
               >
-                <span class="material-symbols-outlined">close</span>
+                <span class="material-symbols-outlined text-xl sm:text-base">close</span>
               </button>
             </div>
 
             <!-- Body -->
-            <div class="p-6">
+            <div class="p-4 sm:p-6 max-h-[calc(100vh-200px)] sm:max-h-[calc(100vh-250px)] overflow-y-auto">
               <slot />
             </div>
 
             <!-- Footer -->
-            <div v-if="$slots.footer" class="flex items-center justify-end gap-3 p-6 border-t border-slate-200 dark:border-white/10">
+            <div v-if="$slots.footer" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-slate-200 dark:border-white/10">
               <slot name="footer" />
             </div>
           </div>

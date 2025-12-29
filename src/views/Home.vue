@@ -99,6 +99,33 @@ async function handlePostCreated() {
   await loadPosts(filters.value, true)
 }
 
+// Listener para quando um post é removido (via report)
+function handlePostRemoved(event: CustomEvent) {
+  const { itemId, itemType } = event.detail
+  
+  if (itemType === 'post') {
+    // Remover post do cache local
+    const postIndex = posts.value.findIndex(p => p.id === itemId)
+    if (postIndex !== -1) {
+      posts.value.splice(postIndex, 1)
+    }
+  } else if (itemType === 'comment') {
+    // Remover comentário do cache local de todos os posts
+    posts.value.forEach(post => {
+      if (post.comments) {
+        const commentIndex = post.comments.findIndex(c => c.id === itemId)
+        if (commentIndex !== -1) {
+          post.comments.splice(commentIndex, 1)
+          post.comments_count = (post.comments_count || 1) - 1
+        }
+      }
+    })
+  }
+  
+  // Recarregar posts para garantir sincronização
+  loadPosts(filters.value, true)
+}
+
 async function handleEventCreated() {
   // Evento criado - já foi criado um post sobre ele
   // Recarregar eventos em destaque
@@ -224,8 +251,10 @@ let observer: IntersectionObserver | null = null
 
 onMounted(async () => {
   await loadPosts(filters.value, true)
-  await loadPosts(filters.value, true)
   await loadFeaturedEvent()
+
+  // Listener para posts removidos via reports
+  window.addEventListener('post-removed', handlePostRemoved as EventListener)
 
   // Setup intersection observer for infinite scroll
   if (loadMoreRef.value) {
@@ -246,5 +275,8 @@ onUnmounted(() => {
     observer.unobserve(loadMoreRef.value)
     observer.disconnect()
   }
+  
+  // Remover listener
+  window.removeEventListener('post-removed', handlePostRemoved as EventListener)
 })
 </script>

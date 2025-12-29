@@ -140,32 +140,44 @@ export const usePostStore = defineStore('posts', () => {
       })
 
       // Transform data to match Post interface
-      const transformedPosts: Post[] = data.map((post: any) => {
-        const profile = profilesMap.get(post.user_id)
-        return {
-          id: post.id,
-          user_id: post.user_id,
-          tipo: post.tipo,
-          conteudo: post.conteudo,
-          fixado: post.fixado,
-          image_url: post.image_url || undefined,
-          created_at: post.created_at,
-          updated_at: post.updated_at,
-          status: post.status || 'approved', // Incluir status do post
-          author: profile ? {
-            id: profile.id,
-            nome: profile.nome || 'Usuário',
-            area_atuacao: profile.area_atuacao,
-            avatar_url: profile.avatar_url,
-          } : {
-            id: post.user_id,
-            nome: 'Usuário',
-          },
-          likes_count: likesCountMap.get(post.id) || 0,
-          comments_count: commentsCountMap.get(post.id) || 0,
-          isLiked: userLikesSet.has(post.id),
-        }
-      })
+      // Filtrar posts removidos ou spam (RLS já deveria bloquear, mas garantimos aqui também)
+      const transformedPosts: Post[] = data
+        .filter((post: any) => {
+          // Filtrar posts removidos e spam (exceto se for o próprio criador)
+          const isRemovedOrSpam = post.status === 'removed' || post.status === 'spam'
+          const isOwner = post.user_id === currentUserId.value
+          // Se for removido/spam e não for o dono, não mostrar
+          if (isRemovedOrSpam && !isOwner) {
+            return false
+          }
+          return true
+        })
+        .map((post: any) => {
+          const profile = profilesMap.get(post.user_id)
+          return {
+            id: post.id,
+            user_id: post.user_id,
+            tipo: post.tipo,
+            conteudo: post.conteudo,
+            fixado: post.fixado,
+            image_url: post.image_url || undefined,
+            created_at: post.created_at,
+            updated_at: post.updated_at,
+            status: post.status || 'approved', // Incluir status do post
+            author: profile ? {
+              id: profile.id,
+              nome: profile.nome || 'Usuário',
+              area_atuacao: profile.area_atuacao,
+              avatar_url: profile.avatar_url,
+            } : {
+              id: post.user_id,
+              nome: 'Usuário',
+            },
+            likes_count: likesCountMap.get(post.id) || 0,
+            comments_count: commentsCountMap.get(post.id) || 0,
+            isLiked: userLikesSet.has(post.id),
+          }
+        })
 
       // Sort by popular if needed
       if (filters.sortBy === 'popular') {
