@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
                 service_id: service.id,
                 user_id: user.id,
                 mensagem: mensagem || '',
-                status: 'aguardando_pagamento',
+                status: 'pendente',
                 payment_required: true
             })
             .select()
@@ -158,7 +158,8 @@ Deno.serve(async (req) => {
 
         // 9. Criar Sessão Stripe
         const sessionConfig: Stripe.Checkout.SessionCreateParams = {
-            payment_method_types: payment_method === 'pix' ? ['customer_balance'] : ['card'],
+            // Adicionamos 'card' junto com 'pix' para evitar erro 500 se o PIX não estiver ativado no Dashboard
+            payment_method_types: payment_method === 'pix' ? ['card', 'pix'] : ['card'],
             line_items: [{
                 price_data: {
                     currency: currency,
@@ -183,15 +184,7 @@ Deno.serve(async (req) => {
             customer_email: user.email,
         }
 
-        if (payment_method === 'pix') {
-            sessionConfig.payment_method_options = {
-                customer_balance: {
-                    funding_type: 'bank_transfer',
-                    bank_transfer: { type: 'br_pix' },
-                },
-            }
-        }
-
+        console.log('Creating Stripe Session with config:', JSON.stringify(sessionConfig, null, 2))
         const session = await stripe.checkout.sessions.create(sessionConfig)
         console.log('Stripe session created:', session.id)
 

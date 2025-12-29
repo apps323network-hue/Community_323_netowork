@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
 import Stripe from "npm:stripe@^14.0.0"
 import { createClient } from "npm:@supabase/supabase-js@^2.39.0"
 
@@ -7,7 +6,7 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-serve(async (req: Request) => {
+Deno.serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
@@ -102,7 +101,7 @@ serve(async (req: Request) => {
                     const { error: requestError } = await supabase
                         .from('service_requests')
                         .update({
-                            status: 'pendente',
+                            status: 'pendente', // Mantém pendente, mas agora está pago
                             updated_at: new Date().toISOString()
                         })
                         .eq('id', serviceRequestId)

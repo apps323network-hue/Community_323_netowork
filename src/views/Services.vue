@@ -414,9 +414,6 @@ async function handleCheckout() {
         payment_method: paymentMethod.value,
         exchange_rate: exchangeRate.value,
         mensagem: requestMessage.value
-      },
-      headers: {
-        Authorization: `Bearer ${session.access_token}`
       }
     })
 
