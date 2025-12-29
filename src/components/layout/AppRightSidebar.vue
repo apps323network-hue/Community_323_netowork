@@ -1,26 +1,26 @@
 <template>
   <aside class="lg:sticky lg:top-20 h-fit space-y-6">
     <!-- Próximos Eventos Card -->
-    <div class="border-gradient-blue-pink rounded-xl p-5 shadow-xl bg-surface-dark relative overflow-hidden">
+    <div class="rounded-xl p-5 shadow-xl relative overflow-hidden bg-white dark:bg-surface-dark border border-slate-200 dark:border-none neon-border-card">
       <div class="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full blur-xl"></div>
-      <h3 class="font-bold text-white mb-5 flex items-center text-sm uppercase tracking-widest">
-        <span class="material-icons-outlined mr-2 text-secondary animate-pulse">event_available</span>
+      <h3 class="font-bold text-slate-900 dark:text-white mb-5 flex items-center text-sm uppercase tracking-widest">
+        <span class="material-icons-outlined mr-2 text-secondary-dark dark:text-secondary animate-pulse">event_available</span>
         Próximos Eventos
       </h3>
       <div class="space-y-5">
         <div 
           v-for="event in upcomingEvents" 
           :key="event.id"
-          class="flex gap-4 items-center group cursor-pointer hover:bg-surface-lighter/50 p-2 rounded-lg -mx-2 transition-colors"
+          class="flex gap-4 items-center group cursor-pointer hover:bg-slate-100 dark:hover:bg-surface-lighter/50 p-2 rounded-lg -mx-2 transition-colors"
           @click="handleEventClick(event.id)"
         >
-          <div class="flex-shrink-0 w-12 h-14 bg-gradient-to-b from-gray-800 to-black rounded border border-gray-700 flex flex-col items-center justify-center text-xs font-bold shadow-lg">
-            <span class="text-secondary uppercase tracking-tighter text-[10px]">{{ event.month }}</span>
-            <span class="text-white text-lg">{{ event.day }}</span>
+          <div class="flex-shrink-0 w-12 h-14 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-gray-800 dark:to-black rounded border border-slate-200 dark:border-gray-700 flex flex-col items-center justify-center text-xs font-bold shadow-lg">
+            <span class="text-secondary-dark dark:text-secondary uppercase tracking-tighter text-[10px]">{{ event.month }}</span>
+            <span class="text-slate-900 dark:text-white text-lg">{{ event.day }}</span>
           </div>
           <div>
-            <h4 class="text-sm font-bold text-white group-hover:text-secondary transition-colors">{{ event.titulo }}</h4>
-            <p class="text-xs text-gray-500 mt-0.5 flex items-center">
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-secondary-dark dark:group-hover:text-secondary transition-colors">{{ event.titulo }}</h4>
+            <p class="text-xs text-slate-500 dark:text-gray-500 mt-0.5 flex items-center">
               <span v-if="event.tipo === 'webinar'" class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
               {{ event.local }}
             </p>
@@ -29,15 +29,15 @@
       </div>
       <RouterLink
         to="/eventos/calendario"
-        class="w-full mt-6 py-2 text-xs font-bold text-center text-secondary border border-gray-700 hover:border-secondary hover:bg-secondary/5 rounded-lg transition-all uppercase tracking-wider block"
+        class="w-full mt-6 py-2 text-xs font-bold text-center text-secondary-dark dark:text-secondary border border-slate-200 dark:border-gray-700 hover:border-secondary-dark dark:hover:border-secondary hover:bg-secondary/5 rounded-lg transition-all uppercase tracking-wider block"
       >
         Ver Calendário
       </RouterLink>
     </div>
 
     <!-- Membros em Destaque Card -->
-    <div class="bg-surface-light dark:bg-surface-dark rounded-xl p-5 shadow-xl border-t border-gray-100 dark:border-gray-800">
-      <h3 class="font-bold text-white mb-4 text-sm uppercase tracking-widest border-l-4 border-primary pl-3">
+    <div class="bg-white dark:bg-surface-dark rounded-xl p-5 shadow-xl border-t border-slate-200 dark:border-gray-800">
+      <h3 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-widest border-l-4 border-primary pl-3">
         Membros em Destaque
       </h3>
       <div class="space-y-4">
@@ -64,8 +64,8 @@
               ></div>
             </div>
             <div class="text-xs">
-              <p class="font-bold text-white group-hover:text-primary transition-colors truncate">{{ member.nome }}</p>
-              <p class="text-gray-500 truncate w-24">{{ member.area_atuacao }}</p>
+              <p class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors truncate">{{ member.nome }}</p>
+              <p class="text-slate-500 dark:text-gray-500 truncate w-24">{{ member.area_atuacao }}</p>
             </div>
           </RouterLink>
           <button 
@@ -96,17 +96,17 @@
     </div>
 
     <!-- Seu Negócio Aqui Card -->
-    <div class="rounded-xl p-0 overflow-hidden shadow-xl relative h-56 group border border-gray-800 hover:border-primary/30 transition-all">
-      <div class="w-full h-full bg-gradient-to-b from-orange-900/20 via-gray-900 to-background-dark"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent"></div>
+    <div class="rounded-xl p-0 overflow-hidden shadow-xl relative h-56 group border border-slate-200 dark:border-gray-800 hover:border-primary/30 transition-all bg-white dark:bg-transparent">
+      <div class="w-full h-full bg-gradient-to-b from-white to-slate-50 dark:from-orange-900/20 dark:via-gray-900 dark:to-background-dark"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent dark:from-background-dark dark:via-transparent dark:to-transparent"></div>
       <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-        <div class="w-12 h-12 rounded-full bg-surface-dark/50 flex items-center justify-center mb-2 border border-primary text-primary group-hover:bg-primary group-hover:text-black transition-all">
+        <div class="w-12 h-12 rounded-full bg-white dark:bg-surface-dark/50 flex items-center justify-center mb-2 border border-primary text-primary group-hover:bg-primary group-hover:text-black transition-all shadow-sm">
           <span class="material-icons-outlined">rocket_launch</span>
         </div>
-        <h4 class="text-white font-bold text-xl mb-1 drop-shadow-lg group-hover:text-primary transition-colors">
+        <h4 class="text-slate-900 dark:text-white font-bold text-xl mb-1 drop-shadow-md dark:drop-shadow-lg group-hover:text-primary transition-colors">
           Seu Negócio Aqui
         </h4>
-        <p class="text-gray-300 text-xs mb-4 drop-shadow-md">
+        <p class="text-slate-500 dark:text-gray-300 text-xs mb-4 drop-shadow-sm dark:drop-shadow-md">
           Alcance milhares de brasileiros nos EUA.
         </p>
         <button 
@@ -311,7 +311,11 @@ onMounted(() => {
 
 
 <style scoped>
-.border-gradient-blue-pink {
+/* Default is handled by utility classes */
+.neon-border-card {
+}
+
+:global(.dark) .neon-border-card {
   position: relative;
   border: 1px solid transparent;
   background: linear-gradient(#12121A, #12121A) padding-box,

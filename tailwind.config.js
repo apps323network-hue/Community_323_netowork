@@ -12,12 +12,13 @@ export default {
         'primary-hover': '#d920d9',
         secondary: '#00f0ff',      // Neon Cyan
         'secondary-hover': '#00cce6',
-        'secondary-dark': '#00c2cc', // Darker Cyan for light mode
+        'secondary-dark': '#0891b2', // Darker Cyan (600) for better contrast on light mode
         neonBlue: '#00f0ff',       // Neon Blue/Cyan
         neonPink: '#f425f4',      // Neon Pink
         // Light mode colors
-        'background-light': '#f8fafd', // Clean light background
+        'background-light': '#f0f2f5', // Standard dashboard gray for better contrast
         'surface-white': '#ffffff',
+        'surface-light': '#ffffff', // Added alias for consistency
         // Dark mode colors
         'background-dark': '#050508',
         'surface-dark': '#12121A',

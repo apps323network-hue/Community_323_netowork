@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
     <AppHeader />
     
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:pl-0 lg:pr-8 py-8 flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)]">
+    <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:pl-0 lg:pr-8 py-8 flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)]">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12">
         <!-- Sidebar Esquerda -->
         <div class="hidden lg:block lg:col-span-2 -ml-32">
@@ -28,7 +28,7 @@
     <AppFooter />
     
     <!-- Mobile Menu - Sempre visível -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 bg-surface-dark border-t border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden">
+    <div class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden">
       <nav class="flex justify-around items-center h-16 px-2">
         <RouterLink
           v-for="item in mobileMenuItems"
@@ -37,7 +37,7 @@
           class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group"
           :class="$route.path === item.path 
             ? 'text-primary' 
-            : 'text-white/60 hover:text-primary'"
+            : 'text-slate-500 dark:text-white/60 hover:text-primary'"
         >
           <span 
             class="material-symbols-outlined text-[24px] transition-all"

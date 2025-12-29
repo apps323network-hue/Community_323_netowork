@@ -4,7 +4,7 @@
   >
     <nav :class="[
       'w-full mx-auto px-4 sm:px-6 lg:px-8',
-      (route.path === '/comunidade' || route.path.startsWith('/comunidade/') || route.path === '/servicos' || route.path === '/beneficios' || route.path === '/eventos' || route.path.startsWith('/eventos/') || route.path === '/perfil')
+      (route.path === '/' || route.path === '/comunidade' || route.path.startsWith('/comunidade/') || route.path === '/servicos' || route.path === '/beneficios' || route.path === '/eventos' || route.path.startsWith('/eventos/') || route.path === '/perfil')
         ? 'max-w-[1400px]'
         : 'max-w-7xl'
     ]">
@@ -12,7 +12,7 @@
         <!-- Logo -->
         <RouterLink to="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
           <div
-            class="text-3xl font-black tracking-tighter flex items-center transform group-hover:scale-105 transition-transform"
+            class="text-3xl font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform"
           >
             <span class="text-primary dark:text-secondary">(323</span>
             <span
@@ -21,7 +21,7 @@
               >play_arrow</span
             >
             <span
-              class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary font-black"
+              class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary font-extrabold"
               >NETWORK</span
             >
           </div>
@@ -35,8 +35,8 @@
               class="relative px-3 py-2 text-sm font-bold transition-all"
               :class="
                 route.path === '/'
-                  ? 'text-white dark:text-white'
-                  : 'text-gray-400 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
               "
             >
               Home
@@ -54,8 +54,8 @@
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="
                 route.path === '/comunidade'
-                  ? 'text-white dark:text-white'
-                  : 'text-gray-400 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
               "
             >
               Comunidade
@@ -73,8 +73,8 @@
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="
                 route.path === '/eventos'
-                  ? 'text-white dark:text-white'
-                  : 'text-gray-400 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
               "
             >
               Eventos
@@ -92,8 +92,8 @@
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="
                 route.path === '/servicos'
-                  ? 'text-white dark:text-white'
-                  : 'text-gray-400 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
               "
             >
               Serviços
@@ -111,8 +111,8 @@
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="
                 route.path === '/beneficios'
-                  ? 'text-white dark:text-white'
-                  : 'text-gray-400 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
               "
             >
               Benefícios
@@ -152,11 +152,11 @@
               </div>
               <div class="text-left hidden lg:block">
                 <p
-                  class="text-sm font-bold text-white dark:text-white group-hover:text-primary dark:group-hover:text-secondary transition-colors"
+                  class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-secondary transition-colors"
                 >
                   {{ userDisplayName }}
                 </p>
-                <p class="text-xs text-gray-400 dark:text-gray-400 truncate">{{ userTitle }}</p>
+                <p class="text-xs text-slate-500 dark:text-gray-400 truncate">{{ userTitle }}</p>
               </div>
             </div>
 
