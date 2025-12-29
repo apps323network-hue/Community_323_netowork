@@ -1719,7 +1719,7 @@ export const useAdminStore = defineStore('admin', () => {
   }
 
   // Descartar report
-  async function dismissReport(id: string, reason?: string): Promise<void> {
+  async function dismissReport(id: string, _reason?: string): Promise<void> {
     if (!authStore.user) {
       throw new Error('Usuário não autenticado')
     }

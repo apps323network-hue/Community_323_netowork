@@ -69,12 +69,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { useAdminStore } from '@/stores/admin'
 import AdminHeader from './AdminHeader.vue'
 import AdminSidebar from './AdminSidebar.vue'
 
-const route = useRoute()
 const adminStore = useAdminStore()
 
 // Carregar estatísticas para os badges

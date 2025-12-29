@@ -63,7 +63,7 @@ import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import AdminReportsList from '@/components/admin/AdminReportsList.vue'
 import ResolveReportModal from '@/components/admin/ResolveReportModal.vue'
 import ReportStats from '@/components/admin/ReportStats.vue'
-import type { Report, ReportStatus } from '@/types/admin'
+import type { Report } from '@/types/admin'
 
 const router = useRouter()
 const adminStore = useAdminStore()

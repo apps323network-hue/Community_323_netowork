@@ -182,7 +182,7 @@ const router = createRouter({
 })
 
 // Guard de autenticação
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
 
   // Aguardar inicialização do Firebase/Supabase se necessário

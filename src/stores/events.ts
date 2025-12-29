@@ -439,8 +439,8 @@ export const useEventStore = defineStore('events', () => {
       const { data, error: insertError } = await supabase
         .from('events')
         .insert({
-          titulo: finalTitulo,
-          descricao: finalDescricao || null,
+          titulo: input.titulo,
+          descricao: input.descricao || null,
           data_hora: input.data_hora,
           tipo: input.tipo,
           local: input.local || null,
