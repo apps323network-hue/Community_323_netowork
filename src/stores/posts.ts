@@ -16,22 +16,22 @@ export const usePostStore = defineStore('posts', () => {
   const currentUserId = computed(() => authStore.user?.id)
 
   // Verificar se usuário é admin
-  async function checkIsAdmin(): Promise<boolean> {
-    if (!authStore.user) return false
+  // async function checkIsAdmin(): Promise<boolean> {
+  //   if (!authStore.user) return false
 
-    try {
-      const { data, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', authStore.user.id)
-        .single()
+  //   try {
+  //     const { data, error: profileError } = await supabase
+  //       .from('profiles')
+  //       .select('role')
+  //       .eq('id', authStore.user.id)
+  //       .single()
 
-      if (profileError) return false
-      return data?.role === 'admin'
-    } catch {
-      return false
-    }
-  }
+  //     if (profileError) return false
+  //     return data?.role === 'admin'
+  //   } catch {
+  //     return false
+  //   }
+  // }
 
   // Fetch posts with pagination and filters
   async function fetchPosts(filters: PostFilters = {}, reset = false) {
@@ -45,8 +45,6 @@ export const usePostStore = defineStore('posts', () => {
     error.value = null
 
     try {
-      // Verificar se é admin
-      const isAdminUser = await checkIsAdmin()
 
       let query = supabase
         .from('posts')
@@ -191,9 +189,6 @@ export const usePostStore = defineStore('posts', () => {
     error.value = null
 
     try {
-      // Verificar se é admin
-      const isAdminUser = await checkIsAdmin()
-
       let query = supabase
         .from('posts')
         .select('*')
