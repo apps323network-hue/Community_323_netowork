@@ -91,12 +91,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
-
-const route = useRoute()
 
 defineEmits<{
   'edit-profile': []

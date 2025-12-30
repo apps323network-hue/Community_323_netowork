@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords, invalidateBannedWordsCache } from '@/lib/bannedWords'
-import type { AdminEvent, EventStats, EventApprovalAction, AdminUser, UserStats, UserStatus, AdminPost, PostStats, AdminService, ServiceStats, BannedWord, BannedWordStats, Report, ReportStats, ReportCreateInput, ReportResolveInput, ReportStatus, ReportItemType, Challenge, ChallengeStats, ChallengeCreateInput, ChallengeUpdateInput, UserChallenge, UserPoint } from '@/types/admin'
+import type { AdminEvent, EventStats, EventApprovalAction, AdminUser, UserStats, UserStatus, AdminPost, PostStats, AdminService, ServiceStats, BannedWord, BannedWordStats, Report, ReportStats, ReportCreateInput, ReportResolveInput, ReportStatus, ReportItemType, Challenge, ChallengeStats, ChallengeCreateInput, ChallengeUpdateInput } from '@/types/admin'
 import type { EventStatus } from '@/types/events'
 import type { PostStatus } from '@/types/posts'
 
