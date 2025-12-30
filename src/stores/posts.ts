@@ -93,32 +93,65 @@ export const usePostStore = defineStore('posts', () => {
       }
 
       // Fetch likes and comments counts for each post
-      const postIds = data.map((p: any) => p.id)
       const userIds = [...new Set(data.map((p: any) => p.user_id))]
-      
-      // Fetch profiles for authors
+
+      // Fetch profiles for authors (with status to filter banned users)
       const { data: profilesData } = await supabase
         .from('profiles')
-        .select('id, nome, area_atuacao, avatar_url')
+        .select('id, nome, area_atuacao, avatar_url, status')
         .in('id', userIds)
+
+      console.log('[POSTS] Profiles fetched:', profilesData?.length)
+
+      // Criar mapa de perfis e filtrar usuários banidos
+      const profilesMap = new Map<string, any>()
+      const bannedUserIds = new Set<string>()
+
+      profilesData?.forEach((profile: any) => {
+        profilesMap.set(profile.id, profile)
+        if (profile.status === 'banned') {
+          bannedUserIds.add(profile.id)
+          console.log('[POSTS] Usuário banido detectado:', profile.nome, profile.id)
+        }
+      })
+
+      console.log('[POSTS] Total de usuários banidos:', bannedUserIds.size)
+      console.log('[POSTS] Posts antes do filtro:', data.length)
+
+      // Filtrar posts de usuários banidos
+      const filteredData = data.filter((post: any) => {
+        // Não mostrar posts de usuários banidos
+        if (bannedUserIds.has(post.user_id)) {
+          console.log('[POSTS] Filtrando post de usuário banido:', post.id)
+          return false
+        }
+        return true
+      })
+
+      console.log('[POSTS] Posts depois do filtro:', filteredData.length)
+
+      // Se todos os posts foram filtrados, retornar vazio
+      if (filteredData.length === 0) {
+        hasMore.value = false
+        return []
+      }
+
+      // Usar filteredData em vez de data para buscar likes e comments
+      const filteredPostIds = filteredData.map((p: any) => p.id)
 
       // Fetch likes counts
       const { data: likesData } = await supabase
         .from('post_likes')
         .select('post_id, user_id')
-        .in('post_id', postIds)
+        .in('post_id', filteredPostIds)
 
       // Fetch comments counts
       const { data: commentsData } = await supabase
         .from('post_comments')
         .select('post_id')
-        .in('post_id', postIds)
+        .in('post_id', filteredPostIds)
 
-      // Create maps for quick lookup
-      const profilesMap = new Map<string, any>()
-      profilesData?.forEach((profile: any) => {
-        profilesMap.set(profile.id, profile)
-      })
+      // Create maps for quick lookup (já não preciso mais do profilesMap aqui)
 
       // Count likes and comments per post
       const likesCountMap = new Map<string, number>()
@@ -128,7 +161,7 @@ export const usePostStore = defineStore('posts', () => {
       likesData?.forEach((like: any) => {
         const count = likesCountMap.get(like.post_id) || 0
         likesCountMap.set(like.post_id, count + 1)
-        
+
         if (like.user_id === currentUserId.value) {
           userLikesSet.add(like.post_id)
         }
@@ -141,7 +174,7 @@ export const usePostStore = defineStore('posts', () => {
 
       // Transform data to match Post interface
       // Filtrar posts removidos ou spam (RLS já deveria bloquear, mas garantimos aqui também)
-      const transformedPosts: Post[] = data
+      const transformedPosts: Post[] = filteredData
         .filter((post: any) => {
           // Filtrar posts removidos e spam (exceto se for o próprio criador)
           const isRemovedOrSpam = post.status === 'removed' || post.status === 'spam'
@@ -242,7 +275,7 @@ export const usePostStore = defineStore('posts', () => {
         .select('id')
         .eq('post_id', postId)
 
-      const isLiked = currentUserId.value 
+      const isLiked = currentUserId.value
         ? (likesData?.some((like: any) => like.user_id === currentUserId.value) || false)
         : false
 
@@ -291,7 +324,7 @@ export const usePostStore = defineStore('posts', () => {
     try {
       // Verificar palavras proibidas
       const bannedCheck = await checkBannedWords(input.conteudo)
-      
+
       if (bannedCheck.found) {
         // Bloquear qualquer palavra ofensiva encontrada
         throw new Error('Seu post contém palavras ofensivas. Por favor, revise o conteúdo.')
@@ -568,7 +601,7 @@ export const usePostStore = defineStore('posts', () => {
     try {
       // Verificar palavras proibidas
       const bannedCheck = await checkBannedWords(input.conteudo)
-      
+
       if (bannedCheck.found) {
         // Bloquear qualquer palavra ofensiva encontrada
         throw new Error('Seu comentário contém palavras ofensivas. Por favor, revise o conteúdo.')

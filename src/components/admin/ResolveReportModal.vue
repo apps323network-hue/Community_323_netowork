@@ -94,18 +94,6 @@
           <button
             :class="[
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
-              action === 'suspend_user'
-                ? 'bg-orange-500/20 text-orange-400 border-2 border-orange-500'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-orange-500/30',
-            ]"
-            @click="action = 'suspend_user'"
-          >
-            <span class="material-symbols-outlined text-lg">block</span>
-            Suspender Usuário
-          </button>
-          <button
-            :class="[
-              'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
               action === 'ban_user'
                 ? 'bg-red-600/20 text-red-500 border-2 border-red-600'
                 : 'bg-surface-card text-white/60 border border-white/10 hover:border-red-600/30',
@@ -129,7 +117,7 @@
           </button>
           <button
             :class="[
-              'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm col-span-full',
+              'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
               action === 'dismiss'
                 ? 'bg-gray-500/20 text-gray-400 border-2 border-gray-500'
                 : 'bg-surface-card text-white/60 border border-white/10 hover:border-gray-500/30',

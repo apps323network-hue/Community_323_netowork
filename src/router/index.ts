@@ -37,6 +37,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresGuest: true },
   },
   {
+    path: '/banned',
+    name: 'Banned',
+    component: () => import('@/views/Banned.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/comunidade',
     name: 'Members',
     component: () => import('@/views/Members.vue'),
@@ -126,48 +132,48 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/PaymentCancel.vue'),
     meta: { requiresAuth: true },
   },
-    {
-      path: '/admin',
-      name: 'AdminOverview',
-      component: () => import('@/views/admin/AdminOverview.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
-    {
-      path: '/admin/eventos',
-      name: 'AdminEvents',
-      component: () => import('@/views/admin/AdminEvents.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
-    {
-      path: '/admin/membros',
-      name: 'AdminMembers',
-      component: () => import('@/views/admin/AdminMembers.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
-    {
-      path: '/admin/posts',
-      name: 'AdminPosts',
-      component: () => import('@/views/admin/AdminPosts.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
-    {
-      path: '/admin/servicos',
-      name: 'AdminServices',
-      component: () => import('@/views/admin/AdminServices.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
-    {
-      path: '/admin/palavras-proibidas',
-      name: 'AdminBannedWords',
-      component: () => import('@/views/admin/AdminBannedWords.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
-    {
-      path: '/admin/reports',
-      name: 'AdminReports',
-      component: () => import('@/views/admin/AdminReports.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
+  {
+    path: '/admin',
+    name: 'AdminOverview',
+    component: () => import('@/views/admin/AdminOverview.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/eventos',
+    name: 'AdminEvents',
+    component: () => import('@/views/admin/AdminEvents.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/membros',
+    name: 'AdminMembers',
+    component: () => import('@/views/admin/AdminMembers.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/posts',
+    name: 'AdminPosts',
+    component: () => import('@/views/admin/AdminPosts.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/servicos',
+    name: 'AdminServices',
+    component: () => import('@/views/admin/AdminServices.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/palavras-proibidas',
+    name: 'AdminBannedWords',
+    component: () => import('@/views/admin/AdminBannedWords.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/reports',
+    name: 'AdminReports',
+    component: () => import('@/views/admin/AdminReports.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
     {
       path: '/admin/desafios',
       name: 'AdminChallenges',
@@ -221,6 +227,24 @@ router.beforeEach(async (to, _from, next) => {
   if (requiresAuth && !authStore.user) {
     next({ name: 'Login', query: { redirect: to.fullPath } })
     return
+  }
+
+  // Verificar se usuário está banido
+  if (requiresAuth && authStore.user) {
+    const userStore = useUserStore()
+
+    // Se profile não estiver carregado, buscar
+    if (!userStore.profile) {
+      await userStore.fetchProfile(authStore.user.id)
+    }
+
+    // Redirecionar usuário banido para página de aviso
+    if (userStore.profile?.status === 'banned') {
+      if (to.path !== '/banned') {
+        next({ name: 'Banned' })
+        return
+      }
+    }
   }
 
   // Verificar se precisa ser guest (não logado)

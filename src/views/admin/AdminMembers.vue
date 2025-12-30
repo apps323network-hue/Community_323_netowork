@@ -53,6 +53,7 @@
           :loading="loading"
           @suspend="handleSuspend"
           @ban="handleBan"
+          @unban="handleUnban"
           @unsuspend="handleUnsuspend"
           @view-history="handleViewHistory"
         />
@@ -66,7 +67,64 @@
         @reject="handleModalReject"
       />
     </div>
-    </AdminLayout>
+
+    <!-- Ban Confirmation Modal -->
+    <Modal v-model="showBanModal" title="Confirmar Banimento">
+      <div class="space-y-4">
+        <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-red-500 text-2xl">warning</span>
+            <div>
+              <p class="text-white font-medium mb-1">Ação Irreversível</p>
+              <p class="text-white/60 text-sm">
+                Tem certeza que deseja banir este usuário? Esta ação impedirá completamente o acesso à plataforma.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="userToBan" class="bg-surface-card rounded-lg p-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-2xl">person</span>
+            </div>
+            <div>
+              <p class="text-white font-medium">{{ userToBan.nome || 'Usuário' }}</p>
+              <p class="text-white/60 text-sm">{{ userToBan.email || userToBan.area_atuacao }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-white text-sm font-medium mb-2">
+            Motivo do banimento (opcional)
+          </label>
+          <textarea
+            v-model="banReason"
+            rows="3"
+            class="w-full px-4 py-3 bg-surface-lighter border border-white/10 rounded-lg text-white placeholder-white/40 focus:border-primary focus:outline-none resize-none"
+            placeholder="Descreva o motivo do banimento..."
+          ></textarea>
+        </div>
+
+        <div class="flex gap-3 justify-end pt-2">
+          <button
+            @click="showBanModal = false"
+            class="px-6 py-2.5 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="confirmBan"
+            class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center gap-2"
+          >
+            <span class="material-symbols-outlined text-lg">block</span>
+            Banir Usuário
+          </button>
+        </div>
+      </div>
+    </Modal>
+  </AdminLayout>
 </template>
 
 <script setup lang="ts">
@@ -78,6 +136,7 @@ import UserStats from '@/components/admin/UserStats.vue'
 import AdminPendingUsersList from '@/components/admin/AdminPendingUsersList.vue'
 import AdminUsersList from '@/components/admin/AdminUsersList.vue'
 import UserApprovalModal from '@/components/admin/UserApprovalModal.vue'
+import Modal from '@/components/ui/Modal.vue'
 import type { AdminUser } from '@/types/admin'
 import { toast } from 'vue-sonner'
 
@@ -87,6 +146,9 @@ const adminStore = useAdminStore()
 const activeTab = ref<'pending' | 'all' | 'suspended' | 'banned'>('pending')
 const showApprovalModal = ref(false)
 const selectedUser = ref<AdminUser | null>(null)
+const showBanModal = ref(false)
+const userToBan = ref<AdminUser | null>(null)
+const banReason = ref('')
 
 const tabs = computed(() => [
   {
@@ -194,9 +256,42 @@ function handleSuspend(_userId: string) {
   toast.info('Funcionalidade de suspensão será implementada em breve')
 }
 
-function handleBan(_userId: string) {
-  // TODO: Implementar banimento (Sprint 2)
-  toast.info('Funcionalidade de banimento será implementada em breve')
+function handleBan(userId: string) {
+  const user = displayedUsers.value.find(u => u.id === userId)
+  if (user) {
+    userToBan.value = user
+    banReason.value = ''
+    showBanModal.value = true
+  }
+}
+
+async function confirmBan() {
+  if (!userToBan.value) return
+
+  try {
+    await adminStore.banUser(userToBan.value.id, banReason.value || undefined)
+    toast.success('Usuário banido com sucesso')
+    await adminStore.fetchAllUsers()
+    await adminStore.fetchUserStats()
+    showBanModal.value = false
+    userToBan.value = null
+    banReason.value = ''
+  } catch (error: any) {
+    toast.error(error.message || 'Erro ao banir usuário')
+    console.error('Error banning user:', error)
+  }
+}
+
+async function handleUnban(userId: string) {
+  try {
+    await adminStore.unbanUser(userId)
+    toast.success('Usuário desbanido com sucesso')
+    await adminStore.fetchAllUsers()
+    await adminStore.fetchUserStats()
+  } catch (error: any) {
+    toast.error(error.message || 'Erro ao desbanir usuário')
+    console.error('Error unbanning user:', error)
+  }
 }
 
 function handleUnsuspend(_userId: string) {
