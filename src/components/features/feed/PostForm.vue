@@ -274,6 +274,7 @@ import { useUserStore } from '@/stores/user'
 import { usePosts } from '@/composables/usePosts'
 import { supabase } from '@/lib/supabase'
 import { checkBannedWords } from '@/lib/bannedWords'
+import { logAdminAction } from '@/lib/auditLog'
 import Card from '@/components/ui/Card.vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import Modal from '@/components/ui/Modal.vue'
@@ -716,6 +717,16 @@ async function handleCreateEvent() {
       throw eventError
     }
     
+    // Log da ação
+    if (authStore.user) {
+      logAdminAction(authStore.user.id, {
+        action: 'create_event',
+        targetId: data.id,
+        targetType: 'event',
+        details: { titulo: data.titulo, tipo: data.tipo }
+      })
+    }
+
     console.log('✅ Evento criado com sucesso! ID:', data.id)
 
     console.log('11. Criando post sobre o evento...')

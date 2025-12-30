@@ -48,9 +48,6 @@ export function usePosts() {
     return await postStore.addComment(input)
   }
 
-  async function updateComment(commentId: string, conteudo: string) {
-    return await postStore.updateComment(commentId, conteudo)
-  }
 
   async function removeComment(commentId: string) {
     return await postStore.deleteComment(commentId)
@@ -76,7 +73,6 @@ export function usePosts() {
     toggleLike,
     loadComments,
     addComment,
-    updateComment,
     removeComment,
     reset,
   }

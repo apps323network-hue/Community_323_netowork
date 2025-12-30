@@ -174,12 +174,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/admin/AdminReports.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
-    {
-      path: '/admin/desafios',
-      name: 'AdminChallenges',
-      component: () => import('@/views/admin/AdminChallenges.vue'),
-      meta: { requiresAuth: true, requiresRole: 'admin' },
-    },
+  {
+    path: '/admin/desafios',
+    name: 'AdminChallenges',
+    component: () => import('@/views/admin/AdminChallenges.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/users/:userId/history',
+    name: 'UserHistory',
+    component: () => import('@/views/admin/UserHistoryView.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
   {
     path: '/parceiro/eventos',
     name: 'PartnerEvents',
@@ -200,10 +206,10 @@ router.beforeEach(async (to, _from, next) => {  // Detectar se é uma URL de rec
     const hashParams = new URLSearchParams(window.location.hash.substring(1))
     const type = hashParams.get('type')
     const accessToken = hashParams.get('access_token')
-    
+
     if (type === 'recovery' && accessToken) {
       // Redirecionar para página de reset password mantendo o hash
-      next({ 
+      next({
         path: '/reset-password',
         replace: true
       })

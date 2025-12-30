@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
+import { logAdminAction } from '@/lib/auditLog'
 import type { Post, Comment, PostCreateInput, CommentCreateInput, PostFilters } from '@/types/posts'
 
 export const usePostStore = defineStore('posts', () => {
@@ -150,6 +151,7 @@ export const usePostStore = defineStore('posts', () => {
         .from('post_comments')
         .select('post_id')
         .in('post_id', filteredPostIds)
+        .eq('status', 'approved')
 
       // Create maps for quick lookup (já não preciso mais do profilesMap aqui)
 
@@ -274,6 +276,7 @@ export const usePostStore = defineStore('posts', () => {
         .from('post_comments')
         .select('id')
         .eq('post_id', postId)
+        .eq('status', 'approved')
 
       const isLiked = currentUserId.value
         ? (likesData?.some((like: any) => like.user_id === currentUserId.value) || false)
@@ -396,6 +399,18 @@ export const usePostStore = defineStore('posts', () => {
         posts.value = [newPost, ...posts.value]
       }
 
+      // Log da ação
+      logAdminAction(currentUserId.value, {
+        action: 'user_create_post',
+        targetId: data.id,
+        targetType: 'post',
+        details: {
+          tipo: data.tipo,
+          status: data.status,
+          conteudo: data.conteudo
+        }
+      })
+
       return newPost
     } catch (err: any) {
       error.value = err.message
@@ -453,6 +468,14 @@ export const usePostStore = defineStore('posts', () => {
         posts.value[index] = { ...posts.value[index], ...updatedPost }
       }
 
+      // Log da ação
+      logAdminAction(currentUserId.value as string, {
+        action: 'user_update_post',
+        targetId: postId,
+        targetType: 'post',
+        details: { updates: Object.keys(updates) }
+      })
+
       return updatedPost
     } catch (err: any) {
       error.value = err.message
@@ -478,6 +501,15 @@ export const usePostStore = defineStore('posts', () => {
 
       // Remove from local state
       posts.value = posts.value.filter(p => p.id !== postId)
+
+      // Log da ação
+      if (currentUserId.value) {
+        logAdminAction(currentUserId.value, {
+          action: 'user_delete_post',
+          targetId: postId,
+          targetType: 'post'
+        })
+      }
     } catch (err: any) {
       error.value = err.message
       console.error('Error deleting post:', err)
@@ -511,6 +543,13 @@ export const usePostStore = defineStore('posts', () => {
           .eq('user_id', currentUserId.value)
 
         if (error) throw error
+
+        // Log da ação
+        logAdminAction(currentUserId.value, {
+          action: 'user_unlike_post',
+          targetId: postId,
+          targetType: 'post'
+        })
       } else {
         // Like
         const { error } = await supabase
@@ -521,6 +560,13 @@ export const usePostStore = defineStore('posts', () => {
           })
 
         if (error) throw error
+
+        // Log da ação
+        logAdminAction(currentUserId.value, {
+          action: 'user_like_post',
+          targetId: postId,
+          targetType: 'post'
+        })
       }
     } catch (err: any) {
       // Revert optimistic update on error
@@ -538,6 +584,7 @@ export const usePostStore = defineStore('posts', () => {
         .from('post_comments')
         .select('*')
         .eq('post_id', postId)
+        .eq('status', 'approved')
         .order('created_at', { ascending: true })
 
       if (queryError) throw queryError
@@ -654,6 +701,17 @@ export const usePostStore = defineStore('posts', () => {
         post.comments_count = (post.comments_count || 0) + 1
       }
 
+      // Log da ação
+      logAdminAction(currentUserId.value, {
+        action: 'user_add_comment',
+        targetId: data.id,
+        targetType: 'comment',
+        details: {
+          post_id: input.post_id,
+          conteudo: input.conteudo
+        }
+      })
+
       return newComment
     } catch (err: any) {
       console.error('Error adding comment:', err)
@@ -661,69 +719,22 @@ export const usePostStore = defineStore('posts', () => {
     }
   }
 
-  // Update comment
-  async function updateComment(commentId: string, conteudo: string): Promise<Comment> {
-    try {
-      const { data, error: updateError } = await supabase
-        .from('post_comments')
-        .update({ conteudo })
-        .eq('id', commentId)
-        .select('*')
-        .single()
-
-      if (updateError) throw updateError
-
-      // Fetch profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('id, nome, area_atuacao, avatar_url')
-        .eq('id', data.user_id)
-        .single()
-
-      const updatedComment: Comment = {
-        id: data.id,
-        post_id: data.post_id,
-        user_id: data.user_id,
-        conteudo: data.conteudo,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        author: profileData ? {
-          id: profileData.id,
-          nome: profileData.nome || 'Usuário',
-          area_atuacao: profileData.area_atuacao,
-          avatar_url: profileData.avatar_url,
-        } : {
-          id: data.user_id,
-          nome: 'Usuário',
-        },
-      }
-
-      // Update in local state
-      const post = posts.value.find(p => p.comments?.some(c => c.id === commentId))
-      if (post && post.comments) {
-        const index = post.comments.findIndex(c => c.id === commentId)
-        if (index !== -1) {
-          post.comments[index] = updatedComment
-        }
-      }
-
-      return updatedComment
-    } catch (err: any) {
-      console.error('Error updating comment:', err)
-      throw err
-    }
-  }
 
   // Delete comment
   async function deleteComment(commentId: string): Promise<void> {
     try {
-      // Find comment to get post_id
+      // Find comment to get post_id and content for logging
       const post = posts.value.find(p => p.comments?.some(c => c.id === commentId))
       if (!post || !post.comments) return
+      const comment = post.comments.find(c => c.id === commentId)
 
       const { error: deleteError } = await supabase
         .from('post_comments')
-        .delete()
+        .update({
+          status: 'removed',
+          moderated_at: new Date().toISOString(),
+          moderated_by: currentUserId.value
+        })
         .eq('id', commentId)
 
       if (deleteError) throw deleteError
@@ -731,6 +742,19 @@ export const usePostStore = defineStore('posts', () => {
       // Remove from local state
       post.comments = post.comments.filter(c => c.id !== commentId)
       post.comments_count = Math.max(0, (post.comments_count || 0) - 1)
+
+      // Log da ação
+      if (currentUserId.value) {
+        logAdminAction(currentUserId.value, {
+          action: 'user_delete_comment',
+          targetId: commentId,
+          targetType: 'comment',
+          details: {
+            post_id: post.id,
+            conteudo: comment?.conteudo
+          }
+        })
+      }
     } catch (err: any) {
       console.error('Error deleting comment:', err)
       throw err
@@ -762,7 +786,6 @@ export const usePostStore = defineStore('posts', () => {
     toggleLike,
     fetchComments,
     addComment,
-    updateComment,
     deleteComment,
     reset,
   }

@@ -12,13 +12,6 @@
         <div class="flex gap-2">
           <button
             v-if="isOwnComment"
-            class="text-gray-400 hover:text-secondary text-sm transition-colors"
-            @click="emit('edit', comment.id)"
-          >
-            {{ t('common.edit') }}
-          </button>
-          <button
-            v-if="isOwnComment"
             class="text-gray-400 hover:text-primary text-sm transition-colors"
             @click="emit('delete', comment.id)"
           >
@@ -63,7 +56,6 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  edit: [commentId: string]
   delete: [commentId: string]
 }>()
 
