@@ -2,15 +2,17 @@
   <AppLayout>
     <div class="w-full flex flex-col gap-4 sm:gap-6 md:gap-8 overflow-x-hidden">
       <!-- Featured Event Hero -->
-      <EventHero
-        v-if="displayedFeaturedEvent"
-        :event="displayedFeaturedEvent"
-        @register="handleRegister"
-        @learn-more="handleLearnMore"
-      />
+      <div class="pt-4 sm:pt-6 md:pt-8">
+        <EventHero
+          v-if="displayedFeaturedEvent"
+          :event="displayedFeaturedEvent"
+          @register="handleRegister"
+          @learn-more="handleLearnMore"
+        />
+      </div>
 
       <!-- Filters and Search (Sticky apenas no desktop) -->
-      <section class="flex flex-col lg:flex-row gap-4 sm:gap-6 justify-between items-start lg:items-center lg:sticky lg:top-[69px] z-40 bg-background-dark py-3 sm:py-4 px-0 lg:-mx-10 lg:px-10 border-b border-white/5">
+      <section class="flex flex-col lg:flex-row gap-4 sm:gap-6 justify-between items-start lg:items-center lg:sticky lg:top-[69px] z-40 bg-background-light dark:bg-background-dark py-3 sm:py-4 px-0 lg:-mx-10 lg:px-10 border-b border-slate-200 dark:border-white/5">
         <EventFilters :active-filter="activeFilter" @filter-change="handleFilterChange" />
         <EventSearch @search-change="handleSearchChange" />
       </section>
@@ -18,7 +20,7 @@
       <!-- Events List -->
       <section>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-6 sm:mb-8">
-          <h3 class="text-white text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
+          <h3 class="text-slate-900 dark:text-white text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
             <span class="material-symbols-outlined text-secondary text-2xl sm:text-3xl drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">
               calendar_month
             </span>
@@ -26,7 +28,7 @@
           </h3>
           <router-link
             to="/eventos/calendario"
-            class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-white hover:text-primary transition-colors whitespace-nowrap"
+            class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-slate-700 dark:text-white hover:text-primary transition-colors whitespace-nowrap"
           >
             {{ t('events.viewFullCalendar') }}
             <span class="material-symbols-outlined text-primary text-base sm:text-lg group-hover:translate-x-1 transition-transform">
@@ -40,11 +42,11 @@
           <div
             v-for="i in 6"
             :key="i"
-            class="bg-surface-card rounded-xl p-6 animate-pulse border border-white/5"
+            class="bg-white dark:bg-surface-card rounded-xl p-6 animate-pulse border border-slate-200 dark:border-white/5"
           >
-            <div class="h-52 bg-gray-700 rounded-lg mb-4"></div>
-            <div class="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-            <div class="h-4 bg-gray-700 rounded w-1/2"></div>
+            <div class="h-52 bg-gray-300 dark:bg-gray-700 rounded-lg mb-4"></div>
+            <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+            <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2"></div>
           </div>
         </div>
 
@@ -71,7 +73,7 @@
         <!-- Load More Button -->
         <div v-if="hasMore" class="mt-12 flex justify-center">
           <button
-            class="flex items-center gap-2 text-white/60 hover:text-white hover:border-white text-sm font-bold transition-all px-8 py-3 border border-white/10 rounded-full hover:bg-white/5 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+            class="flex items-center gap-2 text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-white text-sm font-bold transition-all px-8 py-3 border border-slate-200 dark:border-white/10 rounded-full hover:bg-slate-50 dark:hover:bg-white/5 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]"
             @click="loadMore"
           >
             <span class="material-symbols-outlined animate-spin-slow">refresh</span>
@@ -81,23 +83,23 @@
       </section>
 
       <!-- Newsletter Section (Optional) -->
-      <section class="mt-8 rounded-xl bg-surface-card border border-white/5 p-4 sm:p-6 md:p-8 lg:p-12 text-center relative overflow-hidden group">
+      <section class="mt-8 rounded-xl bg-white dark:bg-surface-card border border-slate-200 dark:border-white/5 p-4 sm:p-6 md:p-8 lg:p-12 text-center relative overflow-hidden group">
         <div class="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-primary/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/30 transition-colors duration-500"></div>
         <div class="absolute bottom-0 left-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-secondary/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-secondary/30 transition-colors duration-500"></div>
         <div class="relative z-10 flex flex-col items-center gap-3 sm:gap-4">
-          <div class="size-12 sm:size-14 md:size-16 rounded-full bg-surface-dark border border-white/10 flex items-center justify-center mb-1 sm:mb-2 shadow-neon-mixed">
-            <span class="material-symbols-outlined text-white text-2xl sm:text-2xl md:text-3xl">mail</span>
+          <div class="size-12 sm:size-14 md:size-16 rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-white/10 flex items-center justify-center mb-1 sm:mb-2 shadow-neon-mixed">
+            <span class="material-symbols-outlined text-slate-700 dark:text-white text-2xl sm:text-2xl md:text-3xl">mail</span>
           </div>
-          <h3 class="text-white text-xl sm:text-2xl md:text-2xl lg:text-3xl font-black tracking-tight px-2">
+          <h3 class="text-slate-900 dark:text-white text-xl sm:text-2xl md:text-2xl lg:text-3xl font-black tracking-tight px-2">
             {{ t('events.newsletterTitlePrefix') }} <span class="text-primary">{{ t('events.newsletterTitleHighlight1') }}</span><span class="text-secondary">{{ t('events.newsletterTitleHighlight2') }}</span>
           </h3>
-          <p class="text-white/60 max-w-lg mx-auto mb-4 sm:mb-6 text-sm sm:text-base md:text-lg px-4">
+          <p class="text-slate-600 dark:text-white/60 max-w-lg mx-auto mb-4 sm:mb-6 text-sm sm:text-base md:text-lg px-4">
             {{ t('events.newsletterDesc') }}
           </p>
           <form class="flex w-full max-w-md flex-col sm:flex-row gap-2 sm:gap-3 px-4 sm:px-0" @submit.prevent="handleNewsletterSubmit">
             <input
               v-model="newsletterEmail"
-              class="flex-1 rounded-lg bg-black/50 border border-white/10 px-3 sm:px-4 py-2.5 sm:py-3 text-white text-sm sm:text-base placeholder:text-white/30 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all"
+              class="flex-1 rounded-lg bg-white dark:bg-[#0a040f] border border-slate-200 dark:border-white/10 px-3 sm:px-4 py-2.5 sm:py-3 text-slate-900 dark:text-white text-sm sm:text-base placeholder:text-slate-400 dark:placeholder:text-white/30 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all"
               :placeholder="t('events.emailPlaceholder')"
               type="email"
             />
@@ -151,7 +153,20 @@ const currentFilters = ref<EventFiltersType>({
 })
 
 const displayedEvents = computed(() => {
-  return events.value
+  // Remover apenas duplicatas por ID (mantém o evento em destaque na lista)
+  const seenIds = new Set<string>()
+  let filtered = events.value.filter(event => {
+    // Remover duplicatas
+    if (seenIds.has(event.id)) {
+      return false
+    }
+    seenIds.add(event.id)
+    
+    // Não excluir o evento em destaque - ele deve aparecer tanto no banner quanto na lista
+    return true
+  })
+  
+  return filtered
 })
 
 const displayedFeaturedEvent = computed(() => {

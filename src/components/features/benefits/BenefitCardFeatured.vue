@@ -1,5 +1,5 @@
 <template>
-  <div class="group relative flex flex-col justify-end overflow-hidden rounded-xl h-72 bg-background-card border border-border-dark hover:border-primary transition-all duration-300 neon-glow cursor-pointer shadow-lg">
+  <div class="group relative flex flex-col justify-end overflow-hidden rounded-xl h-72 bg-white dark:bg-surface-card border border-slate-200 dark:border-white/10 hover:border-primary transition-all duration-300 neon-glow cursor-pointer shadow-lg">
     <!-- Imagem de Fundo -->
     <div 
       v-if="benefit.imagem_url"
@@ -9,7 +9,7 @@
     <div v-else class="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20"></div>
     
     <!-- Overlay Gradient -->
-    <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-card/90 to-transparent opacity-90"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-white/90 via-white/80 to-transparent dark:from-background-dark dark:via-surface-card/90 dark:to-transparent opacity-90"></div>
     
     <!-- Conteúdo -->
     <div class="relative z-10 p-6 flex flex-col gap-3">
@@ -31,8 +31,8 @@
       </div>
       
       <div>
-        <h4 class="text-xl font-bold text-white group-hover:text-primary transition-colors">{{ benefit.nome }}</h4>
-        <p class="text-sm text-gray-300 mt-1 line-clamp-2">{{ benefit.descricao }}</p>
+        <h4 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ benefit.nome }}</h4>
+        <p class="text-sm text-slate-700 dark:text-gray-300 mt-1 line-clamp-2">{{ benefit.descricao }}</p>
       </div>
     </div>
   </div>

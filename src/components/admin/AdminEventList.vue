@@ -13,14 +13,16 @@
   </div>
 
   <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <AdminEventCard
-      v-for="event in events"
-      :key="event.id"
-      :event="event"
-      @approve="handleApprove(event.id)"
-      @reject="handleReject(event.id)"
-      @view-details="handleViewDetails(event.id)"
-    />
+      <AdminEventCard
+        v-for="event in events"
+        :key="event.id"
+        :event="event"
+        @approve="handleApprove(event.id)"
+        @reject="handleReject(event.id)"
+        @view-details="handleViewDetails(event.id)"
+        @toggle-destaque="handleToggleDestaque(event.id)"
+        @delete="handleDelete(event.id)"
+      />
   </div>
 </template>
 
@@ -39,6 +41,8 @@ const emit = defineEmits<{
   approve: [eventId: string]
   reject: [eventId: string]
   'view-details': [eventId: string]
+  'toggle-destaque': [eventId: string]
+  delete: [eventId: string]
 }>()
 
 function handleApprove(eventId: string) {
@@ -51,6 +55,14 @@ function handleReject(eventId: string) {
 
 function handleViewDetails(eventId: string) {
   emit('view-details', eventId)
+}
+
+function handleToggleDestaque(eventId: string) {
+  emit('toggle-destaque', eventId)
+}
+
+function handleDelete(eventId: string) {
+  emit('delete', eventId)
 }
 </script>
 

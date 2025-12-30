@@ -4,7 +4,9 @@
     :disabled="disabled || loading"
     @click="$emit('click', $event)"
   >
-    <span v-if="loading" class="inline-block animate-spin mr-2">⟳</span>
+    <span v-if="loading" class="inline-flex items-center justify-center">
+      <span class="material-icons-outlined animate-spin mr-2 text-base">refresh</span>
+    </span>
     <slot />
   </button>
 </template>

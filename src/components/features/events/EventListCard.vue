@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex flex-col bg-surface-card rounded-xl overflow-hidden border border-white/5 transition-all duration-300 hover:-translate-y-2"
+    class="group flex flex-col bg-white dark:bg-surface-card rounded-xl overflow-hidden border border-slate-200 dark:border-white/5 transition-all duration-300 hover:-translate-y-2"
     :class="cardHoverClass"
     @click="$emit('click', event.id)"
   >
@@ -24,7 +24,7 @@
       <div v-else class="w-full h-full bg-gradient-to-br from-gray-900 to-black"></div>
       
       <!-- Gradient Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-surface-card via-surface-card/20 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-surface-card via-white/20 dark:via-surface-card/20 to-transparent"></div>
       
       <!-- Hover Accent Line -->
       <div
@@ -43,7 +43,7 @@
         >
           {{ eventTypeLabel }}
         </span>
-        <span class="text-white/60 text-xs font-semibold flex items-center gap-1">
+        <span class="text-slate-600 dark:text-white/60 text-xs font-semibold flex items-center gap-1">
           <span class="material-symbols-outlined text-sm">schedule</span>
           {{ formattedTime }}
         </span>
@@ -51,19 +51,19 @@
       
       <!-- Title -->
       <h4
-        class="text-white text-lg sm:text-xl font-bold leading-tight transition-colors"
+        class="text-slate-900 dark:text-white text-lg sm:text-xl font-bold leading-tight transition-colors"
         :class="titleHoverClass"
       >
         {{ event.titulo }}
       </h4>
       
       <!-- Description -->
-      <p class="text-white/60 text-xs sm:text-sm line-clamp-2">
+      <p class="text-slate-600 dark:text-white/60 text-xs sm:text-sm line-clamp-2">
         {{ event.descricao || t('events.heroPlaceholder') }}
       </p>
       
       <!-- Location -->
-      <div class="flex items-center gap-2 text-white/80 text-sm mt-auto">
+      <div class="flex items-center gap-2 text-slate-700 dark:text-white/80 text-sm mt-auto">
         <span
           class="material-symbols-outlined text-lg"
           :class="locationIconClass"
@@ -74,7 +74,7 @@
       </div>
       
       <!-- Action Button -->
-      <div class="pt-3 sm:pt-4 md:pt-5 mt-2 border-t border-white/5">
+      <div class="pt-3 sm:pt-4 md:pt-5 mt-2 border-t border-slate-200 dark:border-white/5">
         <button
           class="w-full h-10 sm:h-11 rounded-lg font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
           :class="buttonClass"

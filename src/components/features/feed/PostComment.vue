@@ -15,21 +15,21 @@
             class="text-gray-400 hover:text-secondary text-sm transition-colors"
             @click="emit('edit', comment.id)"
           >
-            Editar
+            {{ t('common.edit') }}
           </button>
           <button
             v-if="isOwnComment"
             class="text-gray-400 hover:text-primary text-sm transition-colors"
             @click="emit('delete', comment.id)"
           >
-            Deletar
+            {{ t('common.delete') }}
           </button>
           <button
             v-if="!isOwnComment"
             class="text-gray-400 hover:text-orange-500 text-sm transition-colors"
             @click="handleReport"
           >
-            Reportar
+            {{ t('posts.report') }}
           </button>
         </div>
       </div>
@@ -48,10 +48,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import Avatar from '@/components/ui/Avatar.vue'
 import ReportModal from './ReportModal.vue'
 import type { Comment } from '@/types/posts'
+
+const { t, locale } = useI18n()
 
 interface Props {
   comment: Comment
@@ -85,10 +88,10 @@ function formatTime(date: string) {
   const commentDate = new Date(date)
   const diffInSeconds = Math.floor((now.getTime() - commentDate.getTime()) / 1000)
 
-  if (diffInSeconds < 60) return 'agora'
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}min atrás`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h atrás`
-  return commentDate.toLocaleDateString('pt-BR')
+  if (diffInSeconds < 60) return t('common.now')
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}${t('common.minutesAgo')}`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}${t('common.hoursAgo')}`
+  return commentDate.toLocaleDateString(locale.value)
 }
 
 function handleReport() {

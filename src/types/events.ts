@@ -19,6 +19,8 @@ export interface Event {
   approved_by?: string
   approved_at?: string
   rejection_reason?: string
+  // Featured event
+  destaque?: boolean
   // Joined data
   confirmations_count?: number
   is_confirmed?: boolean

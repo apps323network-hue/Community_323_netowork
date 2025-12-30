@@ -79,10 +79,18 @@
         </RouterLink>
         <RouterLink
           to="/beneficios"
-          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group transition-all"
+          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
+          :class="$route.path === '/beneficios' 
+            ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-primary shadow-neon-pink/10' 
+            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
         >
-          <span class="material-icons-outlined mr-3 text-gray-500 group-hover:text-secondary transition-colors">card_giftcard</span>
-          Benefícios
+          <span 
+            class="material-icons-outlined mr-3 transition-colors"
+            :class="$route.path === '/beneficios' ? 'text-primary' : 'text-gray-500 group-hover:text-primary'"
+          >
+            card_giftcard
+          </span>
+          {{ t('navigation.benefits') }}
         </RouterLink>
       </nav>
     </div>

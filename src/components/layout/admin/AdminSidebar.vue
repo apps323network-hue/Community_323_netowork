@@ -46,6 +46,7 @@ const adminStore = useAdminStore()
 onMounted(async () => {
   await adminStore.fetchUserStats()
   await adminStore.fetchPostStats()
+  await adminStore.fetchEventStats()
   await adminStore.fetchReportStats()
   await adminStore.fetchChallengeStats()
 })
@@ -76,8 +77,8 @@ const menuItems = computed(() => [
     path: '/admin/eventos',
     label: 'Eventos',
     icon: 'event',
-    badge: undefined,
-    badgeClass: '',
+    badge: adminStore.stats.pending > 0 ? adminStore.stats.pending : undefined,
+    badgeClass: 'bg-yellow-500/20 text-yellow-400',
   },
   {
     path: '/admin/servicos',

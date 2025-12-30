@@ -1,7 +1,7 @@
 <template>
   <div class="relative w-full lg:w-auto">
-    <!-- Fade gradient no final (apenas mobile) -->
-    <div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background-dark to-transparent pointer-events-none lg:hidden z-10"></div>
+      <!-- Fade gradient no final (apenas mobile) -->
+      <div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background-light dark:from-background-dark to-transparent pointer-events-none lg:hidden z-10"></div>
     
     <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar w-full lg:flex-nowrap lg:overflow-visible lg:gap-2 pb-1 items-center">
       <button
@@ -52,13 +52,13 @@ function getButtonClass(filterId: string): string {
   
   // Hover colors based on filter type (matching Stitch design)
   const hoverColors: Record<string, string> = {
-    'networking': 'group px-5 lg:px-5 bg-surface-card hover:bg-surface-highlight text-white/80 hover:text-secondary border border-white/10 hover:border-secondary',
-    'showcase': 'group px-5 lg:px-5 bg-surface-card hover:bg-surface-highlight text-white/80 hover:text-primary border border-white/10 hover:border-primary',
-    'workshop': 'group px-5 lg:px-5 bg-surface-card hover:bg-surface-highlight text-white/80 hover:text-secondary border border-white/10 hover:border-secondary',
-    'social': 'group px-5 lg:px-5 bg-surface-card hover:bg-surface-highlight text-white/80 hover:text-primary border border-white/10 hover:border-primary',
+    'networking': 'group px-5 lg:px-5 bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-700 dark:text-white/80 hover:text-slate-900 dark:hover:text-secondary border border-slate-200 dark:border-white/10 hover:border-secondary',
+    'showcase': 'group px-5 lg:px-5 bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-700 dark:text-white/80 hover:text-slate-900 dark:hover:text-primary border border-slate-200 dark:border-white/10 hover:border-primary',
+    'workshop': 'group px-5 lg:px-5 bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-700 dark:text-white/80 hover:text-slate-900 dark:hover:text-secondary border border-slate-200 dark:border-white/10 hover:border-secondary',
+    'social': 'group px-5 lg:px-5 bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-700 dark:text-white/80 hover:text-slate-900 dark:hover:text-primary border border-slate-200 dark:border-white/10 hover:border-primary',
   }
   
-  return hoverColors[filterId] || 'group px-5 lg:px-5 bg-surface-card hover:bg-surface-highlight text-white/80 hover:text-secondary border border-white/10 hover:border-secondary'
+  return hoverColors[filterId] || 'group px-5 lg:px-5 bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-700 dark:text-white/80 hover:text-slate-900 dark:hover:text-secondary border border-slate-200 dark:border-white/10 hover:border-secondary'
 }
 </script>
 

@@ -1,32 +1,32 @@
 <template>
-  <div class="flex flex-col items-center gap-2 sm:gap-3 md:gap-4 bg-black/40 backdrop-blur-xl p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl border border-white/10 shadow-[0_0_30px_rgba(244,37,244,0.15)] w-full sm:w-auto">
+  <div class="flex flex-col items-center gap-2 sm:gap-3 md:gap-4 bg-white/80 dark:bg-black/40 backdrop-blur-xl p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-white/10 shadow-[0_0_30px_rgba(244,37,244,0.15)] w-full sm:w-auto">
     <p class="text-secondary text-xs sm:text-sm font-bold uppercase tracking-widest mb-1 sm:mb-2 text-glow-blue">
       {{ t('events.startsIn') }}
     </p>
     <div class="flex gap-1.5 sm:gap-2 md:gap-3 text-center w-full sm:w-auto justify-center">
       <div class="flex flex-col gap-1 sm:gap-2">
-        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-surface-dark border border-primary/50 shadow-[0_0_10px_rgba(244,37,244,0.2)]">
+        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-primary/50 shadow-[0_0_10px_rgba(244,37,244,0.2)]">
           <p class="text-primary text-lg sm:text-xl md:text-2xl font-bold font-display">{{ days }}</p>
         </div>
-        <p class="text-white/60 text-[10px] sm:text-xs">{{ t('common.days') }}</p>
+        <p class="text-slate-600 dark:text-white/60 text-[10px] sm:text-xs">{{ t('common.days') }}</p>
       </div>
       <div class="flex flex-col gap-1 sm:gap-2">
-        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-surface-dark border border-secondary/50 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-secondary/50 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
           <p class="text-secondary text-lg sm:text-xl md:text-2xl font-bold font-display">{{ hours }}</p>
         </div>
-        <p class="text-white/60 text-[10px] sm:text-xs">{{ t('common.hours') }}</p>
+        <p class="text-slate-600 dark:text-white/60 text-[10px] sm:text-xs">{{ t('common.hours') }}</p>
       </div>
       <div class="flex flex-col gap-1 sm:gap-2">
-        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-surface-dark border border-primary/50 shadow-[0_0_10px_rgba(244,37,244,0.2)]">
+        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-primary/50 shadow-[0_0_10px_rgba(244,37,244,0.2)]">
           <p class="text-primary text-lg sm:text-xl md:text-2xl font-bold font-display">{{ minutes }}</p>
         </div>
-        <p class="text-white/60 text-[10px] sm:text-xs">{{ t('common.minutesShort') }}</p>
+        <p class="text-slate-600 dark:text-white/60 text-[10px] sm:text-xs">{{ t('common.minutesShort') }}</p>
       </div>
       <div class="flex flex-col gap-1 sm:gap-2">
-        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-surface-dark border border-secondary/50 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+        <div class="flex size-12 sm:size-14 md:size-16 items-center justify-center rounded-lg bg-white dark:bg-surface-dark border border-secondary/50 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
           <p class="text-secondary text-lg sm:text-xl md:text-2xl font-bold font-display">{{ seconds }}</p>
         </div>
-        <p class="text-white/60 text-[10px] sm:text-xs">{{ t('common.secondsShort') }}</p>
+        <p class="text-slate-600 dark:text-white/60 text-[10px] sm:text-xs">{{ t('common.secondsShort') }}</p>
       </div>
     </div>
   </div>

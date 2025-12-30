@@ -2,7 +2,7 @@
   <AppLayout>
     <div class="space-y-3 sm:space-y-4 md:space-y-6 lg:space-y-8 w-full overflow-x-hidden max-w-full">
       <!-- Hero Section -->
-      <div class="relative overflow-hidden rounded-xl sm:rounded-2xl border border-white/5 bg-[#0a040f]">
+      <div class="relative overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200 dark:border-white/5 bg-white dark:bg-[#0a040f]">
         <!-- FlickeringGrid Background -->
         <FlickeringGrid
           :squareSize="4"
@@ -10,11 +10,11 @@
           :flickerChance="0.3"
           color="rgb(244, 37, 244)"
           :maxOpacity="0.2"
-          class="absolute inset-0 z-0"
+          class="absolute inset-0 z-0 dark:block hidden"
         />
         
         <!-- Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-r from-[#0a040f]/95 via-[#0a040f]/80 to-[#0a040f]/60 z-[1]"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/60 dark:from-[#0a040f]/95 dark:via-[#0a040f]/80 dark:to-[#0a040f]/60 z-[1]"></div>
         
         <div class="relative z-10 flex flex-col gap-3 sm:gap-4 md:gap-6 px-3 sm:px-4 md:px-6 lg:px-12 py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 text-center md:text-left items-center md:items-start">
           <div class="flex flex-col gap-2 sm:gap-3 max-w-2xl w-full">
@@ -22,11 +22,11 @@
               <span class="material-symbols-outlined text-secondary text-sm sm:text-base md:text-[18px]">verified</span>
               <span class="text-secondary text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
             </div>
-            <h1 class="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight tracking-tight">
+            <h1 class="text-slate-900 dark:text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight tracking-tight">
               {{ t('services.heroTitle1') }} <br class="hidden sm:block"/>
               <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary drop-shadow-[0_0_15px_rgba(244,37,244,0.3)]">{{ t('services.heroTitle2') }}</span>
             </h1>
-            <p class="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mt-1 sm:mt-2">
+            <p class="text-slate-600 dark:text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mt-1 sm:mt-2">
               {{ t('services.heroDescription') }}
             </p>
           </div>
@@ -34,7 +34,7 @@
             <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-gradient-to-r from-primary to-secondary text-black text-xs sm:text-sm md:text-base font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)] hover:shadow-[0_0_40px_rgba(0,243,255,0.5)] hover:scale-105 w-full sm:w-auto" @click="exploreServices">
               {{ t('services.exploreServices') }}
             </button>
-            <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs sm:text-sm md:text-base font-medium backdrop-blur-sm transition-colors w-full sm:w-auto" @click="howItWorks">
+            <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white text-xs sm:text-sm md:text-base font-medium backdrop-blur-sm transition-colors w-full sm:w-auto" @click="howItWorks">
               {{ t('services.howItWorks') }}
             </button>
           </div>
@@ -50,7 +50,7 @@
             'flex h-8 sm:h-9 md:h-10 shrink-0 items-center justify-center gap-x-1 sm:gap-x-1.5 md:gap-x-2 rounded-full px-2.5 sm:px-3 md:px-4 lg:px-5 transition-all outline-none',
             activeFilter === filter.id
               ? 'bg-secondary text-black shadow-[0_0_15px_rgba(0,243,255,0.4)] hover:scale-105 font-bold'
-              : 'bg-surface-dark border border-white/10 hover:border-primary/50 hover:bg-white/5 text-gray-300 hover:text-white group font-medium'
+              : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white group font-medium'
           ]"
           @click="activeFilter = filter.id"
         >
@@ -63,9 +63,9 @@
         <div v-if="loading" class="flex justify-center py-8 sm:py-12 md:py-16 lg:py-20">
           <div class="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-b-2 border-primary"></div>
         </div>
-        <div v-else-if="filteredServices.length === 0" class="flex flex-col items-center justify-center py-8 sm:py-12 md:py-16 lg:py-20 bg-surface-dark/50 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10 backdrop-blur-sm px-3 sm:px-4">
-          <span class="material-symbols-outlined text-gray-500 text-3xl sm:text-4xl md:text-5xl lg:text-[64px] mb-2 sm:mb-3 md:mb-4">search_off</span>
-          <p class="text-gray-400 font-medium text-xs sm:text-sm md:text-base text-center">{{ t('services.noServicesFound') }}</p>
+        <div v-else-if="filteredServices.length === 0" class="flex flex-col items-center justify-center py-8 sm:py-12 md:py-16 lg:py-20 bg-white dark:bg-surface-card rounded-lg sm:rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/5 backdrop-blur-sm px-3 sm:px-4">
+          <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-3xl sm:text-4xl md:text-5xl lg:text-[64px] mb-2 sm:mb-3 md:mb-4">search_off</span>
+          <p class="text-slate-500 dark:text-gray-400 font-medium text-xs sm:text-sm md:text-base text-center">{{ t('services.noServicesFound') }}</p>
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           <ServiceCard
@@ -79,9 +79,9 @@
 
       <!-- Testimonials -->
       <div class="flex flex-col gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-3 sm:pt-4 md:pt-6 lg:pt-8">
-        <div class="flex items-center justify-between border-b border-white/10 pb-2.5 sm:pb-3 md:pb-4 gap-2">
-          <h2 class="text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight truncate">{{ t('services.whatMembersSay') }}</h2>
-          <a class="text-secondary text-[10px] sm:text-xs md:text-sm font-bold hover:underline hover:text-white transition-colors cursor-pointer whitespace-nowrap flex-shrink-0">{{ t('common.seeAll') }}</a>
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2.5 sm:pb-3 md:pb-4 gap-2">
+          <h2 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight truncate">{{ t('services.whatMembersSay') }}</h2>
+          <a class="text-secondary text-[10px] sm:text-xs md:text-sm font-bold hover:underline hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer whitespace-nowrap flex-shrink-0">{{ t('common.seeAll') }}</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           <TestimonialCard
@@ -93,10 +93,10 @@
       </div>
 
       <!-- CTA Section -->
-      <div class="bg-[#0a040f] border border-white/10 rounded-lg sm:rounded-xl md:rounded-2xl py-4 sm:py-6 md:py-8 lg:py-12 px-3 sm:px-4 md:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+      <div class="bg-white dark:bg-[#0a040f] border border-slate-200 dark:border-white/10 rounded-lg sm:rounded-xl md:rounded-2xl py-4 sm:py-6 md:py-8 lg:py-12 px-3 sm:px-4 md:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 md:gap-6 lg:gap-8">
         <div class="flex flex-col gap-1.5 sm:gap-2 text-center md:text-left w-full md:w-auto">
-          <h2 class="text-white text-lg sm:text-xl md:text-2xl font-bold">{{ t('services.needSomethingCustom') }}</h2>
-          <p class="text-gray-400 text-xs sm:text-sm md:text-base">{{ t('services.conciergeDescription') }}</p>
+          <h2 class="text-slate-900 dark:text-white text-lg sm:text-xl md:text-2xl font-bold">{{ t('services.needSomethingCustom') }}</h2>
+          <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm md:text-base">{{ t('services.conciergeDescription') }}</p>
         </div>
         <button class="flex items-center gap-1.5 sm:gap-2 rounded-lg bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-black px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base font-bold transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.2)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)] w-full md:w-auto justify-center" @click="contactSupport">
           <span class="material-symbols-outlined text-base sm:text-lg md:text-[20px]">chat</span>
@@ -113,12 +113,12 @@
     >
       <div class="flex flex-col gap-3 sm:gap-4">
         <!-- Descrição -->
-        <p class="text-xs sm:text-sm text-gray-300">
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300">
           <template v-if="selectedService.preco">
-            {{ t('services.contracting') }} <strong class="text-white">{{ selectedService.nome }}</strong>.
+            {{ t('services.contracting') }} <strong class="text-slate-900 dark:text-white">{{ selectedService.nome }}</strong>.
           </template>
           <template v-else>
-            {{ t('services.requesting') }} <strong class="text-white">{{ selectedService.nome }}</strong>.
+            {{ t('services.requesting') }} <strong class="text-slate-900 dark:text-white">{{ selectedService.nome }}</strong>.
             {{ t('services.partnerContact') }}
           </template>
         </p>
@@ -126,22 +126,22 @@
         <!-- Preço (se existir) -->
         <div v-if="selectedService.preco" class="space-y-3">
           <!-- Breakdown de Valores -->
-          <div class="p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10 space-y-2">
+          <div class="p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
             <div class="flex justify-between items-center text-sm">
-              <span class="text-gray-400">{{ t('services.serviceValue') }}</span>
-              <span class="text-white font-medium">{{ formatPrice(selectedService.preco, selectedService.moeda) }}</span>
+              <span class="text-slate-500 dark:text-gray-400">{{ t('services.serviceValue') }}</span>
+              <span class="text-slate-900 dark:text-white font-medium">{{ formatPrice(selectedService.preco, selectedService.moeda) }}</span>
             </div>
             
             <div v-if="paymentMethod" class="flex justify-between items-center text-sm">
-              <span class="text-gray-400">{{ t('services.stripeFee') }} ({{ paymentMethod === 'card' ? '3.9% + $0.30' : '~1.8%' }})</span>
-              <span class="text-white font-medium">{{ formatPrice(calculateFee(selectedService.preco, paymentMethod), paymentMethod === 'pix' ? 'BRL' : selectedService.moeda) }}</span>
+              <span class="text-slate-500 dark:text-gray-400">{{ t('services.stripeFee') }} ({{ paymentMethod === 'card' ? '3.9% + $0.30' : '~1.8%' }})</span>
+              <span class="text-slate-900 dark:text-white font-medium">{{ formatPrice(calculateFee(selectedService.preco, paymentMethod), paymentMethod === 'pix' ? 'BRL' : selectedService.moeda) }}</span>
             </div>
             
-            <div class="border-t border-white/10 pt-2 mt-2"></div>
+            <div class="border-t border-slate-200 dark:border-white/10 pt-2 mt-2"></div>
             
             <div class="flex justify-between items-center">
-              <span class="text-gray-300 font-bold">{{ t('services.totalToPay') }}</span>
-              <span class="text-2xl font-bold text-white">
+              <span class="text-slate-700 dark:text-gray-300 font-bold">{{ t('services.totalToPay') }}</span>
+              <span class="text-2xl font-bold text-slate-900 dark:text-white">
                 {{ paymentMethod ? formatPrice(calculateTotal(selectedService.preco, paymentMethod), paymentMethod === 'pix' ? 'BRL' : selectedService.moeda) : formatPrice(selectedService.preco, selectedService.moeda) }}
               </span>
             </div>
@@ -159,45 +159,45 @@
         <!-- Benefício Membro -->
         <div v-if="selectedService.beneficio_membro" class="p-4 rounded-lg bg-secondary/10 border border-secondary/20">
           <p class="text-[10px] sm:text-xs font-bold text-secondary uppercase mb-1">{{ t('services.memberBenefit') }}</p>
-          <p class="text-xs sm:text-sm text-gray-300 font-medium">{{ selectedService.beneficio_membro }}</p>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-medium">{{ selectedService.beneficio_membro }}</p>
         </div>
 
         <!-- Método de Pagamento (apenas para serviços pagos) -->
         <div v-if="selectedService.preco" class="space-y-3">
-          <label class="text-sm font-bold text-gray-300">{{ t('services.paymentMethod') }}</label>
+          <label class="text-sm font-bold text-slate-700 dark:text-gray-300">{{ t('services.paymentMethod') }}</label>
           <div class="grid grid-cols-2 gap-3">
             <button
               @click="paymentMethod = 'card'"
               class="flex flex-col items-center gap-2 p-4 rounded-lg border transition-all"
               :class="paymentMethod === 'card' 
-                ? 'border-primary bg-primary/10 text-white' 
-                : 'border-white/10 hover:border-white/30 text-gray-400'"
+                ? 'border-primary bg-primary/10 text-slate-900 dark:text-white' 
+                : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/30 text-slate-600 dark:text-gray-400'"
             >
               <span class="material-symbols-outlined text-2xl">credit_card</span>
               <span class="text-sm font-bold">{{ t('services.card') }}</span>
-              <span class="text-[10px] text-gray-500">{{ t('services.debitOrCredit') }}</span>
+              <span class="text-[10px] text-slate-500 dark:text-gray-500">{{ t('services.debitOrCredit') }}</span>
             </button>
             <button
               @click="paymentMethod = 'pix'"
               class="flex flex-col items-center gap-2 p-4 rounded-lg border transition-all"
               :class="paymentMethod === 'pix' 
-                ? 'border-secondary bg-secondary/10 text-white' 
-                : 'border-white/10 hover:border-white/30 text-gray-400'"
+                ? 'border-secondary bg-secondary/10 text-slate-900 dark:text-white' 
+                : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/30 text-slate-600 dark:text-gray-400'"
             >
               <span class="material-symbols-outlined text-2xl">qr_code_2</span>
               <span class="text-sm font-bold">{{ t('services.pix') }}</span>
-              <span class="text-[10px] text-gray-500">{{ t('services.instantPayment') }}</span>
+              <span class="text-[10px] text-slate-500 dark:text-gray-500">{{ t('services.instantPayment') }}</span>
             </button>
           </div>
         </div>
 
         <!-- Mensagem (para serviços gratuitos) -->
         <div v-if="!selectedService.preco" class="flex flex-col gap-1.5">
-          <label class="text-xs sm:text-sm font-bold text-gray-300">{{ t('services.additionalMessage') }}</label>
+          <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-gray-300">{{ t('services.additionalMessage') }}</label>
           <textarea
             v-model="requestMessage"
             rows="4"
-            class="w-full rounded-lg border border-white/10 bg-surface-dark p-2.5 sm:p-3 text-xs sm:text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-2.5 sm:p-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
             :placeholder="t('services.requestPlaceholder')"
           ></textarea>
         </div>
@@ -223,7 +223,7 @@
         </button>
 
         <!-- Segurança -->
-        <p v-if="selectedService.preco" class="text-[10px] text-gray-500 text-center flex items-center justify-center gap-1">
+        <p v-if="selectedService.preco" class="text-[10px] text-slate-500 dark:text-gray-500 text-center flex items-center justify-center gap-1">
           <span class="material-symbols-outlined text-[14px]">lock</span>
           {{ t('services.securePayment') }}
         </p>
@@ -236,30 +236,30 @@
     >
       <div class="space-y-6 sm:space-y-8 py-2 sm:py-4">
         <!-- Step 1 -->
-        <div class="relative pl-6 sm:pl-8 border-l-2 border-white/10 group">
-          <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-surface-dark border-2 border-primary shadow-[0_0_10px_rgba(244,37,244,0.5)] group-hover:scale-125 transition-transform"></div>
-          <h3 class="text-white text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step1Title') }}</h3>
-          <p class="text-gray-400 text-xs sm:text-sm">{{ t('services.step1Desc') }}</p>
+        <div class="relative pl-6 sm:pl-8 border-l-2 border-slate-200 dark:border-white/10 group">
+          <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-white dark:bg-surface-dark border-2 border-primary shadow-[0_0_10px_rgba(244,37,244,0.5)] group-hover:scale-125 transition-transform"></div>
+          <h3 class="text-slate-900 dark:text-white text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step1Title') }}</h3>
+          <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm">{{ t('services.step1Desc') }}</p>
         </div>
 
         <!-- Step 2 -->
-        <div class="relative pl-6 sm:pl-8 border-l-2 border-white/10 group">
-          <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-surface-dark border-2 border-secondary shadow-[0_0_10px_rgba(0,243,255,0.5)] group-hover:scale-125 transition-transform"></div>
-          <h3 class="text-white text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step2Title') }}</h3>
-          <p class="text-gray-400 text-xs sm:text-sm">{{ t('services.step2Desc') }}</p>
+        <div class="relative pl-6 sm:pl-8 border-l-2 border-slate-200 dark:border-white/10 group">
+          <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-white dark:bg-surface-dark border-2 border-secondary shadow-[0_0_10px_rgba(0,243,255,0.5)] group-hover:scale-125 transition-transform"></div>
+          <h3 class="text-slate-900 dark:text-white text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step2Title') }}</h3>
+          <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm">{{ t('services.step2Desc') }}</p>
         </div>
 
         <!-- Step 3 -->
         <div class="relative pl-6 sm:pl-8 border-l-2 border-transparent group">
           <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_15px_rgba(255,255,255,0.5)] group-hover:scale-125 transition-transform"></div>
           <h3 class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step3Title') }}</h3>
-          <p class="text-gray-400 text-xs sm:text-sm">{{ t('services.step3Desc') }}</p>
+          <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm">{{ t('services.step3Desc') }}</p>
         </div>
 
         <div class="pt-3 sm:pt-4 flex justify-center">
           <button 
             @click="showHowItWorksModal = false"
-            class="px-6 sm:px-8 py-2 rounded-full border border-white/10 hover:bg-white/5 text-white text-xs sm:text-sm transition-colors"
+            class="px-6 sm:px-8 py-2 rounded-full border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-white text-xs sm:text-sm transition-colors"
           >
             {{ t('services.gotIt') }}
           </button>

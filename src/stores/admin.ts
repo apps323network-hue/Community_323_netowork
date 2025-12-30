@@ -289,6 +289,92 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  // Toggle destaque de evento (admin)
+  async function toggleEventDestaque(eventId: string, destaque: boolean) {
+    if (!authStore.user) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      // Se está marcando como destaque, desmarcar todos os outros primeiro
+      if (destaque) {
+        await supabase
+          .from('events')
+          .update({ destaque: false })
+          .neq('id', eventId)
+      }
+
+      // Atualizar o evento atual
+      const { data, error: updateError } = await supabase
+        .from('events')
+        .update({ destaque })
+        .eq('id', eventId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      // Atualizar lista local
+      const eventIndex = allEvents.value.findIndex(e => e.id === eventId)
+      if (eventIndex !== -1) {
+        allEvents.value[eventIndex] = { ...allEvents.value[eventIndex], destaque }
+      }
+
+      return data
+    } catch (err: any) {
+      error.value = err.message
+      console.error('Error toggling event destaque:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Deletar evento (admin)
+  async function deleteEvent(eventId: string) {
+    console.log('[ADMIN STORE] deleteEvent chamada com eventId:', eventId)
+    if (!authStore.user) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      const { error: deleteError } = await supabase
+        .from('events')
+        .delete()
+        .eq('id', eventId)
+
+      if (deleteError) throw deleteError
+
+      // Remover da lista local
+      const pendingIndex = pendingEvents.value.findIndex(e => e.id === eventId)
+      if (pendingIndex !== -1) {
+        pendingEvents.value.splice(pendingIndex, 1)
+      }
+
+      const allIndex = allEvents.value.findIndex(e => e.id === eventId)
+      if (allIndex !== -1) {
+        allEvents.value.splice(allIndex, 1)
+      }
+
+      // Atualizar stats
+      await fetchEventStats()
+
+      return true
+    } catch (err: any) {
+      error.value = err.message
+      console.error('Error deleting event:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Criar novo evento (admin)
   async function createEvent(eventData: { titulo: string; descricao?: string; data_hora: string; tipo: string; local?: string; status?: EventStatus; image_url?: string; partner_id?: string }) {
     if (!authStore.user) {
@@ -2159,7 +2245,14 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  return {
+  // Debug: verificar se deleteEvent está definida antes do return
+  console.log('[ADMIN STORE] Verificando deleteEvent antes do return:', {
+    isFunction: typeof deleteEvent === 'function',
+    deleteEventName: deleteEvent?.name,
+    deleteEventType: typeof deleteEvent,
+  })
+
+  const returnObject = {
     pendingEvents,
     allEvents,
     stats,
@@ -2183,8 +2276,10 @@ export const useAdminStore = defineStore('admin', () => {
     fetchPendingEvents,
     fetchAllEvents,
     createEvent,
+    toggleEventDestaque,
     approveEvent,
     rejectEvent,
+    deleteEvent,
     fetchEventStats,
     handleEventApproval,
     fetchPendingUsers,
@@ -2223,5 +2318,14 @@ export const useAdminStore = defineStore('admin', () => {
     deleteChallenge,
     fetchChallengeStats,
   }
+
+  // Debug: verificar se deleteEvent está no objeto de retorno
+  console.log('[ADMIN STORE] Verificando deleteEvent no objeto de retorno:', {
+    hasDeleteEvent: 'deleteEvent' in returnObject,
+    deleteEventType: typeof returnObject.deleteEvent,
+    returnObjectKeys: Object.keys(returnObject).filter(k => k.toLowerCase().includes('event')),
+  })
+
+  return returnObject
 })
 

@@ -9,6 +9,7 @@ export interface AdminEvent extends Event {
   approved_by?: string
   approved_at?: string
   rejection_reason?: string
+  destaque?: boolean
   // Joined data from profiles
   creator_name?: string
   creator_email?: string

@@ -44,29 +44,51 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex gap-3">
+      <div class="flex flex-col gap-3">
+        <div class="flex gap-3">
+          <button
+            v-if="event.status === 'pending'"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all"
+            @click="$emit('approve')"
+          >
+            <span class="material-symbols-outlined text-base">check_circle</span>
+            Aprovar
+          </button>
+          <button
+            v-if="event.status === 'pending'"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all"
+            @click="$emit('reject')"
+          >
+            <span class="material-symbols-outlined text-base">cancel</span>
+            Rejeitar
+          </button>
+        </div>
+        <div class="flex gap-3">
+          <button
+            v-if="event.status === 'approved'"
+            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all"
+            :class="event.destaque 
+              ? 'bg-gradient-to-r from-primary to-secondary text-black border border-transparent shadow-[0_0_15px_rgba(244,37,244,0.3)]' 
+              : 'bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10'"
+            @click="$emit('toggle-destaque')"
+          >
+            <span class="material-symbols-outlined text-base">{{ event.destaque ? 'star' : 'star_border' }}</span>
+            {{ event.destaque ? 'Em Destaque' : 'Definir Destaque' }}
+          </button>
+          <button
+            class="flex items-center justify-center gap-2 px-4 py-2 bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10 rounded-lg font-semibold transition-all"
+            @click="$emit('view-details')"
+          >
+            <span class="material-symbols-outlined text-base">visibility</span>
+            Ver Detalhes
+          </button>
+        </div>
         <button
-          v-if="event.status === 'pending'"
-          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all"
-          @click="$emit('approve')"
+          class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all"
+          @click="$emit('delete')"
         >
-          <span class="material-symbols-outlined text-base">check_circle</span>
-          Aprovar
-        </button>
-        <button
-          v-if="event.status === 'pending'"
-          class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all"
-          @click="$emit('reject')"
-        >
-          <span class="material-symbols-outlined text-base">cancel</span>
-          Rejeitar
-        </button>
-        <button
-          class="flex items-center justify-center gap-2 px-4 py-2 bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10 rounded-lg font-semibold transition-all"
-          @click="$emit('view-details')"
-        >
-          <span class="material-symbols-outlined text-base">visibility</span>
-          Ver Detalhes
+          <span class="material-symbols-outlined text-base">delete</span>
+          Apagar Evento
         </button>
       </div>
     </div>
@@ -88,6 +110,8 @@ defineEmits<{
   approve: []
   reject: []
   'view-details': []
+  'toggle-destaque': []
+  delete: []
 }>()
 
 const formattedDate = computed(() => {

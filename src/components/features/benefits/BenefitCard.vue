@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-[#1a0a1f] p-6 rounded-2xl border border-white/10 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(244,37,244,0.15)] transition-all flex flex-col gap-4 group h-full">
+  <div class="bg-white dark:bg-surface-card p-6 rounded-2xl border border-slate-200 dark:border-white/5 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(244,37,244,0.15)] transition-all flex flex-col gap-4 group h-full">
     <div class="flex justify-between items-start">
-      <div class="size-12 rounded-xl bg-[#0f0515] flex items-center justify-center border border-white/10 group-hover:border-primary group-hover:shadow-[0_0_10px_rgba(244,37,244,0.4)] transition-all duration-300">
-        <span class="material-symbols-outlined text-gray-400 group-hover:text-primary text-[28px] transition-colors">{{ icon }}</span>
+      <div class="size-12 rounded-xl bg-slate-100 dark:bg-[#0f0515] flex items-center justify-center border border-slate-200 dark:border-white/10 group-hover:border-primary group-hover:shadow-[0_0_10px_rgba(244,37,244,0.4)] transition-all duration-300">
+        <span class="material-symbols-outlined text-slate-500 dark:text-gray-400 group-hover:text-primary text-[28px] transition-colors">{{ icon }}</span>
       </div>
       <span 
         :class="[
@@ -15,8 +15,8 @@
     </div>
     
     <div class="flex-grow">
-      <h5 class="text-lg font-bold text-white mb-1 group-hover:text-primary transition-colors">{{ benefit.nome }}</h5>
-      <p class="text-sm text-gray-400 leading-snug">{{ benefit.descricao }}</p>
+      <h5 class="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">{{ benefit.nome }}</h5>
+      <p class="text-sm text-slate-600 dark:text-gray-400 leading-snug">{{ benefit.descricao }}</p>
     </div>
     
     <!-- Estado -->

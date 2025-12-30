@@ -2,8 +2,8 @@
   <AppLayout>
     <div class="space-y-8 w-full max-w-4xl mx-auto">
       <header class="flex flex-col gap-2">
-        <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Meus Pedidos</h1>
-        <p class="text-slate-500 dark:text-gray-400">Acompanhe suas solicitações de serviços e benefícios.</p>
+        <h1 class="text-3xl font-bold text-slate-900 dark:text-white">{{ t('myRequests.title') }}</h1>
+        <p class="text-slate-500 dark:text-gray-400">{{ t('myRequests.subtitle') }}</p>
       </header>
 
       <div v-if="loading" class="flex justify-center py-20">
@@ -15,11 +15,11 @@
           <span class="material-symbols-outlined text-[40px]">assignment_late</span>
         </div>
         <div>
-          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Nenhuma solicitação encontrada</h3>
-          <p class="text-slate-500 dark:text-gray-400 text-sm">Você ainda não solicitou nenhum serviço no Marketplace.</p>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">{{ t('myRequests.emptyTitle') }}</h3>
+          <p class="text-slate-500 dark:text-gray-400 text-sm">{{ t('myRequests.emptyDesc') }}</p>
         </div>
         <RouterLink to="/servicos">
-          <Button variant="primary">Explorar Marketplace</Button>
+          <Button variant="primary">{{ t('myRequests.exploreMarketplace') }}</Button>
         </RouterLink>
       </div>
 
@@ -41,17 +41,17 @@
                 </span>
               </div>
               <p class="text-sm text-slate-500 dark:text-gray-400 line-clamp-1">
-                {{ request.mensagem || 'Sem mensagem adicional' }}
+                {{ request.mensagem || t('myRequests.noMessage') }}
               </p>
               <p class="text-[10px] text-slate-400 dark:text-gray-500 uppercase font-bold tracking-wider mt-1">
-                Solicitado em {{ formatDate(request.created_at) }}
+                {{ t('myRequests.requestedOn') }} {{ formatDate(request.created_at) }}
               </p>
             </div>
           </div>
 
           <div class="flex items-center gap-3">
             <Button variant="outline" size="sm" @click="viewDetails(request)">
-              Ver Detalhes
+              {{ t('myRequests.viewDetails') }}
             </Button>
           </div>
         </div>
@@ -62,12 +62,12 @@
     <Modal
       v-if="selectedRequest"
       v-model="showDetailsModal"
-      :title="'Detalhes da Solicitação'"
+      :title="t('myRequests.modalTitle')"
     >
       <div class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
           <div class="flex flex-col">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Serviço</span>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('myRequests.labels.service') }}</span>
             <span class="text-lg font-bold text-slate-900 dark:text-white">{{ selectedRequest.services?.nome }}</span>
           </div>
           <span :class="getStatusClasses(selectedRequest.status)">
@@ -77,17 +77,17 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div class="flex flex-col p-3 rounded-lg bg-slate-50 dark:bg-surface-lighter">
-            <span class="text-[10px] font-bold text-slate-400 uppercase">Data da Solicitação</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase">{{ t('myRequests.labels.requestDate') }}</span>
             <span class="text-sm font-medium dark:text-white">{{ formatDate(selectedRequest.created_at) }}</span>
           </div>
           <div v-if="selectedRequest.status_updated_at" class="flex flex-col p-3 rounded-lg bg-slate-50 dark:bg-surface-lighter">
-            <span class="text-[10px] font-bold text-slate-400 uppercase">Última Atualização</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase">{{ t('myRequests.labels.lastUpdate') }}</span>
             <span class="text-sm font-medium dark:text-white">{{ formatDate(selectedRequest.status_updated_at) }}</span>
           </div>
         </div>
 
         <div v-if="selectedRequest.mensagem" class="flex flex-col gap-1.5">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Sua Mensagem</span>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('myRequests.labels.yourMessage') }}</span>
           <div class="p-4 rounded-lg bg-slate-50 dark:bg-surface-lighter text-sm text-slate-600 dark:text-gray-300 italic border-l-4 border-slate-300">
             "{{ selectedRequest.mensagem }}"
           </div>
@@ -96,9 +96,9 @@
         <div class="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-start gap-4">
           <span class="material-symbols-outlined text-primary">info</span>
           <div class="flex flex-col gap-1">
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white">O que acontece agora?</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ t('myRequests.nextSteps.title') }}</h4>
             <p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
-              Nossa equipe ou o parceiro responsável analisará sua solicitação e entrará em contato via WhatsApp ou E-mail cadastrado no seu perfil em até 48h úteis.
+              {{ t('myRequests.nextSteps.description') }}
             </p>
           </div>
         </div>
@@ -109,10 +109,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useSupabase } from '@/composables/useSupabase'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import Modal from '@/components/ui/Modal.vue'
+
+const { t, locale } = useI18n()
 
 const { supabase } = useSupabase()
 const loading = ref(true)
@@ -152,9 +155,9 @@ async function fetchRequests() {
 
 function getStatusLabel(status: string) {
   switch (status) {
-    case 'pendente': return 'Pendente'
-    case 'em_andamento': return 'Em Andamento'
-    case 'concluido': return 'Concluído'
+    case 'pendente': return t('myRequests.status.pendente')
+    case 'em_andamento': return t('myRequests.status.em_andamento')
+    case 'concluido': return t('myRequests.status.concluido')
     default: return status
   }
 }
@@ -181,7 +184,7 @@ function getIcon(category: string) {
 
 function formatDate(date: string) {
   if (!date) return '-'
-  return new Date(date).toLocaleDateString('pt-BR', {
+  return new Date(date).toLocaleDateString(locale.value, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'

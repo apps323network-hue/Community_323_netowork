@@ -38,6 +38,10 @@
         "days": "Dias",
         "hours": "Horas",
         "minutesShort": "Min",
+        "now": "agora",
+        "minutesAgo": "min atrás",
+        "hoursAgo": "h atrás",
+        "daysAgo": "d atrás",
         "secondsShort": "Seg"
     },
     "navigation": {
@@ -277,6 +281,7 @@
         "noServicesFound": "Nenhum serviço encontrado nesta categoria.",
         "noServicesFoundDesc": "Você ainda não contratou nenhum serviço.",
         "browseServices": "Explorar Serviços",
+        "exploreServices": "Explorar Serviços",
         "contactVia": "Contato via",
         "requestDate": "Data da Solicitação",
         "amountPaid": "Valor Pago",
@@ -455,6 +460,32 @@
         },
         "whatsappMessage": "Olá! Contratei o serviço \"{name}\" e gostaria de acompanhar o status."
     },
+    "myRequests": {
+        "title": "Meus Pedidos",
+        "subtitle": "Acompanhe suas solicitações de serviços e benefícios.",
+        "emptyTitle": "Nenhuma solicitação encontrada",
+        "emptyDesc": "Você ainda não solicitou nenhum serviço no Marketplace.",
+        "exploreMarketplace": "Explorar Marketplace",
+        "viewDetails": "Ver Detalhes",
+        "requestedOn": "Solicitado em",
+        "noMessage": "Sem mensagem adicional",
+        "modalTitle": "Detalhes da Solicitação",
+        "labels": {
+            "service": "Serviço",
+            "requestDate": "Data da Solicitação",
+            "lastUpdate": "Última Atualização",
+            "yourMessage": "Sua Mensagem"
+        },
+        "status": {
+            "pendente": "Pendente",
+            "em_andamento": "Em Andamento",
+            "concluido": "Concluído"
+        },
+        "nextSteps": {
+            "title": "O que acontece agora?",
+            "description": "Nossa equipe ou o parceiro responsável analisará sua solicitação e entrará em contato via WhatsApp ou E-mail cadastrado no seu perfil em até 48h úteis."
+        }
+    },
     "profile": {
         "myProfile": "Meu Perfil",
         "editProfile": "Editar Perfil",
@@ -534,6 +565,9 @@
         "deletePost": "Deletar Post",
         "editPost": "Editar Post",
         "reportPost": "Denunciar Post",
+        "report": "Reportar",
+        "postDeleted": "Post deletado com sucesso!",
+        "deletePostError": "Erro ao deletar post. Tente novamente.",
         "noPostsYet": "Nenhum post ainda",
         "beTheFirst": "Seja o primeiro a compartilhar algo na comunidade!",
         "linkCopied": "Link copiado para a área de transferência!",

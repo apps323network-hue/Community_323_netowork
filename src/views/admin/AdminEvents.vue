@@ -47,6 +47,8 @@
         @approve="handleApprove"
         @reject="handleReject"
         @view-details="handleViewDetails"
+        @toggle-destaque="handleToggleDestaque"
+        @delete="handleDelete"
       />
 
       <!-- Approval Modal -->
@@ -56,6 +58,50 @@
         @approve="handleModalApprove"
         @reject="handleModalReject"
       />
+
+      <!-- Delete Confirmation Modal -->
+      <Modal
+        v-model="showDeleteModal"
+        title="Confirmar Exclusão"
+        size="md"
+      >
+        <div class="space-y-4">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-red-400 text-2xl">warning</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                Tem certeza que deseja apagar este evento?
+              </h3>
+              <p class="text-slate-600 dark:text-gray-300 text-sm leading-relaxed">
+                Esta ação não pode ser desfeita. O evento será permanentemente removido do sistema.
+              </p>
+              <div v-if="eventToDelete" class="mt-4 p-3 bg-slate-100 dark:bg-surface-lighter rounded-lg border border-slate-200 dark:border-white/10">
+                <p class="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">Evento a ser deletado:</p>
+                <p class="text-sm font-medium text-slate-900 dark:text-white">{{ eventToDelete.titulo }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <template #footer>
+          <div class="flex gap-3">
+            <button
+              @click="showDeleteModal = false"
+              class="px-6 py-2.5 bg-white dark:bg-surface-lighter hover:bg-slate-50 dark:hover:bg-surface-highlight border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
+            >
+              Cancelar
+            </button>
+            <button
+              @click="confirmDelete"
+              class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-bold transition-all shadow-lg hover:shadow-red-500/30"
+            >
+              Apagar Evento
+            </button>
+          </div>
+        </template>
+      </Modal>
 
       <!-- Create Event Modal -->
       <Modal
@@ -350,14 +396,18 @@ const {
   loadEventStats,
   handleApproval,
   createEvent,
+  toggleEventDestaque,
+  deleteEvent,
 } = useAdmin()
 
 const activeFilter = ref<EventStatus | 'all'>('all')
 const showApprovalModal = ref(false)
 const showCreateModal = ref(false)
+const showDeleteModal = ref(false)
 const submitting = ref(false)
 const currentStep = ref(1)
 const selectedEvent = ref<AdminEvent | null>(null)
+const eventToDelete = ref<AdminEvent | null>(null)
 
 const newEventData = ref({
   titulo: '',
@@ -503,6 +553,46 @@ async function handleModalReject(eventId: string, reason: string) {
 
 function handleViewDetails(eventId: string) {
   router.push(`/eventos/${eventId}`)
+}
+
+async function handleToggleDestaque(eventId: string) {
+  try {
+    const event = allEvents.value.find(e => e.id === eventId)
+    if (!event) return
+    
+    const newDestaqueValue = !event.destaque
+    await toggleEventDestaque(eventId, newDestaqueValue)
+    toast.success(newDestaqueValue ? 'Evento definido como destaque!' : 'Evento removido do destaque')
+    await loadAllEvents(activeFilter.value === 'all' ? undefined : activeFilter.value)
+    await loadEventStats()
+  } catch (error: any) {
+    console.error('Error toggling event destaque:', error)
+    toast.error(error.message || 'Erro ao atualizar destaque do evento')
+  }
+}
+
+function handleDelete(eventId: string) {
+  const event = allEvents.value.find(e => e.id === eventId)
+  if (event) {
+    eventToDelete.value = event
+    showDeleteModal.value = true
+  }
+}
+
+async function confirmDelete() {
+  if (!eventToDelete.value) return
+
+  try {
+    await deleteEvent(eventToDelete.value.id)
+    toast.success('Evento apagado com sucesso!')
+    showDeleteModal.value = false
+    eventToDelete.value = null
+    await loadAllEvents(activeFilter.value === 'all' ? undefined : activeFilter.value)
+    await loadEventStats()
+  } catch (error: any) {
+    console.error('Error deleting event:', error)
+    toast.error(error.message || 'Erro ao apagar evento')
+  }
 }
 
 function handleImageSelect(event: Event) {
