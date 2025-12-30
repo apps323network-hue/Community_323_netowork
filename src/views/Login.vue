@@ -36,8 +36,8 @@
             >{{ t('auth.taglineHighlight') }}</span
           >
         </h1>
-        <p class="text-slate-400 text-lg leading-relaxed mb-10 max-w-md">
-          Grupo de Network de brasileiros nos EUA em busca de negócios a fim de obter parcerias com o intuito de alcançar o american dream
+        <p class="text-slate-400 dark:text-slate-400 text-lg leading-relaxed mb-10 max-w-md">
+          {{ t('auth.description') }}
         </p>
       </div>
     </div>
