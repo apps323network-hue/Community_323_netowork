@@ -153,7 +153,7 @@ const currentFilters = ref<EventFiltersType>({
 })
 
 const displayedEvents = computed(() => {
-  // Remover duplicatas por ID e excluir o evento em destaque
+  // Remover apenas duplicatas por ID (mantém o evento em destaque na lista)
   const seenIds = new Set<string>()
   let filtered = events.value.filter(event => {
     // Remover duplicatas
@@ -162,11 +162,7 @@ const displayedEvents = computed(() => {
     }
     seenIds.add(event.id)
     
-    // Excluir evento em destaque
-    if (featuredEvent.value && event.id === featuredEvent.value.id) {
-      return false
-    }
-    
+    // Não excluir o evento em destaque - ele deve aparecer tanto no banner quanto na lista
     return true
   })
   
