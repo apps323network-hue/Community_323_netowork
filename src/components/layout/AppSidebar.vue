@@ -8,7 +8,7 @@
       
       <div class="relative z-10">
         <h2 class="text-xl font-bold mb-1 text-slate-900 dark:text-white">{{ t('common.hello') }}, {{ userName }}!</h2>
-        <p class="text-sm text-slate-500 dark:text-gray-400 mb-6">{{ t('profile.memberSince') }} 2023</p>
+        <p class="text-sm text-slate-500 dark:text-gray-400 mb-6">{{ t('profile.memberSince') }} {{ memberSinceYear }}</p>
         
         <button
           class="w-full bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-black font-bold py-2.5 px-4 rounded-lg transition-all shadow-lg shadow-secondary/10 hover:shadow-secondary/40"
@@ -90,17 +90,47 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, onMounted } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
+
+const route = useRoute()
 
 defineEmits<{
   'edit-profile': []
 }>()
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const { t } = useI18n()
 
-const userName = computed(() => authStore.user?.email?.split('@')[0] || 'Usuário')
+// Pegar o primeiro nome do perfil, ou fallback para email
+const userName = computed(() => {
+  if (userStore.profile?.nome) {
+    // Pegar apenas o primeiro nome
+    const firstName = userStore.profile.nome.split(' ')[0]
+    return firstName
+  }
+  // Fallback para email se não tiver nome
+  return authStore.user?.email?.split('@')[0] || 'Usuário'
+})
+
+// Pegar o ano real de criação do perfil
+const memberSinceYear = computed(() => {
+  if (userStore.profile?.created_at) {
+    const year = new Date(userStore.profile.created_at).getFullYear()
+    return year
+  }
+  // Fallback para ano atual se não tiver created_at
+  return new Date().getFullYear()
+})
+
+// Carregar perfil quando componente for montado
+onMounted(async () => {
+  if (authStore.user?.id && !userStore.profile) {
+    await userStore.fetchProfile(authStore.user.id)
+  }
+})
 </script>

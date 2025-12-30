@@ -12,7 +12,7 @@
             <img
               alt="323 Network Logo"
               class="w-56 h-auto object-contain drop-shadow-lg"
-              src="/logo.png"
+              src="/logo-removebg-preview.png"
             />
           </div>
         </div>

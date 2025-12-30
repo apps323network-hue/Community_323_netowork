@@ -17,17 +17,12 @@
         style="animation-delay: 2.5s"
       ></div>
       <div class="relative z-10 flex flex-col items-center text-center max-w-lg">
-        <div class="mb-10 p-6 rounded-3xl glass shadow-2xl relative group">
-          <div
-            class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"
-          ></div>
-          <div class="relative bg-black/40 rounded-2xl p-4">
-            <img
-              alt="323 Network Logo"
-              class="w-56 h-auto object-contain drop-shadow-lg"
-              src="/logo.png"
-            />
-          </div>
+        <div class="mb-10">
+          <img
+            alt="323 Network Logo"
+            class="w-56 h-auto object-contain drop-shadow-lg"
+            src="/logo-removebg-preview.png"
+          />
         </div>
         <h1 class="text-5xl font-black text-white mb-6 leading-tight tracking-tight">
           Conectando o Brasil <br />
@@ -37,8 +32,7 @@
           >
         </h1>
         <p class="text-slate-400 text-lg leading-relaxed mb-10 max-w-md">
-          A plataforma definitiva para artistas, empreendedores e profissionais. Expanda seus
-          negócios e construa sua comunidade.
+          Grupo de Network de brasileiros nos EUA em busca de negócios a fim de obter parcerias com o intuito de alcançar o american dream
         </p>
       </div>
     </div>
