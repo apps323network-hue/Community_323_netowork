@@ -60,10 +60,9 @@ export const useEventStore = defineStore('events', () => {
         .select('*')
         .order('data_hora', { ascending: true })
 
-      // Filtrar apenas eventos aprovados se não for admin
-      if (!isAdminUser) {
-        query = query.eq('status', 'approved')
-      }
+      // Filtrar eventos: aprovados para todos OU próprios eventos pending para o criador
+      // Nota: Filtramos no cliente para permitir que criadores vejam seus próprios eventos pending
+      // Não aplicamos filtro de status aqui, vamos filtrar após buscar os dados
 
       // Apply search filter
       if (filtersParam.search) {
@@ -94,7 +93,21 @@ export const useEventStore = defineStore('events', () => {
 
       if (queryError) throw queryError
 
-      if (!data || data.length === 0) {
+      // Filtrar eventos no cliente: aprovados OU próprios eventos pending
+      let filteredData = data || []
+      if (!isAdminUser) {
+        filteredData = filteredData.filter((event: any) => {
+          // Mostrar eventos aprovados
+          if (event.status === 'approved') return true
+          // Mostrar eventos pending do próprio usuário
+          if (currentUserId.value && event.status === 'pending' && event.created_by === currentUserId.value) {
+            return true
+          }
+          return false
+        })
+      }
+
+      if (!filteredData || filteredData.length === 0) {
         hasMore.value = false
         if (reset) {
           events.value = []
@@ -103,12 +116,12 @@ export const useEventStore = defineStore('events', () => {
       }
 
       // Check if we reached the end
-      if (data.length < pageSize) {
+      if (filteredData.length < pageSize) {
         hasMore.value = false
       }
 
       // Fetch confirmations for ALL fetched events
-      const eventIds = data.map((e: any) => e.id)
+      const eventIds = filteredData.map((e: any) => e.id)
       const { data: confirmationsData } = await supabase
         .from('event_confirmations')
         .select('event_id, user_id')
@@ -128,7 +141,7 @@ export const useEventStore = defineStore('events', () => {
       })
 
       // Transform data to match Event interface
-      const transformedEvents: Event[] = data.map((event: any) => ({
+      const transformedEvents: Event[] = filteredData.map((event: any) => ({
         id: event.id,
         titulo: event.titulo,
         descricao: event.descricao,
@@ -145,6 +158,7 @@ export const useEventStore = defineStore('events', () => {
         approved_by: event.approved_by,
         approved_at: event.approved_at,
         rejection_reason: event.rejection_reason,
+        destaque: event.destaque || false,
         confirmations_count: confirmationsCountMap.get(event.id) || 0,
         is_confirmed: userConfirmationsSet.has(event.id),
       }))
@@ -193,7 +207,7 @@ export const useEventStore = defineStore('events', () => {
     }
   }
 
-  // Fetch featured event (next upcoming event)
+  // Fetch featured event (prioridade: destaque manual > próximo evento)
   async function fetchFeaturedEvent(): Promise<Event | null> {
     loading.value = true
     error.value = null
@@ -203,21 +217,66 @@ export const useEventStore = defineStore('events', () => {
       const isAdminUser = await checkIsAdmin()
 
       const now = new Date().toISOString()
+      
+      // Primeiro, tentar buscar evento marcado como destaque pelo admin
       let query = supabase
         .from('events')
         .select('*')
+        .eq('destaque', true)
         .gte('data_hora', now)
         .order('data_hora', { ascending: true })
         .limit(1)
 
-      // Filtrar apenas eventos aprovados se não for admin
+      // Para não-admins, buscar apenas eventos aprovados em destaque
       if (!isAdminUser) {
         query = query.eq('status', 'approved')
       }
 
-      const { data, error: queryError } = await query.maybeSingle()
+      let { data, error: queryError } = await query.maybeSingle()
 
       if (queryError) throw queryError
+
+      // Filtrar no cliente: aprovados OU próprios eventos pending (para não-admins)
+      if (data && !isAdminUser && currentUserId.value) {
+        const isApproved = data.status === 'approved'
+        const isOwnPending = data.status === 'pending' && data.created_by === currentUserId.value
+        if (!isApproved && !isOwnPending) {
+          data = null // Não atende critérios, buscar próximo evento
+        }
+      }
+
+      // Se não encontrou evento em destaque, buscar o próximo evento futuro (fallback)
+      if (!data) {
+        query = supabase
+          .from('events')
+          .select('*')
+          .gte('data_hora', now)
+          .order('data_hora', { ascending: true })
+          .limit(1)
+
+        if (!isAdminUser) {
+          if (currentUserId.value) {
+            query = query.or(`status.eq.approved,and(created_by.eq.${currentUserId.value},status.eq.pending)`)
+          } else {
+            query = query.eq('status', 'approved')
+          }
+        }
+
+        const { data: fallbackData, error: fallbackError } = await query.maybeSingle()
+        
+        if (fallbackError) throw fallbackError
+        
+        if (fallbackData && !isAdminUser) {
+          const isApproved = fallbackData.status === 'approved'
+          const isOwnPending = currentUserId.value && fallbackData.status === 'pending' && fallbackData.created_by === currentUserId.value
+          if (!isApproved && !isOwnPending) {
+            featuredEvent.value = null
+            return null
+          }
+        }
+        
+        data = fallbackData
+      }
 
       if (!data) {
         featuredEvent.value = null
@@ -252,6 +311,7 @@ export const useEventStore = defineStore('events', () => {
         approved_by: data.approved_by,
         approved_at: data.approved_at,
         rejection_reason: data.rejection_reason,
+        destaque: data.destaque || false,
         confirmations_count: confirmationsCount,
         is_confirmed: isConfirmed,
       }
@@ -281,12 +341,20 @@ export const useEventStore = defineStore('events', () => {
         .select('*')
         .eq('id', eventId)
 
-      // Se não for admin, apenas eventos aprovados
-      if (!isAdminUser) {
-        query = query.eq('status', 'approved')
-      }
+      // Filtrar eventos: aprovados OU próprios eventos pending para o criador
+      // Não aplicamos filtro aqui, vamos filtrar após buscar os dados
 
       const { data, error: queryError } = await query.single()
+
+      // Filtrar no cliente: aprovados OU próprios eventos pending
+      if (data && !isAdminUser) {
+        const isApproved = data.status === 'approved'
+        const isOwnPending = currentUserId.value && data.status === 'pending' && data.created_by === currentUserId.value
+        if (!isApproved && !isOwnPending) {
+          // Evento não atende aos critérios, lançar erro
+          throw new Error('Event not found or not accessible')
+        }
+      }
 
       if (queryError) throw queryError
 
@@ -318,6 +386,7 @@ export const useEventStore = defineStore('events', () => {
         approved_by: data.approved_by,
         approved_at: data.approved_at,
         rejection_reason: data.rejection_reason,
+        destaque: data.destaque || false,
         confirmations_count: confirmationsCount,
         is_confirmed: isConfirmed,
       }

@@ -9,7 +9,6 @@
         v-if="featuredEvent"
         :event="featuredEvent"
         @click="handleEventClick"
-        @deleted="handleEventDeleted"
       />
 
 
@@ -67,7 +66,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePosts } from '@/composables/usePosts'
-import { supabase } from '@/lib/supabase'
+import { useEvents } from '@/composables/useEvents'
 import HomeLayout from '@/components/layout/HomeLayout.vue'
 import PostForm from '@/components/features/feed/PostForm.vue'
 import PostCard from '@/components/features/feed/PostCard.vue'
@@ -86,12 +85,13 @@ const {
   removeComment,
 } = usePosts()
 
+const { featuredEvent, loadFeaturedEvent: fetchFeaturedEvent } = useEvents()
+
 const router = useRouter()
 const { t } = useI18n()
 const expandedComments = ref(new Set<string>())
 const loadMoreRef = ref<HTMLElement | null>(null)
 const filters = ref<PostFiltersType>({ sortBy: 'recent' })
-const featuredEvent = ref<any>(null)
 
 async function handlePostCreated() {
   // Reload posts to show the new one
@@ -127,41 +127,13 @@ function handlePostRemoved(event: CustomEvent) {
 
 async function handleEventCreated() {
   // Evento criado - já foi criado um post sobre ele
-  // Recarregar eventos em destaque
-  await loadFeaturedEvent()
-}
-
-async function loadFeaturedEvent() {
-  try {
-    const { data, error } = await supabase
-      .from('events')
-      .select('id, titulo, descricao, data_hora, tipo, local, image_url, created_by')
-      .gte('data_hora', new Date().toISOString())
-      .order('data_hora', { ascending: true })
-      .limit(1)
-      .maybeSingle()
-
-    if (error) throw error
-    
-    if (data) {
-      featuredEvent.value = data
-    } else {
-      featuredEvent.value = null
-    }
-  } catch (error) {
-    console.error('Error loading featured event:', error)
-    featuredEvent.value = null
-  }
+  // Recarregar eventos em destaque usando a store que prioriza destaque = true
+  await fetchFeaturedEvent()
 }
 
 
 function handleEventClick(eventId: string) {
   router.push(`/eventos/${eventId}`)
-}
-
-async function handleEventDeleted() {
-  // Recarregar eventos em destaque
-  await loadFeaturedEvent()
 }
 
 async function handleToggleComments(postId: string) {
@@ -246,7 +218,7 @@ let observer: IntersectionObserver | null = null
 
 onMounted(async () => {
   await loadPosts(filters.value, true)
-  await loadFeaturedEvent()
+  await fetchFeaturedEvent()
 
   // Listener para posts removidos via reports
   window.addEventListener('post-removed', handlePostRemoved as EventListener)

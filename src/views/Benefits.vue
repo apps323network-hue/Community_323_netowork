@@ -2,18 +2,18 @@
   <AppLayout>
     <div class="space-y-12">
       <!-- Hero -->
-      <div class="relative overflow-hidden rounded-2xl bg-[#1a0a1f] border border-white/5 shadow-2xl min-h-[400px]">
+      <div class="relative overflow-hidden rounded-2xl bg-white dark:bg-[#1a0a1f] border border-slate-200 dark:border-white/5 shadow-2xl min-h-[400px]">
         <!-- Interactive Grid Pattern Background -->
         <InteractiveGridPattern
           :width="50"
           :height="50"
           :squares="[30, 12]"
-          class="opacity-30"
+          class="opacity-30 dark:block hidden"
           squaresClassName="fill-primary/20 hover:fill-primary/40 transition-all duration-500"
         />
         
         <!-- Background gradiente escuro -->
-        <div class="absolute inset-0 bg-gradient-to-br from-[#0f0515]/70 via-[#1a0a1f]/80 to-[#0a0410]/70 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-white/70 via-white/80 to-white/70 dark:from-[#0f0515]/70 dark:via-[#1a0a1f]/80 dark:to-[#0a0410]/70 pointer-events-none"></div>
         
         <!-- Glow subtil no canto -->
         <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-secondary/5 via-transparent to-transparent rounded-full blur-3xl"></div>
@@ -28,11 +28,11 @@
           
           <!-- Título -->
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight">
-            <span class="text-white">{{ t('benefits.heroTitle1') }}<br/></span><span class="bg-gradient-to-r from-[#b845f4] via-[#c855ff] to-[#d865ff] bg-clip-text text-transparent">{{ t('benefits.heroTitle2') }}</span>
+            <span class="text-slate-900 dark:text-white">{{ t('benefits.heroTitle1') }}<br/></span><span class="bg-gradient-to-r from-[#b845f4] via-[#c855ff] to-[#d865ff] bg-clip-text text-transparent">{{ t('benefits.heroTitle2') }}</span>
           </h1>
           
           <!-- Descrição -->
-          <p class="text-gray-400 text-base md:text-lg font-normal leading-relaxed max-w-lg">
+          <p class="text-slate-600 dark:text-gray-400 text-base md:text-lg font-normal leading-relaxed max-w-lg">
             {{ t('benefits.description') }}
           </p>
           
@@ -40,7 +40,7 @@
           <div class="flex flex-wrap gap-4 pt-2">
             <button 
               @click="scrollToBenefits"
-              class="flex items-center justify-center gap-2 rounded-lg bg-transparent hover:bg-white/5 border border-white/20 hover:border-white/40 transition-all h-12 px-8 text-white text-base font-medium group"
+              class="flex items-center justify-center gap-2 rounded-lg bg-transparent hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/20 hover:border-slate-300 dark:hover:border-white/40 transition-all h-12 px-8 text-slate-700 dark:text-white text-base font-medium group"
             >
               <span>{{ t('common.seeAll') }}</span>
               <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
@@ -50,7 +50,7 @@
       </div>
 
       <!-- Filtros -->
-      <div ref="benefitsSection" class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-border-dark pb-6">
+      <div ref="benefitsSection" class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200 dark:border-white/10 pb-6">
         <div class="flex gap-3 overflow-x-auto pb-2 md:pb-0 max-w-full no-scrollbar">
           <button 
             v-for="filter in filters" 
@@ -60,25 +60,25 @@
               'flex h-10 shrink-0 items-center gap-2 rounded-full px-6 transition-all active:scale-95',
               activeFilter === filter.id
                 ? 'bg-gradient-to-r from-primary to-primary/80 shadow-[0_0_10px_rgba(244,37,244,0.3)] hover:brightness-110'
-                : 'bg-background-card hover:bg-secondary/10 border border-border-dark hover:border-secondary/50 group'
+                : 'bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-secondary/10 border border-slate-200 dark:border-white/10 hover:border-secondary/50 group'
             ]"
           >
             <span 
               v-if="filter.icon" 
               :class="[
                 'material-symbols-outlined text-[18px] transition-colors',
-                activeFilter === filter.id ? 'text-white' : 'text-gray-400 group-hover:text-secondary'
+                activeFilter === filter.id ? 'text-white' : 'text-slate-500 dark:text-gray-400 group-hover:text-secondary'
               ]"
             >{{ filter.icon }}</span>
             <span 
               :class="[
                 'text-sm font-medium transition-colors',
-                activeFilter === filter.id ? 'text-white font-bold' : 'text-gray-300 group-hover:text-white'
+                activeFilter === filter.id ? 'text-white font-bold' : 'text-slate-700 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white'
               ]"
             >{{ filter.label }}</span>
           </button>
         </div>
-        <div class="text-sm text-text-secondary">
+        <div class="text-sm text-slate-600 dark:text-gray-400">
           {{ t('benefits.showingBenefits', { count: filteredBenefits.length }) }}
         </div>
       </div>
@@ -93,7 +93,7 @@
         <section v-if="featuredBenefits.length > 0">
           <div class="flex items-center gap-3 mb-6">
             <span class="material-symbols-outlined text-secondary drop-shadow-[0_0_8px_rgba(0,243,255,0.8)]">star</span>
-            <h3 class="text-2xl font-bold text-white tracking-tight">{{ t('benefits.featuredPartners') }}</h3>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ t('benefits.featuredPartners') }}</h3>
           </div>
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -110,8 +110,8 @@
         <!-- Todos os Benefícios (grid 4 colunas, sem imagem) -->
         <section>
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-bold text-white tracking-tight">{{ t('benefits.allBenefits') }}</h3>
-            <div class="hidden md:flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-white transition-colors">
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ t('benefits.allBenefits') }}</h3>
+            <div class="hidden md:flex items-center gap-2 text-sm text-slate-600 dark:text-gray-400 cursor-pointer hover:text-slate-900 dark:hover:text-white transition-colors">
               <span>{{ t('benefits.sortBy') }} <span class="text-secondary font-medium">{{ t('benefits.latest') }}</span></span>
               <span class="material-symbols-outlined text-secondary">expand_more</span>
             </div>
@@ -140,28 +140,29 @@
         </section>
 
         <!-- CTA Parceria -->
-        <section class="mt-8 mb-10 w-full rounded-2xl bg-gradient-to-br from-background-card to-background-dark p-8 md:p-12 border border-border-dark relative overflow-hidden shadow-2xl">
-          <div class="absolute -top-32 -right-32 w-80 h-80 bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
-          <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-secondary/20 rounded-full blur-[80px] pointer-events-none"></div>
+        <section class="mt-8 mb-10 w-full rounded-2xl bg-white dark:bg-surface-card p-8 md:p-12 border border-slate-200 dark:border-white/5 relative overflow-hidden shadow-xl dark:shadow-2xl">
+          <!-- Glow effects adaptativos -->
+          <div class="absolute -top-32 -right-32 w-80 h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+          <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-secondary/10 dark:bg-secondary/20 rounded-full blur-[80px] pointer-events-none"></div>
           
           <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
             <div class="flex flex-col gap-4 max-w-xl">
-              <h2 class="text-3xl font-black text-white leading-tight">{{ t('benefits.businessOwnerTitle') }}</h2>
-              <p class="text-gray-300 text-lg">
+              <h2 class="text-3xl font-black text-slate-900 dark:text-white leading-tight">{{ t('benefits.businessOwnerTitle') }}</h2>
+              <p class="text-slate-600 dark:text-white/80 text-lg leading-relaxed">
                 {{ t('benefits.businessOwnerDescription') }}
               </p>
               <ul class="flex flex-col sm:flex-row justify-center md:justify-start gap-4 mt-2">
-                <li class="flex items-center gap-2 text-sm text-gray-300 bg-background-dark/50 px-3 py-1.5 rounded-full border border-border-dark">
+                <li class="flex items-center gap-2 text-sm text-slate-700 dark:text-white/80 bg-slate-100 dark:bg-surface-lighter px-3 py-1.5 rounded-full border border-slate-200 dark:border-white/10">
                   <span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
                   {{ t('benefits.brandVisibility') }}
                 </li>
-                <li class="flex items-center gap-2 text-sm text-gray-300 bg-background-dark/50 px-3 py-1.5 rounded-full border border-border-dark">
+                <li class="flex items-center gap-2 text-sm text-slate-700 dark:text-white/80 bg-slate-100 dark:bg-surface-lighter px-3 py-1.5 rounded-full border border-slate-200 dark:border-white/10">
                   <span class="material-symbols-outlined text-secondary text-[20px]">check_circle</span>
                   {{ t('benefits.qualifiedNetworking') }}
                 </li>
               </ul>
             </div>
-            <button class="shrink-0 rounded-lg bg-white text-background-dark hover:bg-gray-100 px-8 py-4 font-bold text-lg shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]">
+            <button class="shrink-0 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-gray-100 px-8 py-4 font-bold text-lg shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-2xl transition-all hover:scale-105">
               {{ t('benefits.beAPartner') }}
             </button>
           </div>

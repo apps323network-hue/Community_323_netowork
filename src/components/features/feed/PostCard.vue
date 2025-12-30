@@ -71,7 +71,7 @@
               @click="handleDelete"
             >
               <span class="material-icons-outlined text-[20px]">delete</span>
-              Deletar Post
+              {{ t('posts.deletePost') }}
             </button>
             <!-- Botão Reportar (apenas para posts de outros usuários) -->
             <button
@@ -80,7 +80,7 @@
               @click="handleReport"
             >
               <span class="material-icons-outlined text-[20px]">report</span>
-              Reportar
+              {{ t('posts.report') }}
             </button>
           </div>
         </Transition>
@@ -181,6 +181,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { usePosts } from '@/composables/usePosts'
 import Card from '@/components/ui/Card.vue'
@@ -191,6 +192,8 @@ import ImageLightbox from '@/components/ui/ImageLightbox.vue'
 import ReportModal from './ReportModal.vue'
 import { toast } from 'vue-sonner'
 import type { Post } from '@/types/posts'
+
+const { t, locale } = useI18n()
 
 interface Props {
   post: Post
@@ -286,11 +289,11 @@ function formatTime(date: string) {
   const postDate = new Date(date)
   const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000)
 
-  if (diffInSeconds < 60) return 'agora'
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}min atrás`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h atrás`
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d atrás`
-  return postDate.toLocaleDateString('pt-BR')
+  if (diffInSeconds < 60) return t('common.now')
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}${t('common.minutesAgo')}`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}${t('common.hoursAgo')}`
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}${t('common.daysAgo')}`
+  return postDate.toLocaleDateString(locale.value)
 }
 
 async function handleDelete() {
@@ -299,10 +302,10 @@ async function handleDelete() {
     await deletePost(props.post.id)
     emit('delete-post', props.post.id)
     showMenu.value = false
-    toast.success('Post deletado com sucesso!')
+    toast.success(t('posts.postDeleted'))
   } catch (error) {
     console.error('Error deleting post:', error)
-    toast.error('Erro ao deletar post. Tente novamente.')
+    toast.error(t('posts.deletePostError'))
   }
 }
 

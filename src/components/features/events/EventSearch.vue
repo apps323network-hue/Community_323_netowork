@@ -1,12 +1,12 @@
 <template>
   <div class="w-full lg:w-96">
-    <div class="flex w-full items-center rounded-lg bg-surface-card border border-white/10 focus-within:border-secondary focus-within:shadow-neon-blue transition-all h-10 sm:h-11">
-      <div class="text-white/40 flex items-center justify-center pl-3 sm:pl-4">
+    <div class="flex w-full items-center rounded-lg bg-white dark:bg-surface-card border border-slate-200 dark:border-white/10 focus-within:border-secondary focus-within:shadow-neon-blue transition-all h-10 sm:h-11">
+      <div class="text-slate-400 dark:text-white/40 flex items-center justify-center pl-3 sm:pl-4">
         <span class="material-symbols-outlined text-base sm:text-lg">search</span>
       </div>
       <input
         v-model="searchQuery"
-        class="w-full bg-transparent border-none text-white placeholder:text-white/30 focus:ring-0 text-xs sm:text-sm px-2 sm:px-3"
+        class="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:ring-0 text-xs sm:text-sm px-2 sm:px-3"
         :placeholder="t('events.searchPlaceholder')"
         type="text"
         @input="handleSearch"

@@ -1,5 +1,5 @@
 <template>
-  <div class="group relative flex flex-col justify-between gap-2.5 sm:gap-3 md:gap-4 rounded-lg sm:rounded-xl border border-white/10 bg-surface-dark/50 backdrop-blur-sm p-3 sm:p-4 md:p-6 transition-all duration-300 hover:-translate-y-1 hover:border-secondary/50 hover:shadow-[0_0_30px_-5px_rgba(0,243,255,0.15)]">
+  <div class="group relative flex flex-col justify-between gap-2.5 sm:gap-3 md:gap-4 rounded-lg sm:rounded-xl border border-slate-200 dark:border-white/5 bg-white dark:bg-surface-card backdrop-blur-sm p-3 sm:p-4 md:p-6 transition-all duration-300 hover:-translate-y-1 hover:border-secondary/50 hover:shadow-[0_0_30px_-5px_rgba(0,243,255,0.15)]">
     <!-- Featured Badge -->
     <div
       v-if="service.destaque"
@@ -17,24 +17,24 @@
 
     <div>
       <!-- Icon based on category or default -->
-      <div class="mb-2.5 sm:mb-3 md:mb-4 inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 p-1.5 sm:p-2 md:p-3 text-secondary shadow-[0_0_10px_rgba(0,243,255,0.1)] group-hover:bg-secondary group-hover:text-black group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-300">
+      <div class="mb-2.5 sm:mb-3 md:mb-4 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 p-1.5 sm:p-2 md:p-3 text-secondary shadow-[0_0_10px_rgba(0,243,255,0.1)] group-hover:bg-secondary group-hover:text-black group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-300">
         <span class="material-symbols-outlined text-xl sm:text-2xl md:text-[28px] lg:text-[32px]">{{ getIcon(service.categoria) }}</span>
       </div>
 
       <!-- Title -->
-      <h3 class="text-white text-base sm:text-lg md:text-xl font-bold leading-tight mb-1 sm:mb-1.5 md:mb-2">
+      <h3 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl font-bold leading-tight mb-1 sm:mb-1.5 md:mb-2">
         {{ service.nome }}
       </h3>
 
       <!-- Description -->
-      <p class="text-gray-400 text-[11px] sm:text-xs md:text-sm font-normal leading-relaxed mb-2.5 sm:mb-3 md:mb-4 line-clamp-2">
+      <p class="text-slate-600 dark:text-gray-400 text-[11px] sm:text-xs md:text-sm font-normal leading-relaxed mb-2.5 sm:mb-3 md:mb-4 line-clamp-2">
         {{ service.descricao }}
       </p>
 
       <!-- Price Section -->
       <div v-if="service.preco" class="flex items-baseline gap-2 mb-4">
-        <span class="text-2xl font-bold text-white">{{ formatPrice(service.preco, service.moeda) }}</span>
-        <span class="text-xs text-gray-500 uppercase">{{ service.moeda || 'USD' }}</span>
+        <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatPrice(service.preco, service.moeda) }}</span>
+        <span class="text-xs text-slate-500 dark:text-gray-500 uppercase">{{ service.moeda || 'USD' }}</span>
       </div>
 
       <!-- Benefit Section -->
@@ -43,7 +43,7 @@
           <span class="material-symbols-outlined text-sm sm:text-base md:text-[18px]">workspace_premium</span>
           <span class="text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.memberBenefit') }}</span>
         </div>
-        <p class="text-gray-300 text-[10px] sm:text-[11px] md:text-xs font-medium leading-relaxed">
+        <p class="text-slate-600 dark:text-gray-300 text-[10px] sm:text-[11px] md:text-xs font-medium leading-relaxed">
           {{ service.beneficio_membro }}
         </p>
       </div>

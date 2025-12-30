@@ -245,8 +245,20 @@
       <template #footer>
         <div class="flex gap-3">
           <Button variant="outline" @click="closeEventModal">{{ t('common.cancel') }}</Button>
-          <Button variant="primary" :disabled="!eventForm.titulo || !buildDateTimeString()" @click="handleCreateEvent">
-            {{ t('events.createEvent') }}
+          <Button 
+            variant="primary" 
+            :disabled="!eventForm.titulo || !buildDateTimeString() || loading" 
+            :loading="loading"
+            @click="handleCreateEvent"
+          >
+            <span v-if="loading" class="flex items-center gap-2">
+              <span class="material-icons-outlined animate-spin text-base">refresh</span>
+              {{ t('common.loading') }}
+            </span>
+            <span v-else class="flex items-center gap-2">
+              <span class="material-icons-outlined text-base">event</span>
+              {{ t('events.createEvent') }}
+            </span>
           </Button>
         </div>
       </template>
@@ -568,6 +580,12 @@ function closeEventModal() {
 }
 
 async function handleCreateEvent() {
+  // Proteção contra duplo clique
+  if (loading.value) {
+    console.log('⚠️ handleCreateEvent já está em execução, ignorando clique duplo')
+    return
+  }
+  
   console.log('=== INÍCIO handleCreateEvent ===')
   console.log('1. Dados do formulário:', { 
     titulo: eventForm.value.titulo, 
@@ -712,12 +730,13 @@ async function handleCreateEvent() {
     console.log('✅ Evento criado com sucesso! ID:', data.id)
 
     console.log('11. Criando post sobre o evento...')
-    // Criar post sobre o evento
+    // Criar post sobre o evento com a imagem do banner
     const newPost = await createPost({
       conteudo: `📅 Novo evento: ${eventForm.value.titulo}\n\n${eventForm.value.descricao || ''}`,
       tipo: 'oportunidade',
+      image_url: eventImageUrl || undefined, // Usar a imagem do banner do evento no post
     })
-    console.log('✅ Post criado com sucesso! ID:', newPost.id)
+    console.log('✅ Post criado com sucesso! ID:', newPost.id, 'com imagem:', !!eventImageUrl)
 
     // Reset form
     closeEventModal()

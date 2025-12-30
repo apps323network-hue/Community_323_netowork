@@ -38,6 +38,10 @@
         "days": "Days",
         "hours": "Hours",
         "minutesShort": "Min",
+        "now": "now",
+        "minutesAgo": "min ago",
+        "hoursAgo": "h ago",
+        "daysAgo": "d ago",
         "secondsShort": "Sec"
     },
     "navigation": {
@@ -276,6 +280,7 @@
         "noServicesFound": "No services found in this category.",
         "noServicesFoundDesc": "You haven't purchased any services yet.",
         "browseServices": "Explore Services",
+        "exploreServices": "Explore Services",
         "contactVia": "Contact via",
         "requestDate": "Request Date",
         "amountPaid": "Amount Paid",
@@ -454,6 +459,32 @@
         },
         "whatsappMessage": "Hello! I hired the service \"{name}\" and would like to track the status."
     },
+    "myRequests": {
+        "title": "My Orders",
+        "subtitle": "Track your service and benefit requests.",
+        "emptyTitle": "No requests found",
+        "emptyDesc": "You haven't requested any service in the Marketplace yet.",
+        "exploreMarketplace": "Explore Marketplace",
+        "viewDetails": "View Details",
+        "requestedOn": "Requested on",
+        "noMessage": "No additional message",
+        "modalTitle": "Request Details",
+        "labels": {
+            "service": "Service",
+            "requestDate": "Request Date",
+            "lastUpdate": "Last Update",
+            "yourMessage": "Your Message"
+        },
+        "status": {
+            "pendente": "Pending",
+            "em_andamento": "In Progress",
+            "concluido": "Completed"
+        },
+        "nextSteps": {
+            "title": "What happens now?",
+            "description": "Our team or the responsible partner will review your request and contact you via WhatsApp or Email registered in your profile within 48 business hours."
+        }
+    },
     "profile": {
         "myProfile": "My Profile",
         "editProfile": "Edit Profile",
@@ -533,6 +564,9 @@
         "deletePost": "Delete Post",
         "editPost": "Edit Post",
         "reportPost": "Report Post",
+        "report": "Report",
+        "postDeleted": "Post deleted successfully!",
+        "deletePostError": "Error deleting post. Please try again.",
         "noPostsYet": "No posts yet",
         "beTheFirst": "Be the first to share something in the community!",
         "linkCopied": "Link copied to clipboard!",

@@ -13,18 +13,10 @@
     <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent"></div>
     
     <!-- Badge "DESTAQUE DA SEMANA" -->
-    <div class="absolute top-4 left-4 flex gap-2">
+    <div class="absolute top-4 left-4">
       <span class="bg-secondary/90 text-white text-xs font-black px-3 py-1.5 rounded shadow-[0_0_15px_rgba(217,70,239,0.5)] backdrop-blur-sm tracking-wider">
         DESTAQUE DA SEMANA
       </span>
-      <!-- Delete Button (only for creator) -->
-      <button
-        v-if="isOwnEvent"
-        class="bg-red-500/90 hover:bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded shadow-lg backdrop-blur-sm transition-colors"
-        @click.stop="handleDelete"
-      >
-        <span class="material-icons-outlined text-sm">delete</span>
-      </button>
     </div>
     
     <!-- Content -->
@@ -51,10 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { supabase } from '@/lib/supabase'
-import { toast } from 'vue-sonner'
 
 interface Event {
   id: string
@@ -71,33 +59,13 @@ interface Props {
   event: Event
 }
 
-const props = defineProps<Props>()
+const { event } = defineProps<Props>()
 
-const emit = defineEmits<{
+// emit não é usado neste componente, mas mantido para compatibilidade futura
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+defineEmits<{
   click: [eventId: string]
-  deleted: [eventId: string]
 }>()
-
-const authStore = useAuthStore()
-const isOwnEvent = computed(() => authStore.user?.id === props.event.created_by)
-
-async function handleDelete() {
-  // Sem confirm por solicitação do usuário
-  try {
-    const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', props.event.id)
-
-    if (error) throw error
-
-    emit('deleted', props.event.id)
-    toast.success('Evento deletado com sucesso!')
-  } catch (error) {
-    console.error('Error deleting event:', error)
-    toast.error('Erro ao deletar evento. Tente novamente.')
-  }
-}
 </script>
 
 <style scoped>

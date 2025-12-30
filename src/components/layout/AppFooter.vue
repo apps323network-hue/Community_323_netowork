@@ -26,7 +26,7 @@
       </div>
       
       <p class="text-gray-600 dark:text-gray-500 text-xs px-2">
-        © 2024 323 Network. Todos os direitos reservados.
+        © 2025 323 Network. Todos os direitos reservados.
       </p>
     </div>
   </footer>
