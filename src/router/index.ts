@@ -34,7 +34,7 @@ const routes: RouteRecordRaw[] = [
     path: '/reset-password',
     name: 'ResetPassword',
     component: () => import('@/views/ResetPassword.vue'),
-    meta: { requiresGuest: true },
+    // Não usar requiresGuest pois o Supabase cria uma sessão temporária durante recovery
   },
   {
     path: '/banned',
@@ -188,7 +188,22 @@ const router = createRouter({
 })
 
 // Guard de autenticação
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {  // Detectar se é uma URL de recuperação de senha
+  // O Supabase adiciona type=recovery no hash quando é reset password
+  if (to.path === '/' || to.path === '') {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    const type = hashParams.get('type')
+    const accessToken = hashParams.get('access_token')
+    
+    if (type === 'recovery' && accessToken) {
+      // Redirecionar para página de reset password mantendo o hash
+      next({ 
+        path: '/reset-password',
+        replace: true
+      })
+      return
+    }
+  }
   const authStore = useAuthStore()
 
   // Aguardar inicialização do Firebase/Supabase se necessário
