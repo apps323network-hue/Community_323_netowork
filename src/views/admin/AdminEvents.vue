@@ -3,10 +3,10 @@
     <div class="w-full flex flex-col gap-8">
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-white text-4xl lg:text-5xl font-black mb-3">
+        <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
           Admin de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Eventos</span>
         </h1>
-        <p class="text-white/60 text-lg">
+        <p class="text-slate-600 dark:text-white/60 text-lg">
           Gerencie e aprove eventos da comunidade
         </p>
       </div>
@@ -31,9 +31,9 @@
           v-for="filter in filters"
           :key="filter.id"
           class="flex h-9 shrink-0 items-center justify-center rounded-full px-6 text-sm font-medium transition-all"
-          :class="activeFilter === filter.id
+            :class="activeFilter === filter.id
             ? 'bg-neon-gradient text-black font-black shadow-neon-pink'
-            : 'bg-surface-card hover:bg-surface-highlight text-white/80 hover:text-secondary border border-white/10 hover:border-secondary'"
+            : 'bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-700 dark:text-white/80 hover:text-secondary border border-slate-200 dark:border-white/10 hover:border-secondary'"
           @click="handleFilterChange(filter.id)"
         >
           {{ filter.label }}
@@ -112,10 +112,10 @@
         <!-- Progress Indicator -->
         <div class="mb-6">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-white/60">Etapa {{ currentStep }} de 2</span>
-            <span class="text-xs text-white/60">{{ currentStep === 1 ? 'Informações Básicas' : 'Data e Localização' }}</span>
+              <span class="text-xs text-slate-600 dark:text-white/60">Etapa {{ currentStep }} de 2</span>
+            <span class="text-xs text-slate-600 dark:text-white/60">{{ currentStep === 1 ? 'Informações Básicas' : 'Data e Localização' }}</span>
           </div>
-          <div class="w-full bg-white/10 rounded-full h-2">
+          <div class="w-full bg-slate-200 dark:bg-white/10 rounded-full h-2">
             <div 
               class="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-300"
               :style="{ width: `${(currentStep / 2) * 100}%` }"
@@ -127,32 +127,32 @@
           <!-- Step 1: Basic Information -->
           <div v-show="currentStep === 1" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Título *</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Título *</label>
               <input
                 v-model="newEventData.titulo"
                 type="text"
                 required
-                class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
                 placeholder="Nome do evento..."
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Descrição</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Descrição</label>
               <textarea
                 v-model="newEventData.descricao"
                 rows="4"
-                class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
                 placeholder="Descrição do evento..."
               ></textarea>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-white mb-2">Tipo *</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Tipo *</label>
               <select
                 v-model="newEventData.tipo"
                 required
-                class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
               >
                 <option value="">Selecione...</option>
                 <option value="presencial">Presencial</option>
@@ -167,19 +167,19 @@
               <label class="block text-sm font-medium text-white mb-2">Data *</label>
               <div class="grid grid-cols-3 gap-3">
                 <div>
-                  <label class="block text-xs text-white/60 mb-1">Dia</label>
+                  <label class="block text-xs text-slate-600 dark:text-white/60 mb-1">Dia</label>
                   <div class="relative">
                     <select
                       v-model="dateTime.day"
                       required
-                      class="custom-select w-full rounded-lg border border-white/10 bg-surface-dark p-3 pr-10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none cursor-pointer transition-all hover:border-white/20"
+                      class="custom-select w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 pr-10 text-slate-900 dark:text-white focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none appearance-none cursor-pointer transition-all hover:border-secondary/50 dark:hover:border-white/20"
                     >
                       <option value="">Dia</option>
                       <option v-for="d in 31" :key="d" :value="d.toString().padStart(2, '0')">
                         {{ d.toString().padStart(2, '0') }}
                       </option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none text-lg">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/60 pointer-events-none text-lg">
                       expand_more
                     </span>
                   </div>
@@ -197,7 +197,7 @@
                         {{ getMonthName(m) }}
                       </option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none text-lg">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/60 pointer-events-none text-lg">
                       expand_more
                     </span>
                   </div>
@@ -215,7 +215,7 @@
                         {{ y }}
                       </option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none text-lg">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/60 pointer-events-none text-lg">
                       expand_more
                     </span>
                   </div>
@@ -239,7 +239,7 @@
                         {{ (h - 1).toString().padStart(2, '0') }}
                       </option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none text-lg">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/60 pointer-events-none text-lg">
                       expand_more
                     </span>
                   </div>
@@ -257,7 +257,7 @@
                         {{ (m - 1).toString().padStart(2, '0') }}
                       </option>
                     </select>
-                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none text-lg">
+                    <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-white/60 pointer-events-none text-lg">
                       expand_more
                     </span>
                   </div>
@@ -297,14 +297,14 @@
               <!-- Input de arquivo -->
               <label
                 v-if="!imagePreview"
-                class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer bg-surface-dark hover:bg-surface-highlight hover:border-primary transition-all"
+                class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 dark:border-white/20 rounded-lg cursor-pointer bg-slate-50 dark:bg-[#0a040f] hover:bg-slate-100 dark:hover:bg-surface-highlight hover:border-secondary dark:hover:border-primary transition-all"
               >
                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                  <span class="material-symbols-outlined text-4xl text-white/60 mb-2">cloud_upload</span>
-                  <p class="mb-2 text-sm text-white/60">
+                  <span class="material-symbols-outlined text-4xl text-slate-500 dark:text-white/60 mb-2">cloud_upload</span>
+                  <p class="mb-2 text-sm text-slate-600 dark:text-white/60">
                     <span class="font-semibold">Clique para fazer upload</span> ou arraste e solte
                   </p>
-                  <p class="text-xs text-white/40">PNG, JPG ou WEBP (máx. 20MB)</p>
+                  <p class="text-xs text-slate-500 dark:text-white/40">PNG, JPG ou WEBP (máx. 20MB)</p>
                 </div>
                 <input
                   type="file"
@@ -324,7 +324,7 @@
                   :false-value="'pending'"
                   class="w-4 h-4 rounded border-white/10 bg-surface-dark text-primary focus:ring-primary"
                 />
-                <span class="text-sm text-white">Criar já aprovado</span>
+                <span class="text-sm text-slate-700 dark:text-white">Criar já aprovado</span>
               </label>
             </div>
           </div>
@@ -343,7 +343,7 @@
               v-if="currentStep === 2"
               type="button"
               @click="prevStep"
-              class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+              class="px-4 py-2 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
             >
               Voltar
             </button>
@@ -359,7 +359,7 @@
               v-if="currentStep === 1"
               type="button"
               @click="showCreateModal = false"
-              class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+              class="px-4 py-2 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
             >
               Cancelar
             </button>

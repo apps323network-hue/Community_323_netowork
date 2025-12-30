@@ -3,10 +3,10 @@
     <div class="w-full flex flex-col gap-6 sm:gap-8">
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-white text-4xl lg:text-5xl font-black mb-3">
+        <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
           Reports de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Conteúdo</span>
         </h1>
-        <p class="text-white/60 text-lg">
+        <p class="text-slate-600 dark:text-white/60 text-lg">
           Gerencie reports de conteúdo inapropriado da comunidade
         </p>
       </div>
@@ -15,14 +15,14 @@
       <ReportStats :stats="reportStats" />
 
       <!-- Tabs -->
-      <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-white/10">
+      <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-slate-200 dark:border-white/10">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           class="flex h-9 sm:h-10 shrink-0 items-center justify-center rounded-t-lg px-4 sm:px-6 text-xs sm:text-sm font-medium transition-all relative"
           :class="activeTab === tab.id
-            ? 'bg-surface-card text-white border-t-2 border-primary'
-            : 'text-white/60 hover:text-white border-t-2 border-transparent'"
+            ? 'bg-white dark:bg-surface-card text-slate-900 dark:text-white border-t-2 border-primary'
+            : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white border-t-2 border-transparent'"
           @click="handleTabChange(tab.id)"
         >
           {{ tab.label }}

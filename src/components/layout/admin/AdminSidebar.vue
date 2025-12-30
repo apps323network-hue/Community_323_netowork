@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-64 bg-surface-dark border-r border-white/10 h-full flex flex-col">
+  <aside class="w-64 bg-white dark:bg-surface-dark border-r border-slate-200 dark:border-white/10 h-full flex flex-col">
     <!-- Navigation Menu -->
     <nav class="flex-1 px-4 py-6 space-y-1">
       <RouterLink
@@ -8,8 +8,8 @@
         :to="item.path"
         class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all group"
         :class="isActive(item.path)
-          ? 'bg-primary/20 text-primary border-l-4 border-primary shadow-lg shadow-primary/20'
-          : 'text-white/60 hover:text-white hover:bg-white/5'"
+          ? 'bg-primary/10 dark:bg-primary/20 text-primary border-l-4 border-primary shadow-lg shadow-primary/20'
+          : 'text-slate-700 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5'"
         @click="handleClick"
       >
         <span class="material-symbols-outlined text-xl">{{ item.icon }}</span>
@@ -25,8 +25,8 @@
     </nav>
 
     <!-- Footer Info -->
-    <div class="px-4 py-4 border-t border-white/10">
-      <div class="text-xs text-white/40 text-center">
+    <div class="px-4 py-4 border-t border-slate-200 dark:border-white/10">
+      <div class="text-xs text-slate-500 dark:text-white/40 text-center">
         <p>Admin Dashboard</p>
         <p class="mt-1">v1.0.0</p>
       </div>

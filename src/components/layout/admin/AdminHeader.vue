@@ -1,5 +1,5 @@
 <template>
-  <header class="sticky top-0 z-50 bg-surface-dark/95 backdrop-blur-md border-b border-white/10 shadow-lg w-full">
+  <header class="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-lg w-full">
     <div class="w-full px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 max-w-full">
         <!-- Logo e Nome do Dashboard -->
@@ -11,9 +11,9 @@
               <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary font-black">ADMIN</span>
             </div>
           </RouterLink>
-          <div class="hidden md:block h-6 w-px bg-white/10"></div>
+          <div class="hidden md:block h-6 w-px bg-slate-200 dark:bg-white/10"></div>
           <div class="hidden md:block">
-            <p class="text-sm text-white/60">Dashboard de Administração</p>
+            <p class="text-sm text-slate-600 dark:text-white/60">Dashboard de Administração</p>
           </div>
         </div>
 
@@ -31,12 +31,12 @@
                   :src="userAvatar"
                   :name="userName"
                   size="sm"
-                  class="relative border-2 border-white"
+                  class="relative border-2 border-white dark:border-white"
                 />
               </div>
               <div class="hidden lg:block text-left">
-                <p class="text-sm font-bold text-white">{{ userDisplayName }}</p>
-                <p class="text-xs text-white/60">Admin</p>
+                <p class="text-sm font-bold text-slate-900 dark:text-white">{{ userDisplayName }}</p>
+                <p class="text-xs text-slate-600 dark:text-white/60">Admin</p>
               </div>
             </div>
 
@@ -51,13 +51,13 @@
             >
               <div
                 v-if="showUserMenu"
-                class="absolute right-0 mt-2 w-56 rounded-xl bg-surface-dark border border-white/10 shadow-2xl z-50 overflow-hidden"
+                class="absolute right-0 mt-2 w-56 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
                 @click.stop
               >
                 <div class="p-2">
                   <RouterLink
                     to="/"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-white/80 hover:bg-white/5 transition-colors"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">home</span>
@@ -65,16 +65,16 @@
                   </RouterLink>
                   <RouterLink
                     to="/perfil"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-white/80 hover:bg-white/5 transition-colors"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     Meu Perfil
                   </RouterLink>
-                  <div class="border-t border-white/10 my-1"></div>
+                  <div class="border-t border-slate-200 dark:border-white/10 my-1"></div>
                   <button
                     @click="handleLogout"
-                    class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors text-left"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left"
                   >
                     <span class="material-symbols-outlined text-[20px]">logout</span>
                     Sair

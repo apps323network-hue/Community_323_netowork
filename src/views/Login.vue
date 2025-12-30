@@ -1,12 +1,12 @@
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-background-dark">
     <!-- Header -->
-    <AppHeader :show-navigation="false" />
+    <AppHeader :show-navigation="false" :show-logo="false" />
     
     <!-- Login Content -->
-    <div
+  <div
       class="flex min-h-[calc(100vh-80px)] relative text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-primary selection:text-white"
-    >
+  >
     <!-- Left Side - Image/Logo -->
     <div
       class="hidden lg:flex w-1/2 relative overflow-hidden bg-slate-100 dark:bg-background-dark items-center justify-center p-12 border-r border-slate-200 dark:border-slate-800/50"
@@ -23,12 +23,12 @@
       ></div>
       <div class="relative z-10 flex flex-col items-center text-center max-w-lg">
         <div class="mb-10">
-          <img
-            alt="323 Network Logo"
-            class="w-56 h-auto object-contain drop-shadow-lg"
+            <img
+              alt="323 Network Logo"
+              class="w-56 h-auto object-contain drop-shadow-lg"
             src="/logo-removebg-preview.png"
-          />
-        </div>
+            />
+          </div>
         <h1 class="text-5xl font-black text-slate-900 dark:text-white mb-6 leading-tight tracking-tight">
           {{ t('auth.tagline') }} <br />
           <span
@@ -384,7 +384,7 @@
       <div class="absolute bottom-6 w-full text-center">
         <p class="text-xs text-slate-500 dark:text-slate-600">{{ t('auth.copyright') }}</p>
       </div>
-    </div>
+      </div>
     </div>
   </div>
 </template>

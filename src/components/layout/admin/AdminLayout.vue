@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background-dark flex flex-col">
+  <div class="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
     <!-- Header - Full Width -->
     <div class="w-full fixed top-0 left-0 right-0 z-50">
       <AdminHeader />
@@ -25,7 +25,7 @@
 
     <!-- Mobile Menu - Sempre visível na parte inferior -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-50 bg-surface-dark border-t border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
+      class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-lg dark:shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
     >
       <nav class="flex justify-around items-center h-16 px-2">
         <RouterLink
@@ -35,7 +35,7 @@
           class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group"
           :class="$route.path === item.path 
             ? 'text-primary' 
-            : 'text-white/60 hover:text-primary'"
+            : 'text-slate-700 dark:text-white/60 hover:text-primary'"
         >
           <span 
             class="material-symbols-outlined text-[24px] transition-all"
@@ -45,7 +45,7 @@
           >
             {{ item.icon }}
           </span>
-          <span class="text-[10px] mt-0.5 font-medium text-white/60 group-hover:text-primary" :class="$route.path === item.path ? 'text-primary' : ''">
+          <span class="text-[10px] mt-0.5 font-medium text-slate-700 dark:text-white/60 group-hover:text-primary" :class="$route.path === item.path ? 'text-primary' : ''">
             {{ item.label }}
           </span>
           <!-- Badge para itens com notificações -->

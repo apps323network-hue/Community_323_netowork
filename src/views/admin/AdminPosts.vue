@@ -3,10 +3,10 @@
     <div class="w-full flex flex-col gap-6 sm:gap-8">
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-white text-4xl lg:text-5xl font-black mb-3">
+        <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
           Gestão de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Posts</span>
         </h1>
-        <p class="text-white/60 text-lg">
+        <p class="text-slate-600 dark:text-white/60 text-lg">
           Aprove, oculte, remova e gerencie posts da comunidade
         </p>
       </div>
@@ -26,14 +26,14 @@
       </div>
 
       <!-- Tabs -->
-      <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-white/10">
+      <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-slate-200 dark:border-white/10">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           class="flex h-9 sm:h-10 shrink-0 items-center justify-center rounded-t-lg px-4 sm:px-6 text-xs sm:text-sm font-medium transition-all relative"
           :class="activeTab === tab.id
-            ? 'bg-surface-card text-white border-t-2 border-primary'
-            : 'text-white/60 hover:text-white border-t-2 border-transparent'"
+            ? 'bg-white dark:bg-surface-card text-slate-900 dark:text-white border-t-2 border-primary'
+            : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white border-t-2 border-transparent'"
           @click="handleTabChange(tab.id)"
         >
           {{ tab.label }}
@@ -101,11 +101,11 @@
       >
         <form @submit.prevent="handleCreatePost" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-white mb-2">Tipo *</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Tipo *</label>
             <select
               v-model="newPostData.tipo"
               required
-              class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
             >
               <option value="">Selecione...</option>
               <option value="networking">Networking</option>
@@ -116,12 +116,12 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-white mb-2">Conteúdo *</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Conteúdo *</label>
             <textarea
               v-model="newPostData.conteudo"
               rows="6"
               required
-              class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
               placeholder="Escreva o conteúdo do post..."
             ></textarea>
           </div>
@@ -134,7 +134,7 @@
               <img
                 :src="imagePreview"
                 alt="Preview"
-                class="w-full h-48 object-cover rounded-lg border border-white/10"
+                class="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-white/10"
               />
               <button
                 type="button"
@@ -148,14 +148,14 @@
             <!-- Input de arquivo -->
             <label
               v-if="!imagePreview"
-              class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-lg cursor-pointer bg-surface-dark hover:bg-surface-highlight hover:border-primary transition-all"
+              class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 dark:border-white/20 rounded-lg cursor-pointer bg-slate-50 dark:bg-[#0a040f] hover:bg-slate-100 dark:hover:bg-surface-highlight hover:border-secondary transition-all"
             >
               <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                <span class="material-symbols-outlined text-4xl text-white/60 mb-2">cloud_upload</span>
-                <p class="mb-2 text-sm text-white/60">
+                <span class="material-symbols-outlined text-4xl text-slate-500 dark:text-white/60 mb-2">cloud_upload</span>
+                <p class="mb-2 text-sm text-slate-600 dark:text-white/60">
                   <span class="font-semibold">Clique para fazer upload</span> ou arraste e solte
                 </p>
-                <p class="text-xs text-white/40">PNG, JPG ou WEBP (máx. 20MB)</p>
+                <p class="text-xs text-slate-500 dark:text-white/40">PNG, JPG ou WEBP (máx. 20MB)</p>
               </div>
               <input
                 type="file"
@@ -173,9 +173,9 @@
                 type="checkbox"
                 :true-value="'approved'"
                 :false-value="'pending'"
-                class="w-4 h-4 rounded border-white/10 bg-surface-dark text-primary focus:ring-primary"
+                class="w-4 h-4 rounded border-slate-300 dark:border-white/10 bg-white dark:bg-[#0a040f] text-primary focus:ring-primary"
               />
-              <span class="text-sm text-white">Criar já aprovado</span>
+              <span class="text-sm text-slate-700 dark:text-white">Criar já aprovado</span>
             </label>
           </div>
 
@@ -190,7 +190,7 @@
             <button
               type="button"
               @click="showCreateModal = false"
-              class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+              class="px-4 py-2 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
             >
               Cancelar
             </button>

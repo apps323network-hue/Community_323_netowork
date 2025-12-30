@@ -1,7 +1,7 @@
 <template>
-  <div v-if="post" class="bg-surface-card rounded-xl p-4 sm:p-6 border border-white/5">
+  <div v-if="post" class="bg-white dark:bg-surface-card rounded-xl p-4 sm:p-6 border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
     <!-- Header with Author -->
-    <div class="flex items-start gap-4 mb-4 pb-4 border-b border-white/5">
+    <div class="flex items-start gap-4 mb-4 pb-4 border-b border-slate-200 dark:border-white/5">
       <Avatar
         :src="post.author?.avatar_url"
         :name="post.author?.nome || 'Usuário'"
@@ -9,15 +9,15 @@
       />
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-3 mb-1">
-          <h3 class="text-white text-lg sm:text-xl font-bold">
+          <h3 class="text-slate-900 dark:text-white text-lg sm:text-xl font-bold">
             {{ post.author?.nome || 'Usuário' }}
           </h3>
           <PostStatusBadge :status="post.status || 'pending'" />
         </div>
-        <p v-if="post.author?.area_atuacao" class="text-white/60 text-sm mb-2">
+        <p v-if="post.author?.area_atuacao" class="text-slate-600 dark:text-white/60 text-sm mb-2">
           {{ post.author.area_atuacao }}
         </p>
-        <div class="flex items-center gap-4 text-white/50 text-xs">
+        <div class="flex items-center gap-4 text-slate-500 dark:text-white/50 text-xs">
           <span class="flex items-center gap-1">
             <span class="material-symbols-outlined text-sm">schedule</span>
             {{ formattedDate(post.created_at) }}
@@ -39,7 +39,7 @@
 
     <!-- Post Content -->
     <div class="mb-4">
-      <p class="text-white/90 text-base sm:text-lg whitespace-pre-wrap mb-3">
+      <p class="text-slate-900 dark:text-white/90 text-base sm:text-lg whitespace-pre-wrap mb-3">
         {{ post.conteudo }}
       </p>
       <div
@@ -69,7 +69,7 @@
     </div>
 
     <!-- Post Stats -->
-    <div class="flex items-center gap-6 mb-4 pb-4 border-b border-white/5 text-white/60 text-sm">
+    <div class="flex items-center gap-6 mb-4 pb-4 border-b border-slate-200 dark:border-white/5 text-slate-600 dark:text-white/60 text-sm">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-base">favorite</span>
         <span>{{ post.likes_count || 0 }} curtidas</span>
@@ -85,9 +85,9 @@
     </div>
 
     <!-- Moderation Info -->
-    <div v-if="post.approved_by || post.moderated_by" class="mb-4 pb-4 border-b border-white/5">
-      <h4 class="text-white/80 text-sm font-semibold mb-2">Informações de Moderação</h4>
-      <div class="space-y-2 text-white/60 text-xs sm:text-sm">
+    <div v-if="post.approved_by || post.moderated_by" class="mb-4 pb-4 border-b border-slate-200 dark:border-white/5">
+      <h4 class="text-slate-700 dark:text-white/80 text-sm font-semibold mb-2">Informações de Moderação</h4>
+      <div class="space-y-2 text-slate-600 dark:text-white/60 text-xs sm:text-sm">
         <div v-if="post.approved_by && post.approved_at" class="flex items-center gap-2">
           <span class="material-symbols-outlined text-base text-green-400">check_circle</span>
           <span>Aprovado em {{ formattedDate(post.approved_at) }}</span>
@@ -109,14 +109,14 @@
 
     <!-- Comments Preview -->
     <div v-if="post.comments && post.comments.length > 0" class="mb-4">
-      <h4 class="text-white/80 text-sm font-semibold mb-3">
+      <h4 class="text-slate-700 dark:text-white/80 text-sm font-semibold mb-3">
         Comentários ({{ post.comments.length }})
       </h4>
       <div class="space-y-3 max-h-64 overflow-y-auto">
         <div
           v-for="comment in post.comments.slice(0, 5)"
           :key="comment.id"
-          class="bg-surface-lighter rounded-lg p-3 border border-white/5"
+          class="bg-slate-50 dark:bg-surface-lighter rounded-lg p-3 border border-slate-200 dark:border-white/5"
         >
           <div class="flex items-start gap-3">
             <Avatar
@@ -125,24 +125,24 @@
               size="sm"
             />
             <div class="flex-1 min-w-0">
-              <p class="text-white font-semibold text-sm mb-1">
+              <p class="text-slate-900 dark:text-white font-semibold text-sm mb-1">
                 {{ comment.author?.nome || 'Usuário' }}
               </p>
-              <p class="text-white/80 text-sm">{{ comment.conteudo }}</p>
-              <p class="text-white/50 text-xs mt-1">
+              <p class="text-slate-700 dark:text-white/80 text-sm">{{ comment.conteudo }}</p>
+              <p class="text-slate-500 dark:text-white/50 text-xs mt-1">
                 {{ formattedDate(comment.created_at) }}
               </p>
             </div>
           </div>
         </div>
-        <p v-if="post.comments.length > 5" class="text-white/60 text-xs text-center">
+        <p v-if="post.comments.length > 5" class="text-slate-600 dark:text-white/60 text-xs text-center">
           +{{ post.comments.length - 5 }} comentários adicionais
         </p>
       </div>
     </div>
 
     <!-- Actions -->
-    <div class="flex flex-wrap gap-3 pt-4 border-t border-white/5">
+    <div class="flex flex-wrap gap-3 pt-4 border-t border-slate-200 dark:border-white/5">
       <button
         v-if="post.status === 'pending'"
         class="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all text-sm"
@@ -176,8 +176,8 @@
   </div>
 
   <div v-else class="text-center py-12">
-    <span class="material-symbols-outlined text-white/40 text-6xl mb-4">article</span>
-    <p class="text-white/60 text-lg">Post não encontrado</p>
+    <span class="material-symbols-outlined text-slate-400 dark:text-white/40 text-6xl mb-4">article</span>
+    <p class="text-slate-600 dark:text-white/60 text-lg">Post não encontrado</p>
   </div>
 </template>
 

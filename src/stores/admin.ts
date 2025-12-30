@@ -271,7 +271,7 @@ export const useAdminStore = defineStore('admin', () => {
           status: 'rejected',
           approved_by: authStore.user.id,
           approved_at: new Date().toISOString(),
-          rejection_reason: reason || null,
+          rejection_reason: reason || undefined,
         })
         .eq('id', eventId)
         .select()
@@ -618,7 +618,7 @@ export const useAdminStore = defineStore('admin', () => {
       const { data, error: updateError } = await supabase
         .from('profiles')
         .update({
-          rejection_reason: reason || null,
+          rejection_reason: reason || undefined,
           approved_by: authStore.user.id,
           approved_at: new Date().toISOString(),
           // Status permanece 'pending' mas registra motivo da rejeição
@@ -971,7 +971,7 @@ export const useAdminStore = defineStore('admin', () => {
           status: 'hidden',
           moderated_by: authStore.user.id,
           moderated_at: new Date().toISOString(),
-          rejection_reason: reason || null,
+          rejection_reason: reason || undefined,
         })
         .eq('id', postId)
         .select()
@@ -980,9 +980,21 @@ export const useAdminStore = defineStore('admin', () => {
       if (updateError) throw updateError
 
       // Atualizar lista local
-      const index = pendingPosts.value.findIndex(p => p.id === postId)
-      if (index !== -1) {
-        pendingPosts.value.splice(index, 1)
+      const pendingIndex = pendingPosts.value.findIndex(p => p.id === postId)
+      if (pendingIndex !== -1) {
+        pendingPosts.value.splice(pendingIndex, 1)
+      }
+
+      // Atualizar allPosts - atualizar status
+      const allIndex = allPosts.value.findIndex(p => p.id === postId)
+      if (allIndex !== -1) {
+        allPosts.value[allIndex] = {
+          ...allPosts.value[allIndex],
+          status: 'hidden',
+          moderated_by: authStore.user.id,
+          moderated_at: new Date().toISOString(),
+          rejection_reason: reason || undefined,
+        }
       }
 
       // Atualizar stats
@@ -1030,7 +1042,7 @@ export const useAdminStore = defineStore('admin', () => {
           status: 'removed',
           moderated_by: authStore.user.id,
           moderated_at: new Date().toISOString(),
-          rejection_reason: reason || null,
+          rejection_reason: reason || undefined,
           strikes_added: addStrike,
         })
         .eq('id', postId)
@@ -1045,9 +1057,23 @@ export const useAdminStore = defineStore('admin', () => {
       }
 
       // Atualizar lista local
-      const index = pendingPosts.value.findIndex(p => p.id === postId)
-      if (index !== -1) {
-        pendingPosts.value.splice(index, 1)
+      const pendingIndex = pendingPosts.value.findIndex(p => p.id === postId)
+      if (pendingIndex !== -1) {
+        pendingPosts.value.splice(pendingIndex, 1)
+      }
+
+      // Atualizar allPosts - atualizar status ou remover da lista
+      const allIndex = allPosts.value.findIndex(p => p.id === postId)
+      if (allIndex !== -1) {
+        // Atualizar o status do post na lista
+        allPosts.value[allIndex] = {
+          ...allPosts.value[allIndex],
+          status: 'removed',
+          moderated_by: authStore.user.id,
+          moderated_at: new Date().toISOString(),
+          rejection_reason: reason || undefined,
+          strikes_added: addStrike,
+        }
       }
 
       // Atualizar stats
@@ -1110,9 +1136,22 @@ export const useAdminStore = defineStore('admin', () => {
       }
 
       // Atualizar lista local
-      const index = pendingPosts.value.findIndex(p => p.id === postId)
-      if (index !== -1) {
-        pendingPosts.value.splice(index, 1)
+      const pendingIndex = pendingPosts.value.findIndex(p => p.id === postId)
+      if (pendingIndex !== -1) {
+        pendingPosts.value.splice(pendingIndex, 1)
+      }
+
+      // Atualizar allPosts - atualizar status
+      const allIndex = allPosts.value.findIndex(p => p.id === postId)
+      if (allIndex !== -1) {
+        allPosts.value[allIndex] = {
+          ...allPosts.value[allIndex],
+          status: 'spam',
+          moderated_by: authStore.user.id,
+          moderated_at: new Date().toISOString(),
+          rejection_reason: 'Marcado como spam',
+          strikes_added: true,
+        }
       }
 
       // Atualizar stats
@@ -2444,13 +2483,6 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  // Debug: verificar se deleteEvent está definida antes do return
-  console.log('[ADMIN STORE] Verificando deleteEvent antes do return:', {
-    isFunction: typeof deleteEvent === 'function',
-    deleteEventName: deleteEvent?.name,
-    deleteEventType: typeof deleteEvent,
-  })
-
   const returnObject = {
     pendingEvents,
     allEvents,
@@ -2517,13 +2549,6 @@ export const useAdminStore = defineStore('admin', () => {
     deleteChallenge,
     fetchChallengeStats,
   }
-
-  // Debug: verificar se deleteEvent está no objeto de retorno
-  console.log('[ADMIN STORE] Verificando deleteEvent no objeto de retorno:', {
-    hasDeleteEvent: 'deleteEvent' in returnObject,
-    deleteEventType: typeof returnObject.deleteEvent,
-    returnObjectKeys: Object.keys(returnObject).filter(k => k.toLowerCase().includes('event')),
-  })
 
   return returnObject
 })

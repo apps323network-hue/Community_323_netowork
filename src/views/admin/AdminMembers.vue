@@ -3,10 +3,10 @@
     <div class="w-full flex flex-col gap-8">
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-white text-4xl lg:text-5xl font-black mb-3">
+        <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
           Gestão de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Membros</span>
         </h1>
-        <p class="text-white/60 text-lg">
+        <p class="text-slate-600 dark:text-white/60 text-lg">
           Aprove, rejeite e gerencie membros da comunidade
         </p>
       </div>
@@ -15,14 +15,14 @@
       <UserStats :stats="userStats" />
 
       <!-- Tabs -->
-      <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-white/10">
+      <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-slate-200 dark:border-white/10">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           class="flex h-9 sm:h-10 shrink-0 items-center justify-center rounded-t-lg px-4 sm:px-6 text-xs sm:text-sm font-medium transition-all relative"
           :class="activeTab === tab.id
-            ? 'bg-surface-card text-white border-t-2 border-primary'
-            : 'text-white/60 hover:text-white border-t-2 border-transparent'"
+            ? 'bg-white dark:bg-surface-card text-slate-900 dark:text-white border-t-2 border-primary'
+            : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white border-t-2 border-transparent'"
           @click="handleTabChange(tab.id)"
         >
           {{ tab.label }}
@@ -71,38 +71,38 @@
     <!-- Ban Confirmation Modal -->
     <Modal v-model="showBanModal" title="Confirmar Banimento">
       <div class="space-y-4">
-        <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+        <div class="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-lg p-4">
           <div class="flex items-start gap-3">
             <span class="material-symbols-outlined text-red-500 text-2xl">warning</span>
             <div>
-              <p class="text-white font-medium mb-1">Ação Irreversível</p>
-              <p class="text-white/60 text-sm">
+              <p class="text-slate-900 dark:text-white font-medium mb-1">Ação Irreversível</p>
+              <p class="text-slate-600 dark:text-white/60 text-sm">
                 Tem certeza que deseja banir este usuário? Esta ação impedirá completamente o acesso à plataforma.
               </p>
             </div>
           </div>
         </div>
 
-        <div v-if="userToBan" class="bg-surface-card rounded-lg p-4">
+        <div v-if="userToBan" class="bg-white dark:bg-surface-card rounded-lg p-4 border border-slate-200 dark:border-white/5">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
               <span class="material-symbols-outlined text-primary text-2xl">person</span>
             </div>
             <div>
-              <p class="text-white font-medium">{{ userToBan.nome || 'Usuário' }}</p>
-              <p class="text-white/60 text-sm">{{ userToBan.email || userToBan.area_atuacao }}</p>
+              <p class="text-slate-900 dark:text-white font-medium">{{ userToBan.nome || 'Usuário' }}</p>
+              <p class="text-slate-600 dark:text-white/60 text-sm">{{ userToBan.email || userToBan.area_atuacao }}</p>
             </div>
           </div>
         </div>
 
         <div>
-          <label class="block text-white text-sm font-medium mb-2">
+          <label class="block text-slate-700 dark:text-white text-sm font-medium mb-2">
             Motivo do banimento (opcional)
           </label>
           <textarea
             v-model="banReason"
             rows="3"
-            class="w-full px-4 py-3 bg-surface-lighter border border-white/10 rounded-lg text-white placeholder-white/40 focus:border-primary focus:outline-none resize-none"
+            class="w-full px-4 py-3 bg-white dark:bg-surface-lighter border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] focus:outline-none resize-none transition-all"
             placeholder="Descreva o motivo do banimento..."
           ></textarea>
         </div>
@@ -110,7 +110,7 @@
         <div class="flex gap-3 justify-end pt-2">
           <button
             @click="showBanModal = false"
-            class="px-6 py-2.5 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+            class="px-6 py-2.5 rounded-lg text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
           >
             Cancelar
           </button>

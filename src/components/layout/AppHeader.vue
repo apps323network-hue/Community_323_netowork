@@ -10,7 +10,7 @@
     ]">
       <div class="flex items-center justify-between h-20">
         <!-- Logo -->
-        <RouterLink to="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
+        <RouterLink v-if="props.showLogo" to="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
           <div
             :class="[
               'font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform',
@@ -29,6 +29,7 @@
             >
           </div>
         </RouterLink>
+        <div v-else class="flex-shrink-0"></div>
 
         <!-- Navigation Links - Desktop -->
         <div v-if="props.showNavigation" class="hidden md:block">
@@ -504,10 +505,12 @@ import NotificationsDropdown from '@/components/layout/NotificationsDropdown.vue
 
 interface Props {
   showNavigation?: boolean
+  showLogo?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showNavigation: true
+  showNavigation: true,
+  showLogo: true
 })
 
 const route = useRoute()
