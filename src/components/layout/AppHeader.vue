@@ -12,12 +12,15 @@
         <!-- Logo -->
         <RouterLink to="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
           <div
-            class="text-3xl font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform"
+            :class="[
+              'font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform',
+              props.showNavigation ? 'text-3xl' : 'text-2xl'
+            ]"
           >
             <span class="text-primary dark:text-secondary">(323</span>
             <span
               class="material-icons-outlined text-primary dark:text-secondary mx-1 animate-pulse"
-              style="font-size: 1.2em"
+              :style="{ fontSize: props.showNavigation ? '1.2em' : '1em' }"
               >play_arrow</span
             >
             <span
@@ -28,7 +31,7 @@
         </RouterLink>
 
         <!-- Navigation Links - Desktop -->
-        <div class="hidden md:block">
+        <div v-if="props.showNavigation" class="hidden md:block">
           <div class="ml-10 flex items-baseline space-x-6">
             <RouterLink
               to="/"
@@ -129,7 +132,7 @@
         </div>
 
         <!-- Mobile Menu - Notifications, User -->
-        <div class="md:hidden flex items-center gap-3">
+        <div v-if="props.showNavigation" class="md:hidden flex items-center gap-3">
           <!-- Notifications Mobile -->
           <NotificationsDropdown />
           
@@ -211,43 +214,64 @@
                     {{ t('navigation.myProfile') }}
                   </RouterLink>
                   
-                  <!-- Dark Mode Toggle -->
-                  <div class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
-                    <div class="flex items-center justify-between px-4 py-3">
-                      <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[20px] text-slate-700 dark:text-gray-300">dark_mode</span>
-                        <span class="text-sm font-medium text-slate-700 dark:text-gray-300">{{ t('navigation.theme') }}</span>
-                      </div>
+                  <!-- Divider -->
+                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
+                  
+                  <!-- Theme & Language Row -->
+                  <div class="grid grid-cols-2 gap-2 p-2">
+                    <!-- Theme Toggle -->
+                    <button
+                      class="flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-sm font-medium text-slate-700  transition-colors"
+                    >
                       <AnimatedThemeToggler />
+                    </button>
+                    
+                    <!-- Language Switcher -->
+                    <div class="relative">
+                      <button
+                        @click="toggleMobileLanguageMenu"
+                        class="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                      >
+                        <span class="text-lg">{{ currentLocaleData.flag }}</span>
+                        <span>{{ currentLocaleData.code.split('-')[0].toUpperCase() }}</span>
+                      </button>
+                      
+                      <!-- Language Dropdown -->
+                      <Transition
+                        enter-active-class="transition-all duration-200"
+                        enter-from-class="opacity-0 scale-95 translate-y-2"
+                        enter-to-class="opacity-100 scale-100 translate-y-0"
+                        leave-active-class="transition-all duration-200"
+                        leave-from-class="opacity-100 scale-100 translate-y-0"
+                        leave-to-class="opacity-0 scale-95 translate-y-2"
+                      >
+                        <div
+                          v-if="showMobileLanguageMenu"
+                          class="absolute -top-24 right-0 w-40 rounded-lg bg-white dark:bg-surface-lighter border border-slate-200 dark:border-white/10 shadow-xl z-50 overflow-hidden"
+                          @click.stop
+                        >
+                          <button
+                            v-for="locale in availableLocales"
+                            :key="locale.code"
+                            @click="handleLocaleChangeMobile(locale.code)"
+                            class="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium transition-colors text-left"
+                            :class="[
+                              currentLocale === locale.code
+                                ? 'bg-primary/10 text-primary dark:bg-secondary/10 dark:text-secondary'
+                                : 'text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter'
+                            ]"
+                          >
+                            <span class="text-base">{{ locale.flag }}</span>
+                            <span>{{ locale.name }}</span>
+                            <span v-if="currentLocale === locale.code" class="material-icons text-sm ml-auto">check</span>
+                          </button>
+                        </div>
+                      </Transition>
                     </div>
                   </div>
                   
-                  <!-- Language Switcher -->
-                  <div class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
-                    <div class="px-4 py-2">
-                      <div class="flex items-center gap-3 mb-2">
-                        <span class="material-symbols-outlined text-[20px] text-slate-700 dark:text-gray-300">language</span>
-                        <span class="text-sm font-medium text-slate-700 dark:text-gray-300">{{ t('navigation.language') }}</span>
-                      </div>
-                      <div class="space-y-1">
-                        <button
-                          v-for="locale in availableLocales"
-                          :key="locale.code"
-                          @click="handleLocaleChange(locale.code)"
-                          class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                          :class="[
-                            currentLocale === locale.code
-                              ? 'bg-primary/10 text-primary dark:bg-secondary/10 dark:text-secondary'
-                              : 'text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter'
-                          ]"
-                        >
-                          <span class="text-base">{{ locale.flag }}</span>
-                          <span>{{ locale.name }}</span>
-                          <span v-if="currentLocale === locale.code" class="material-icons text-sm ml-auto">check</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <!-- Divider -->
+                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
                   
                   <!-- Dashboard Admin (apenas para admins) -->
                   <div v-if="isAdmin" class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
@@ -266,6 +290,56 @@
                   >
                     <span class="material-symbols-outlined text-[20px]">logout</span>
                     {{ t('navigation.logout') }}
+                  </button>
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </div>
+
+        <!-- Mobile Menu - Theme and Language (when not logged in) -->
+        <div v-if="!props.showNavigation" class="md:hidden flex items-center gap-3">
+          <AnimatedThemeToggler />
+          
+          <!-- Language Switcher Mobile -->
+          <div class="relative" ref="languageMenuContainerMobile">
+            <button
+              @click.stop="toggleLanguageMenu"
+              class="flex items-center gap-1 px-2 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-surface-lighter transition-colors"
+            >
+              <span class="text-lg">{{ currentLocaleData.flag }}</span>
+              <span class="material-icons text-sm">expand_more</span>
+            </button>
+            
+            <!-- Language Dropdown Mobile -->
+            <Transition
+              enter-active-class="transition-all duration-200"
+              enter-from-class="opacity-0 scale-95 translate-y-2"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition-all duration-200"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-2"
+            >
+              <div
+                v-if="showLanguageMenu"
+                class="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
+                @click.stop
+              >
+                <div class="p-2">
+                  <button
+                    v-for="locale in availableLocales"
+                    :key="locale.code"
+                    @click="handleLocaleChange(locale.code)"
+                    class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors"
+                    :class="[
+                      currentLocale === locale.code
+                        ? 'bg-primary/10 text-primary dark:bg-secondary/10 dark:text-secondary'
+                        : 'text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter'
+                    ]"
+                  >
+                    <span class="text-lg">{{ locale.flag }}</span>
+                    <span>{{ locale.name }}</span>
+                    <span v-if="currentLocale === locale.code" class="material-icons text-sm ml-auto">check</span>
                   </button>
                 </div>
               </div>
@@ -323,8 +397,10 @@
             </Transition>
           </div>
           
-          <NotificationsDropdown />
-          <div class="relative group cursor-pointer" ref="userMenuContainer">
+          <!-- Notifications and User Menu (only when logged in) -->
+          <template v-if="props.showNavigation">
+            <NotificationsDropdown />
+            <div class="relative group cursor-pointer" ref="userMenuContainer">
             <div class="flex items-center gap-2 lg:gap-3" @click.stop="toggleUserMenu">
               <div class="relative">
                 <div
@@ -408,6 +484,7 @@
               </div>
             </Transition>
           </div>
+          </template>
         </div>
 
       </div>
@@ -425,6 +502,14 @@ import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 import NotificationsDropdown from '@/components/layout/NotificationsDropdown.vue'
 
+interface Props {
+  showNavigation?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showNavigation: true
+})
+
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -433,9 +518,11 @@ const { locale: currentLocale, setLocale, availableLocales, t } = useLocale()
 
 const showUserMenu = ref(false)
 const showLanguageMenu = ref(false)
+const showMobileLanguageMenu = ref(false)
 const userMenuContainer = ref<HTMLElement | null>(null)
 const userMenuContainerMobile = ref<HTMLElement | null>(null)
 const languageMenuContainer = ref<HTMLElement | null>(null)
+const languageMenuContainerMobile = ref<HTMLElement | null>(null)
 
 const userStore = useUserStore()
 
@@ -457,9 +544,18 @@ function toggleLanguageMenu() {
   showUserMenu.value = false
 }
 
+function toggleMobileLanguageMenu() {
+  showMobileLanguageMenu.value = !showMobileLanguageMenu.value
+}
+
 function handleLocaleChange(newLocale: string) {
   setLocale(newLocale)
   showLanguageMenu.value = false
+}
+
+function handleLocaleChangeMobile(newLocale: string) {
+  setLocale(newLocale)
+  showMobileLanguageMenu.value = false
 }
 
 const currentLocaleData = computed(() => {

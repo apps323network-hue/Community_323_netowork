@@ -126,12 +126,30 @@ export const useAuthStore = defineStore('auth', () => {
       const userStore = useUserStore()
       userStore.clearProfile()
       
+      // Limpar localStorage manualmente para garantir
+      localStorage.removeItem('supabase.auth.token')
+      
+      // Limpar todas as chaves do supabase no localStorage
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-') || key.includes('supabase')) {
+          localStorage.removeItem(key)
+        }
+      })
+      
       return { success: true }
     } catch (err: any) {
       // Mesmo com erro ou timeout, limpar o estado local
       user.value = null
       const userStore = useUserStore()
       userStore.clearProfile()
+      
+      // Limpar localStorage mesmo em caso de erro
+      localStorage.removeItem('supabase.auth.token')
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-') || key.includes('supabase')) {
+          localStorage.removeItem(key)
+        }
+      })
       
       error.value = err.message
       return { success: false, error: err.message }

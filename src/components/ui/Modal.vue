@@ -10,7 +10,7 @@
     >
       <div
         v-if="modelValue"
-        class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
+        class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 overflow-hidden"
         @click.self="closeModal"
       >
         <!-- Backdrop -->
@@ -32,7 +32,7 @@
               'bg-white dark:bg-surface-dark',
               'border border-slate-200 dark:border-white/10',
               'shadow-2xl',
-              'max-h-[90vh] sm:max-h-[85vh] flex flex-col',
+              'max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden',
               sizeClasses
             ]"
           >
@@ -52,7 +52,7 @@
             </div>
 
             <!-- Body -->
-            <div class="p-4 sm:p-6 max-h-[calc(100vh-200px)] sm:max-h-[calc(100vh-250px)] overflow-y-auto">
+            <div class="p-4 sm:p-6 max-h-[calc(100vh-200px)] sm:max-h-[calc(100vh-250px)] overflow-y-auto overflow-x-hidden">
               <slot />
             </div>
 
