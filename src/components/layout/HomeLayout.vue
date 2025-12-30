@@ -79,7 +79,6 @@ const mobileMenuItems = [
   { path: '/eventos', label: 'Eventos', icon: 'event' },
   { path: '/servicos', label: 'Serviços', icon: 'business_center' },
   { path: '/beneficios', label: 'Benefícios', icon: 'card_giftcard' },
-  { path: '/perfil', label: 'Perfil', icon: 'person' },
 ]
 </script>
 

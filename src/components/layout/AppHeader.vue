@@ -128,9 +128,112 @@
           </div>
         </div>
 
-        <!-- Mobile Theme Toggle -->
-        <div class="md:hidden flex items-center">
+        <!-- Mobile Menu - Theme, Notifications, User -->
+        <div class="md:hidden flex items-center gap-3">
           <AnimatedThemeToggler />
+          
+          <!-- Notifications Mobile -->
+          <NotificationsDropdown />
+          
+          <!-- User Menu Mobile -->
+          <div class="relative" ref="userMenuContainerMobile">
+            <button
+              @click.stop="toggleUserMenu"
+              class="relative flex items-center"
+            >
+              <div class="relative">
+                <div
+                  class="absolute -inset-0.5 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-75 transition duration-200"
+                  :class="showUserMenu ? 'opacity-100' : ''"
+                ></div>
+                <Avatar
+                  :src="userAvatar"
+                  :name="userName"
+                  size="sm"
+                  class="relative border-2 border-white dark:border-surface-dark"
+                />
+              </div>
+            </button>
+
+            <!-- Dropdown Menu Mobile -->
+            <Transition
+              enter-active-class="transition-all duration-200"
+              enter-from-class="opacity-0 scale-95 translate-y-2"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition-all duration-200"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-2"
+            >
+              <div
+                v-if="showUserMenu"
+                class="absolute right-0 mt-2 w-56 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
+                @click.stop
+              >
+                <!-- User Info Header -->
+                <div class="p-4 border-b border-slate-200 dark:border-white/10">
+                  <div class="flex items-center gap-3">
+                    <Avatar
+                      :src="userAvatar"
+                      :name="userName"
+                      size="md"
+                      class="border-2 border-primary dark:border-secondary"
+                    />
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                        {{ userDisplayName }}
+                      </p>
+                      <p class="text-xs text-slate-500 dark:text-gray-400 truncate">{{ userTitle }}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="p-2">
+                  <RouterLink
+                    to="/conexoes"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">groups</span>
+                    Minha Rede
+                  </RouterLink>
+                  <RouterLink
+                    to="/meus-servicos"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+                    Meus Serviços
+                  </RouterLink>
+                  <RouterLink
+                    to="/perfil"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">person</span>
+                    Meu Perfil
+                  </RouterLink>
+                  <!-- Dashboard Admin (apenas para admins) -->
+                  <div v-if="isAdmin" class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
+                    <RouterLink
+                      to="/admin/membros"
+                      class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-primary dark:text-secondary hover:bg-primary/10 dark:hover:bg-secondary/10 transition-colors"
+                      @click="showUserMenu = false"
+                    >
+                      <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                      Dashboard Admin
+                    </RouterLink>
+                  </div>
+                  <button
+                    @click="handleLogout"
+                    class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                    Sair
+                  </button>
+                </div>
+              </div>
+            </Transition>
+          </div>
         </div>
 
         <!-- User Menu -->
@@ -294,6 +397,7 @@ const { locale: currentLocale, setLocale, availableLocales, t } = useLocale()
 const showUserMenu = ref(false)
 const showLanguageMenu = ref(false)
 const userMenuContainer = ref<HTMLElement | null>(null)
+const userMenuContainerMobile = ref<HTMLElement | null>(null)
 const languageMenuContainer = ref<HTMLElement | null>(null)
 
 const userStore = useUserStore()
@@ -354,6 +458,9 @@ async function handleLogout() {
 
 function handleClickOutside(event: MouseEvent) {
   if (userMenuContainer.value && !userMenuContainer.value.contains(event.target as Node)) {
+    showUserMenu.value = false
+  }
+  if (userMenuContainerMobile.value && !userMenuContainerMobile.value.contains(event.target as Node)) {
     showUserMenu.value = false
   }
   if (languageMenuContainer.value && !languageMenuContainer.value.contains(event.target as Node)) {
