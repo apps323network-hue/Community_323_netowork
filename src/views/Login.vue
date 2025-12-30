@@ -1,10 +1,15 @@
 <template>
-  <div
-    class="flex min-h-screen relative bg-background-dark text-slate-100 font-sans antialiased selection:bg-primary selection:text-white"
-  >
+  <div class="min-h-screen bg-slate-50 dark:bg-background-dark">
+    <!-- Header -->
+    <AppHeader :show-navigation="false" />
+    
+    <!-- Login Content -->
+    <div
+      class="flex min-h-[calc(100vh-80px)] relative text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-primary selection:text-white"
+    >
     <!-- Left Side - Image/Logo -->
     <div
-      class="hidden lg:flex w-1/2 relative overflow-hidden bg-background-dark items-center justify-center p-12 border-r border-slate-800/50"
+      class="hidden lg:flex w-1/2 relative overflow-hidden bg-slate-100 dark:bg-background-dark items-center justify-center p-12 border-r border-slate-200 dark:border-slate-800/50"
     >
       <div
         class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0"
@@ -29,23 +34,22 @@
             />
           </div>
         </div>
-        <h1 class="text-5xl font-black text-white mb-6 leading-tight tracking-tight">
-          Conectando o Brasil <br />
+        <h1 class="text-5xl font-black text-slate-900 dark:text-white mb-6 leading-tight tracking-tight">
+          {{ t('auth.tagline') }} <br />
           <span
             class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-secondary neon-text"
-            >nos EUA</span
+            >{{ t('auth.taglineHighlight') }}</span
           >
         </h1>
-        <p class="text-slate-400 text-lg leading-relaxed mb-10 max-w-md">
-          A plataforma definitiva para artistas, empreendedores e profissionais. Expanda seus
-          negócios e construa sua comunidade.
+        <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed mb-10 max-w-md">
+          {{ t('auth.description') }}
         </p>
       </div>
     </div>
 
     <!-- Right Side - Form -->
     <div
-      class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 bg-background-dark relative overflow-hidden"
+      class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 bg-white dark:bg-background-dark relative overflow-hidden"
     >
       <div
         class="lg:hidden absolute top-[-20%] left-[-20%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px]"
@@ -55,43 +59,43 @@
       ></div>
       <div class="w-full max-w-md space-y-8 relative z-10">
         <!-- Tabs -->
-        <div class="flex justify-center mb-8 border-b border-slate-800 pb-1 relative">
+        <div class="flex justify-center mb-8 border-b border-slate-200 dark:border-slate-800 pb-1 relative">
           <div class="grid grid-cols-2 w-full">
             <button
               :class="[
                 'pb-3 text-lg transition-all duration-300 relative',
                 activeTab === 'login'
                   ? 'text-primary border-b-2 border-primary font-bold'
-                  : 'text-slate-500 hover:text-slate-300 border-b-2 border-transparent font-medium',
+                  : 'text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent font-medium',
               ]"
               @click="activeTab = 'login'"
             >
-              Login
+              {{ t('auth.loginTab') }}
             </button>
             <button
               :class="[
                 'pb-3 text-lg transition-all duration-300',
                 activeTab === 'register'
                   ? 'text-primary border-b-2 border-primary font-bold'
-                  : 'text-slate-500 hover:text-slate-300 border-b-2 border-transparent font-medium',
+                  : 'text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent font-medium',
               ]"
               @click="activeTab = 'register'"
             >
-              Cadastro
+              {{ t('auth.registerTab') }}
             </button>
           </div>
         </div>
 
         <!-- Form Title -->
         <div class="text-center">
-          <h2 class="text-3xl font-extrabold tracking-tight text-white">
-            {{ activeTab === 'login' ? 'Bem-vindo de volta' : 'Junte-se a nós' }}
+          <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            {{ activeTab === 'login' ? t('auth.welcomeBack') : t('auth.joinUs') }}
           </h2>
-          <p class="mt-2 text-sm text-slate-400">
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
             {{
               activeTab === 'login'
-                ? 'Acesse sua conta para conectar-se.'
-                : 'Crie sua conta e comece a expandir sua rede.'
+                ? t('auth.loginSubtitle')
+                : t('auth.registerSubtitle')
             }}
           </p>
         </div>
@@ -104,8 +108,8 @@
         >
           <div class="space-y-5">
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-2" for="email"
-                >Email ou Usuário</label
+              <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="email"
+                >{{ t('auth.emailOrUsername') }}</label
               >
               <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -127,14 +131,14 @@
                   id="email"
                   v-model="loginForm.email"
                   type="email"
-                  class="block w-full pl-10 pr-3 py-3.5 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
+                  class="block w-full pl-10 pr-3 py-3.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
                   required
                 />
               </div>
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-2" for="password"
-                >Senha</label
+              <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="password"
+                >{{ t('auth.password') }}</label
               >
               <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -156,7 +160,7 @@
                   id="password"
                   v-model="loginForm.password"
                   type="password"
-                  class="block w-full pl-10 pr-3 py-3.5 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
+                  class="block w-full pl-10 pr-3 py-3.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
                   required
                 />
               </div>
@@ -170,7 +174,7 @@
                     class="font-medium text-primary hover:text-cyan-300 transition-colors hover:shadow-[0_0_10px_rgba(6,182,212,0.5)]"
                     @click.stop
                   >
-                    Esqueceu sua senha?
+                    {{ t('auth.forgotPasswordLink') }}
                   </RouterLink>
                 </div>
               </div>
@@ -178,7 +182,7 @@
           </div>
           <div>
             <Button variant="primary" size="lg" full-width :loading="loading" type="submit">
-              Entrar
+              {{ t('auth.login') }}
             </Button>
           </div>
         </form>
@@ -192,76 +196,76 @@
           <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-semibold text-slate-300 mb-1" for="first-name"
-                  >Nome</label
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="first-name"
+                  >{{ t('auth.firstName') }}</label
                 >
                 <input
                   id="first-name"
                   v-model="registerForm.firstName"
                   type="text"
-                  class="block w-full px-3 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
+                  class="block w-full px-3 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
                   required
                 />
               </div>
               <div>
-                <label class="block text-sm font-semibold text-slate-300 mb-1" for="last-name"
-                  >Sobrenome</label
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="last-name"
+                  >{{ t('auth.lastName') }}</label
                 >
                 <input
                   id="last-name"
                   v-model="registerForm.lastName"
                   type="text"
-                  class="block w-full px-3 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
+                  class="block w-full px-3 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
                   required
                 />
               </div>
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-1" for="reg-email"
-                >Email Profissional</label
+              <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="reg-email"
+                >{{ t('auth.professionalEmail') }}</label
               >
               <input
                 id="reg-email"
                 v-model="registerForm.email"
                 type="email"
-                class="block w-full px-3 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
+                class="block w-full px-3 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
                 required
               />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-1" for="reg-password"
-                >Senha</label
+              <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="reg-password"
+                >{{ t('auth.password') }}</label
               >
               <input
                 id="reg-password"
                 v-model="registerForm.password"
                 type="password"
-                class="block w-full px-3 py-3 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
+                class="block w-full px-3 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
                 required
               />
             </div>
             <div>
-              <label class="block text-sm font-semibold text-slate-300 mb-1" for="role"
-                >Eu sou...</label
+              <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="role"
+                >{{ t('auth.iAm') }}</label
               >
               <Select
                 id="role"
                 v-model="registerForm.role"
                 :options="roleOptions"
-                placeholder="Selecione..."
+                :placeholder="t('auth.selectPlaceholder')"
               />
             </div>
           </div>
           <div>
             <Button variant="secondary" size="lg" full-width :loading="loading" type="submit">
-              Criar Conta
+              {{ t('auth.createAccount') }}
             </Button>
           </div>
-          <div class="text-xs text-center text-slate-500 mt-4">
-            Ao se registrar, você concorda com nossos
-            <a class="underline hover:text-primary transition-colors" href="#">Termos</a> e
+          <div class="text-xs text-center text-slate-500 dark:text-slate-500 mt-4">
+            {{ t('auth.termsAgreement') }}
+            <a class="underline hover:text-primary transition-colors" href="#">{{ t('auth.terms') }}</a> {{ t('auth.and') }}
             <a class="underline hover:text-primary transition-colors" href="#"
-              >Política de Privacidade</a
+              >{{ t('auth.privacyPolicy') }}</a
             >.
           </div>
         </form>
@@ -290,9 +294,8 @@
                 <span class="material-symbols-outlined text-sm align-middle mr-1 text-primary"
                   >info</span
                 >
-                <strong>O que fazer agora?</strong><br />
-                Verifique sua caixa de entrada e clique no link de confirmação que enviamos. Se não
-                encontrar o email, verifique também sua pasta de spam.
+                <strong>{{ t('auth.whatToDoNow') }}</strong><br />
+                {{ t('auth.verifyInboxInstructions') }}
               </p>
             </div>
           </div>
@@ -307,18 +310,18 @@
                 :loading="resendingEmail"
                 :disabled="resendCooldown > 0"
               >
-                <span v-if="resendCooldown > 0"> Aguarde {{ resendCooldown }}s </span>
-                <span v-else> Reenviar Email de Confirmação </span>
+                <span v-if="resendCooldown > 0"> {{ t('auth.wait') }} {{ resendCooldown }}s </span>
+                <span v-else> {{ t('auth.resendConfirmationEmail') }} </span>
               </Button>
               <Button variant="primary" size="sm" full-width @click="closeLoginErrorModal">
-                Entendi
+                {{ t('auth.understood') }}
               </Button>
             </div>
           </template>
         </Modal>
 
         <!-- Modal de Verificação de Email -->
-        <Modal v-model="showEmailVerificationModal" title="Verifique seu email" :closable="true">
+        <Modal v-model="showEmailVerificationModal" :title="t('auth.verifyEmailTitle')" :closable="true">
           <div class="text-center">
             <div class="mb-6 flex justify-center">
               <div class="rounded-full bg-primary/10 dark:bg-primary/20 p-4">
@@ -328,27 +331,25 @@
               </div>
             </div>
             <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">
-              Conta criada com sucesso!
+              {{ t('auth.accountCreatedSuccess') }}
             </h3>
             <p class="text-slate-600 dark:text-gray-400 mb-4 leading-relaxed">
-              Enviamos um email de verificação para
+              {{ t('auth.verificationEmailSent') }}
               <strong class="text-slate-900 dark:text-white">{{ registerForm.email }}</strong>
             </p>
             <p class="text-sm text-slate-500 dark:text-gray-500 mb-6 leading-relaxed">
-              Por favor, verifique sua caixa de entrada e clique no link de confirmação para ativar
-              sua conta. Se não encontrar o email, verifique também sua pasta de spam.
+              {{ t('auth.checkInboxInstructions') }}
             </p>
             <div class="bg-slate-50 dark:bg-surface-lighter rounded-lg p-4 mb-6">
               <p class="text-xs text-slate-600 dark:text-gray-400">
                 <span class="material-symbols-outlined text-sm align-middle mr-1">info</span>
-                <strong>Importante:</strong> Você precisará verificar seu email antes de fazer login
-                pela primeira vez.
+                <strong>{{ t('auth.important') }}</strong> {{ t('auth.verifyBeforeLogin') }}
               </p>
             </div>
           </div>
           <template #footer>
             <Button variant="primary" full-width @click="closeEmailModal">
-              Entendi, obrigado!
+              {{ t('auth.thankYou') }}
             </Button>
           </template>
         </Modal>
@@ -388,8 +389,9 @@
         -->
       </div>
       <div class="absolute bottom-6 w-full text-center">
-        <p class="text-xs text-slate-600">© 2025 (323) Network. Todos os direitos reservados.</p>
+        <p class="text-xs text-slate-500 dark:text-slate-600">{{ t('auth.copyright') }}</p>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -402,7 +404,11 @@ import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button.vue'
 import Select from '@/components/ui/Select.vue'
 import Modal from '@/components/ui/Modal.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -437,10 +443,10 @@ const registerForm = ref({
 })
 
 const roleOptions = [
-  { value: 'empreendedor', label: 'Empreendedor' },
-  { value: 'artista', label: 'Artista' },
-  { value: 'profissional', label: 'Profissional Liberal' },
-  { value: 'investidor', label: 'Investidor' },
+  { value: 'empreendedor', label: t('auth.roleEntrepreneur') },
+  { value: 'artista', label: t('auth.roleArtist') },
+  { value: 'profissional', label: t('auth.roleProfessional') },
+  { value: 'investidor', label: t('auth.roleInvestor') },
 ]
 
 async function handleLogin() {
@@ -493,17 +499,17 @@ async function handleLogin() {
 
     if (isEmailNotConfirmed) {
       loginErrorModal.value = {
-        title: 'Email não confirmado',
-        message: `O email ${loginForm.value.email} ainda não foi confirmado. Por favor, verifique sua caixa de entrada e clique no link de confirmação que enviamos.`,
+        title: t('auth.emailNotConfirmedTitle'),
+        message: t('auth.emailNotConfirmedMessage', { email: loginForm.value.email }),
         icon: 'mark_email_unread',
         isEmailNotConfirmed: true,
       }
     } else {
       loginErrorModal.value = {
-        title: 'Erro ao fazer login',
+        title: t('auth.loginErrorTitle'),
         message:
           error.message ||
-          'Não foi possível fazer login. Verifique suas credenciais e tente novamente.',
+          t('auth.loginErrorMessage'),
         icon: 'error',
         isEmailNotConfirmed: false,
       }
@@ -528,8 +534,8 @@ function closeLoginErrorModal() {
 async function resendConfirmationEmail() {
   if (!loginForm.value.email) {
     loginErrorModal.value = {
-      title: 'Email necessário',
-      message: 'Por favor, informe seu email no campo de login antes de reenviar.',
+      title: t('auth.emailNecessaryTitle'),
+      message: t('auth.emailNecessaryMessage'),
       icon: 'error',
       isEmailNotConfirmed: false,
     }
@@ -559,18 +565,18 @@ async function resendConfirmationEmail() {
 
     // Mostrar mensagem de sucesso
     loginErrorModal.value = {
-      title: 'Email reenviado!',
-      message: `Enviamos um novo email de confirmação para ${loginForm.value.email}. Verifique sua caixa de entrada e também a pasta de spam.`,
+      title: t('auth.emailResentTitle'),
+      message: t('auth.emailResentMessage', { email: loginForm.value.email }),
       icon: 'mark_email_read',
       isEmailNotConfirmed: false,
     }
   } catch (error: any) {
     console.error('Error resending confirmation:', error)
     loginErrorModal.value = {
-      title: 'Erro ao reenviar email',
+      title: t('auth.resendErrorTitle'),
       message:
         error.message ||
-        'Não foi possível reenviar o email. Tente novamente mais tarde ou entre em contato com o suporte.',
+        t('auth.resendErrorMessage'),
       icon: 'error',
       isEmailNotConfirmed: false,
     }
