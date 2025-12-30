@@ -28,7 +28,7 @@
         </RouterLink>
 
         <!-- Navigation Links - Desktop -->
-        <div class="hidden md:block">
+        <div v-if="props.showNavigation" class="hidden md:block">
           <div class="ml-10 flex items-baseline space-x-6">
             <RouterLink
               to="/"
@@ -323,8 +323,8 @@
             </Transition>
           </div>
           
-          <NotificationsDropdown />
-          <div class="relative group cursor-pointer" ref="userMenuContainer">
+          <NotificationsDropdown v-if="props.showNavigation" />
+          <div v-if="props.showNavigation" class="relative group cursor-pointer" ref="userMenuContainer">
             <div class="flex items-center gap-2 lg:gap-3" @click.stop="toggleUserMenu">
               <div class="relative">
                 <div
@@ -424,6 +424,14 @@ import { useLocale } from '@/composables/useLocale'
 import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 import NotificationsDropdown from '@/components/layout/NotificationsDropdown.vue'
+
+interface Props {
+  showNavigation?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showNavigation: true
+})
 
 const route = useRoute()
 const router = useRouter()
