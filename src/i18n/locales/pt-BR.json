@@ -112,6 +112,7 @@
     "events": {
         "title": "Próximos Eventos",
         "description": "Participe de eventos exclusivos da comunidade 323 Network.",
+        "createEvent": "Criar Evento",
         "searchPlaceholder": "Buscar eventos...",
         "filterAll": "Todos",
         "filterNetworking": "Networking",

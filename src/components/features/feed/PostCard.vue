@@ -1,5 +1,5 @@
 <template>
-  <Card variant="white" class="p-0 overflow-hidden shadow-sm hover:shadow-md transition-shadow dark:bg-surface-dark dark:border-gray-800">
+  <Card variant="white" class="p-0 overflow-hidden shadow-sm hover:shadow-lg transition-shadow dark:bg-surface-dark dark:border-gray-800">
     <!-- Pinned Badge -->
     <div v-if="post.fixado" class="px-5 pt-4 pb-2">
       <Badge variant="primary" size="sm">
@@ -88,15 +88,15 @@
     </div>
 
     <!-- Post Content -->
-    <div class="px-6 py-5">
-      <p class="text-sm text-gray-900 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+    <div class="px-6 py-5 md:px-8 md:py-6">
+      <p class="text-base md:text-lg text-gray-900 dark:text-gray-300 leading-relaxed whitespace-pre-line">
         {{ post.conteudo }}
       </p>
-      <div v-if="hashtags.length" class="mt-3 flex flex-wrap gap-2">
+      <div v-if="hashtags.length" class="mt-4 flex flex-wrap gap-2">
         <span
           v-for="tag in hashtags"
           :key="tag"
-          class="text-secondary hover:text-primary transition-colors cursor-pointer font-medium text-sm"
+          class="text-secondary hover:text-primary transition-colors cursor-pointer font-medium text-sm md:text-base"
         >
           {{ tag }}
         </span>
@@ -106,19 +106,19 @@
     <!-- Post Image -->
     <div
       v-if="post.image_url"
-      class="mt-2 relative h-72 bg-gray-900 group overflow-hidden rounded-xl cursor-pointer"
+      class="mt-2 relative bg-gray-900 group overflow-hidden rounded-xl cursor-pointer"
       @click="showImageLightbox = true"
     >
       <img
         :alt="'Imagem do post'"
         :src="post.image_url"
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        class="w-full h-auto max-h-[600px] md:max-h-[700px] object-contain bg-gray-50 dark:bg-gray-900 transition-transform duration-500 group-hover:scale-[1.02]"
       />
-      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none"></div>
       <!-- Zoom Icon Overlay -->
-      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <div class="bg-black/50 backdrop-blur-sm rounded-full p-3">
-          <span class="material-symbols-outlined text-white text-2xl">zoom_in</span>
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <div class="bg-black/60 backdrop-blur-sm rounded-full p-4 shadow-xl">
+          <span class="material-symbols-outlined text-white text-3xl">zoom_in</span>
         </div>
       </div>
     </div>

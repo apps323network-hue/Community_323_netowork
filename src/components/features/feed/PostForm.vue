@@ -111,24 +111,120 @@
             </div>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.dateTime') }}</label>
-            <input
-              v-model="eventForm.data_hora"
-              type="datetime-local"
-              class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-            />
+        <!-- Data -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">Data *</label>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Dia</label>
+              <div class="relative">
+                <select
+                  v-model="dateTime.day"
+                  required
+                  class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                >
+                  <option value="">Dia</option>
+                  <option v-for="d in 31" :key="d" :value="d.toString().padStart(2, '0')">
+                    {{ d.toString().padStart(2, '0') }}
+                  </option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                  expand_more
+                </span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Mês</label>
+              <div class="relative">
+                <select
+                  v-model="dateTime.month"
+                  required
+                  class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                >
+                  <option value="">Mês</option>
+                  <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
+                    {{ getMonthName(m) }}
+                  </option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                  expand_more
+                </span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Ano</label>
+              <div class="relative">
+                <select
+                  v-model="dateTime.year"
+                  required
+                  class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                >
+                  <option value="">Ano</option>
+                  <option v-for="y in getYearOptions()" :key="y" :value="y">
+                    {{ y }}
+                  </option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                  expand_more
+                </span>
+              </div>
+            </div>
           </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.eventType') }}</label>
-            <select
-              v-model="eventForm.tipo"
-              class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-            >
-              <option value="presencial">{{ t('events.inPerson') }}</option>
-              <option value="webinar">{{ t('events.webinar') }}</option>
-            </select>
+        </div>
+
+        <!-- Tipo de Evento -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.eventType') }} *</label>
+          <select
+            v-model="eventForm.tipo"
+            required
+            class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+          >
+            <option value="presencial">{{ t('events.inPerson') }}</option>
+            <option value="webinar">{{ t('events.webinar') }}</option>
+          </select>
+        </div>
+
+        <!-- Hora -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">Hora *</label>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Hora</label>
+              <div class="relative">
+                <select
+                  v-model="dateTime.hour"
+                  required
+                  class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                >
+                  <option value="">Hora</option>
+                  <option v-for="h in 24" :key="h - 1" :value="(h - 1).toString().padStart(2, '0')">
+                    {{ (h - 1).toString().padStart(2, '0') }}
+                  </option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                  expand_more
+                </span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Minuto</label>
+              <div class="relative">
+                <select
+                  v-model="dateTime.minute"
+                  required
+                  class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                >
+                  <option value="">Minuto</option>
+                  <option v-for="m in 60" :key="m - 1" :value="(m - 1).toString().padStart(2, '0')">
+                    {{ (m - 1).toString().padStart(2, '0') }}
+                  </option>
+                </select>
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                  expand_more
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <div v-if="eventForm.tipo === 'presencial'">
@@ -140,11 +236,16 @@
             placeholder="Ex: Miami, FL"
           />
         </div>
+        
+        <!-- Mensagem de erro -->
+        <div v-if="error" class="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+          {{ error }}
+        </div>
       </div>
       <template #footer>
         <div class="flex gap-3">
-          <Button variant="outline" @click="showEventModal = false">{{ t('common.cancel') }}</Button>
-          <Button variant="primary" :disabled="!eventForm.titulo || !eventForm.data_hora" @click="handleCreateEvent">
+          <Button variant="outline" @click="closeEventModal">{{ t('common.cancel') }}</Button>
+          <Button variant="primary" :disabled="!eventForm.titulo || !buildDateTimeString()" @click="handleCreateEvent">
             {{ t('events.createEvent') }}
           </Button>
         </div>
@@ -154,7 +255,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
@@ -191,6 +292,14 @@ const eventForm = ref({
   local: '',
 })
 
+const dateTime = ref({
+  day: '',
+  month: '',
+  year: '',
+  hour: '',
+  minute: '',
+})
+
 const userName = computed(() => userStore.profile?.nome || authStore.user?.email?.split('@')[0] || 'Usuário')
 const userAvatar = computed(() => userStore.profile?.avatar_url || authStore.user?.user_metadata?.avatar_url || '')
 
@@ -198,6 +307,30 @@ const emit = defineEmits<{
   'post-created': [postId: string]
   'event-created': [eventId: string]
 }>()
+
+// Resetar formulário quando modal fechar
+watch(showEventModal, (newValue) => {
+  if (!newValue) {
+    // Modal foi fechado, resetar formulário
+    eventForm.value = {
+      titulo: '',
+      descricao: '',
+      data_hora: '',
+      tipo: 'presencial',
+      local: '',
+    }
+    dateTime.value = {
+      day: '',
+      month: '',
+      year: '',
+      hour: '',
+      minute: '',
+    }
+    eventImageFile.value = null
+    eventImagePreview.value = null
+    error.value = null
+  }
+})
 
 async function handleImageSelect(event: Event) {
   const target = event.target as HTMLInputElement
@@ -382,27 +515,131 @@ async function handleSubmit() {
   }
 }
 
+function getMonthName(month: number): string {
+  const months = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ]
+  return months[month - 1]
+}
+
+function getYearOptions(): number[] {
+  const currentYear = new Date().getFullYear()
+  const years = []
+  for (let i = currentYear; i <= currentYear + 5; i++) {
+    years.push(i)
+  }
+  return years
+}
+
+function buildDateTimeString(): string {
+  if (!dateTime.value.day || !dateTime.value.month || !dateTime.value.year || 
+      !dateTime.value.hour || !dateTime.value.minute) {
+    return ''
+  }
+  
+  // Formato: YYYY-MM-DDTHH:mm (ISO 8601)
+  const dateStr = `${dateTime.value.year}-${dateTime.value.month}-${dateTime.value.day}`
+  const timeStr = `${dateTime.value.hour}:${dateTime.value.minute}`
+  return `${dateStr}T${timeStr}:00`
+}
+
+function closeEventModal() {
+  showEventModal.value = false
+  // Reset form
+  eventForm.value = {
+    titulo: '',
+    descricao: '',
+    data_hora: '',
+    tipo: 'presencial',
+    local: '',
+  }
+  dateTime.value = {
+    day: '',
+    month: '',
+    year: '',
+    hour: '',
+    minute: '',
+  }
+  eventImageFile.value = null
+  eventImagePreview.value = null
+  error.value = null
+}
+
 async function handleCreateEvent() {
-  if (!eventForm.value.titulo || !eventForm.value.data_hora) return
+  console.log('=== INÍCIO handleCreateEvent ===')
+  console.log('1. Dados do formulário:', { 
+    titulo: eventForm.value.titulo, 
+    descricao: eventForm.value.descricao,
+    tipo: eventForm.value.tipo,
+    local: eventForm.value.local,
+    dateTime: dateTime.value,
+    eventForm: { ...eventForm.value }
+  })
+  
+  // Limpar erro anterior
+  error.value = null
+  
+  // Validar título
+  if (!eventForm.value.titulo || eventForm.value.titulo.trim() === '') {
+    error.value = 'Por favor, preencha o título do evento'
+    console.log('❌ Erro: título vazio')
+    return
+  }
+  
+  // Validar data e hora
+  const dataHora = buildDateTimeString()
+  console.log('2. Data/Hora construída:', dataHora)
+  
+  if (!dataHora) {
+    const missingFields = []
+    if (!dateTime.value.day) missingFields.push('Dia')
+    if (!dateTime.value.month) missingFields.push('Mês')
+    if (!dateTime.value.year) missingFields.push('Ano')
+    if (!dateTime.value.hour) missingFields.push('Hora')
+    if (!dateTime.value.minute) missingFields.push('Minuto')
+    
+    error.value = `Por favor, preencha todos os campos de data e hora. Faltando: ${missingFields.join(', ')}`
+    console.log('❌ Erro: campos de data/hora incompletos', missingFields)
+    return
+  }
 
   loading.value = true
   error.value = null
+  
+  console.log('3. Usuário autenticado:', {
+    userId: authStore.user?.id,
+    email: authStore.user?.email,
+    hasUser: !!authStore.user
+  })
+  
+  console.log('4. Iniciando criação do evento...')
 
   try {
+    console.log('5. Verificando palavras proibidas...')
     // Verificar palavras proibidas em título e descrição
     const titleCheck = await checkBannedWords(eventForm.value.titulo)
     const descCheck = eventForm.value.descricao ? await checkBannedWords(eventForm.value.descricao) : { found: false, action: null, words: [] }
+    
+    console.log('6. Resultado verificação palavras:', {
+      titleCheck: titleCheck.found ? 'BLOQUEADO' : 'OK',
+      descCheck: descCheck.found ? 'BLOQUEADO' : 'OK',
+      titleWords: titleCheck.words,
+      descWords: descCheck.words
+    })
     
     // Bloquear qualquer palavra ofensiva encontrada
     if (titleCheck.found) {
       error.value = 'O título do evento contém palavras ofensivas. Por favor, revise o conteúdo.'
       loading.value = false
+      console.log('❌ Bloqueado por palavras ofensivas no título')
       return
     }
     
     if (descCheck.found) {
       error.value = 'A descrição do evento contém palavras ofensivas. Por favor, revise o conteúdo.'
       loading.value = false
+      console.log('❌ Bloqueado por palavras ofensivas na descrição')
       return
     }
     
@@ -412,54 +649,85 @@ async function handleCreateEvent() {
     // Upload da imagem do evento se houver
     let eventImageUrl: string | null = null
     if (eventImageFile.value) {
+      console.log('7. Fazendo upload da imagem...')
       eventImageUrl = await uploadEventImage()
       if (!eventImageUrl) {
         loading.value = false
+        console.log('❌ Upload da imagem falhou')
         return
       }
+      console.log('✅ Upload da imagem concluído:', eventImageUrl)
+    } else {
+      console.log('7. Nenhuma imagem para upload')
     }
+
+    const eventData = {
+      titulo: finalTitulo,
+      descricao: finalDescricao || null,
+      data_hora: dataHora,
+      tipo: eventForm.value.tipo,
+      local: eventForm.value.tipo === 'presencial' ? eventForm.value.local : null,
+      image_url: eventImageUrl || null,
+      status: 'pending', // Sempre criar como pending
+      created_by: authStore.user?.id,
+    }
+    
+    console.log('8. Dados que serão inseridos:', JSON.stringify(eventData, null, 2))
+    console.log('9. Tentando inserir no banco de dados...')
 
     const { data, error: eventError } = await supabase
       .from('events')
-      .insert({
-        titulo: finalTitulo,
-        descricao: finalDescricao || null,
-        data_hora: eventForm.value.data_hora,
-        tipo: eventForm.value.tipo,
-        local: eventForm.value.tipo === 'presencial' ? eventForm.value.local : null,
-        image_url: eventImageUrl || null,
-        status: 'pending', // Sempre criar como pending
-        created_by: authStore.user?.id,
-      })
+      .insert(eventData)
       .select()
       .single()
 
-    if (eventError) throw eventError
+    console.log('10. Resposta do Supabase:', {
+      hasData: !!data,
+      hasError: !!eventError,
+      error: eventError ? {
+        code: eventError.code,
+        message: eventError.message,
+        details: eventError.details,
+        hint: eventError.hint
+      } : null,
+      data: data ? { id: data.id, titulo: data.titulo, status: data.status } : null
+    })
 
+    if (eventError) {
+      console.error('❌ ERRO ao criar evento:', eventError)
+      throw eventError
+    }
+    
+    console.log('✅ Evento criado com sucesso! ID:', data.id)
+
+    console.log('11. Criando post sobre o evento...')
     // Criar post sobre o evento
     const newPost = await createPost({
       conteudo: `📅 Novo evento: ${eventForm.value.titulo}\n\n${eventForm.value.descricao || ''}`,
       tipo: 'oportunidade',
     })
+    console.log('✅ Post criado com sucesso! ID:', newPost.id)
 
     // Reset form
-    showEventModal.value = false
-    eventForm.value = {
-      titulo: '',
-      descricao: '',
-      data_hora: '',
-      tipo: 'presencial',
-      local: '',
-    }
-    eventImageFile.value = null
-    eventImagePreview.value = null
+    closeEventModal()
     content.value = ''
 
     emit('post-created', newPost.id)
     emit('event-created', data.id)
+    
+    console.log('=== FIM handleCreateEvent - SUCESSO ===')
   } catch (err: any) {
+    console.error('=== ERRO em handleCreateEvent ===')
+    console.error('Tipo do erro:', err?.constructor?.name)
+    console.error('Código do erro:', err?.code)
+    console.error('Mensagem do erro:', err?.message)
+    console.error('Detalhes do erro:', err?.details)
+    console.error('Hint do erro:', err?.hint)
+    console.error('Erro completo:', err)
+    console.error('Stack trace:', err?.stack)
+    
     error.value = err.message || 'Erro ao criar evento. Tente novamente.'
-    console.error('Error creating event:', err)
+    console.error('=== FIM handleCreateEvent - ERRO ===')
   } finally {
     loading.value = false
   }
