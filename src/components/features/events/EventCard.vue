@@ -59,9 +59,11 @@ interface Props {
   event: Event
 }
 
-const props = defineProps<Props>()
+const { event } = defineProps<Props>()
 
-const emit = defineEmits<{
+// emit não é usado neste componente, mas mantido para compatibilidade futura
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+defineEmits<{
   click: [eventId: string]
 }>()
 </script>

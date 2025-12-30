@@ -723,7 +723,7 @@ async function handleCreateEvent() {
     const newPost = await createPost({
       conteudo: `📅 Novo evento: ${eventForm.value.titulo}\n\n${eventForm.value.descricao || ''}`,
       tipo: 'oportunidade',
-      image_url: eventImageUrl || null, // Usar a imagem do banner do evento no post
+      image_url: eventImageUrl || undefined, // Usar a imagem do banner do evento no post
     })
     console.log('✅ Post criado com sucesso! ID:', newPost.id, 'com imagem:', !!eventImageUrl)
 
