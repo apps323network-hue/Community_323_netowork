@@ -37,7 +37,6 @@
           :show-comments="expandedComments.has(post.id)"
           @toggle-comments="handleToggleComments"
           @share="handleShare"
-          @edit-comment="handleEditComment"
           @delete-comment="handleDeleteComment"
           @delete-post="handleDeletePost"
         >
@@ -185,10 +184,6 @@ async function handleShare(postId: string) {
   }
 }
 
-async function handleEditComment(commentId: string) {
-  // TODO: Implement edit comment modal/form
-  console.log('Edit comment:', commentId)
-}
 
 async function handleDeleteComment(commentId: string) {
   try {

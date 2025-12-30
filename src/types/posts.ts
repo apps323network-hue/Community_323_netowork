@@ -39,6 +39,10 @@ export interface Comment {
   conteudo: string
   created_at: string
   updated_at?: string
+  status?: PostStatus
+  moderated_by?: string
+  moderated_at?: string
+  rejection_reason?: string
   // Joined data
   author?: PostAuthor
 }

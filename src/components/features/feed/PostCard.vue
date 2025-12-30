@@ -171,7 +171,6 @@
           v-for="comment in post.comments"
           :key="comment.id"
           :comment="comment"
-          @edit="(id) => $emit('edit-comment', id)"
           @delete="(id) => $emit('delete-comment', id)"
         />
       </div>
@@ -208,7 +207,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'toggle-comments': [postId: string]
   'share': [postId: string]
-  'edit-comment': [commentId: string]
   'delete-comment': [commentId: string]
   'delete-post': [postId: string]
 }>()

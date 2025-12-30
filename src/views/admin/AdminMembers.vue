@@ -299,9 +299,8 @@ function handleUnsuspend(_userId: string) {
   toast.info('Funcionalidade será implementada em breve')
 }
 
-function handleViewHistory(_userId: string) {
-  // TODO: Implementar visualização de histórico (Sprint 2)
-  toast.info('Funcionalidade de histórico será implementada em breve')
+function handleViewHistory(userId: string) {
+  router.push({ name: 'UserHistory', params: { userId } })
 }
 
 onMounted(async () => {

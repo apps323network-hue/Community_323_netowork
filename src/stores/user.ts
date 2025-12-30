@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { logAdminAction } from '@/lib/auditLog'
 import type { UserRole, UserStatus } from '@/types/admin'
 
 export interface UserProfile {
@@ -82,7 +83,7 @@ export const useUserStore = defineStore('user', () => {
         code: error?.code || '',
       }
       console.error(`[USER] fetchProfile erro após ${(fetchErrorTime - fetchStartTime).toFixed(2)}ms:`, errorDetails)
-      
+
       // Não bloquear se houver erro - apenas logar
       // Mas definir profile como null para evitar estados inconsistentes
       profile.value = null
@@ -105,6 +106,16 @@ export const useUserStore = defineStore('user', () => {
 
       if (error) throw error
       profile.value = data
+
+      // Log da ação
+      if (profile.value) {
+        logAdminAction(profile.value.id, {
+          action: 'user_update_profile',
+          targetId: profile.value.id,
+          targetType: 'user',
+          details: { updates: Object.keys(updates) }
+        })
+      }
     } catch (error) {
       console.error('Error updating profile:', error)
       throw error
