@@ -17,6 +17,7 @@ export interface Post {
   image_url?: string
   created_at: string
   updated_at: string
+  edited_at?: string
   status?: PostStatus
   approved_by?: string
   approved_at?: string
@@ -29,6 +30,7 @@ export interface Post {
   likes_count?: number
   comments_count?: number
   isLiked?: boolean
+  isBookmarked?: boolean
   comments?: Comment[]
 }
 
@@ -39,6 +41,7 @@ export interface Comment {
   conteudo: string
   created_at: string
   updated_at?: string
+  edited_at?: string
   status?: PostStatus
   moderated_by?: string
   moderated_at?: string

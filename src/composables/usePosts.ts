@@ -53,6 +53,14 @@ export function usePosts() {
     return await postStore.deleteComment(commentId)
   }
 
+  async function editPost(postId: string, newContent: string) {
+    return await postStore.editPost(postId, newContent)
+  }
+
+  async function editComment(commentId: string, newContent: string) {
+    return await postStore.editComment(commentId, newContent)
+  }
+
   function reset() {
     postStore.reset()
   }
@@ -74,6 +82,8 @@ export function usePosts() {
     loadComments,
     addComment,
     removeComment,
+    editPost,
+    editComment,
     reset,
   }
 }

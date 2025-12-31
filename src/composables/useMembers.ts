@@ -81,20 +81,45 @@ export function useMembers() {
     }
   }
 
-  async function fetchMemberById(id: string): Promise<Member | null> {
+  async function fetchMemberById(idOrUsername: string): Promise<Member | null> {
     loading.value = true
     error.value = null
 
     try {
-      const { data, error: queryError } = await supabase
+      // Check if it's a valid UUID format
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrUsername)
+      
+      let query = supabase
         .from('profiles')
         .select('*')
-        .eq('id', id)
-        .single()
-
-      if (queryError) throw queryError
-
-      return data
+      
+      if (isUUID) {
+        // If it's a UUID, search by id
+        query = query.eq('id', idOrUsername)
+        const { data, error: queryError } = await query.single()
+        if (queryError) throw queryError
+        return data
+      } else {
+        // If it's not a UUID, search by nome (username) - exact match (case-insensitive)
+        // Use ilike for case-insensitive search, but we need exact match
+        const { data: dataList, error: listError } = await supabase
+          .from('profiles')
+          .select('*')
+          .ilike('nome', idOrUsername)
+        
+        if (listError) throw listError
+        
+        if (!dataList || dataList.length === 0) {
+          return null // User not found
+        }
+        
+        // Find exact match (case-insensitive)
+        const exactMatch = dataList.find(profile => 
+          profile.nome && profile.nome.toLowerCase() === idOrUsername.toLowerCase()
+        )
+        
+        return exactMatch || dataList[0] // Return exact match or first result
+      }
     } catch (err: any) {
       console.error('Error fetching member:', err)
       error.value = err.message || 'Erro ao buscar membro'

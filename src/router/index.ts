@@ -13,6 +13,24 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/posts-salvos',
+    name: 'SavedPosts',
+    component: () => import('@/views/SavedPosts.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/hashtag/:hashtag',
+    name: 'HashtagPage',
+    component: () => import('@/views/HashtagPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/feed/:postId',
+    name: 'PostDetail',
+    component: () => import('@/views/PostDetail.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue'),

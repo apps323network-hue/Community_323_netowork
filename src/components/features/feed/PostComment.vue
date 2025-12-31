@@ -4,15 +4,32 @@
     <div class="flex-1">
       <div class="flex items-start justify-between gap-2">
         <div>
-          <span class="font-semibold text-sm text-gray-900 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors cursor-pointer">
-            {{ authorName }}
-          </span>
-          <span class="text-xs text-gray-400 ml-2">{{ formatTime(comment.created_at) }}</span>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold text-sm text-gray-900 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors cursor-pointer">
+              {{ authorName }}
+            </span>
+            <Badge 
+              v-if="comment.edited_at" 
+              variant="secondary" 
+              size="sm"
+            >
+              <span class="material-icons-outlined text-[8px] mr-1">edit</span>
+              {{ t('posts.edited') }}
+            </Badge>
+          </div>
+          <span class="text-xs text-gray-400">{{ formatTime(comment.created_at) }}</span>
         </div>
         <div class="flex gap-2">
           <button
+            v-if="isOwnComment && canEditComment"
+            class="text-gray-400 hover:text-primary dark:hover:text-secondary text-sm transition-colors"
+            @click="handleEdit"
+          >
+            {{ t('posts.editComment') }}
+          </button>
+          <button
             v-if="isOwnComment"
-            class="text-gray-400 hover:text-primary text-sm transition-colors"
+            class="text-gray-400 hover:text-red-500 text-sm transition-colors"
             @click="emit('delete', comment.id)"
           >
             {{ t('common.delete') }}
@@ -26,7 +43,10 @@
           </button>
         </div>
       </div>
-      <p class="text-sm text-gray-900 dark:text-gray-300 mt-1 leading-relaxed">{{ comment.conteudo }}</p>
+      <p 
+        class="text-sm text-gray-900 dark:text-gray-300 mt-1 leading-relaxed"
+        v-html="formattedCommentContent"
+      ></p>
     </div>
   </div>
 
@@ -37,6 +57,13 @@
     :item-id="comment.id"
     @reported="handleReportSubmitted"
   />
+
+  <!-- Edit Comment Modal -->
+  <EditCommentModal
+    v-model="showEditModal"
+    :comment="comment"
+    @saved="handleEditSaved"
+  />
 </template>
 
 <script setup lang="ts">
@@ -44,7 +71,11 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import Avatar from '@/components/ui/Avatar.vue'
+import Badge from '@/components/ui/Badge.vue'
 import ReportModal from './ReportModal.vue'
+import EditCommentModal from './EditCommentModal.vue'
+import { formatMentions } from '@/lib/mentionParser'
+import { formatHashtags } from '@/lib/hashtagParser'
 import type { Comment } from '@/types/posts'
 
 const { t, locale } = useI18n()
@@ -61,9 +92,22 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore()
 const showReportModal = ref(false)
+const showEditModal = ref(false)
 
 const isOwnComment = computed(() => {
   return authStore.user?.id === props.comment.user_id
+})
+
+// Verificar se o comentário ainda pode ser editado (dentro de 5 minutos)
+const canEditComment = computed(() => {
+  if (!isOwnComment.value) return false
+  
+  const createdAt = new Date(props.comment.created_at).getTime()
+  const now = Date.now()
+  const timeDiff = now - createdAt
+  const fiveMinutes = 5 * 60 * 1000
+  
+  return timeDiff <= fiveMinutes
 })
 
 const authorName = computed(() => {
@@ -73,6 +117,12 @@ const authorName = computed(() => {
 const authorAvatar = computed(() => {
   const avatar = props.comment.author?.avatar_url
   return avatar && avatar.trim() ? avatar : ''
+})
+
+const formattedCommentContent = computed(() => {
+  let content = formatMentions(props.comment.conteudo, '/comunidade')
+  content = formatHashtags(content, '/hashtag')
+  return content
 })
 
 function formatTime(date: string) {
@@ -92,6 +142,15 @@ function handleReport() {
 
 function handleReportSubmitted() {
   showReportModal.value = false
+}
+
+function handleEdit() {
+  showEditModal.value = true
+}
+
+function handleEditSaved() {
+  showEditModal.value = false
+  // Comment will be updated in store automatically
 }
 </script>
 

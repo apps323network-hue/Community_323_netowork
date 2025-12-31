@@ -262,7 +262,10 @@ export const useAuthStore = defineStore('auth', () => {
       // Usar setTimeout para garantir que não bloqueie o fluxo principal
       setTimeout(() => {
         userStore.fetchProfile(session.user.id).catch((err) => {
-          console.error('[AUTH] Erro ao buscar profile no onAuthStateChange (não crítico):', err)
+          // Apenas logar erros não relacionados a conexão
+          if (!err?.message?.includes('Failed to fetch')) {
+            console.error('[AUTH] Erro ao buscar profile no onAuthStateChange (não crítico):', err)
+          }
         })
       }, 100) // Pequeno delay para não interferir no login
     } else {

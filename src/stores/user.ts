@@ -35,7 +35,7 @@ export const useUserStore = defineStore('user', () => {
   const profile = ref<UserProfile | null>(null)
   const loading = ref(false)
 
-  async function fetchProfile(userId: string) {
+  async function fetchProfile(userId: string, retries = 2) {
     loading.value = true
     try {
       // Verificar se o Supabase está configurado
@@ -50,31 +50,43 @@ export const useUserStore = defineStore('user', () => {
         .single()
 
       if (error) {
-        // Melhorar mensagem de erro
+        // Se for erro de conexão e ainda houver tentativas, fazer retry
+        if (error.message?.includes('Failed to fetch') && retries > 0) {
+          // Aguardar um pouco antes de tentar novamente (backoff exponencial)
+          await new Promise(resolve => setTimeout(resolve, 1000 * (3 - retries)))
+          return fetchProfile(userId, retries - 1)
+        }
+
+        // Se for erro de conexão mas sem mais tentativas, apenas logar silenciosamente
         if (error.message?.includes('Failed to fetch')) {
-          console.error('[USER] Erro de conexão com Supabase:', {
-            message: error.message,
-            hint: 'Verifique: 1) URL do Supabase está correta? 2) Conexão com internet? 3) CORS configurado?',
-            code: error.code,
-          })
-          throw new Error('Erro de conexão com o servidor. Verifique sua conexão com a internet e as configurações do Supabase.')
+          // Log apenas em desenvolvimento
+          if (import.meta.env.DEV) {
+            console.warn('[USER] Erro de conexão temporário (não crítico):', error.message)
+          }
+          // Não definir profile como null para manter o último valor conhecido
+          return
         }
         throw error
       }
 
       profile.value = data
     } catch (error: any) {
-      const errorDetails = {
-        message: error?.message || 'Erro desconhecido',
-        details: error?.stack || error?.toString(),
-        hint: error?.hint || '',
-        code: error?.code || '',
+      // Apenas logar erros não relacionados a conexão
+      if (!error?.message?.includes('Failed to fetch')) {
+        const errorDetails = {
+          message: error?.message || 'Erro desconhecido',
+          details: error?.stack || error?.toString(),
+          hint: error?.hint || '',
+          code: error?.code || '',
+        }
+        console.error('[USER] fetchProfile erro:', errorDetails)
       }
-      console.error('[USER] fetchProfile erro:', errorDetails)
-
-      // Não bloquear se houver erro - apenas logar
-      // Mas definir profile como null para evitar estados inconsistentes
-      profile.value = null
+      
+      // Não definir profile como null para manter o último valor conhecido em caso de erro de conexão
+      // Apenas limpar se for um erro diferente (ex: usuário não encontrado)
+      if (!error?.message?.includes('Failed to fetch')) {
+        profile.value = null
+      }
     } finally {
       loading.value = false
     }

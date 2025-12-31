@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { supabase } from '@/lib/supabase'
 import { checkBannedWords } from '@/lib/bannedWords'
 import { logAdminAction } from '@/lib/auditLog'
+import { extractPlainText } from '@/lib/mentionParser'
 import { useAdminBaseStore } from './base'
 import type { AdminPost, PostStats } from '@/types/admin'
 import type { PostStatus } from '@/types/posts'
@@ -476,11 +477,17 @@ export const useAdminPostsStore = defineStore('admin-posts', () => {
     try {
       console.log('[ADMIN] Criando post:', { tipo: postData.tipo, status: postData.status, hasImage: !!postData.image_url })
 
+      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
+      const sanitizedContent = extractPlainText(postData.conteudo)
+
       // Verificar palavras proibidas (admins podem criar mesmo assim, mas vamos avisar)
-      const bannedCheck = await checkBannedWords(postData.conteudo)
+      const bannedCheck = await checkBannedWords(sanitizedContent)
       if (bannedCheck.found && bannedCheck.action === 'replace' && bannedCheck.sanitizedContent) {
         // Se for replace, usar conteúdo sanitizado
         postData.conteudo = bannedCheck.sanitizedContent
+      } else {
+        // Usar conteúdo sanitizado (sem HTML)
+        postData.conteudo = sanitizedContent
       }
       // Admins podem criar posts mesmo com palavras proibidas (não bloqueamos)
 
@@ -488,7 +495,7 @@ export const useAdminPostsStore = defineStore('admin-posts', () => {
         .from('posts')
         .insert({
           user_id: authStore.user.id,
-          conteudo: postData.conteudo,
+          conteudo: postData.conteudo, // Já sanitizado acima
           tipo: postData.tipo,
           status: postData.status || 'approved', // Admin pode criar já aprovado
           image_url: postData.image_url || null,

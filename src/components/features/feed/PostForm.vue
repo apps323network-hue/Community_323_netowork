@@ -3,11 +3,11 @@
     <div class="flex gap-6">
       <Avatar :src="userAvatar" :name="userName" size="md" class="ring-2 ring-offset-2 ring-offset-surface-dark ring-secondary flex-shrink-0" />
       <div class="flex-grow min-w-0">
-        <input
+        <MentionAutocomplete
           v-model="content"
-          class="w-full bg-slate-50 dark:bg-surface-lighter border border-slate-200 dark:border-gray-700/50 rounded-full px-5 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-500 transition-all"
           :placeholder="t('posts.placeholder')"
-          type="text"
+          :rows="1"
+          input-classes="w-full bg-slate-50 dark:bg-surface-lighter border border-slate-200 dark:border-gray-700/50 rounded-full px-5 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-500 transition-all resize-none"
         />
       </div>
     </div>
@@ -279,11 +279,17 @@ import Card from '@/components/ui/Card.vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
+import MentionAutocomplete from './MentionAutocomplete.vue'
+import { useMentions } from '@/composables/useMentions'
+import { useHashtags } from '@/composables/useHashtags'
+import { parseMentions } from '@/lib/mentionParser'
 import type { PostType } from '@/types/posts'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const { createPost } = usePosts()
+const { saveMentions } = useMentions()
+const { saveHashtags } = useHashtags()
 const { t } = useI18n()
 
 const content = ref('')
@@ -501,6 +507,25 @@ async function handleSubmit() {
       tipo: selectedType.value,
       image_url: imageUrl || undefined,
     })
+
+    // Process and save mentions
+    const mentions = parseMentions(content.value.trim())
+    if (mentions.length > 0) {
+      try {
+        await saveMentions(newPost.id, null, mentions)
+      } catch (err) {
+        console.error('Error saving mentions:', err)
+        // Don't block post creation if mentions fail
+      }
+    }
+
+    // Process and save hashtags
+    try {
+      await saveHashtags(newPost.id, null, content.value.trim())
+    } catch (err) {
+      console.error('Error saving hashtags:', err)
+      // Don't block post creation if hashtags fail
+    }
 
     // Reset form
     content.value = ''

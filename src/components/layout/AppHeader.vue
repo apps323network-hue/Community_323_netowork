@@ -214,6 +214,14 @@
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     {{ t('navigation.myProfile') }}
                   </RouterLink>
+                  <RouterLink
+                    to="/posts-salvos"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">bookmark</span>
+                    {{ t('navigation.savedPosts') }}
+                  </RouterLink>
                   
                   <!-- Divider -->
                   <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
@@ -462,6 +470,14 @@
                   >
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     {{ t('navigation.myProfile') }}
+                  </RouterLink>
+                  <RouterLink
+                    to="/posts-salvos"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">bookmark</span>
+                    {{ t('navigation.savedPosts') }}
                   </RouterLink>
                   <!-- Dashboard Admin (apenas para admins) -->
                   <div v-if="isAdmin" class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
