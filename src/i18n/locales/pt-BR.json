@@ -207,7 +207,7 @@
         "filterSocial": "Social",
         "presenceConfirmed": "Presença Confirmada",
         "cancel": "Cancelar",
-        "register": "Inscrever-se",
+        "register": "Confirmar Presença",
         "learnMore": "Saiba Mais",
         "viewFullCalendar": "Ver calendário completo",
         "inPerson": "Presencial",
@@ -235,7 +235,7 @@
         "addBanner": "Adicionar banner",
         "featuredEvent": "Evento Destaque",
         "heroPlaceholder": "Junte-se a profissionais brasileiros para uma noite de conexões e oportunidades de negócios.",
-        "registerNow": "Inscreva-se Agora",
+        "registerNow": "Confirmar Presença",
         "locationToBeDefined": "Local a definir",
         "rsvp": "RSVP",
         "startsIn": "Começa em",
@@ -915,5 +915,17 @@
             "social": "Redes Sociais",
             "rights": "Todos os direitos reservados."
         }
+    },
+    "gamification": {
+        "title": "Desafios da Comunidade",
+        "subtitle": "Complete desafios, ganhe pontos e suba no ranking da nossa rede. Cada ação conta para o seu crescimento!",
+        "yourPoints": "Seus Pontos",
+        "completed": "Completados",
+        "position": "Posição",
+        "loading": "Carregando desafios...",
+        "noActiveChallenges": "Nenhum desafio ativo",
+        "checkBackSoon": "Volte em breve para novos desafios!",
+        "progress": "Progresso",
+        "viewFullRanking": "Ver Ranking Completo"
     }
 }

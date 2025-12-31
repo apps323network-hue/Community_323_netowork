@@ -439,8 +439,8 @@ export const useEventStore = defineStore('events', () => {
         throw insertError
       }
 
-      // Award points for confirming attendance
-      await gamificationStore.awardPoints(20, 'event', eventId, `Confirmou presença no evento: ${event.titulo}`)
+      // Award points for confirming attendance (Only once for the first event confirmed)
+      await gamificationStore.awardPoints(20, 'event', eventId, event.titulo, true, false)
     } catch (err: any) {
       // Revert optimistic update on error
       event.is_confirmed = wasConfirmed

@@ -10,12 +10,12 @@
 
     <!-- Content -->
     <div class="flex-grow min-w-0 pr-2">
-       <div class="flex flex-col">
-          <div class="flex items-center gap-2 mb-0.5">
+       <div class="flex flex-col gap-0.5">
+          <div class="flex items-center gap-2">
             <span class="font-bold text-base text-white text-shadow-sm">+{{ points }} PTS</span>
             <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/20">Novo!</span>
           </div>
-          <p class="text-sm text-slate-300 leading-tight">{{ message }}</p>
+          <p class="text-sm text-slate-300 leading-snug truncate" :title="message">{{ message }}</p>
        </div>
     </div>
 

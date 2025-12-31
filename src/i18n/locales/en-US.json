@@ -914,5 +914,17 @@
             "social": "Social Media",
             "rights": "All rights reserved."
         }
+    },
+    "gamification": {
+        "title": "Community Challenges",
+        "subtitle": "Complete challenges, earn points, and climb the leaderboard. Every action counts towards your growth!",
+        "yourPoints": "Your Points",
+        "completed": "Completed",
+        "position": "Rank",
+        "loading": "Loading challenges...",
+        "noActiveChallenges": "No active challenges",
+        "checkBackSoon": "Check back soon for new challenges!",
+        "progress": "Progress",
+        "viewFullRanking": "View Full Leaderboard"
     }
 }

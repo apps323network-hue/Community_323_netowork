@@ -6,11 +6,11 @@
         <div class="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 blur-3xl rounded-full animate-pulse"></div>
         <h1 class="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white mb-4 relative z-10">
           <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Desafios da Comunidade
+            {{ t('gamification.title') }}
           </span>
         </h1>
         <p class="text-lg text-slate-600 dark:text-gray-400 max-w-2xl">
-          Complete desafios, ganhe pontos e suba no ranking da nossa rede. Cada ação conta para o seu crescimento!
+          {{ t('gamification.subtitle') }}
         </p>
       </div>
 
@@ -22,7 +22,7 @@
               <span class="material-symbols-outlined text-secondary">stars</span>
             </div>
             <div>
-              <p class="text-sm text-slate-500 dark:text-gray-400 font-medium">Seus Pontos</p>
+              <p class="text-sm text-slate-500 dark:text-gray-400 font-medium">{{ t('gamification.yourPoints') }}</p>
               <p class="text-3xl font-black text-slate-900 dark:text-white">{{ userStore.profile?.total_points || 0 }}</p>
             </div>
           </div>
@@ -34,19 +34,26 @@
               <span class="material-symbols-outlined text-primary">task_alt</span>
             </div>
             <div>
-              <p class="text-sm text-slate-500 dark:text-gray-400 font-medium">Completados</p>
+              <p class="text-sm text-slate-500 dark:text-gray-400 font-medium">{{ t('gamification.completed') }}</p>
               <p class="text-3xl font-black text-slate-900 dark:text-white">{{ completedCount }}</p>
             </div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-surface-dark rounded-2xl p-6 border border-slate-200 dark:border-white/5 shadow-xl transition-all hover:scale-[1.02]">
+        <div 
+          @click="router.push('/ranking')"
+          class="bg-white dark:bg-surface-dark rounded-2xl p-6 border border-slate-200 dark:border-white/5 shadow-xl transition-all hover:scale-[1.02] cursor-pointer group relative hover:border-orange-500/30"
+          :title="t('gamification.viewFullRanking')"
+        >
+          <div class="absolute top-4 right-4">
+            <span class="material-symbols-outlined text-orange-500">arrow_forward</span>
+          </div>
           <div class="flex items-center gap-4 mb-2">
             <div class="p-3 bg-orange-500/10 rounded-xl">
               <span class="material-symbols-outlined text-orange-500">trending_up</span>
             </div>
             <div>
-              <p class="text-sm text-slate-500 dark:text-gray-400 font-medium">Posição</p>
+              <p class="text-sm text-slate-500 dark:text-gray-400 font-medium group-hover:text-orange-500 transition-colors">{{ t('gamification.position') }}</p>
               <p class="text-3xl font-black text-slate-900 dark:text-white">#{{ getPosition() }}</p>
             </div>
           </div>
@@ -56,13 +63,13 @@
       <!-- Challenges List -->
       <div v-if="gamificationStore.loading" class="flex flex-col items-center justify-center py-20 gap-4">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary"></div>
-        <p class="text-slate-500 dark:text-gray-400 animate-pulse">Carregando desafios...</p>
+        <p class="text-slate-500 dark:text-gray-400 animate-pulse">{{ t('gamification.loading') }}</p>
       </div>
 
       <div v-else-if="gamificationStore.activeChallenges.length === 0" class="text-center py-20 bg-slate-50 dark:bg-surface-dark/50 rounded-3xl border border-dashed border-slate-200 dark:border-white/10">
         <span class="material-symbols-outlined text-6xl text-slate-300 dark:text-gray-700 mb-4">emoji_events</span>
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Nenhum desafio ativo</h3>
-        <p class="text-slate-500 dark:text-gray-400">Volte em breve para novos desafios!</p>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">{{ t('gamification.noActiveChallenges') }}</h3>
+        <p class="text-slate-500 dark:text-gray-400">{{ t('gamification.checkBackSoon') }}</p>
       </div>
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -102,7 +109,7 @@
             <!-- Progress Bar -->
             <div class="mt-auto">
               <div class="flex justify-between items-end mb-2">
-                <span class="text-xs font-bold text-slate-500 dark:text-gray-400">Progresso</span>
+                <span class="text-xs font-bold text-slate-500 dark:text-gray-400">{{ t('gamification.progress') }}</span>
                 <span class="text-xs font-black text-slate-900 dark:text-white">
                   {{ getProgressValue(challenge.id) }}%
                 </span>
@@ -129,10 +136,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useGamificationStore } from '@/stores/gamification'
 import { useUserStore } from '@/stores/user'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
+const router = useRouter()
+const { t } = useI18n()
 const gamificationStore = useGamificationStore()
 const userStore = useUserStore()
 

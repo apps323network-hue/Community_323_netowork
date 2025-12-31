@@ -60,21 +60,30 @@ export const useGamificationStore = defineStore('gamification', () => {
     }
 
     // Award points to user
-    async function awardPoints(points: number, origin: PointsOrigin, originId?: string, description?: string, unique: boolean = false) {
+    async function awardPoints(points: number, origin: PointsOrigin, originId?: string, description?: string, unique: boolean = false, uniquePerId: boolean = false) {
         if (!userId.value) return
         try {
             if (unique) {
                 // Check if already awarded for this origin
-                const { count, error: countErr } = await supabase
+                const { data: existingPoints, error: fetchErr } = await supabase
                     .from('user_points')
-                    .select('*', { count: 'exact', head: true })
+                    .select('id, origem_id')
                     .eq('user_id', userId.value)
                     .eq('origem', origin)
 
-                if (countErr) throw countErr
-                if (count && count > 0) {
-                    alert(`DEBUG: Bloqueado por verificação única! Encontrados ${count} registros de '${origin}' no banco.`)
-                    return // Already awarded
+                if (fetchErr) throw fetchErr
+
+                if (existingPoints && existingPoints.length > 0) {
+                    if (uniquePerId && originId) {
+                        // Check if any point matches the specific originId
+                        // We also check for null originId to be safe against legacy data, though we can't be sure
+                        // Ideally we only match exact ID.
+                        const alreadyAwarded = existingPoints.some(p => p.origem_id === originId)
+                        if (alreadyAwarded) return
+                    } else {
+                        // Global uniqueness for this origin type
+                        return
+                    }
                 }
             }
 
