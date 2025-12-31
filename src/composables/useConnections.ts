@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
+import { logAdminAction } from '@/lib/auditLog'
 
 export interface Connection {
     id: string
@@ -46,6 +47,17 @@ export function useConnections() {
                 }
                 throw error
             }
+
+            // Log da ação
+            logAdminAction(requesterId, {
+                action: 'user_send_connection_request',
+                targetId: responderId,
+                targetType: 'user',
+                details: {
+                    requesterId,
+                    responderId
+                }
+            })
 
             return { success: true }
         } catch (error: any) {

@@ -143,7 +143,7 @@ import { toast } from 'vue-sonner'
 const router = useRouter()
 const adminStore = useAdminStore()
 
-const activeTab = ref<'pending' | 'all' | 'suspended' | 'banned'>('pending')
+const activeTab = ref<'pending' | 'all' | 'banned'>('all')
 const showApprovalModal = ref(false)
 const selectedUser = ref<AdminUser | null>(null)
 const showBanModal = ref(false)
@@ -162,12 +162,6 @@ const tabs = computed(() => [
     label: 'Todos',
   },
   {
-    id: 'suspended' as const,
-    label: 'Suspensos',
-    badge: adminStore.userStats.suspended > 0 ? adminStore.userStats.suspended : undefined,
-    badgeClass: 'bg-orange-500/20 text-orange-400',
-  },
-  {
     id: 'banned' as const,
     label: 'Banidos',
     badge: adminStore.userStats.banned > 0 ? adminStore.userStats.banned : undefined,
@@ -183,10 +177,10 @@ const displayedUsers = computed(() => {
   if (activeTab.value === 'all') {
     return adminStore.allUsers
   }
-  return adminStore.allUsers.filter(u => u.status === activeTab.value)
+  return adminStore.allUsers.filter((u: AdminUser) => u.status === activeTab.value)
 })
 
-async function handleTabChange(tabId: 'pending' | 'all' | 'suspended' | 'banned') {
+async function handleTabChange(tabId: 'pending' | 'all' | 'banned') {
   activeTab.value = tabId
 
   if (tabId === 'pending') {
@@ -199,7 +193,7 @@ async function handleTabChange(tabId: 'pending' | 'all' | 'suspended' | 'banned'
 }
 
 function handleApprove(userId: string) {
-  const user = pendingUsers.value.find(u => u.id === userId)
+  const user = pendingUsers.value.find((u: AdminUser) => u.id === userId)
   if (user) {
     selectedUser.value = user
     showApprovalModal.value = true
@@ -207,7 +201,7 @@ function handleApprove(userId: string) {
 }
 
 function handleReject(userId: string) {
-  const user = pendingUsers.value.find(u => u.id === userId)
+  const user = pendingUsers.value.find((u: AdminUser) => u.id === userId)
   if (user) {
     selectedUser.value = user
     showApprovalModal.value = true
@@ -257,7 +251,7 @@ function handleSuspend(_userId: string) {
 }
 
 function handleBan(userId: string) {
-  const user = displayedUsers.value.find(u => u.id === userId)
+  const user = displayedUsers.value.find((u: AdminUser) => u.id === userId)
   if (user) {
     userToBan.value = user
     banReason.value = ''
@@ -311,7 +305,7 @@ onMounted(async () => {
     return
   }
 
-  await adminStore.fetchPendingUsers()
+  await adminStore.fetchAllUsers()
   await adminStore.fetchUserStats()
 })
 </script>

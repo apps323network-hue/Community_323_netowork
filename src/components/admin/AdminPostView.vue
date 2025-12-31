@@ -39,9 +39,10 @@
 
     <!-- Post Content -->
     <div class="mb-4">
-      <p class="text-slate-900 dark:text-white/90 text-base sm:text-lg whitespace-pre-wrap mb-3">
-        {{ post.conteudo }}
-      </p>
+      <div 
+        class="text-slate-900 dark:text-white/90 text-base sm:text-lg mb-3 rich-text-content"
+        v-html="sanitizedContent"
+      ></div>
       <div
         v-if="post.image_url"
         class="rounded-lg overflow-hidden mt-3 cursor-pointer group relative"
@@ -100,10 +101,6 @@
           <span class="material-symbols-outlined text-base text-red-400">info</span>
           <span class="flex-1">Motivo: {{ post.rejection_reason }}</span>
         </div>
-        <div v-if="post.strikes_added" class="flex items-center gap-2 text-orange-400">
-          <span class="material-symbols-outlined text-base">warning</span>
-          <span>Strike adicionado ao autor</span>
-        </div>
       </div>
     </div>
 
@@ -128,7 +125,7 @@
               <p class="text-slate-900 dark:text-white font-semibold text-sm mb-1">
                 {{ comment.author?.nome || 'Usuário' }}
               </p>
-              <p class="text-slate-700 dark:text-white/80 text-sm">{{ comment.conteudo }}</p>
+              <div class="text-slate-700 dark:text-white/80 text-sm rich-text-content" v-html="sanitize(comment.conteudo)"></div>
               <p class="text-slate-500 dark:text-white/50 text-xs mt-1">
                 {{ formattedDate(comment.created_at) }}
               </p>
@@ -152,25 +149,11 @@
         Aprovar
       </button>
       <button
-        class="flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 rounded-lg font-semibold transition-all text-sm"
-        @click="$emit('hide', post.id)"
-      >
-        <span class="material-symbols-outlined text-base">visibility_off</span>
-        Ocultar
-      </button>
-      <button
         class="flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all text-sm"
         @click="$emit('remove', post.id)"
       >
         <span class="material-symbols-outlined text-base">delete</span>
         Remover
-      </button>
-      <button
-        class="flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-semibold transition-all text-sm"
-        @click="$emit('spam', post.id)"
-      >
-        <span class="material-symbols-outlined text-base">report</span>
-        Marcar Spam
       </button>
     </div>
   </div>
@@ -182,7 +165,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import DOMPurify from 'dompurify'
 import { RouterLink } from 'vue-router'
 import type { AdminPost } from '@/types/admin'
 import Avatar from '@/components/ui/Avatar.vue'
@@ -193,16 +177,22 @@ interface Props {
   post: AdminPost
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 defineEmits<{
   approve: [postId: string]
-  hide: [postId: string]
   remove: [postId: string]
-  spam: [postId: string]
 }>()
 
 const showImageLightbox = ref(false)
+
+const sanitizedContent = computed(() => {
+  return DOMPurify.sanitize(props.post.conteudo)
+})
+
+function sanitize(content: string) {
+  return DOMPurify.sanitize(content)
+}
 
 function formattedDate(dateString?: string) {
   if (!dateString) return ''
@@ -226,4 +216,26 @@ function postTypeLabel(tipo: string) {
   return labels[tipo] || tipo
 }
 </script>
+
+<style scoped>
+:deep(.rich-text-content ul) {
+  @apply list-disc pl-5 my-2;
+}
+
+:deep(.rich-text-content ol) {
+  @apply list-decimal pl-5 my-2;
+}
+
+:deep(.rich-text-content p) {
+  @apply my-1 min-h-[1em];
+}
+
+:deep(.rich-text-content strong) {
+  @apply font-bold text-slate-900 dark:text-white;
+}
+
+:deep(.rich-text-content em) {
+  @apply italic;
+}
+</style>
 

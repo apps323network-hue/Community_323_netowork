@@ -40,7 +40,7 @@
               {{ post.author.area_atuacao }}
             </p>
             <p class="text-slate-700 dark:text-white/80 text-sm sm:text-base line-clamp-3 mb-2">
-              {{ post.conteudo }}
+              {{ stripHtml(post.conteudo) }}
             </p>
             <div v-if="post.image_url" class="mt-2 rounded-lg overflow-hidden max-w-xs">
               <img :src="post.image_url" alt="Post image" class="w-full h-auto max-h-32 object-cover" />
@@ -68,25 +68,11 @@
             <span>Aprovar</span>
           </button>
           <button
-            class="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 rounded-lg font-semibold transition-all text-xs sm:text-sm"
-            @click="$emit('hide', post.id)"
-          >
-            <span class="material-symbols-outlined text-base">visibility_off</span>
-            <span>Ocultar</span>
-          </button>
-          <button
             class="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all text-xs sm:text-sm"
             @click="$emit('remove', post.id)"
           >
             <span class="material-symbols-outlined text-base">delete</span>
             <span>Remover</span>
-          </button>
-          <button
-            class="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-semibold transition-all text-xs sm:text-sm"
-            @click="$emit('spam', post.id)"
-          >
-            <span class="material-symbols-outlined text-base">report</span>
-            <span>Spam</span>
           </button>
           <button
             class="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white dark:bg-surface-lighter hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 rounded-lg font-semibold transition-all text-xs sm:text-sm"
@@ -114,9 +100,7 @@ defineProps<Props>()
 
 defineEmits<{
   approve: [postId: string]
-  hide: [postId: string]
   remove: [postId: string]
-  spam: [postId: string]
   'view-full': [postId: string]
 }>()
 
@@ -140,6 +124,11 @@ function postTypeLabel(tipo: string) {
     oportunidade: 'Oportunidade',
   }
   return labels[tipo] || tipo
+}
+
+function stripHtml(html: string) {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, ' ')
 }
 </script>
 

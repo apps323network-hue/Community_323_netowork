@@ -58,18 +58,6 @@
           <button
             :class="[
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
-              action === 'hide'
-                ? 'bg-orange-500/20 text-orange-400 border-2 border-orange-500'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-orange-500/30',
-            ]"
-            @click="action = 'hide'"
-          >
-            <span class="material-symbols-outlined text-lg">visibility_off</span>
-            Ocultar
-          </button>
-          <button
-            :class="[
-              'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
               action === 'remove'
                 ? 'bg-red-500/20 text-red-400 border-2 border-red-500'
                 : 'bg-surface-card text-white/60 border border-white/10 hover:border-red-500/30',
@@ -79,23 +67,11 @@
             <span class="material-symbols-outlined text-lg">delete</span>
             Remover
           </button>
-          <button
-            :class="[
-              'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
-              action === 'spam'
-                ? 'bg-purple-500/20 text-purple-400 border-2 border-purple-500'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-purple-500/30',
-            ]"
-            @click="action = 'spam'"
-          >
-            <span class="material-symbols-outlined text-lg">report</span>
-            Spam
-          </button>
         </div>
       </div>
 
-      <!-- Reason (required for hide/remove) -->
-      <div v-if="action === 'hide' || action === 'remove'">
+      <!-- Reason (required for remove) -->
+      <div v-if="action === 'remove'">
         <label class="block text-white/80 text-sm font-semibold mb-2">
           Motivo <span class="text-red-400">*</span>
         </label>
@@ -103,36 +79,18 @@
           v-model="reason"
           rows="3"
           class="w-full px-3 py-2 border border-white/10 rounded-lg bg-surface-card text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm"
-          :placeholder="action === 'hide' ? 'Por que este post deve ser ocultado?' : 'Por que este post deve ser removido?'"
+          placeholder="Por que este post deve ser removido?"
         ></textarea>
       </div>
 
-      <!-- Add Strike Checkbox (for remove/spam) -->
-      <div v-if="action === 'remove' || action === 'spam'" class="flex items-start gap-3">
-        <input
-          v-model="addStrike"
-          type="checkbox"
-          id="addStrike"
-          class="mt-1 w-4 h-4 rounded border-white/20 bg-surface-card text-primary focus:ring-primary focus:ring-offset-0"
-          :disabled="action === 'spam'"
-        />
-        <label for="addStrike" class="text-white/80 text-sm flex-1">
-          <span v-if="action === 'spam'" class="font-semibold text-purple-400">Strike será adicionado automaticamente</span>
-          <span v-else>Adicionar strike ao autor</span>
-          <p class="text-white/60 text-xs mt-1">
-            {{ action === 'spam' ? 'Marcar como spam adiciona um strike automaticamente ao autor.' : 'Adicionar um strike ao autor por este conteúdo inapropriado.' }}
-          </p>
-        </label>
-      </div>
-
       <!-- Warning for destructive actions -->
-      <div v-if="action === 'remove' || action === 'spam'" class="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
+      <div v-if="action === 'remove'" class="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
         <div class="flex items-start gap-2">
           <span class="material-symbols-outlined text-red-400 text-lg">warning</span>
           <div class="flex-1">
             <p class="text-red-400 text-sm font-semibold">Ação Destrutiva</p>
             <p class="text-red-400/80 text-xs mt-1">
-              {{ action === 'spam' ? 'Marcar como spam removerá o post permanentemente e adicionará um strike ao autor.' : 'Remover o post é uma ação permanente e não pode ser desfeita.' }}
+              Remover o post é uma ação permanente e não pode ser desfeita.
             </p>
           </div>
         </div>
@@ -177,9 +135,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   approve: [postId: string]
-  hide: [postId: string, reason: string]
-  remove: [postId: string, reason: string, addStrike: boolean]
-  spam: [postId: string]
+  remove: [postId: string, reason: string]
 }>()
 
 const isOpen = computed({
@@ -187,15 +143,14 @@ const isOpen = computed({
   set: (value) => emit('update:modelValue', value),
 })
 
-const action = ref<'approve' | 'hide' | 'remove' | 'spam'>('approve')
+const action = ref<'approve' | 'remove'>('approve')
 const reason = ref('')
-const addStrike = ref(false)
 const error = ref<string | null>(null)
 const processing = ref(false)
 const showImageLightbox = ref(false)
 
 const canSubmit = computed(() => {
-  if (action.value === 'hide' || action.value === 'remove') {
+  if (action.value === 'remove') {
     return reason.value.trim().length > 0
   }
   return true
@@ -205,12 +160,8 @@ const actionLabel = computed(() => {
   switch (action.value) {
     case 'approve':
       return 'Aprovar'
-    case 'hide':
-      return 'Ocultar'
     case 'remove':
       return 'Remover'
-    case 'spam':
-      return 'Marcar como Spam'
     default:
       return 'Confirmar'
   }
@@ -221,16 +172,8 @@ watch(() => props.modelValue, (newValue) => {
     // Reset form when modal opens
     action.value = 'approve'
     reason.value = ''
-    addStrike.value = false
     error.value = null
     processing.value = false
-  }
-})
-
-watch(() => action.value, (newAction) => {
-  // Auto-enable strike for spam
-  if (newAction === 'spam') {
-    addStrike.value = true
   }
 })
 
@@ -241,7 +184,7 @@ function handleCancel() {
 async function handleSubmit() {
   if (!props.post) return
 
-  if ((action.value === 'hide' || action.value === 'remove') && !reason.value.trim()) {
+  if (action.value === 'remove' && !reason.value.trim()) {
     error.value = 'Por favor, informe o motivo'
     return
   }
@@ -254,14 +197,8 @@ async function handleSubmit() {
       case 'approve':
         emit('approve', props.post.id)
         break
-      case 'hide':
-        emit('hide', props.post.id, reason.value.trim())
-        break
       case 'remove':
-        emit('remove', props.post.id, reason.value.trim(), addStrike.value)
-        break
-      case 'spam':
-        emit('spam', props.post.id)
+        emit('remove', props.post.id, reason.value.trim())
         break
     }
     isOpen.value = false

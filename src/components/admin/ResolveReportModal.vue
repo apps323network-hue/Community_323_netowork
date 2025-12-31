@@ -103,18 +103,7 @@
             <span class="material-symbols-outlined text-lg">person_off</span>
             Banir Usuário
           </button>
-          <button
-            :class="[
-              'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
-              action === 'add_strike'
-                ? 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-yellow-500/30',
-            ]"
-            @click="action = 'add_strike'"
-          >
-            <span class="material-symbols-outlined text-lg">warning</span>
-            Adicionar Strike
-          </button>
+
           <button
             :class="[
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
@@ -141,21 +130,7 @@
         />
       </div>
 
-      <!-- Checkbox para adicionar strike (quando remover conteúdo) -->
-      <div v-if="action === 'remove_content'" class="flex items-start gap-3">
-        <input
-          v-model="addStrike"
-          type="checkbox"
-          id="addStrike"
-          class="mt-1 w-4 h-4 rounded border-white/20 bg-surface-card text-primary focus:ring-primary focus:ring-offset-0"
-        />
-        <label for="addStrike" class="text-white/80 text-sm flex-1">
-          Adicionar strike ao autor
-          <p class="text-white/60 text-xs mt-1">
-            Adicionar um strike ao autor por este conteúdo inapropriado.
-          </p>
-        </label>
-      </div>
+
 
       <!-- Warning para ações destrutivas -->
       <div v-if="action === 'remove_content' || action === 'ban_user'" class="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
@@ -221,9 +196,8 @@ const isOpen = computed({
   set: (value) => emit('update:modelValue', value),
 })
 
-const action = ref<'remove_content' | 'suspend_user' | 'ban_user' | 'add_strike' | 'dismiss' | ''>('')
+const action = ref<'remove_content' | 'ban_user' | 'dismiss' | ''>('')
 const details = ref('')
-const addStrike = ref(false)
 const error = ref<string | null>(null)
 const processing = ref(false)
 
@@ -232,7 +206,6 @@ watch(() => props.modelValue, (newVal) => {
     // Reset form when modal closes
     action.value = ''
     details.value = ''
-    addStrike.value = false
     error.value = null
   } else if (props.report) {
     // Load report details when modal opens
@@ -317,7 +290,6 @@ async function handleSubmit() {
       const resolveInput: ReportResolveInput = {
         action: action.value,
         details: details.value || undefined,
-        add_strike: addStrike.value,
       }
 
       await adminStore.resolveReport(props.report.id, resolveInput)

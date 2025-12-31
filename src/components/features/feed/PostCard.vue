@@ -89,9 +89,10 @@
 
     <!-- Post Content -->
     <div class="px-6 py-5 md:px-8 md:py-6">
-      <p class="text-base md:text-lg text-gray-900 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-        {{ post.conteudo }}
-      </p>
+      <div 
+        class="text-base md:text-lg text-gray-900 dark:text-gray-300 leading-relaxed rich-text-content"
+        v-html="sanitizedContent"
+      ></div>
       <div v-if="hashtags.length" class="mt-4 flex flex-wrap gap-2">
         <span
           v-for="tag in hashtags"
@@ -181,6 +182,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import DOMPurify from 'dompurify'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { usePosts } from '@/composables/usePosts'
@@ -255,10 +257,22 @@ const authorRole = computed(() => {
 })
 const authorAvatar = computed(() => props.post.author?.avatar_url || '')
 
-// Extract hashtags from content
+// Extract hashtags from content (removing HTML tags first)
 const hashtags = computed(() => {
-  const matches = props.post.conteudo.match(/#\w+/g)
+  const textContent = props.post.conteudo.replace(/<[^>]*>/g, ' ')
+  const matches = textContent.match(/#\w+/g)
   return matches || []
+})
+
+const sanitizedContent = computed(() => {
+  let content = props.post.conteudo
+  
+  // Replace br/us text with emojis (only if they are standalone words and NOT inside HTML tags)
+  // This handles lowercase and uppercase variations
+  content = content.replace(/(?![^<]*>)\b(br|BR)\b/g, '🇧🇷')
+  content = content.replace(/(?![^<]*>)\b(us|US)\b/g, '🇺🇸')
+  
+  return DOMPurify.sanitize(content)
 })
 
 async function handleToggleLike() {
@@ -338,6 +352,26 @@ onUnmounted(() => {
   text-decoration: none !important;
   border: none !important;
   outline: none !important;
+}
+
+:deep(.rich-text-content ul) {
+  @apply list-disc pl-5 my-2;
+}
+
+:deep(.rich-text-content ol) {
+  @apply list-decimal pl-5 my-2;
+}
+
+:deep(.rich-text-content p) {
+  @apply my-1 min-h-[1em];
+}
+
+:deep(.rich-text-content strong) {
+  @apply font-bold text-gray-900 dark:text-white;
+}
+
+:deep(.rich-text-content em) {
+  @apply italic;
 }
 </style>
 

@@ -1,13 +1,12 @@
 <template>
   <Card variant="white" class="p-8 dark:bg-surface-dark dark:border-gray-800 shadow-xl border-t border-gray-100 dark:border-gray-800 w-full">
-    <div class="flex gap-6">
+    <div class="flex gap-6 items-start">
       <Avatar :src="userAvatar" :name="userName" size="md" class="ring-2 ring-offset-2 ring-offset-surface-dark ring-secondary flex-shrink-0" />
       <div class="flex-grow min-w-0">
-        <input
+        <RichTextEditor
           v-model="content"
-          class="w-full bg-slate-50 dark:bg-surface-lighter border border-slate-200 dark:border-gray-700/50 rounded-full px-5 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-500 transition-all"
           :placeholder="t('posts.placeholder')"
-          type="text"
+          ref="editorRef"
         />
       </div>
     </div>
@@ -275,6 +274,7 @@ import { usePosts } from '@/composables/usePosts'
 import { supabase } from '@/lib/supabase'
 import { checkBannedWords } from '@/lib/bannedWords'
 import { logAdminAction } from '@/lib/auditLog'
+import RichTextEditor from '@/components/ui/RichTextEditor.vue'
 import Card from '@/components/ui/Card.vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import Modal from '@/components/ui/Modal.vue'
@@ -287,6 +287,7 @@ const { createPost } = usePosts()
 const { t } = useI18n()
 
 const content = ref('')
+const editorRef = ref<any>(null)
 const selectedType = ref<PostType>('networking')
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -504,6 +505,9 @@ async function handleSubmit() {
 
     // Reset form
     content.value = ''
+    if (editorRef.value) {
+      editorRef.value.clearContent()
+    }
     selectedType.value = 'networking'
     selectedImage.value = null
     selectedImageFile.value = null

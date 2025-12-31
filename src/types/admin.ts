@@ -38,7 +38,6 @@ export interface AdminUser {
   pais?: string
   avatar_url?: string
   status: UserStatus
-  strikes: number
   approved_by?: string
   approved_at?: string
   rejection_reason?: string
@@ -69,9 +68,7 @@ export interface PostStats {
   total: number
   pending: number
   approved: number
-  hidden: number
   removed: number
-  spam: number
   removedToday: number
 }
 
@@ -163,9 +160,8 @@ export interface ReportCreateInput {
 }
 
 export interface ReportResolveInput {
-  action: 'remove_content' | 'suspend_user' | 'ban_user' | 'add_strike' | 'dismiss'
+  action: 'remove_content' | 'ban_user' | 'dismiss'
   details?: string
-  add_strike?: boolean
 }
 
 export type ChallengeType = 'post' | 'comment' | 'event' | 'connection' | 'engagement' | 'other'

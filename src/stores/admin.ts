@@ -33,9 +33,7 @@ export const useAdminStore = defineStore('admin', () => {
     total: 0,
     pending: 0,
     approved: 0,
-    hidden: 0,
     removed: 0,
-    spam: 0,
     removedToday: 0,
   })
   const allServices = ref<AdminService[]>([])
@@ -340,6 +338,14 @@ export const useAdminStore = defineStore('admin', () => {
         allEvents.value[eventIndex] = { ...allEvents.value[eventIndex], destaque }
       }
 
+      // Log da ação
+      logAdminAction(authStore.user.id, {
+        action: 'toggle_featured',
+        targetId: eventId,
+        targetType: 'event',
+        details: { destaque }
+      })
+
       return data
     } catch (err: any) {
       error.value = err.message
@@ -381,6 +387,13 @@ export const useAdminStore = defineStore('admin', () => {
 
       // Atualizar stats
       await fetchEventStats()
+
+      // Log da ação
+      logAdminAction(authStore.user.id, {
+        action: 'delete_event',
+        targetId: eventId,
+        targetType: 'event'
+      })
 
       return true
     } catch (err: any) {
@@ -955,71 +968,10 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  // Ocultar post
-  async function hidePost(postId: string, reason?: string) {
-    if (!authStore.user) {
-      throw new Error('Usuário não autenticado')
-    }
 
-    loading.value = true
-    error.value = null
-
-    try {
-      const { data, error: updateError } = await supabase
-        .from('posts')
-        .update({
-          status: 'hidden',
-          moderated_by: authStore.user.id,
-          moderated_at: new Date().toISOString(),
-          rejection_reason: reason || undefined,
-        })
-        .eq('id', postId)
-        .select()
-        .single()
-
-      if (updateError) throw updateError
-
-      // Atualizar lista local
-      const pendingIndex = pendingPosts.value.findIndex(p => p.id === postId)
-      if (pendingIndex !== -1) {
-        pendingPosts.value.splice(pendingIndex, 1)
-      }
-
-      // Atualizar allPosts - atualizar status
-      const allIndex = allPosts.value.findIndex(p => p.id === postId)
-      if (allIndex !== -1) {
-        allPosts.value[allIndex] = {
-          ...allPosts.value[allIndex],
-          status: 'hidden',
-          moderated_by: authStore.user.id,
-          moderated_at: new Date().toISOString(),
-          rejection_reason: reason || undefined,
-        }
-      }
-
-      // Atualizar stats
-      await fetchPostStats()
-
-      // Log da ação
-      logAdminAction(authStore.user.id, {
-        action: 'hide_post',
-        targetId: postId,
-        targetType: 'post',
-        details: { reason, conteudo: data?.conteudo }
-      })
-
-      return data
-    } catch (err: any) {
-      error.value = err.message
-      console.error('Error hiding post:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
 
   // Remover post
-  async function removePost(postId: string, reason?: string, addStrike: boolean = false) {
+  async function removePost(postId: string, reason?: string) {
     if (!authStore.user) {
       throw new Error('Usuário não autenticado')
     }
@@ -1028,13 +980,6 @@ export const useAdminStore = defineStore('admin', () => {
     error.value = null
 
     try {
-      // Buscar post para pegar user_id
-      const { data: postData } = await supabase
-        .from('posts')
-        .select('user_id')
-        .eq('id', postId)
-        .single()
-
       // Atualizar post
       const { data, error: updateError } = await supabase
         .from('posts')
@@ -1043,18 +988,12 @@ export const useAdminStore = defineStore('admin', () => {
           moderated_by: authStore.user.id,
           moderated_at: new Date().toISOString(),
           rejection_reason: reason || undefined,
-          strikes_added: addStrike,
         })
         .eq('id', postId)
         .select()
         .single()
 
       if (updateError) throw updateError
-
-      // Adicionar strike se solicitado
-      if (addStrike && postData?.user_id) {
-        await addStrikeToUser(postData.user_id, `Post removido: ${reason || 'Sem motivo especificado'}`)
-      }
 
       // Atualizar lista local
       const pendingIndex = pendingPosts.value.findIndex(p => p.id === postId)
@@ -1072,7 +1011,6 @@ export const useAdminStore = defineStore('admin', () => {
           moderated_by: authStore.user.id,
           moderated_at: new Date().toISOString(),
           rejection_reason: reason || undefined,
-          strikes_added: addStrike,
         }
       }
 
@@ -1084,7 +1022,7 @@ export const useAdminStore = defineStore('admin', () => {
         action: 'remove_post',
         targetId: postId,
         targetType: 'post',
-        details: { reason, addStrike, userId: postData?.user_id, conteudo: data?.conteudo }
+        details: { reason, conteudo: data?.conteudo }
       })
 
       return data
@@ -1097,120 +1035,9 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  // Marcar como spam
-  async function markAsSpam(postId: string) {
-    if (!authStore.user) {
-      throw new Error('Usuário não autenticado')
-    }
 
-    loading.value = true
-    error.value = null
 
-    try {
-      // Buscar post para pegar user_id
-      const { data: postData } = await supabase
-        .from('posts')
-        .select('user_id')
-        .eq('id', postId)
-        .single()
 
-      // Atualizar post
-      const { data, error: updateError } = await supabase
-        .from('posts')
-        .update({
-          status: 'spam',
-          moderated_by: authStore.user.id,
-          moderated_at: new Date().toISOString(),
-          rejection_reason: 'Marcado como spam',
-          strikes_added: true,
-        })
-        .eq('id', postId)
-        .select()
-        .single()
-
-      if (updateError) throw updateError
-
-      // Adicionar strike automaticamente ao autor
-      if (postData?.user_id) {
-        await addStrikeToUser(postData.user_id, 'Post marcado como spam')
-      }
-
-      // Atualizar lista local
-      const pendingIndex = pendingPosts.value.findIndex(p => p.id === postId)
-      if (pendingIndex !== -1) {
-        pendingPosts.value.splice(pendingIndex, 1)
-      }
-
-      // Atualizar allPosts - atualizar status
-      const allIndex = allPosts.value.findIndex(p => p.id === postId)
-      if (allIndex !== -1) {
-        allPosts.value[allIndex] = {
-          ...allPosts.value[allIndex],
-          status: 'spam',
-          moderated_by: authStore.user.id,
-          moderated_at: new Date().toISOString(),
-          rejection_reason: 'Marcado como spam',
-          strikes_added: true,
-        }
-      }
-
-      // Atualizar stats
-      await fetchPostStats()
-
-      // Log da ação
-      logAdminAction(authStore.user.id, {
-        action: 'mark_spam',
-        targetId: postId,
-        targetType: 'post',
-        details: { userId: postData?.user_id, conteudo: data?.conteudo }
-      })
-
-      return data
-    } catch (err: any) {
-      error.value = err.message
-      console.error('Error marking post as spam:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
-  }
-
-  // Adicionar strike ao usuário (função auxiliar)
-  async function addStrikeToUser(userId: string, _reason: string) {
-    if (!authStore.user) return
-
-    try {
-      // Buscar strikes atuais
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('strikes')
-        .eq('id', userId)
-        .single()
-
-      const currentStrikes = profile?.strikes || 0
-      const newStrikes = currentStrikes + 1
-
-      // Atualizar strikes
-      await supabase
-        .from('profiles')
-        .update({ strikes: newStrikes })
-        .eq('id', userId)
-
-      // Se chegou a 3 strikes, banir automaticamente
-      if (newStrikes >= 3) {
-        await supabase
-          .from('profiles')
-          .update({
-            status: 'banned',
-            moderated_by: authStore.user.id,
-            moderated_at: new Date().toISOString(),
-          })
-          .eq('id', userId)
-      }
-    } catch (err: any) {
-      console.error('Error adding strike to user:', err)
-    }
-  }
 
   // Criar novo post (admin)
   async function createPost(postData: { conteudo: string; tipo: string; status?: PostStatus; image_url?: string }) {
@@ -1291,9 +1118,7 @@ export const useAdminStore = defineStore('admin', () => {
       const total = data?.length || 0
       const pending = data?.filter(p => p.status === 'pending').length || 0
       const approved = data?.filter(p => p.status === 'approved').length || 0
-      const hidden = data?.filter(p => p.status === 'hidden').length || 0
       const removed = data?.filter(p => p.status === 'removed').length || 0
-      const spam = data?.filter(p => p.status === 'spam').length || 0
 
       // Contar removidos hoje
       const today = new Date()
@@ -1308,9 +1133,7 @@ export const useAdminStore = defineStore('admin', () => {
         total,
         pending,
         approved,
-        hidden,
         removed,
-        spam,
         removedToday,
       }
     } catch (err: any) {
@@ -1995,7 +1818,7 @@ export const useAdminStore = defineStore('admin', () => {
       // Executar ação baseada no tipo
       if (input.action === 'remove_content') {
         if (report.reported_item_type === 'post') {
-          await removePost(report.reported_item_id, input.details || 'Removido por report', input.add_strike || false)
+          await removePost(report.reported_item_id, input.details || 'Removido por report')
         } else if (report.reported_item_type === 'comment') {
           // Marcar comentário como removido (soft-delete)
           const { error: updateError } = await supabase
@@ -2010,30 +1833,13 @@ export const useAdminStore = defineStore('admin', () => {
 
           if (updateError) throw updateError
 
-          if (input.add_strike && report.reported_item) {
-            const commentUserId = (report.reported_item as any).user_id
-            if (commentUserId) {
-              await addStrikeToUser(commentUserId, input.details || 'Comentário removido por report')
-            }
-          }
-        }
-      } else if (input.action === 'suspend_user') {
-        const userId = report.reported_item_type === 'user'
-          ? report.reported_item_id
-          : (report.reported_item as any)?.user_id
-
-        if (userId) {
-          // Suspender por 7 dias por padrão
-          const suspendUntil = new Date()
-          suspendUntil.setDate(suspendUntil.getDate() + 7)
-
-          await supabase
-            .from('profiles')
-            .update({
-              status: 'suspended',
-              suspended_until: suspendUntil.toISOString(),
-            })
-            .eq('id', userId)
+          // Log da ação (específico para comentário)
+          logAdminAction(authStore.user.id, {
+            action: 'remove_post', // Usando remove_post para comentário também por simplicidade
+            targetId: report.reported_item_id,
+            targetType: 'comment',
+            details: { reason: input.details, reportId: id }
+          })
         }
       } else if (input.action === 'ban_user') {
         const userId = report.reported_item_type === 'user'
@@ -2044,14 +1850,6 @@ export const useAdminStore = defineStore('admin', () => {
           // Usar a função banUser para garantir rastreamento completo
           const reason = input.details || `Banido por violação reportada (Report #${id})`
           await banUser(userId, reason)
-        }
-      } else if (input.action === 'add_strike') {
-        const userId = report.reported_item_type === 'user'
-          ? report.reported_item_id
-          : (report.reported_item as any)?.user_id
-
-        if (userId) {
-          await addStrikeToUser(userId, input.details || 'Strike adicionado por report')
         }
       }
 
@@ -2524,9 +2322,7 @@ export const useAdminStore = defineStore('admin', () => {
     fetchAllPosts,
     createPost,
     approvePost,
-    hidePost,
     removePost,
-    markAsSpam,
     fetchPostStats,
     fetchAllServices,
     createService,

@@ -123,7 +123,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import Avatar from '@/components/ui/Avatar.vue'
 import { useBookmarks } from '@/composables/useBookmarks'
@@ -150,6 +150,7 @@ interface Member {
   isOnline?: boolean
 }
 
+const router = useRouter()
 const { t } = useI18n()
 const upcomingEvents = ref<Event[]>([])
 const featuredMembers = ref<Member[]>([])
@@ -270,8 +271,7 @@ async function handleFollowMember(memberId: string) {
 }
 
 function handleEventClick(eventId: string) {
-  // TODO: Navegar para detalhes do evento
-  console.log('Event clicked:', eventId)
+  router.push({ name: 'EventDetail', params: { id: eventId } })
 }
 
 async function loadFeaturedMembers() {
@@ -314,8 +314,6 @@ onMounted(() => {
 
 <style scoped>
 /* Default is handled by utility classes */
-.neon-border-card {
-}
 
 :global(.dark) .neon-border-card {
   position: relative;

@@ -23,9 +23,7 @@
         <option value="">Todos os Status</option>
         <option value="approved">Aprovados</option>
         <option value="pending">Pendentes</option>
-        <option value="hidden">Ocultos</option>
         <option value="removed">Removidos</option>
-        <option value="spam">Spam</option>
       </select>
     </div>
 
@@ -76,7 +74,7 @@
                   <PostStatusBadge :status="post.status || 'pending'" />
                 </div>
                 <p class="text-slate-600 dark:text-white/60 text-xs sm:text-sm line-clamp-2 mb-2">
-                  {{ post.conteudo }}
+                  {{ stripHtml(post.conteudo) }}
                 </p>
                 <div class="flex items-center gap-4 text-slate-500 dark:text-white/50 text-xs">
                   <span class="flex items-center gap-1">
@@ -105,14 +103,6 @@
               @click="$emit('approve', post.id)"
             >
               <span class="material-symbols-outlined text-base sm:text-lg">check_circle</span>
-            </button>
-            <button
-              v-if="post.status !== 'hidden'"
-              class="p-2 text-orange-400 hover:bg-orange-500/20 rounded-lg transition-all"
-              title="Ocultar"
-              @click="$emit('hide', post.id)"
-            >
-              <span class="material-symbols-outlined text-base sm:text-lg">visibility_off</span>
             </button>
             <button
               v-if="post.status !== 'removed'"
@@ -151,7 +141,6 @@ const props = defineProps<Props>()
 
 defineEmits<{
   approve: [postId: string]
-  hide: [postId: string]
   remove: [postId: string]
   'view-details': [postId: string]
 }>()
@@ -200,6 +189,11 @@ function postTypeLabel(tipo: string) {
     oportunidade: 'Oportunidade',
   }
   return labels[tipo] || tipo
+}
+
+function stripHtml(html: string) {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, ' ')
 }
 </script>
 
