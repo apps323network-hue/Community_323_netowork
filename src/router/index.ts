@@ -31,6 +31,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresGuest: true },
   },
   {
+    path: '/lp',
+    name: 'LandingPage',
+    component: () => import('@/views/landing/LandingPage.vue'),
+    meta: { isLanding: true },
+  },
+  {
     path: '/reset-password',
     name: 'ResetPassword',
     component: () => import('@/views/ResetPassword.vue'),

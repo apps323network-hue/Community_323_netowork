@@ -622,6 +622,128 @@
             "close": "Close"
         }
     },
+    "landing": {
+        "hero": {
+            "title1": "The largest Brazilian community",
+            "title2": "in the United States",
+            "subtitle": "Connect with Brazilian artists, entrepreneurs, and professionals. Attend exclusive events, access business opportunities, and be part of a network that transforms lives.",
+            "ctaPrimary": "Join the Community",
+            "ctaSecondary": "View Portfolio"
+        },
+        "about": {
+            "title1": "Who is",
+            "title2": "323 Network",
+            "description": "We are a dynamic ecosystem connecting influential voices from the Brazilian community in the United States. For over a decade, we've been promoting connections that transform careers and businesses.",
+            "partnersTitle": "Media Partners",
+            "stats": {
+                "events": "Events held",
+                "participants": "Participants",
+                "artists": "Artists & Experts",
+                "years": "Years connecting"
+            }
+        },
+        "whatWeDo": {
+            "title": "What We Offer",
+            "description": "A complete experience for Brazilians seeking growth in the United States.",
+            "features": {
+                "events": {
+                    "title": "Exclusive Events",
+                    "description": "High-level networking, inspiring talks, and hands-on workshops with top professionals."
+                },
+                "community": {
+                    "title": "Active Community",
+                    "description": "Genuine connections with entrepreneurs, artists, and professionals who share your goals."
+                },
+                "opportunities": {
+                    "title": "Opportunities",
+                    "description": "Access to exclusive jobs, business partnerships, and specialized services for Brazilians."
+                },
+                "benefits": {
+                    "title": "VIP Benefits",
+                    "description": "Exclusive discounts on services, early access, and perks reserved for members."
+                }
+            }
+        },
+        "events": {
+            "title": "Events that Matter",
+            "description": "In-person and online experiences that connect, inspire, and transform.",
+            "viewAll": "View all events",
+            "participants": "participants"
+        },
+        "portfolio": {
+            "title1": "Our",
+            "title2": "Portfolio",
+            "description": "Relive the best moments from our events and gatherings.",
+            "viewMore": "View full gallery"
+        },
+        "benefits": {
+            "title": "Member Benefits",
+            "description": "Much more than networking. A complete experience for your success.",
+            "items": {
+                "networking": {
+                    "title": "Strategic Networking",
+                    "description": "Connect directly with successful professionals and influential entrepreneurs."
+                },
+                "events": {
+                    "title": "Exclusive Events",
+                    "description": "Priority access and special discounts on all network events."
+                },
+                "discounts": {
+                    "title": "Partner Discounts",
+                    "description": "Exclusive benefits from selected partner services."
+                },
+                "content": {
+                    "title": "Premium Content",
+                    "description": "Access to mentorships, recorded workshops, and exclusive materials."
+                },
+                "support": {
+                    "title": "Dedicated Support",
+                    "description": "Concierge team to help with your needs."
+                },
+                "badge": {
+                    "title": "Verified Badge",
+                    "description": "Member seal that increases your credibility in the community."
+                }
+            },
+            "cta": {
+                "title": "Ready to join?",
+                "description": "Join thousands of Brazilians who are growing together.",
+                "button": "Get Started"
+            }
+        },
+        "testimonials": {
+            "title": "What Our Members Say",
+            "description": "Real stories from Brazilians who transformed their careers with 323 Network."
+        },
+        "cta": {
+            "badge": "Limited Spots",
+            "title1": "Ready to take the",
+            "title2": "next step?",
+            "description": "Join a community that truly cares about your success. Quality networking, exclusive events, and opportunities that make a difference.",
+            "button": "Create my free account",
+            "loginButton": "I already have an account",
+            "trust1": "Verified Community",
+            "trust2": "Secure Data",
+            "trust3": "Fast Support"
+        },
+        "footer": {
+            "description": "Connecting Brazilians and transforming careers in the United States since 2014.",
+            "quickLinks": "Quick Links",
+            "about": "About",
+            "events": "Events",
+            "portfolio": "Portfolio",
+            "benefits": "Benefits",
+            "community": "Community",
+            "login": "Login",
+            "register": "Create Account",
+            "faq": "FAQ",
+            "support": "Support",
+            "contact": "Contact",
+            "copyright": "© 2025 (323) Network. All rights reserved.",
+            "terms": "Terms of Use",
+            "privacy": "Privacy"
+        }
+    },
     "partners": {
         "enterCommunity": "Enter Community",
         "hero": {

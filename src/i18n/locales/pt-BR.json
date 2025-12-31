@@ -623,6 +623,128 @@
             "close": "Fechar"
         }
     },
+    "landing": {
+        "hero": {
+            "title1": "A maior comunidade de brasileiros",
+            "title2": "nos Estados Unidos",
+            "subtitle": "Conecte-se com artistas, empreendedores e profissionais brasileiros. Participe de eventos exclusivos, acesse oportunidades de negócios e faça parte de uma rede que transforma vidas.",
+            "ctaPrimary": "Entrar na Comunidade",
+            "ctaSecondary": "Ver Portfolio"
+        },
+        "about": {
+            "title1": "Quem é a",
+            "title2": "323 Network",
+            "description": "Somos um ecossistema dinâmico que conecta vozes influentes da comunidade brasileira nos Estados Unidos. Há mais de uma década promovendo conexões que transformam carreiras e negócios.",
+            "partnersTitle": "Parceiros de Mídia",
+            "stats": {
+                "events": "Eventos realizados",
+                "participants": "Participantes",
+                "artists": "Artistas & Experts",
+                "years": "Anos conectando"
+            }
+        },
+        "whatWeDo": {
+            "title": "O que oferecemos",
+            "description": "Uma experiência completa para brasileiros que buscam crescer nos Estados Unidos.",
+            "features": {
+                "events": {
+                    "title": "Eventos Exclusivos",
+                    "description": "Networking de alto nível, palestras inspiradoras e workshops práticos com os melhores profissionais."
+                },
+                "community": {
+                    "title": "Comunidade Ativa",
+                    "description": "Conexões genuínas com empreendedores, artistas e profissionais que compartilham seus objetivos."
+                },
+                "opportunities": {
+                    "title": "Oportunidades",
+                    "description": "Acesso a vagas exclusivas, parcerias de negócios e serviços especializados para brasileiros."
+                },
+                "benefits": {
+                    "title": "Benefícios VIP",
+                    "description": "Descontos exclusivos em serviços, acessos antecipados e vantagens reservadas para membros."
+                }
+            }
+        },
+        "events": {
+            "title": "Eventos que Marcam",
+            "description": "Experiências presenciais e online que conectam, inspiram e transformam.",
+            "viewAll": "Ver todos os eventos",
+            "participants": "participantes"
+        },
+        "portfolio": {
+            "title1": "Nosso",
+            "title2": "Portfolio",
+            "description": "Reviva os melhores momentos dos nossos eventos e encontros.",
+            "viewMore": "Ver galeria completa"
+        },
+        "benefits": {
+            "title": "Benefícios de ser Membro",
+            "description": "Muito mais do que networking. Uma experiência completa para seu sucesso.",
+            "items": {
+                "networking": {
+                    "title": "Networking Estratégico",
+                    "description": "Conecte-se diretamente com profissionais de sucesso e empreendedores influentes."
+                },
+                "events": {
+                    "title": "Eventos Exclusivos",
+                    "description": "Acesso prioritário e descontos especiais em todos os eventos da rede."
+                },
+                "discounts": {
+                    "title": "Descontos Parceiros",
+                    "description": "Benefícios exclusivos em serviços de parceiros selecionados."
+                },
+                "content": {
+                    "title": "Conteúdo Premium",
+                    "description": "Acesso a mentorias, workshops gravados e materiais exclusivos."
+                },
+                "support": {
+                    "title": "Suporte Dedicado",
+                    "description": "Equipe de concierge para ajudar em suas necessidades."
+                },
+                "badge": {
+                    "title": "Badge Verificado",
+                    "description": "Selo de membro que aumenta sua credibilidade na comunidade."
+                }
+            },
+            "cta": {
+                "title": "Pronto para fazer parte?",
+                "description": "Junte-se a milhares de brasileiros que estão crescendo juntos.",
+                "button": "Começar Agora"
+            }
+        },
+        "testimonials": {
+            "title": "O que dizem nossos membros",
+            "description": "Histórias reais de brasileiros que transformaram suas carreiras com a 323 Network."
+        },
+        "cta": {
+            "badge": "Vagas Limitadas",
+            "title1": "Pronto para dar o",
+            "title2": "próximo passo?",
+            "description": "Junte-se a uma comunidade que realmente se importa com seu sucesso. Networking de qualidade, eventos exclusivos e oportunidades que fazem a diferença.",
+            "button": "Criar minha conta grátis",
+            "loginButton": "Já tenho conta",
+            "trust1": "Comunidade Verificada",
+            "trust2": "Dados Seguros",
+            "trust3": "Suporte Rápido"
+        },
+        "footer": {
+            "description": "Conectando brasileiros e transformando carreiras nos Estados Unidos desde 2014.",
+            "quickLinks": "Links Rápidos",
+            "about": "Sobre",
+            "events": "Eventos",
+            "portfolio": "Portfolio",
+            "benefits": "Benefícios",
+            "community": "Comunidade",
+            "login": "Entrar",
+            "register": "Criar Conta",
+            "faq": "Perguntas Frequentes",
+            "support": "Suporte",
+            "contact": "Contato",
+            "copyright": "© 2025 (323) Network. Todos os direitos reservados.",
+            "terms": "Termos de Uso",
+            "privacy": "Privacidade"
+        }
+    },
     "partners": {
         "enterCommunity": "Entrar na Comunidade",
         "hero": {
