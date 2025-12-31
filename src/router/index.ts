@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresGuest: true },
   },
   {
-    path: '/lp',
+    path: '/brasileiro-nos-eua',
     name: 'LandingPage',
     component: () => import('@/views/landing/LandingPage.vue'),
     meta: { isLanding: true },
