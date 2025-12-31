@@ -145,6 +145,18 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/desafios',
+    name: 'Challenges',
+    component: () => import('@/views/Challenges.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/ranking',
+    name: 'Leaderboard',
+    component: () => import('@/views/Leaderboard.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/admin',
     name: 'AdminOverview',
     component: () => import('@/views/admin/AdminOverview.vue'),

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
+import { useGamificationStore } from './gamification'
 import type { Event, EventFilters, EventCreateInput } from '@/types/events'
 
 export const useEventStore = defineStore('events', () => {
@@ -14,6 +15,7 @@ export const useEventStore = defineStore('events', () => {
   const filters = ref<EventFilters>({ sortBy: 'upcoming' })
 
   const authStore = useAuthStore()
+  const gamificationStore = useGamificationStore()
   const currentUserId = computed(() => authStore.user?.id)
 
   // Verificar se usuário é admin
@@ -436,6 +438,9 @@ export const useEventStore = defineStore('events', () => {
         }
         throw insertError
       }
+
+      // Award points for confirming attendance
+      await gamificationStore.awardPoints(20, 'event', eventId, `Confirmou presença no evento: ${event.titulo}`)
     } catch (err: any) {
       // Revert optimistic update on error
       event.is_confirmed = wasConfirmed

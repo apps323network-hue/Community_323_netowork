@@ -17,21 +17,21 @@
     @apply bg-background-light dark:bg-background-dark text-slate-900 dark:text-gray-200 transition-colors duration-300;
     font-family: 'Inter', sans-serif;
   }
-  
+
   /* Light mode scrollbar */
   .light-scrollbar::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   .light-scrollbar::-webkit-scrollbar-track {
     background: #f1f5f9;
   }
-  
+
   .light-scrollbar::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 4px;
   }
-  
+
   .light-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
   }
@@ -41,23 +41,23 @@
   .text-glow-blue {
     text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
   }
-  
+
   .text-glow-pink {
     text-shadow: 0 0 10px rgba(244, 37, 244, 0.6);
   }
-  
+
   .neon-text-gradient {
     background: linear-gradient(to right, #f425f4, #00f0ff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .border-gradient-blue-pink {
     position: relative;
     border: 1px solid transparent;
     background: linear-gradient(#12121A, #12121A) padding-box,
-                linear-gradient(to right, #00F0FF, #FF00AA) border-box;
+      linear-gradient(to right, #00F0FF, #FF00AA) border-box;
   }
 }
 
@@ -79,3 +79,19 @@
   background: #555;
 }
 
+/* Points Toast Animations */
+@keyframes bounce-gentle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 1s ease-in-out infinite;
+}

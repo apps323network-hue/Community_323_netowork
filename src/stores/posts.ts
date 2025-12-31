@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
 import { logAdminAction } from '@/lib/auditLog'
+import { useGamificationStore } from './gamification'
 import type { Post, Comment, PostCreateInput, CommentCreateInput, PostFilters } from '@/types/posts'
 
 export const usePostStore = defineStore('posts', () => {
@@ -15,6 +16,7 @@ export const usePostStore = defineStore('posts', () => {
   const pageSize = ref(15)
 
   const authStore = useAuthStore()
+  const gamificationStore = useGamificationStore()
   const currentUserId = computed(() => authStore.user?.id)
 
   // Verificar se usuário é admin
@@ -411,6 +413,9 @@ export const usePostStore = defineStore('posts', () => {
         }
       })
 
+      // Award points for creating a post (First time only)
+      await gamificationStore.awardPoints(10, 'post', data.id, 'Primeiro post criado!', true)
+
       return newPost
     } catch (err: any) {
       error.value = err.message
@@ -711,6 +716,9 @@ export const usePostStore = defineStore('posts', () => {
           conteudo: input.conteudo
         }
       })
+
+      // Award points for adding a comment
+      await gamificationStore.awardPoints(5, 'comment', data.id, 'Novo comentário adicionado')
 
       return newComment
     } catch (err: any) {

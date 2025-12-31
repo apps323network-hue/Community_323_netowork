@@ -34,6 +34,8 @@
 
     <AppFooter v-if="$route.path === '/'" />
 
+
+
     <!-- Mobile Menu - Sempre visível -->
     <div
       class="fixed bottom-0 left-0 right-0 z-50 bg-surface-dark border-t border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
@@ -73,6 +75,7 @@ import { computed } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import AppHeader from './AppHeader.vue'
 import AppFooter from './AppFooter.vue'
+
 
 const props = defineProps<{
   hideSidebars?: boolean

@@ -61,6 +61,8 @@
         "theme": "Theme",
         "language": "Language",
         "dashboardAdmin": "Admin Dashboard",
+        "challenges": "Challenges",
+        "ranking": "Ranking",
         "logout": "Logout"
     },
     "auth": {

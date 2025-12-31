@@ -61,6 +61,8 @@
         "theme": "Tema",
         "language": "Idioma",
         "dashboardAdmin": "Dashboard Admin",
+        "challenges": "Desafios",
+        "ranking": "Ranking",
         "logout": "Sair"
     },
     "auth": {

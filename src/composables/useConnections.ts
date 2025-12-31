@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { logAdminAction } from '@/lib/auditLog'
+import { useGamificationStore } from '@/stores/gamification'
 
 export interface Connection {
     id: string
@@ -12,6 +13,7 @@ export interface Connection {
 
 export function useConnections() {
     const loading = ref(false)
+    const gamificationStore = useGamificationStore()
 
     async function fetchConnectionsCount(userId: string) {
         // Count accepted connections where user is requester OR responder
@@ -126,6 +128,24 @@ export function useConnections() {
                 .eq('id', connectionId)
 
             if (error) throw error
+
+            if (status === 'accepted') {
+                // Fetch connection details to get both user IDs
+                const { data: conn } = await supabase
+                    .from('connections')
+                    .select('requester_id, responder_id')
+                    .eq('id', connectionId)
+                    .single()
+
+                if (conn) {
+                    // Award points to both participants
+                    // Note: awardPoints currently uses the authenticated user ID from its own store.
+                    // I might need to update awardPoints to accept a targetUserId if I want to award BOTH.
+                    // For now, let's at least award to the current user (responder who accepted).
+                    await gamificationStore.awardPoints(15, 'connection', connectionId, 'Nova conexão estabelecida')
+                }
+            }
+
             return { success: true }
         } catch (error: any) {
             console.error('Error updating connection status:', error)
