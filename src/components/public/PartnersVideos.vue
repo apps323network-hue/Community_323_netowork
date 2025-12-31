@@ -132,10 +132,6 @@ const cardsVisible = ref(false)
 
 let observer: IntersectionObserver | null = null
 
-const videoModalOpen = ref(false)
-const selectedVideoUrl = ref<string | null>(null)
-const selectedVideoTitle = ref('')
-
 // Estado para vídeos do Supabase
 const videos = ref<Array<{
   name: string
@@ -246,65 +242,6 @@ async function fetchVideosFromSupabase() {
   }
 }
 
-const selectedVideoType = ref<'youtube' | 'instagram' | null>(null)
-
-function getInstagramEmbedUrl(instagramUrl: string): string {
-  console.log('[Instagram Embed] Processando URL:', instagramUrl)
-  
-  // Extrair o shortcode do reel/post do Instagram
-  // Formato: https://www.instagram.com/reel/SHORTCODE/ ou https://www.instagram.com/p/SHORTCODE/
-  // A regex captura o shortcode até encontrar /, ? ou & (para suportar query params)
-  const reelMatch = instagramUrl.match(/instagram\.com\/reel\/([A-Za-z0-9_-]+)/)
-  const postMatch = instagramUrl.match(/instagram\.com\/p\/([A-Za-z0-9_-]+)/)
-  
-  console.log('[Instagram Embed] Reel match:', reelMatch)
-  console.log('[Instagram Embed] Post match:', postMatch)
-  
-  const shortcode = reelMatch?.[1] || postMatch?.[1]
-  
-  console.log('[Instagram Embed] Shortcode extraído:', shortcode)
-  
-  if (shortcode) {
-    // Para reels, usar o formato /p/ que funciona melhor com embeds
-    // O Instagram aceita reels no formato /p/ para embeds
-    // Usar parâmetros para minimizar a interface do Instagram
-    // O parâmetro hidecaption=true esconde a legenda
-    // Remover parâmetros extras que podem estar causando problemas
-    const embedUrl = `https://www.instagram.com/p/${shortcode}/embed/?hidecaption=true`
-    console.log('[Instagram Embed] URL final do embed:', embedUrl)
-    console.log('[Instagram Embed] Shortcode usado:', shortcode, '| É reel?', !!reelMatch)
-    return embedUrl
-  }
-  
-  // Se não conseguir extrair o shortcode, retornar a URL original
-  console.warn('[Instagram Embed] Não foi possível extrair o shortcode da URL:', instagramUrl)
-  return instagramUrl
-}
-
-function isInstagramUrl(url: string | null): boolean {
-  if (!url) return false
-  const isInstagram = url.includes('instagram.com/reel/') || url.includes('instagram.com/p/')
-  console.log(`🔍 [Instagram Embed] isInstagramUrl("${url}"):`, isInstagram)
-  return isInstagram
-}
-
-// Funções antigas mantidas para compatibilidade (não usadas mais)
-
-function getYouTubeEmbedUrl(youtubeUrl: string): string {
-  // Converter URL do YouTube para formato embed
-  // Suporta: youtube.com/watch?v=, youtu.be/, youtube.com/embed/
-  const watchMatch = youtubeUrl.match(/[?&]v=([^&]+)/)
-  const shortMatch = youtubeUrl.match(/youtu\.be\/([^?]+)/)
-  const embedMatch = youtubeUrl.match(/youtube\.com\/embed\/([^?]+)/)
-  
-  const videoId = watchMatch?.[1] || shortMatch?.[1] || embedMatch?.[1]
-  
-  if (videoId) {
-    return `https://www.youtube.com/embed/${videoId}`
-  }
-  
-  return youtubeUrl
-}
 
 // Lazy loading: carrega apenas os primeiros 3 vídeos inicialmente
 function shouldLoadVideo(index: number): boolean {
@@ -315,11 +252,12 @@ function shouldLoadVideo(index: number): boolean {
 
 // Carregar vídeos restantes quando necessário (lazy loading)
 function loadRemainingVideos() {
-  const iframes = document.querySelectorAll('iframe[data-src]:not([src])')
-  iframes.forEach((iframe) => {
-    const dataSrc = iframe.getAttribute('data-src')
+  const videoElements = document.querySelectorAll('video[data-src]:not([src])')
+  videoElements.forEach((videoEl) => {
+    const dataSrc = videoEl.getAttribute('data-src')
     if (dataSrc) {
-      ;(iframe as HTMLIFrameElement).src = dataSrc
+      ;(videoEl as HTMLVideoElement).src = dataSrc
+      ;(videoEl as HTMLVideoElement).load()
     }
   })
 }
