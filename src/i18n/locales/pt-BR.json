@@ -594,6 +594,9 @@
         "genericError": "Algo deu errado. Tente novamente.",
         "networkError": "Erro de conexão. Verifique sua internet.",
         "notFound": "Página não encontrada",
+        "notFoundMessage": "A página que você está procurando pode ter sido movida ou não existe.",
+        "goHome": "Ir para Início",
+        "explore": "Explorar",
         "unauthorized": "Você não tem permissão para acessar esta página.",
         "formValidation": "Por favor, preencha todos os campos obrigatórios."
     },
