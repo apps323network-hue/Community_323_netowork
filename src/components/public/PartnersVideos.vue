@@ -127,11 +127,5 @@ function openVideo(url: string | null) {
   selectedVideoTitle.value = placeholderVideos.find(v => v.url === url)?.title || ''
   videoModalOpen.value = true
 }
-
-function closeVideo() {
-  videoModalOpen.value = false
-  selectedVideoUrl.value = null
-  selectedVideoTitle.value = ''
-}
 </script>
 

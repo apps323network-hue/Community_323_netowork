@@ -99,11 +99,12 @@ const plans = [
   },
 ]
 
-function openContactForm(planKey: string) {
+function openContactForm(_planKey: string) {
   const contactSection = document.getElementById('contact-form')
   if (contactSection) {
     contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
     // Aqui pode adicionar lógica para preencher o formulário com o plano selecionado
+    // O parâmetro _planKey será usado futuramente para preencher o formulário
   }
 }
 </script>
