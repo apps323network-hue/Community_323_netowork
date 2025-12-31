@@ -62,7 +62,7 @@
     </div>
 
     <!-- Modal de Evento -->
-    <Modal v-model="showEventModal" :title="t('events.createEvent')" size="lg">
+    <Modal v-model="showEventModal" :title="t('posts.createEvent')" size="lg">
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-semibold text-gray-300 mb-2">Título do Evento</label>
@@ -257,7 +257,7 @@
             </span>
             <span v-else class="flex items-center gap-2">
               <span class="material-icons-outlined text-base">event</span>
-              {{ t('events.createEvent') }}
+              {{ t('posts.createEvent') }}
             </span>
           </Button>
         </div>
@@ -729,8 +729,28 @@ async function handleCreateEvent() {
 
     console.log('✅ Evento criado com sucesso! ID:', data.id)
 
+    // Notificar admins sobre o evento (se estiver pendente)
+    // O post também será notificado quando for criado abaixo
+    if (data.status === 'pending') {
+      const creatorName = userStore.profile?.nome || 'Usuário'
+      
+      // Chamar notificação de forma assíncrona sem bloquear
+      import('@/lib/emails').then(({ notifyAdminsNewEvent }) => {
+        notifyAdminsNewEvent(
+          data.id,
+          data.titulo,
+          data.data_hora,
+          data.tipo,
+          creatorName
+        ).catch(err => {
+          console.error('Failed to notify admins about new event:', err)
+        })
+      })
+    }
+
     console.log('11. Criando post sobre o evento...')
     // Criar post sobre o evento com a imagem do banner
+    // O createPost() já notifica os admins sobre o post pendente
     const newPost = await createPost({
       conteudo: `📅 Novo evento: ${eventForm.value.titulo}\n\n${eventForm.value.descricao || ''}`,
       tipo: 'oportunidade',

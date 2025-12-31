@@ -222,7 +222,7 @@ const router = useRouter()
 const adminStore = useAdminStore()
 const authStore = useAuthStore()
 
-const activeTab = ref<'pending' | 'all' | 'hidden' | 'removed' | 'spam'>('pending')
+const activeTab = ref<'pending' | 'all' | 'hidden' | 'removed' | 'spam'>('all')
 const showModerationModal = ref(false)
 const showPostViewModal = ref(false)
 const showCreateModal = ref(false)
@@ -243,14 +243,14 @@ const uploadingImage = ref(false)
 
 const tabs = computed(() => [
   {
+    id: 'all' as const,
+    label: 'Todos',
+  },
+  {
     id: 'pending' as const,
     label: 'Pendentes',
     badge: adminStore.postStats.pending > 0 ? adminStore.postStats.pending : undefined,
     badgeClass: 'bg-yellow-500/20 text-yellow-400',
-  },
-  {
-    id: 'all' as const,
-    label: 'Todos',
   },
   {
     id: 'hidden' as const,
@@ -555,6 +555,8 @@ onMounted(async () => {
     return
   }
 
+  // Carregar dados iniciais baseado na aba padrão
+  await adminStore.fetchAllPosts() // Aba padrão é "Todos"
   await adminStore.fetchPendingPosts()
   await adminStore.fetchPostStats()
 })

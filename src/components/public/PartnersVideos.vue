@@ -62,7 +62,7 @@
               <div class="video-play-overlay">
                 <div class="w-16 h-16 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
                   <span class="material-icons-outlined text-white text-3xl">play_arrow</span>
-                </div>
+            </div>
               </div>
             </div>
           </div>

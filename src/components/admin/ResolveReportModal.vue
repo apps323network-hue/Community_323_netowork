@@ -2,10 +2,10 @@
   <Modal v-model="isOpen" title="Resolver Report" size="lg">
     <div class="space-y-6">
       <!-- Informações do Report -->
-      <div class="bg-surface-card rounded-lg p-4 border border-white/5">
+      <div class="bg-slate-50 dark:bg-surface-card rounded-lg p-4 border border-slate-200 dark:border-white/5">
         <div class="space-y-3">
           <div>
-            <p class="text-white/60 text-xs mb-1">Tipo de Item</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Tipo de Item</p>
             <span
               class="inline-block px-2 py-1 rounded-full text-xs font-bold"
               :class="getItemTypeClass(report?.reported_item_type || '')"
@@ -14,7 +14,7 @@
             </span>
           </div>
           <div>
-            <p class="text-white/60 text-xs mb-1">Motivo</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Motivo</p>
             <span
               class="inline-block px-2 py-1 rounded-full text-xs font-bold"
               :class="getReasonClass(report?.reason || '')"
@@ -23,22 +23,22 @@
             </span>
           </div>
           <div>
-            <p class="text-white/60 text-xs mb-1">Reportado por</p>
-            <p class="text-white font-medium">{{ report?.reporter_name || 'Usuário' }}</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Reportado por</p>
+            <p class="text-slate-900 dark:text-white font-medium">{{ report?.reporter_name || 'Usuário' }}</p>
           </div>
           <div v-if="report?.description">
-            <p class="text-white/60 text-xs mb-1">Descrição</p>
-            <p class="text-white/80 text-sm">{{ report.description }}</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Descrição</p>
+            <p class="text-slate-700 dark:text-white/80 text-sm">{{ report.description }}</p>
           </div>
         </div>
       </div>
 
       <!-- Preview do Item Reportado -->
-      <div class="bg-surface-card rounded-lg p-4 border border-white/5">
-        <p class="text-white/60 text-xs mb-3">Conteúdo Reportado:</p>
+      <div class="bg-slate-50 dark:bg-surface-card rounded-lg p-4 border border-slate-200 dark:border-white/5">
+        <p class="text-slate-600 dark:text-white/60 text-xs mb-3">Conteúdo Reportado:</p>
         <div v-if="report?.reported_item">
           <div v-if="report.reported_item_type === 'post' || report.reported_item_type === 'comment'">
-            <p class="text-white/80 text-sm whitespace-pre-line">{{ (report.reported_item as any).conteudo }}</p>
+            <p class="text-slate-700 dark:text-white/80 text-sm whitespace-pre-line">{{ (report.reported_item as any).conteudo }}</p>
             <div
               v-if="(report.reported_item as any).image_url"
               class="mt-3 rounded-lg overflow-hidden max-w-xs"
@@ -63,28 +63,28 @@
                 />
               </div>
               <div>
-                <p class="text-white font-medium">{{ (report.reported_item as any).nome || 'Usuário' }}</p>
-                <p class="text-white/60 text-xs">{{ (report.reported_item as any).email || '' }}</p>
-                <p class="text-white/60 text-xs">{{ (report.reported_item as any).area_atuacao || '' }}</p>
+                <p class="text-slate-900 dark:text-white font-medium">{{ (report.reported_item as any).nome || 'Usuário' }}</p>
+                <p class="text-slate-600 dark:text-white/60 text-xs">{{ (report.reported_item as any).email || '' }}</p>
+                <p class="text-slate-600 dark:text-white/60 text-xs">{{ (report.reported_item as any).area_atuacao || '' }}</p>
               </div>
             </div>
           </div>
         </div>
-        <div v-else class="text-white/40 text-sm">
+        <div v-else class="text-slate-500 dark:text-white/40 text-sm">
           Carregando conteúdo...
         </div>
       </div>
 
       <!-- Seleção de Ação -->
       <div>
-        <label class="block text-white/80 text-sm font-semibold mb-3">Ação a Tomar *</label>
+        <label class="block text-slate-900 dark:text-white/80 text-sm font-semibold mb-3">Ação a Tomar *</label>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             :class="[
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
               action === 'remove_content'
-                ? 'bg-red-500/20 text-red-400 border-2 border-red-500'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-red-500/30',
+                ? 'bg-red-500/20 text-red-600 dark:text-red-400 border-2 border-red-500'
+                : 'bg-slate-50 dark:bg-surface-card text-slate-700 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:border-red-500/30',
             ]"
             @click="action = 'remove_content'"
           >
@@ -95,8 +95,8 @@
             :class="[
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
               action === 'ban_user'
-                ? 'bg-red-600/20 text-red-500 border-2 border-red-600'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-red-600/30',
+                ? 'bg-red-600/20 text-red-600 dark:text-red-500 border-2 border-red-600'
+                : 'bg-slate-50 dark:bg-surface-card text-slate-700 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:border-red-600/30',
             ]"
             @click="action = 'ban_user'"
           >
@@ -107,8 +107,8 @@
             :class="[
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
               action === 'add_strike'
-                ? 'bg-yellow-500/20 text-yellow-400 border-2 border-yellow-500'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-yellow-500/30',
+                ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-2 border-yellow-500'
+                : 'bg-slate-50 dark:bg-surface-card text-slate-700 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:border-yellow-500/30',
             ]"
             @click="action = 'add_strike'"
           >
@@ -119,8 +119,8 @@
             :class="[
               'flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all text-sm',
               action === 'dismiss'
-                ? 'bg-gray-500/20 text-gray-400 border-2 border-gray-500'
-                : 'bg-surface-card text-white/60 border border-white/10 hover:border-gray-500/30',
+                ? 'bg-gray-500/20 text-gray-600 dark:text-gray-400 border-2 border-gray-500'
+                : 'bg-slate-50 dark:bg-surface-card text-slate-700 dark:text-white/60 border border-slate-200 dark:border-white/10 hover:border-gray-500/30',
             ]"
             @click="action = 'dismiss'"
           >
@@ -132,11 +132,11 @@
 
       <!-- Campo de Detalhes -->
       <div v-if="action && action !== 'dismiss'">
-        <label class="block text-white/80 text-sm font-semibold mb-2">Detalhes (opcional)</label>
+        <label class="block text-slate-900 dark:text-white/80 text-sm font-semibold mb-2">Detalhes (opcional)</label>
         <textarea
           v-model="details"
           rows="3"
-          class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+          class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
           placeholder="Adicione observações sobre a ação tomada..."
         />
       </div>
@@ -147,11 +147,11 @@
           v-model="addStrike"
           type="checkbox"
           id="addStrike"
-          class="mt-1 w-4 h-4 rounded border-white/20 bg-surface-card text-primary focus:ring-primary focus:ring-offset-0"
+          class="mt-1 w-4 h-4 rounded border-slate-300 dark:border-white/20 bg-white dark:bg-surface-card text-primary focus:ring-primary focus:ring-offset-0"
         />
-        <label for="addStrike" class="text-white/80 text-sm flex-1">
+        <label for="addStrike" class="text-slate-900 dark:text-white/80 text-sm flex-1">
           Adicionar strike ao autor
-          <p class="text-white/60 text-xs mt-1">
+          <p class="text-slate-600 dark:text-white/60 text-xs mt-1">
             Adicionar um strike ao autor por este conteúdo inapropriado.
           </p>
         </label>
@@ -180,7 +180,7 @@
       <div class="flex gap-3">
         <button
           @click="isOpen = false"
-          class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+          class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
         >
           Cancelar
         </button>

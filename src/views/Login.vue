@@ -474,12 +474,22 @@ async function handleLogin() {
     console.error(`[LOGIN] Erro após ${errorDuration.toFixed(2)}ms:`, error)
     console.error('Login error:', error)
 
+    const errorMessage = error.message?.toLowerCase() || ''
+    
     // Verificar se é erro de email não confirmado
     const isEmailNotConfirmed =
-      error.message?.toLowerCase().includes('email not confirmed') ||
-      error.message?.toLowerCase().includes('email não confirmado') ||
-      error.message?.toLowerCase().includes('confirmation') ||
+      errorMessage.includes('email not confirmed') ||
+      errorMessage.includes('email não confirmado') ||
+      errorMessage.includes('confirmation') ||
       error.status === 400
+
+    // Verificar se é erro de credenciais inválidas
+    const isInvalidCredentials =
+      errorMessage.includes('invalid login credentials') ||
+      errorMessage.includes('credenciais inválidas') ||
+      errorMessage.includes('invalid credentials') ||
+      errorMessage.includes('email or password') ||
+      error.code === 'invalid_credentials'
 
     if (isEmailNotConfirmed) {
       loginErrorModal.value = {
@@ -488,12 +498,17 @@ async function handleLogin() {
         icon: 'mark_email_unread',
         isEmailNotConfirmed: true,
       }
+    } else if (isInvalidCredentials) {
+      loginErrorModal.value = {
+        title: t('auth.invalidCredentialsTitle'),
+        message: t('auth.invalidCredentialsMessage'),
+        icon: 'lock',
+        isEmailNotConfirmed: false,
+      }
     } else {
       loginErrorModal.value = {
         title: t('auth.loginErrorTitle'),
-        message:
-          error.message ||
-          t('auth.loginErrorMessage'),
+        message: t('auth.loginErrorMessage'),
         icon: 'error',
         isEmailNotConfirmed: false,
       }

@@ -97,6 +97,8 @@
         "emailNotConfirmedMessage": "The email {email} has not been confirmed yet. Please check your inbox and click the confirmation link we sent.",
         "loginErrorTitle": "Login error",
         "loginErrorMessage": "Unable to login. Please check your credentials and try again.",
+        "invalidCredentialsTitle": "Invalid credentials",
+        "invalidCredentialsMessage": "The email or password you entered is incorrect. Please check your information and try again. If you forgot your password, click 'Forgot password?' to recover it.",
         "whatToDoNow": "What to do now?",
         "verifyInboxInstructions": "Check your inbox and click the confirmation link we sent. If you don't find the email, also check your spam folder.",
         "resendConfirmationEmail": "Resend Confirmation Email",

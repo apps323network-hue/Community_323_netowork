@@ -67,6 +67,24 @@ export function usePartner() {
       // Adicionar à lista local
       myEvents.value.unshift(data)
 
+      // Notificar admins se evento estiver pendente
+      if (data.status === 'pending') {
+        const creatorName = userStore.profile?.nome || 'Parceiro'
+        
+        // Chamar notificação de forma assíncrona sem bloquear
+        import('@/lib/emails').then(({ notifyAdminsNewEvent }) => {
+          notifyAdminsNewEvent(
+            data.id,
+            data.titulo,
+            data.data_hora,
+            data.tipo,
+            creatorName
+          ).catch(err => {
+            console.error('Failed to notify admins about new event:', err)
+          })
+        })
+      }
+
       return data
     } catch (err: any) {
       console.error('Error creating event:', err)

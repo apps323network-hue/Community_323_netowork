@@ -69,25 +69,61 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Fallback: criar profile se trigger não funcionar
       if (data.user) {
+        const userName = userData?.nome || userData?.firstName 
+          ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() 
+          : email.split('@')[0]
+        const userArea = userData?.role || null
+        
         try {
-          await supabase.from('profiles').insert({
+          const { data: profileData } = await supabase.from('profiles').insert({
             id: data.user.id,
-            nome: userData?.nome || userData?.firstName 
-              ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() 
-              : email.split('@')[0],
-            area_atuacao: userData?.role || null,
+            nome: userName,
+            area_atuacao: userArea,
             plano: 'Free',
             badge: 'Free',
+            status: 'pending', // Novo usuário sempre começa como pending
           }).select().single()
+          
+          // Notificar admins sobre novo usuário
+          if (profileData?.status === 'pending') {
+            import('@/lib/emails').then(({ notifyAdminsNewUser }) => {
+              notifyAdminsNewUser(
+                data.user!.id,
+                userName,
+                userArea || undefined,
+                profileData.created_at || new Date().toISOString()
+              ).catch(err => {
+                console.error('Failed to notify admins about new user:', err)
+              })
+            })
+          }
         } catch (profileError) {
-          // Profile já existe ou erro - tentar atualizar
+          // Profile já existe ou erro - tentar atualizar e verificar status
           try {
+            const { data: existingProfile } = await supabase
+              .from('profiles')
+              .select('status, created_at, area_atuacao')
+              .eq('id', data.user.id)
+              .single()
+            
             await supabase.from('profiles').update({
-              area_atuacao: userData?.role || null,
-              nome: userData?.nome || userData?.firstName 
-                ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() 
-                : email.split('@')[0],
+              area_atuacao: userArea || null,
+              nome: userName,
             }).eq('id', data.user.id)
+            
+            // Se o profile existente estiver pendente, notificar
+            if (existingProfile?.status === 'pending') {
+              import('@/lib/emails').then(({ notifyAdminsNewUser }) => {
+                notifyAdminsNewUser(
+                  data.user!.id,
+                  userName,
+                  existingProfile.area_atuacao || undefined,
+                  existingProfile.created_at || new Date().toISOString()
+                ).catch(err => {
+                  console.error('Failed to notify admins about new user:', err)
+                })
+              })
+            }
           } catch (updateError) {
             // Profile já existe ou erro - não é crítico, trigger pode ter criado
             console.log('Profile creation/update:', updateError)

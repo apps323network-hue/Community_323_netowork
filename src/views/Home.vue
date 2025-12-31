@@ -73,6 +73,7 @@ import PostCard from '@/components/features/feed/PostCard.vue'
 import CommentForm from '@/components/features/feed/CommentForm.vue'
 import EventCard from '@/components/features/events/EventCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import Button from '@/components/ui/Button.vue'
 import { toast } from 'vue-sonner'
 import type { PostFilters as PostFiltersType } from '@/types/posts'
 

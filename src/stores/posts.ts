@@ -411,6 +411,22 @@ export const usePostStore = defineStore('posts', () => {
         }
       })
 
+      // Notificar admins se post estiver pendente
+      if (newPost.status === 'pending') {
+        const authorName = profileData?.nome || 'Usuário'
+        // Chamar notificação de forma assíncrona sem bloquear
+        import('@/lib/emails').then(({ notifyAdminsNewPost }) => {
+          notifyAdminsNewPost(
+            newPost.id,
+            newPost.conteudo,
+            authorName,
+            newPost.tipo
+          ).catch(err => {
+            console.error('Failed to notify admins about new post:', err)
+          })
+        })
+      }
+
       return newPost
     } catch (err: any) {
       error.value = err.message

@@ -97,6 +97,8 @@
         "emailNotConfirmedMessage": "O email {email} ainda não foi confirmado. Por favor, verifique sua caixa de entrada e clique no link de confirmação que enviamos.",
         "loginErrorTitle": "Erro ao fazer login",
         "loginErrorMessage": "Não foi possível fazer login. Verifique suas credenciais e tente novamente.",
+        "invalidCredentialsTitle": "Credenciais inválidas",
+        "invalidCredentialsMessage": "O email ou senha informados estão incorretos. Por favor, verifique os dados e tente novamente. Se você esqueceu sua senha, clique em 'Esqueceu a senha?' para recuperá-la.",
         "whatToDoNow": "O que fazer agora?",
         "verifyInboxInstructions": "Verifique sua caixa de entrada e clique no link de confirmação que enviamos. Se não encontrar o email, verifique também sua pasta de spam.",
         "resendConfirmationEmail": "Reenviar Email de Confirmação",
