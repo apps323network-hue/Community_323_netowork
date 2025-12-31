@@ -30,7 +30,7 @@ interface Emits {
   (e: 'filter-change', filterId: EventStatus | 'all'): void
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const filters: Filter[] = [

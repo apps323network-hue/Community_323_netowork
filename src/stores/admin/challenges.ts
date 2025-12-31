@@ -229,8 +229,18 @@ export const useAdminChallengesStore = defineStore('admin-challenges', () => {
       challengeStats.value = {
         total: 0,
         active: 0,
-        completed: 0,
-        rewardsGiven: 0,
+        inactive: 0,
+        byType: {
+          post: 0,
+          event: 0,
+          comment: 0,
+          other: 0,
+          connection: 0,
+          engagement: 0,
+        },
+        totalParticipants: 0,
+        totalCompleted: 0,
+        averagePoints: 0,
       }
       return
     }

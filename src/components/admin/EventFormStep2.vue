@@ -176,6 +176,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import type { EventStatus } from '@/types/events'
 
 interface EventFormData {
   titulo: string
@@ -183,7 +184,7 @@ interface EventFormData {
   tipo: string
   local: string
   image_url: string
-  status: string
+  status: EventStatus
 }
 
 interface DateTimeData {

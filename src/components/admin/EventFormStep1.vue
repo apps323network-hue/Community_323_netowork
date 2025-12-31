@@ -40,13 +40,15 @@
 </template>
 
 <script setup lang="ts">
+import type { EventStatus } from '@/types/events'
+
 interface EventFormData {
   titulo: string
   descricao: string
   tipo: string
   local: string
   image_url: string
-  status: string
+  status: EventStatus
 }
 
 interface Props {
