@@ -68,7 +68,9 @@ export interface PostStats {
   total: number
   pending: number
   approved: number
+  hidden: number
   removed: number
+  spam: number
   removedToday: number
 }
 
@@ -160,8 +162,9 @@ export interface ReportCreateInput {
 }
 
 export interface ReportResolveInput {
-  action: 'remove_content' | 'ban_user' | 'dismiss'
+  action: 'remove_content' | 'ban_user' | 'suspend_user' | 'add_strike' | 'dismiss'
   details?: string
+  add_strike?: boolean
 }
 
 export type ChallengeType = 'post' | 'comment' | 'event' | 'connection' | 'engagement' | 'other'

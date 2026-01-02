@@ -186,7 +186,7 @@ const displayedUsers = computed(() => {
   return adminStore.allUsers.filter((u: AdminUser) => u.status === activeTab.value)
 })
 
-async function handleTabChange(tabId: 'pending' | 'all' | 'banned') {
+async function handleTabChange(tabId: 'pending' | 'all' | 'suspended' | 'banned') {
   activeTab.value = tabId
 
   if (tabId === 'pending') {

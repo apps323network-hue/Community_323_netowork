@@ -1,5 +1,5 @@
 export type PostType = 'networking' | 'ofereco_servico' | 'procuro_ajuda' | 'oportunidade'
-export type PostStatus = 'pending' | 'approved' | 'removed'
+export type PostStatus = 'pending' | 'approved' | 'removed' | 'hidden' | 'spam'
 
 export interface PostAuthor {
   id: string
@@ -24,6 +24,7 @@ export interface Post {
   rejection_reason?: string
   moderated_by?: string
   moderated_at?: string
+  strikes_added?: boolean
   // Joined data
   author?: PostAuthor
   likes_count?: number
@@ -45,6 +46,7 @@ export interface Comment {
   moderated_by?: string
   moderated_at?: string
   rejection_reason?: string
+  strikes_added?: boolean
   // Joined data
   author?: PostAuthor
 }
