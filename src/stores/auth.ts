@@ -118,16 +118,37 @@ export const useAuthStore = defineStore('auth', () => {
         
         // Se tiver returnTo, redirecionar com token
         if (userData?.returnTo && accessToken) {
-          const returnUrl = new URL(userData.returnTo)
-          returnUrl.searchParams.set('token', accessToken)
-          returnUrl.searchParams.set('email', email)
-          returnUrl.searchParams.set('name', userData.nome || `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || email.split('@')[0])
-          if (userData.phone) returnUrl.searchParams.set('phone', userData.phone)
-          if (userData.phoneCountryCode) returnUrl.searchParams.set('phoneCountryCode', userData.phoneCountryCode)
-          
-          console.log('[SSO] Redirecionando para:', returnUrl.toString())
-          window.location.href = returnUrl.toString()
-          return { success: true, redirected: true }
+          try {
+            // Verificar se returnTo é uma URL válida
+            let returnUrl: URL
+            
+            // Se já é uma URL absoluta, usar diretamente
+            if (userData.returnTo.startsWith('http://') || userData.returnTo.startsWith('https://')) {
+              returnUrl = new URL(userData.returnTo)
+            } else {
+              // Se for uma URL relativa, construir URL absoluta
+              // Assumir que é do American Dream (produção)
+              const baseUrl = userData.returnTo.startsWith('/') 
+                ? 'https://americandream.323network.com' 
+                : 'https://americandream.323network.com/'
+              returnUrl = new URL(userData.returnTo, baseUrl)
+            }
+            
+            returnUrl.searchParams.set('token', accessToken)
+            returnUrl.searchParams.set('email', email)
+            returnUrl.searchParams.set('name', userData.nome || `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || email.split('@')[0])
+            if (userData.phone) returnUrl.searchParams.set('phone', userData.phone)
+            if (userData.phoneCountryCode) returnUrl.searchParams.set('phoneCountryCode', userData.phoneCountryCode)
+            
+            console.log('[SSO] Redirecionando para:', returnUrl.toString())
+            window.location.href = returnUrl.toString()
+            return { success: true, redirected: true }
+          } catch (urlError: any) {
+            console.error('[SSO] ❌ Erro ao construir URL de redirecionamento:', urlError)
+            console.error('[SSO] returnTo recebido:', userData.returnTo)
+            // Não bloquear o registro - apenas logar o erro
+            // O usuário pode fazer login manualmente depois
+          }
         }
         
         return { success: true }
