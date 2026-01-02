@@ -88,6 +88,13 @@ const menuItems = computed(() => [
     badgeClass: '',
   },
   {
+    path: '/admin/programas',
+    label: 'Programas',
+    icon: 'school',
+    badge: undefined, // Poderíamos adicionar badge de pendentes se houvesse revisão
+    badgeClass: '',
+  },
+  {
     path: '/admin/palavras-proibidas',
     label: 'Palavras Proibidas',
     icon: 'block',

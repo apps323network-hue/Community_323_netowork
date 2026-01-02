@@ -29,20 +29,19 @@ Deno.serve(async (req) => {
         if (authError || !user) throw new Error('Unauthorized')
 
         // 3. Setup Stripe (Environment Detection)
-        const referer = req.headers.get('referer') || req.headers.get('origin')
-        let isProduction = false
-        if (referer) {
-            isProduction = referer.includes('community-323-netowork.vercel.app') ||
-                referer.includes('323network')
-        }
+        const origin = req.headers.get('origin') || ''
+        const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1')
 
-        const stripeKey = isProduction
-            ? Deno.env.get('STRIPE_SECRET_KEY_LIVE')
+        const stripeKey = isDevelopment
+            ? Deno.env.get('STRIPE_TEST_SECRET_KEY')
             : Deno.env.get('STRIPE_SECRET_KEY')
 
-        if (!stripeKey) throw new Error('Stripe key config missing')
+        if (!stripeKey) throw new Error(`Stripe Secret Key não configurada para o ambiente: ${isDevelopment ? 'TEST' : 'PROD'}`)
 
-        const stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' })
+        const stripe = new Stripe(stripeKey, {
+            apiVersion: '2023-10-16',
+            httpClient: Stripe.createFetchHttpClient(),
+        })
 
         // 4. Check Stripe Session
         const session = await stripe.checkout.sessions.retrieve(session_id)
@@ -53,29 +52,70 @@ Deno.serve(async (req) => {
             status = 'completed'
 
             // 5. Force Database Update (Self-healing)
-            // Se o webhook falhou ou atrasou, garantimos a consistência aqui
+            const type = session.metadata?.type
             const paymentIntentId = typeof session.payment_intent === 'string'
                 ? session.payment_intent
                 : (session.payment_intent as any)?.id
 
-            // Update Service Payment
-            const { error: updateError } = await supabase
-                .from('service_payments')
-                .update({
-                    status: 'completed',
-                    stripe_payment_intent_id: paymentIntentId,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('stripe_session_id', session_id)
+            if (type === 'program_payment') {
+                // Update Program Enrollment
+                const { error: updateError } = await supabase
+                    .from('program_enrollments')
+                    .update({
+                        payment_status: 'paid',
+                        status: 'active',
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('payment_id', session_id)
 
-            if (updateError) console.error('Error updating payment:', updateError)
+                if (updateError) console.error('Error updating program enrollment:', updateError)
 
-            // Update Service Request using metadata
-            if (session.metadata?.service_request_id) {
-                await supabase
-                    .from('service_requests')
-                    .update({ status: 'pendente' }) // pendente = pronto para atendimento
-                    .eq('id', session.metadata.service_request_id)
+                // Trigger Classroom Invite (if not already triggered)
+                if (session.metadata?.program_id) {
+                    const programId = session.metadata.program_id
+                    const userId = session.metadata.user_id
+
+                    const { data: program } = await supabase
+                        .from('programs')
+                        .select('classroom_enabled, classroom_course_id')
+                        .eq('id', programId)
+                        .single()
+
+                    if (program?.classroom_enabled && program?.classroom_course_id) {
+                        const { data: authUser } = await supabase.auth.admin.getUserById(userId)
+                        const email = authUser?.user?.email
+
+                        if (email) {
+                            console.log(`Triggering Classroom invite for ${email} in course ${program.classroom_course_id}`)
+                            await supabase.functions.invoke('classroom_invite', {
+                                body: {
+                                    courseId: program.classroom_course_id,
+                                    studentEmail: email
+                                }
+                            })
+                        }
+                    }
+                }
+            } else {
+                // Default: Service Payment
+                const { error: updateError } = await supabase
+                    .from('service_payments')
+                    .update({
+                        status: 'completed',
+                        stripe_payment_intent_id: paymentIntentId,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('stripe_session_id', session_id)
+
+                if (updateError) console.error('Error updating service payment:', updateError)
+
+                // Update Service Request using metadata
+                if (session.metadata?.service_request_id) {
+                    await supabase
+                        .from('service_requests')
+                        .update({ status: 'pendente' }) // pendente = pronto para atendimento
+                        .eq('id', session.metadata.service_request_id)
+                }
             }
         }
 

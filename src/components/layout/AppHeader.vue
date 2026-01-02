@@ -92,6 +92,25 @@
               ></span>
             </RouterLink>
             <RouterLink
+              to="/programas"
+              class="relative px-3 py-2 text-sm font-medium transition-colors group"
+              :class="
+                route.path === '/programas' || route.path.startsWith('/programas/')
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
+              "
+            >
+              {{ t('navigation.programs') }}
+              <span
+                v-if="route.path === '/programas' || route.path.startsWith('/programas/')"
+                class="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-secondary transform scale-x-100 transition-transform"
+              ></span>
+              <span
+                v-else
+                class="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform"
+              ></span>
+            </RouterLink>
+            <RouterLink
               to="/servicos"
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="

@@ -12,7 +12,7 @@ const CARD_FEE_FIXED = 30 // $0.30 em centavos
 const PIX_FEE_PERCENTAGE = 0.0179 // ~1.8%
 
 Deno.serve(async (req) => {
-    console.log('Request received:', req.method)
+    console.log('Program Checkout Request received:', req.method)
 
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
@@ -20,7 +20,6 @@ Deno.serve(async (req) => {
 
     try {
         const authHeader = req.headers.get('Authorization')
-        console.log('Auth Header check:', authHeader ? 'Present' : 'Missing')
 
         // 1. Validar e obter body
         let body
@@ -31,10 +30,10 @@ Deno.serve(async (req) => {
             throw new Error('Invalid JSON body')
         }
 
-        const { service_id, payment_method, exchange_rate, mensagem } = body
+        const { program_id, payment_method, exchange_rate } = body
 
-        if (!service_id || !payment_method) {
-            throw new Error('service_id e payment_method são obrigatórios')
+        if (!program_id || !payment_method) {
+            throw new Error('program_id e payment_method são obrigatórios')
         }
 
         // 2. Setup Supabase Admin
@@ -42,7 +41,7 @@ Deno.serve(async (req) => {
         const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
         const supabase = createClient(supabaseUrl, supabaseKey)
 
-        // 3. Validar Usuário (Manually)
+        // 3. Validar Usuário
         if (!authHeader) {
             throw new Error('Token de autenticação não fornecido')
         }
@@ -53,15 +52,12 @@ Deno.serve(async (req) => {
             console.error('Auth error:', authError)
             throw new Error('Usuário não autenticado')
         }
-        console.log('User authenticated:', user.id)
 
         // 4. Detectar ambiente
         const referer = req.headers.get('referer')
         let siteUrl = referer ? new URL(referer).origin : Deno.env.get('SITE_URL') || 'http://localhost:5173'
         const isProduction = siteUrl.includes('community-323-netowork.vercel.app') ||
             siteUrl.includes('323network')
-
-        console.log(`Environment: ${isProduction ? 'PRODUCTION' : 'TEST'} (${siteUrl})`)
 
         // 5. Setup Stripe
         const origin = req.headers.get('origin') || ''
@@ -81,24 +77,32 @@ Deno.serve(async (req) => {
             httpClient: Stripe.createFetchHttpClient(),
         })
 
-        // 6. Buscar Serviço
-        const { data: service, error: serviceError } = await supabase
-            .from('services')
+        // 6. Buscar Programa
+        const { data: program, error: programError } = await supabase
+            .from('programs')
             .select('*')
-            .eq('id', service_id)
+            .eq('id', program_id)
             .single()
 
-        if (serviceError || !service) {
-            throw new Error('Serviço não encontrado')
+        if (programError || !program) {
+            throw new Error('Programa não encontrado')
         }
 
-        if (!service.preco || service.preco <= 0) {
-            throw new Error('Este serviço não possui preço definido')
+        if (program.status !== 'published') {
+            throw new Error('Este programa não está disponível para matrícula')
+        }
+
+        // Verificar vagas
+        if (program.max_students && program.current_students >= program.max_students) {
+            throw new Error('Este programa não possui mais vagas disponíveis')
         }
 
         // 7. Calcular valores
         let finalAmount: number
         let currency: string
+
+        // Preço base em USD (multiplicamos por 100 para centavos)
+        const basePriceUSD = Math.round(program.price_usd * 100)
 
         if (payment_method === 'pix') {
             if (!exchange_rate) {
@@ -108,108 +112,78 @@ Deno.serve(async (req) => {
             // Fórmula: (Base USD * Taxa * 1.04) / (1 - 0.0179)
             const RATE_MARGIN = 1.04
             const rateWithMargin = exchange_rate * RATE_MARGIN
-            const netAmountBRL = (service.preco / 100) * rateWithMargin
+            const netAmountBRL = (program.price_usd) * rateWithMargin
             const grossAmountBRL = netAmountBRL / (1 - PIX_FEE_PERCENTAGE)
 
-            finalAmount = Math.round(grossAmountBRL * 100)
+            finalAmount = Math.round(grossAmountBRL * 100) // Centavos de BRL
         } else {
             currency = 'usd'
             finalAmount = Math.round(
-                service.preco +
-                (service.preco * CARD_FEE_PERCENTAGE) +
+                basePriceUSD +
+                (basePriceUSD * CARD_FEE_PERCENTAGE) +
                 CARD_FEE_FIXED
             )
         }
 
-        console.log(`Calculating amount: ${finalAmount} ${currency}`)
+        console.log(`Program Checkout: ${program.title_pt} - ${finalAmount} ${currency}`)
 
-        // 8. Criar Records no DB
-        // Criar service_request
-        const { data: serviceRequest, error: requestError } = await supabase
-            .from('service_requests')
-            .insert({
-                service_id: service.id,
+        // 8. Criar/Atualizar Matrícula (Enrollment) como 'pending'
+        // Usamos upsert baseado na constraint UNIQUE(program_id, user_id)
+        const { data: enrollment, error: enrollmentError } = await supabase
+            .from('program_enrollments')
+            .upsert({
+                program_id: program.id,
                 user_id: user.id,
-                mensagem: mensagem || '',
-                status: 'pendente',
-                payment_required: true
-            })
-            .select()
-            .single()
-
-        if (requestError) throw new Error('Erro ao criar solicitação: ' + requestError.message)
-
-        // Criar service_payment
-        const { data: payment, error: paymentError } = await supabase
-            .from('service_payments')
-            .insert({
-                service_request_id: serviceRequest.id,
-                user_id: user.id,
-                service_id: service.id,
-                amount: finalAmount,
-                currency: currency.toUpperCase(),
-                payment_method: payment_method,
                 status: 'pending',
-                metadata: {
-                    base_amount: service.preco,
-                    exchange_rate: payment_method === 'pix' ? exchange_rate : null,
-                    service_name: service.nome
-                }
+                payment_amount: finalAmount,
+                payment_currency: currency.toUpperCase(),
+                payment_method: payment_method,
+                payment_status: 'pending',
+                updated_at: new Date().toISOString()
+            }, {
+                onConflict: 'program_id,user_id'
             })
             .select()
             .single()
 
-        if (paymentError) throw new Error('Erro ao criar pagamento: ' + paymentError.message)
-
-        // Atualizar service_request
-        await supabase
-            .from('service_requests')
-            .update({ payment_id: payment.id })
-            .eq('id', serviceRequest.id)
+        if (enrollmentError) throw new Error('Erro ao processar matrícula: ' + enrollmentError.message)
 
         // 9. Criar Sessão Stripe
         const sessionConfig: Stripe.Checkout.SessionCreateParams = {
-            // Adicionamos 'card' junto com 'pix' para evitar erro 500 se o PIX não estiver ativado no Dashboard
-            payment_method_types: payment_method === 'pix' ? ['card', 'pix'] : ['card'],
+            payment_method_types: payment_method === 'pix' ? ['pix'] : ['card'],
             line_items: [{
                 price_data: {
                     currency: currency,
                     product_data: {
-                        name: service.nome,
-                        description: service.descricao || undefined,
+                        name: program.title_pt,
+                        description: program.short_description_pt || undefined,
+                        images: program.thumbnail_url ? [program.thumbnail_url] : undefined,
                     },
                     unit_amount: finalAmount,
                 },
                 quantity: 1,
             }],
             mode: 'payment',
-            success_url: `${siteUrl}/pagamento/sucesso?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${siteUrl}/pagamento/cancelado?service_id=${service_id}`,
+            success_url: `${siteUrl}/pagamento/sucesso?type=program&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${siteUrl}/programas/${program.id}`,
             metadata: {
-                type: 'service_payment',
-                service_id: service.id,
-                service_request_id: serviceRequest.id,
-                payment_id: payment.id,
+                type: 'program_payment',
+                program_id: program.id,
+                enrollment_id: enrollment.id,
                 user_id: user.id
             },
             customer_email: user.email,
         }
 
-        console.log('Creating Stripe Session with config:', JSON.stringify(sessionConfig, null, 2))
         const session = await stripe.checkout.sessions.create(sessionConfig)
-        console.log('Stripe session created:', session.id)
 
-        // 10. Atualizar DB com Session ID
+        // 10. Atualizar Enrollment com Session ID
         await supabase
-            .from('service_payments')
+            .from('program_enrollments')
             .update({
-                stripe_session_id: session.id,
-                metadata: {
-                    ...payment.metadata,
-                    checkout_url: session.url
-                }
+                payment_id: session.id
             })
-            .eq('id', payment.id)
+            .eq('id', enrollment.id)
 
         return new Response(
             JSON.stringify({
@@ -225,7 +199,7 @@ Deno.serve(async (req) => {
         )
 
     } catch (error: any) {
-        console.error('Handler error:', error.message)
+        console.error('Program Checkout error:', error.message)
         return new Response(
             JSON.stringify({ error: error.message }),
             {

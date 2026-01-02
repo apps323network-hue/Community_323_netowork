@@ -6,7 +6,7 @@
       :class="[
         'mx-auto flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)]',
         hideSidebars 
-          ? `w-full ${isEventsPage ? 'pt-0' : 'pt-8'} px-4 sm:px-6 lg:px-8` 
+          ? `w-full ${isHeroHeroPage ? 'pt-0' : 'pt-8'} px-4 sm:px-6 lg:px-8` 
           : 'max-w-7xl py-8 px-4 sm:px-6 lg:pl-0 lg:pr-8'
       ]"
     >
@@ -14,19 +14,19 @@
         <!-- Sidebar Esquerda - Desktop -->
         <div v-if="!hideSidebars" class="hidden lg:block lg:col-span-2 -ml-32">
           <div class="w-[280px]">
-            <AppSidebar @edit-profile="handleEditProfile" />
+            <AppSidebar v-if="!hideSidebars" @edit-profile="handleEditProfile" />
           </div>
         </div>
 
         <!-- Conteúdo Principal -->
-        <div :class="hideSidebars ? `w-full max-w-[1400px] mx-auto ${isEventsPage ? 'pt-0' : ''}` : 'lg:col-span-8'">
+        <div :class="hideSidebars ? `w-full max-w-[1400px] mx-auto ${isHeroHeroPage ? 'pt-0' : ''}` : 'lg:col-span-8'">
           <slot />
         </div>
 
         <!-- Sidebar Direita -->
         <div v-if="!hideSidebars" class="hidden lg:block lg:col-span-2 -mr-32">
           <div class="w-[280px] ml-auto">
-            <AppRightSidebar />
+            <AppRightSidebar v-if="!hideSidebars" />
           </div>
         </div>
       </div>
@@ -74,6 +74,8 @@
 import { computed } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import AppHeader from './AppHeader.vue'
+import AppSidebar from './AppSidebar.vue'
+import AppRightSidebar from './AppRightSidebar.vue'
 import AppFooter from './AppFooter.vue'
 
 
@@ -94,12 +96,17 @@ const hideSidebars = computed(() => {
     route.path === '/beneficios' || 
     route.path === '/eventos' || 
     route.path.startsWith('/eventos/') ||
+    route.path === '/programas' ||
+    route.path.startsWith('/programas/') ||
     route.path === '/perfil'
 })
 
-// Remove top padding only for Events page
-const isEventsPage = computed(() => {
-  return route.path === '/eventos' || route.path.startsWith('/eventos/')
+// Remove top padding only for Events and Programs pages (Hero style)
+const isHeroHeroPage = computed(() => {
+  return route.path === '/eventos' || 
+         route.path.startsWith('/eventos/') ||
+         route.path === '/programas' ||
+         route.path.startsWith('/programas/')
 })
 
 function handleEditProfile() {

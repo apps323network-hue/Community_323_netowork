@@ -8,7 +8,7 @@
       </div>
 
       <!-- Success State -->
-      <div v-else-if="paymentStatus === 'completed'" class="flex flex-col items-center text-center max-w-md">
+      <div v-else-if="paymentStatus === 'completed' || paymentStatus === 'paid'" class="flex flex-col items-center text-center max-w-md">
         <div class="w-20 h-20 rounded-full bg-gradient-to-r from-secondary to-primary flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(0,243,255,0.4)]">
           <span class="material-symbols-outlined text-4xl text-black">check</span>
         </div>
@@ -16,22 +16,24 @@
         <p class="text-gray-400 mb-6">
           Seu pagamento foi processado com sucesso. O parceiro responsável entrará em contato em breve para iniciar o atendimento.
         </p>
-        <div v-if="serviceName" class="p-4 rounded-lg bg-white/5 border border-white/10 w-full mb-6">
-          <p class="text-xs text-gray-500 mb-1">Serviço contratado</p>
-          <p class="text-white font-bold">{{ serviceName }}</p>
+        <div v-if="itemName" class="p-4 rounded-lg bg-white/5 border border-white/10 w-full mb-6">
+          <p class="text-xs text-gray-500 mb-1">
+            {{ paymentType === 'program' ? 'Programa matriculado' : 'Serviço contratado' }}
+          </p>
+          <p class="text-white font-bold">{{ itemName }}</p>
         </div>
         <div class="flex gap-4">
           <RouterLink
-            to="/meus-pedidos"
+            :to="paymentType === 'program' ? '/dashboard' : '/meus-pedidos'"
             class="px-6 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-black font-bold transition-all hover:shadow-[0_0_20px_rgba(244,37,244,0.4)]"
           >
-            Ver Meus Pedidos
+            {{ paymentType === 'program' ? 'Ir para Dashboard' : 'Ver Meus Pedidos' }}
           </RouterLink>
           <RouterLink
-            to="/servicos"
+            :to="paymentType === 'program' ? '/programas' : '/servicos'"
             class="px-6 py-3 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors"
           >
-            Voltar aos Serviços
+            Voltar
           </RouterLink>
         </div>
       </div>
@@ -53,20 +55,24 @@
         </div>
       </div>
 
-      <!-- Error State -->
+      <!-- Error/Failed State -->
       <div v-else class="flex flex-col items-center text-center max-w-md">
         <div class="w-20 h-20 rounded-full bg-red-500/20 border border-red-500/50 flex items-center justify-center mb-6">
           <span class="material-symbols-outlined text-4xl text-red-500">error</span>
         </div>
-        <h1 class="text-3xl font-bold text-white mb-3">Pagamento não confirmado</h1>
+        <h1 class="text-3xl font-bold text-white mb-3">
+          {{ paymentStatus === 'failed' ? 'Pagamento Falhou' : 'Pagamento não confirmado' }}
+        </h1>
         <p class="text-gray-400 mb-6">
-          Ainda não recebemos a confirmação do seu pagamento. Verifique seu extrato ou tente novamente.
+          {{ paymentStatus === 'failed' 
+            ? 'O Stripe informou que o pagamento não foi concluído. Verifique seu cartão ou tente outro método.'
+            : 'Ainda não recebemos a confirmação do seu pagamento. Verifique seu extrato ou tente novamente.' }}
         </p>
         <RouterLink
-          to="/servicos"
+          :to="paymentType === 'program' ? `/programas/${route.query.program_id || ''}` : '/servicos'"
           class="px-6 py-3 rounded-lg bg-gradient-to-r from-primary to-secondary text-black font-bold"
         >
-          Voltar para Serviços
+          Tentar novamente
         </RouterLink>
       </div>
     </div>
@@ -83,8 +89,9 @@ const route = useRoute()
 const { supabase } = useSupabase()
 
 const loading = ref(true)
-const paymentStatus = ref<'completed' | 'pending' | 'error'>('pending')
-const serviceName = ref('')
+const paymentStatus = ref<'completed' | 'paid' | 'pending' | 'error' | 'failed'>('pending')
+const itemName = ref('')
+const paymentType = ref<'service' | 'program'>((route.query.type as any) || 'service')
 const paymentMethod = ref<'card' | 'pix' | null>(null)
 let pollInterval: any = null
 let attempts = 0
@@ -100,26 +107,45 @@ async function checkPaymentStatus() {
   }
 
   try {
-    const { data: payment, error } = await supabase
-      .from('service_payments')
-      .select(`
-        *,
-        services:service_id (nome)
-      `)
-      .eq('stripe_session_id', sessionId)
-      .single()
+    let query;
+    if (paymentType.value === 'program') {
+      query = supabase
+        .from('program_enrollments')
+        .select(`
+          *,
+          programs:program_id (title_pt)
+        `)
+        .eq('payment_id', sessionId)
+        .single()
+    } else {
+      query = supabase
+        .from('service_payments')
+        .select(`
+          *,
+          services:service_id (nome)
+        `)
+        .eq('stripe_session_id', sessionId)
+        .single()
+    }
+
+    const { data: payment, error } = await query
 
     if (error || !payment) {
       console.log('Pagamento ainda não encontrado ou erro:', error)
-      // Se não achou, pode ser delay de replicação ou criação, continuamos tentando
       return
     }
 
-    serviceName.value = payment.services?.nome || ''
-    paymentMethod.value = payment.payment_method as 'card' | 'pix'
-    paymentStatus.value = payment.status as 'completed' | 'pending' | 'error'
+    if (paymentType.value === 'program') {
+      itemName.value = (payment as any).programs?.title_pt || ''
+      paymentMethod.value = (payment as any).payment_method
+      paymentStatus.value = (payment as any).payment_status
+    } else {
+      itemName.value = (payment as any).services?.nome || ''
+      paymentMethod.value = (payment as any).payment_method
+      paymentStatus.value = (payment as any).status
+    }
 
-    if (payment.status === 'completed' || payment.status === 'failed') {
+    if (paymentStatus.value === 'completed' || paymentStatus.value === 'paid' || paymentStatus.value === 'failed') {
       loading.value = false
       if (pollInterval) clearInterval(pollInterval)
     } else {

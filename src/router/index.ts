@@ -174,6 +174,38 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Leaderboard.vue'),
     meta: { requiresAuth: true },
   },
+  // Programs routes
+  {
+    path: '/programas',
+    name: 'Programs',
+    component: () => import('@/views/Programs.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/programas/:id',
+    name: 'ProgramDetail',
+    component: () => import('@/views/ProgramDetail.vue'),
+    meta: { requiresAuth: true },
+  },
+  // Professor routes
+  {
+    path: '/professor',
+    name: 'ProfessorDashboard',
+    component: () => import('@/views/professor/ProfessorDashboard.vue'),
+    meta: { requiresAuth: true, requiresRole: 'professor' },
+  },
+  {
+    path: '/professor/programa/:id',
+    name: 'ManageProgram',
+    component: () => import('@/views/professor/ManageProgram.vue'),
+    meta: { requiresAuth: true, requiresRole: 'professor' },
+  },
+  {
+    path: '/programas/:id/assistir',
+    name: 'ProgramPlayer',
+    component: () => import('@/views/ProgramPlayer.vue'),
+    meta: { requiresAuth: true },
+  },
   {
     path: '/admin',
     name: 'AdminOverview',
@@ -220,6 +252,31 @@ const routes: RouteRecordRaw[] = [
     path: '/admin/desafios',
     name: 'AdminChallenges',
     component: () => import('@/views/admin/AdminChallenges.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  // Admin Programs routes
+  {
+    path: '/admin/programas',
+    name: 'AdminPrograms',
+    component: () => import('@/views/admin/AdminPrograms.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/programas/criar',
+    name: 'AdminCreateProgram',
+    component: () => import('@/views/admin/AdminProgramForm.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/programas/:id/editar',
+    name: 'AdminEditProgram',
+    component: () => import('@/views/admin/AdminProgramForm.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/programas/:id/matriculas',
+    name: 'AdminProgramEnrollments',
+    component: () => import('@/views/admin/AdminProgramEnrollments.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
   {

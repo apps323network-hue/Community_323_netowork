@@ -122,6 +122,13 @@ const mobileMenuItems = computed(() => [
     badgeClass: '',
   },
   {
+    path: '/admin/programas',
+    label: 'Programas',
+    icon: 'school',
+    badge: undefined,
+    badgeClass: '',
+  },
+  {
     path: '/admin/palavras-proibidas',
     label: 'Palavras',
     icon: 'block',

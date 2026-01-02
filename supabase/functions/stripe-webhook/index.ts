@@ -33,24 +33,36 @@ Deno.serve(async (req) => {
         console.log(`Webhook running in ${isProduction ? 'PRODUCTION' : 'TEST'} mode`)
 
         const stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' })
-        const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET')
-
-        if (!webhookSecret) {
-            throw new Error('Webhook secret not configured')
-        }
 
         // Ler body como texto para validação de assinatura
         const body = await req.text()
-        const sig = req.headers.get('stripe-signature')
+        const signature = req.headers.get('stripe-signature')
 
-        if (!sig) {
-            throw new Error('No signature header')
+        if (!signature) {
+            return new Response(JSON.stringify({ error: 'Missing stripe-signature' }), { status: 400 })
         }
 
-        // Validar assinatura
+        // 1. Decodificar o corpo primeiro para saber se é Live ou Test
+        const tempEvent = JSON.parse(body)
+        const isLive = tempEvent.livemode === true
+
+        // 2. Selecionar o Secret correto
+        const webhookSecret = isLive
+            ? Deno.env.get('STRIPE_WEBHOOK_SECRET')
+            : Deno.env.get('STRIPE_TEST_WEBHOOK_SECRET')
+
+        if (!webhookSecret) {
+            console.error(`Webhook secret não configurado para ambiente: ${isLive ? 'LIVE' : 'TEST'}`)
+            return new Response(JSON.stringify({ error: 'Webhook secret not configured' }), { status: 500 })
+        }
+
         let event: Stripe.Event
         try {
-            event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
+            event = await stripe.webhooks.constructEventAsync(
+                body,
+                signature,
+                webhookSecret
+            )
         } catch (err: any) {
             console.error('Webhook signature verification failed:', err.message)
             return new Response(`Webhook Error: ${err.message}`, { status: 400 })
@@ -124,6 +136,76 @@ Deno.serve(async (req) => {
 
                     console.log(`Service payment completed: ${paymentId}`)
                 }
+
+                // Verificar se é pagamento de programa/curso
+                if (session.metadata?.type === 'program_payment') {
+                    const programId = session.metadata.program_id
+                    const enrollmentId = session.metadata.enrollment_id
+                    const userId = session.metadata.user_id
+
+                    if (!programId || !enrollmentId) {
+                        console.error('Missing program payment metadata')
+                        break
+                    }
+
+                    // 1. Atualizar Matrícula
+                    const { error: enrollError } = await supabase
+                        .from('program_enrollments')
+                        .update({
+                            status: 'active',
+                            payment_status: 'paid',
+                            paid_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', enrollmentId)
+
+                    if (enrollError) {
+                        console.error('Error updating enrollment:', enrollError)
+                    }
+
+                    // 2. Incrementar contador de alunos no programa
+                    await supabase.rpc('increment_program_students', { program_id: programId })
+
+                    // 3. Notificação In-App
+                    await supabase.from('notifications').insert({
+                        user_id: userId,
+                        type: 'program_enrolled',
+                        title: 'Inscrição confirmada!',
+                        content: 'Seu acesso ao programa foi liberado. Bons estudos!',
+                        metadata: {
+                            program_id: programId,
+                            enrollment_id: enrollmentId
+                        }
+                    })
+
+                    // 4. Trigger Google Classroom (se habilitado)
+                    try {
+                        const { data: program } = await supabase
+                            .from('programs')
+                            .select('classroom_enabled, classroom_course_id')
+                            .eq('id', programId)
+                            .single()
+
+                        if (program?.classroom_enabled && program?.classroom_course_id) {
+                            // Buscar e-mail do usuário para o convite
+                            const { data: { user: userData } } = await supabase.auth.admin.getUserById(userId)
+
+                            if (userData?.email) {
+                                console.log(`Triggering Classroom invite for ${userData.email} in course ${program.classroom_course_id}`)
+                                await supabase.functions.invoke('classroom_invite', {
+                                    body: {
+                                        courseId: program.classroom_course_id,
+                                        studentEmail: userData.email
+                                    }
+                                })
+                            }
+                        }
+                    } catch (classroomErr) {
+                        console.error('Error triggering classroom invite from webhook:', classroomErr)
+                    }
+
+                    console.log(`Program enrollment completed: ${enrollmentId}`)
+                }
                 break
             }
 
@@ -157,6 +239,33 @@ Deno.serve(async (req) => {
                         }
 
                         console.log(`Service payment failed: ${paymentId}`)
+                    }
+                }
+
+                if (session.metadata?.type === 'program_payment') {
+                    const enrollmentId = session.metadata.enrollment_id
+                    const userId = session.metadata.user_id
+
+                    if (enrollmentId) {
+                        // Atualizar matrícula como falhou
+                        await supabase
+                            .from('program_enrollments')
+                            .update({
+                                payment_status: 'failed',
+                                status: 'cancelled',
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', enrollmentId)
+
+                        if (userId) {
+                            await supabase.from('notifications').insert({
+                                user_id: userId,
+                                type: 'program_payment_failed',
+                                title: 'Pagamento de programa falhou',
+                                content: 'Não conseguimos processar o pagamento da sua inscrição. Tente novamente.',
+                                metadata: { enrollment_id: enrollmentId }
+                            })
+                        }
                     }
                 }
                 break
