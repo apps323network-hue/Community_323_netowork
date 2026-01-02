@@ -266,7 +266,7 @@ const buttonText = computed(() => {
     return t('events.rsvp')
   }
   if (props.event.tipo === 'webinar') {
-    return t('auth.register')
+    return t('events.confirmPresence')
   }
   return t('events.confirmPresence')
 })

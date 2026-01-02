@@ -334,7 +334,7 @@
       </template>
 
       <!-- Not Found -->
-      <div v-else class="text-center py-20">
+      <div v-else-if="!loading && !member" class="text-center py-20">
         <div
           class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-500/10 mb-6"
         >
@@ -376,6 +376,7 @@ import type { Member } from '@/types/members'
 const route = useRoute()
 const router = useRouter()
 const { fetchMemberById, loading, error } = useMembers()
+loading.value = true // Prevent flash of not found state
 const { posts: memberPosts, loading: postsLoading, hasMore: postsHasMore, loadPosts, loadMorePosts, removeComment } = usePosts()
 const { isBookmarked: checkBookmarked, toggleBookmark, fetchBookmarks, loading: bookmarkLoading } = useBookmarks()
 const { sendConnectionRequest, getConnectionStatus } = useConnections()

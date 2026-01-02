@@ -61,6 +61,36 @@
           {{ t('navigation.myNetwork') }}
         </RouterLink>
         <RouterLink
+          to="/desafios"
+          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
+          :class="$route.path === '/desafios' 
+            ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-secondary shadow-neon-blue/10' 
+            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+        >
+          <span 
+            class="material-icons-outlined mr-3 transition-colors"
+            :class="$route.path === '/desafios' ? 'text-secondary' : 'text-gray-500 group-hover:text-secondary'"
+          >
+            emoji_events
+          </span>
+          {{ t('navigation.challenges') }}
+        </RouterLink>
+        <RouterLink
+          to="/ranking"
+          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
+          :class="$route.path === '/ranking' 
+            ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-secondary shadow-neon-blue/10' 
+            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+        >
+          <span 
+            class="material-icons-outlined mr-3 transition-colors"
+            :class="$route.path === '/ranking' ? 'text-secondary' : 'text-gray-500 group-hover:text-secondary'"
+          >
+            leaderboard
+          </span>
+          {{ t('navigation.ranking') }}
+        </RouterLink>
+        <RouterLink
           to="/eventos"
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group transition-all"
         >

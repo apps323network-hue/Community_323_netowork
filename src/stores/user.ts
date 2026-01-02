@@ -27,6 +27,7 @@ export interface UserProfile {
   strikes?: number
   approved_by?: string
   approved_at?: string
+  total_points?: number
   created_at?: string
   updated_at?: string
 }

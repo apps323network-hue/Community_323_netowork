@@ -163,6 +163,18 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/desafios',
+    name: 'Challenges',
+    component: () => import('@/views/Challenges.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/ranking',
+    name: 'Leaderboard',
+    component: () => import('@/views/Leaderboard.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/admin',
     name: 'AdminOverview',
     component: () => import('@/views/admin/AdminOverview.vue'),
@@ -221,6 +233,12 @@ const routes: RouteRecordRaw[] = [
     name: 'PartnerEvents',
     component: () => import('@/views/partner/PartnerEvents.vue'),
     meta: { requiresAuth: true, requiresRole: 'partner' },
+  },
+  // Catch-all 404 route - must be last
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFound.vue'),
   },
 ]
 

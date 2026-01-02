@@ -25,6 +25,8 @@ export type AdminAction =
     | 'reject_user'
     | 'ban_user'
     | 'unban_user'
+    | 'suspend_user'
+    | 'unsuspend_user'
     | 'add_strike'
     // Post actions
     | 'approve_post'
@@ -36,6 +38,8 @@ export type AdminAction =
     | 'approve_event'
     | 'reject_event'
     | 'create_event'
+    | 'delete_event'
+    | 'toggle_featured'
     // Service actions
     | 'create_service'
     | 'update_service'
@@ -63,6 +67,8 @@ export type AdminAction =
     | 'user_update_comment'
     | 'user_delete_comment'
     | 'user_update_profile'
+    | 'user_send_connection_request'
+    | 'user_accept_connection_request'
 
 // Interface para entrada de log
 export interface LogEntry {
@@ -217,6 +223,8 @@ export const actionLabels: Record<AdminAction, string> = {
     reject_user: 'Usuário Rejeitado',
     ban_user: 'Usuário Banido',
     unban_user: 'Usuário Desbanido',
+    suspend_user: 'Usuário Suspenso',
+    unsuspend_user: 'Suspensão Removida',
     add_strike: 'Strike Adicionado',
     // Post
     approve_post: 'Post Aprovado',
@@ -228,6 +236,8 @@ export const actionLabels: Record<AdminAction, string> = {
     approve_event: 'Evento Aprovado',
     reject_event: 'Evento Rejeitado',
     create_event: 'Evento Criado',
+    delete_event: 'Evento Deletado',
+    toggle_featured: 'Destaque Alterado',
     // Service
     create_service: 'Serviço Criado',
     update_service: 'Serviço Atualizado',
@@ -255,4 +265,6 @@ export const actionLabels: Record<AdminAction, string> = {
     user_update_comment: 'Comentário Atualizado',
     user_delete_comment: 'Comentário Deletado',
     user_update_profile: 'Perfil Atualizado',
+    user_send_connection_request: 'Solicitação de Conexão Enviada',
+    user_accept_connection_request: 'Conexão Aceita',
 }

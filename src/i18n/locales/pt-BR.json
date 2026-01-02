@@ -64,6 +64,8 @@
         "theme": "Tema",
         "language": "Idioma",
         "dashboardAdmin": "Dashboard Admin",
+        "challenges": "Desafios",
+        "ranking": "Ranking",
         "logout": "Sair"
     },
     "auth": {
@@ -210,7 +212,7 @@
         "filterSocial": "Social",
         "presenceConfirmed": "Presença Confirmada",
         "cancel": "Cancelar",
-        "register": "Inscrever-se",
+        "register": "Confirmar Presença",
         "learnMore": "Saiba Mais",
         "viewFullCalendar": "Ver calendário completo",
         "inPerson": "Presencial",
@@ -238,7 +240,7 @@
         "addBanner": "Adicionar banner",
         "featuredEvent": "Evento Destaque",
         "heroPlaceholder": "Junte-se a profissionais brasileiros para uma noite de conexões e oportunidades de negócios.",
-        "registerNow": "Inscreva-se Agora",
+        "registerNow": "Confirmar Presença",
         "locationToBeDefined": "Local a definir",
         "rsvp": "RSVP",
         "startsIn": "Começa em",
@@ -628,6 +630,9 @@
         "genericError": "Algo deu errado. Tente novamente.",
         "networkError": "Erro de conexão. Verifique sua internet.",
         "notFound": "Página não encontrada",
+        "notFoundMessage": "A página que você está procurando pode ter sido movida ou não existe.",
+        "goHome": "Ir para Início",
+        "explore": "Explorar",
         "unauthorized": "Você não tem permissão para acessar esta página.",
         "formValidation": "Por favor, preencha todos os campos obrigatórios."
     },
@@ -949,5 +954,17 @@
             "social": "Redes Sociais",
             "rights": "Todos os direitos reservados."
         }
+    },
+    "gamification": {
+        "title": "Desafios da Comunidade",
+        "subtitle": "Complete desafios, ganhe pontos e suba no ranking da nossa rede. Cada ação conta para o seu crescimento!",
+        "yourPoints": "Seus Pontos",
+        "completed": "Completados",
+        "position": "Posição",
+        "loading": "Carregando desafios...",
+        "noActiveChallenges": "Nenhum desafio ativo",
+        "checkBackSoon": "Volte em breve para novos desafios!",
+        "progress": "Progresso",
+        "viewFullRanking": "Ver Ranking Completo"
     }
 }

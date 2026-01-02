@@ -1,7 +1,12 @@
 <template>
   <AppLayout>
-    <div v-if="loading && !event" class="flex justify-center items-center min-h-[60vh]">
-      <div class="text-slate-900 dark:text-white">{{ t('common.loading') }}</div>
+    <!-- Loading State -->
+    <div v-if="loading || !isCorrectEvent" class="flex flex-col justify-center items-center min-h-[60vh] gap-6">
+      <div class="relative">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-secondary"></div>
+        <div class="absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,240,255,0.5)] animate-pulse"></div>
+      </div>
+      <p class="text-slate-600 dark:text-white/60 font-medium animate-pulse">{{ t('common.loading') }}</p>
     </div>
 
     <div v-else-if="!event" class="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -237,6 +242,7 @@ const { currentEvent, loading, getEventById, confirmEvent, cancelConfirmation } 
 
 const event = computed(() => currentEvent.value)
 const eventId = computed(() => route.params.id as string)
+const isCorrectEvent = computed(() => event.value?.id === eventId.value)
 
 // Featured services for CTA (post-event)
 const featuredServices = [

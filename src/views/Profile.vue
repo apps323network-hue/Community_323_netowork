@@ -66,6 +66,7 @@
             :country="editableProfile.pais || 'USA'"
             :views="1200"
             :connections="connectionsCount"
+            :points="editableProfile.total_points || 0"
             :readonly="isPreviewMode"
             @edit-avatar="handleEditAvatar"
           />
@@ -87,6 +88,32 @@
             v-model:bio="editableProfile.bio"
             :readonly="isPreviewMode"
           />
+
+          <!-- Achievements Section -->
+          <div class="bg-surface-dark border border-input-border rounded-2xl p-6">
+            <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary">stars</span>
+              Conquistas e Desafios
+            </h3>
+            
+            <div v-if="gamificationStore.userChallenges.length === 0" class="text-center py-6 border border-dashed border-input-border rounded-xl">
+              <p class="text-text-muted text-sm">Nenhum desafio completado ainda. Comece a interagir para ganhar pontos!</p>
+            </div>
+            
+            <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div 
+                v-for="uc in gamificationStore.userChallenges.filter(u => u.completado)" 
+                :key="uc.id"
+                class="flex flex-col items-center text-center p-3 rounded-xl bg-white/5 border border-white/5 hover:border-secondary/30 transition-all group"
+              >
+                <div class="p-3 bg-secondary/10 rounded-full mb-2 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,240,255,0.1)]">
+                  <span class="material-symbols-outlined text-secondary">{{ getIconForType(uc.challenge?.tipo || 'other') }}</span>
+                </div>
+                <p class="text-[10px] font-black text-white uppercase tracking-tighter line-clamp-1">{{ uc.challenge?.nome }}</p>
+                <p class="text-[10px] text-secondary font-bold">{{ uc.challenge?.pontos }} PTS</p>
+              </div>
+            </div>
+          </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ProfileInterests
@@ -228,11 +255,13 @@ import ProfileInfoForm from '@/components/features/profile/ProfileInfoForm.vue'
 import ProfileInterests from '@/components/features/profile/ProfileInterests.vue'
 import ProfileGoals from '@/components/features/profile/ProfileGoals.vue'
 import ProfileSettings from '@/components/features/profile/ProfileSettings.vue'
+import { useGamificationStore } from '@/stores/gamification'
 import { useConnections } from '@/composables/useConnections'
 import { supabase } from '@/lib/supabase'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
+const gamificationStore = useGamificationStore()
 const { t } = useI18n()
 
 const saving = ref(false)
@@ -315,6 +344,9 @@ onMounted(async () => {
     
     // Fetch connections
     connectionsCount.value = await fetchConnectionsCount(authStore.user.id)
+    
+    // Fetch gamification data
+    await gamificationStore.fetchUserChallenges()
   }
 })
 
@@ -436,6 +468,18 @@ function handleAddGoal(goal: string) {
 
 function handleRemoveGoal(index: number) {
   editableProfile.goals.splice(index, 1)
+}
+
+function getIconForType(type: string) {
+  const icons: Record<string, string> = {
+    post: 'article',
+    comment: 'chat_bubble',
+    event: 'event_available',
+    connection: 'person_add',
+    engagement: 'thumb_up',
+    other: 'extension'
+  }
+  return icons[type] || 'emoji_events'
 }
 </script>
 

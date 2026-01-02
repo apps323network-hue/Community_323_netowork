@@ -215,6 +215,14 @@
                     {{ t('navigation.myProfile') }}
                   </RouterLink>
                   <RouterLink
+                    to="/desafios"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">emoji_events</span>
+                    {{ t('navigation.challenges') }}
+                  </RouterLink>
+                  <RouterLink
                     to="/posts-salvos"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
                     @click="showUserMenu = false"
@@ -470,6 +478,14 @@
                   >
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     {{ t('navigation.myProfile') }}
+                  </RouterLink>
+                  <RouterLink
+                    to="/desafios"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">emoji_events</span>
+                    {{ t('navigation.challenges') }}
                   </RouterLink>
                   <RouterLink
                     to="/posts-salvos"

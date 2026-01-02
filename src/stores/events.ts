@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
+import { useGamificationStore } from './gamification'
 import type { Event, EventFilters, EventCreateInput } from '@/types/events'
 
 export const useEventStore = defineStore('events', () => {
@@ -14,6 +15,7 @@ export const useEventStore = defineStore('events', () => {
   const filters = ref<EventFilters>({ sortBy: 'upcoming' })
 
   const authStore = useAuthStore()
+  const gamificationStore = useGamificationStore()
   const currentUserId = computed(() => authStore.user?.id)
 
   // Verificar se usuário é admin
@@ -217,7 +219,7 @@ export const useEventStore = defineStore('events', () => {
       const isAdminUser = await checkIsAdmin()
 
       const now = new Date().toISOString()
-      
+
       // Primeiro, tentar buscar evento marcado como destaque pelo admin
       let query = supabase
         .from('events')
@@ -263,9 +265,9 @@ export const useEventStore = defineStore('events', () => {
         }
 
         const { data: fallbackData, error: fallbackError } = await query.maybeSingle()
-        
+
         if (fallbackError) throw fallbackError
-        
+
         if (fallbackData && !isAdminUser) {
           const isApproved = fallbackData.status === 'approved'
           const isOwnPending = currentUserId.value && fallbackData.status === 'pending' && fallbackData.created_by === currentUserId.value
@@ -274,7 +276,7 @@ export const useEventStore = defineStore('events', () => {
             return null
           }
         }
-        
+
         data = fallbackData
       }
 
@@ -436,6 +438,9 @@ export const useEventStore = defineStore('events', () => {
         }
         throw insertError
       }
+
+      // Award points for confirming attendance (Only once for the first event confirmed)
+      await gamificationStore.awardPoints(20, 'event', eventId, event.titulo, true, false)
     } catch (err: any) {
       // Revert optimistic update on error
       event.is_confirmed = wasConfirmed
@@ -495,12 +500,12 @@ export const useEventStore = defineStore('events', () => {
       // Verificar palavras proibidas em título e descrição
       const titleCheck = await checkBannedWords(input.titulo)
       const descCheck = input.descricao ? await checkBannedWords(input.descricao) : { found: false, action: null, words: [] }
-      
+
       // Bloquear qualquer palavra ofensiva encontrada
       if (titleCheck.found) {
         throw new Error('O título do evento contém palavras ofensivas. Por favor, revise o conteúdo.')
       }
-      
+
       if (descCheck.found) {
         throw new Error('A descrição do evento contém palavras ofensivas. Por favor, revise o conteúdo.')
       }

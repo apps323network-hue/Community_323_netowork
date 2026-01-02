@@ -23,7 +23,6 @@
         <option value="">Todos os Status</option>
         <option value="active">Ativos</option>
         <option value="pending">Pendentes</option>
-        <option value="suspended">Suspensos</option>
         <option value="banned">Banidos</option>
       </select>
     </div>
@@ -59,7 +58,6 @@
               <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Usuário</th>
               <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80 hidden sm:table-cell">Área</th>
               <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Status</th>
-              <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Strikes</th>
               <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Ações</th>
             </tr>
           </thead>
@@ -93,20 +91,6 @@
                 <UserStatusBadge :status="user.status" />
               </td>
               <td class="px-4 py-4">
-                <span
-                  class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs sm:text-sm font-bold"
-                  :class="
-                    user.strikes >= 3
-                      ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                      : user.strikes > 0
-                      ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                      : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                  "
-                >
-                  {{ user.strikes || 0 }}
-                </span>
-              </td>
-              <td class="px-4 py-4">
                 <div class="flex items-center justify-end gap-2">
                   <button
                     v-if="user.status !== 'banned'"
@@ -124,14 +108,7 @@
                   >
                     <span class="material-symbols-outlined text-base sm:text-lg">check_circle</span>
                   </button>
-                  <button
-                    v-if="user.status === 'suspended'"
-                    class="p-2 text-green-400 hover:bg-green-500/20 rounded-lg transition-all"
-                    title="Remover Suspensão"
-                    @click="$emit('unsuspend', user.id)"
-                  >
-                    <span class="material-symbols-outlined text-base sm:text-lg">check_circle</span>
-                  </button>
+
                   <button
                     class="p-2 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/10 rounded-lg transition-all"
                     title="Ver Histórico"
@@ -166,7 +143,6 @@ defineEmits<{
   suspend: [userId: string]
   ban: [userId: string]
   unban: [userId: string]
-  unsuspend: [userId: string]
   'view-history': [userId: string]
 }>()
 

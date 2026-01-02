@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
 import { logAdminAction } from '@/lib/auditLog'
+import { useGamificationStore } from './gamification'
 import { extractPlainText } from '@/lib/mentionParser'
 import type { Post, Comment, PostCreateInput, CommentCreateInput, PostFilters } from '@/types/posts'
 
@@ -16,6 +17,7 @@ export const usePostStore = defineStore('posts', () => {
   const pageSize = ref(15)
 
   const authStore = useAuthStore()
+  const gamificationStore = useGamificationStore()
   const currentUserId = computed(() => authStore.user?.id)
 
   // Verificar se usuário é admin
@@ -303,7 +305,7 @@ export const usePostStore = defineStore('posts', () => {
           .eq('user_id', currentUserId.value)
           .eq('post_id', postId)
           .single()
-        
+
         isBookmarked = !!bookmarkData
       }
 
@@ -357,7 +359,7 @@ export const usePostStore = defineStore('posts', () => {
     try {
       // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
       const sanitizedContent = extractPlainText(input.conteudo)
-      
+
       // Verificar palavras proibidas no conteúdo sanitizado
       const bannedCheck = await checkBannedWords(sanitizedContent)
 
@@ -443,6 +445,9 @@ export const usePostStore = defineStore('posts', () => {
           conteudo: data.conteudo
         }
       })
+
+      // Award points for creating a post (First time only)
+      await gamificationStore.awardPoints(10, 'post', data.id, 'Primeiro post criado!', true)
 
       // Notificar admins se post estiver pendente
       if (newPost.status === 'pending') {
@@ -910,7 +915,7 @@ export const usePostStore = defineStore('posts', () => {
     try {
       // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
       const sanitizedContent = extractPlainText(input.conteudo)
-      
+
       // Verificar palavras proibidas no conteúdo sanitizado
       const bannedCheck = await checkBannedWords(sanitizedContent)
 
@@ -976,6 +981,9 @@ export const usePostStore = defineStore('posts', () => {
           conteudo: input.conteudo
         }
       })
+
+      // Award points for adding a comment
+      await gamificationStore.awardPoints(5, 'comment', data.id, 'Novo comentário adicionado')
 
       return newComment
     } catch (err: any) {

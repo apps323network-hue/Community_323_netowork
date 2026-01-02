@@ -38,7 +38,6 @@ export interface AdminUser {
   pais?: string
   avatar_url?: string
   status: UserStatus
-  strikes: number
   approved_by?: string
   approved_at?: string
   rejection_reason?: string
@@ -163,7 +162,7 @@ export interface ReportCreateInput {
 }
 
 export interface ReportResolveInput {
-  action: 'remove_content' | 'suspend_user' | 'ban_user' | 'add_strike' | 'dismiss'
+  action: 'remove_content' | 'ban_user' | 'suspend_user' | 'add_strike' | 'dismiss'
   details?: string
   add_strike?: boolean
 }

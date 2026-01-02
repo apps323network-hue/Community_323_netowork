@@ -7,7 +7,7 @@
           Gestão de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Posts</span>
         </h1>
         <p class="text-slate-600 dark:text-white/60 text-lg">
-          Aprove, oculte, remova e gerencie posts da comunidade
+          Aprove, remova e gerencie posts da comunidade
         </p>
       </div>
 
@@ -53,9 +53,7 @@
           :posts="pendingPosts"
           :loading="loading"
           @approve="handleApprove"
-          @hide="handleHide"
           @remove="handleRemove"
-          @spam="handleSpam"
           @view-full="handleViewFull"
         />
       </div>
@@ -65,7 +63,6 @@
           :posts="displayedPosts"
           :loading="loading"
           @approve="handleApprove"
-          @hide="handleHide"
           @remove="handleRemove"
           @view-details="handleViewDetails"
         />
@@ -76,9 +73,7 @@
         v-model="showModerationModal"
         :post="selectedPost"
         @approve="handleModalApprove"
-        @hide="handleModalHide"
         @remove="handleModalRemove"
-        @spam="handleModalSpam"
       />
 
       <!-- Post View Modal -->
@@ -87,9 +82,7 @@
           v-if="viewedPost"
           :post="viewedPost"
           @approve="handleApproveFromView"
-          @hide="handleHideFromView"
           @remove="handleRemoveFromView"
-          @spam="handleSpamFromView"
         />
       </Modal>
 
@@ -268,7 +261,7 @@ const tabs = computed(() => [
     id: 'spam' as const,
     label: 'Spam',
     badge: adminStore.postStats.spam > 0 ? adminStore.postStats.spam : undefined,
-    badgeClass: 'bg-purple-500/20 text-purple-400',
+    badgeClass: 'bg-indigo-500/20 text-indigo-400',
   },
 ])
 
@@ -280,7 +273,7 @@ const displayedPosts = computed(() => {
   if (activeTab.value === 'all') {
     return adminStore.allPosts
   }
-  return adminStore.allPosts.filter(p => p.status === activeTab.value)
+  return adminStore.allPosts.filter((p: AdminPost) => p.status === activeTab.value)
 })
 
 async function handleTabChange(tabId: 'pending' | 'all' | 'hidden' | 'removed' | 'spam') {
@@ -289,24 +282,15 @@ async function handleTabChange(tabId: 'pending' | 'all' | 'hidden' | 'removed' |
   if (tabId === 'pending') {
     await adminStore.fetchPendingPosts()
   } else {
-    const statusFilter = tabId === 'all' ? undefined : tabId
+    const statusFilter = tabId === 'all' ? undefined : (tabId as PostStatus)
     await adminStore.fetchAllPosts(statusFilter)
   }
   await adminStore.fetchPostStats()
 }
 
 function handleApprove(postId: string) {
-  const post = pendingPosts.value.find(p => p.id === postId) || 
-               adminStore.allPosts.find(p => p.id === postId)
-  if (post) {
-    selectedPost.value = post
-    showModerationModal.value = true
-  }
-}
-
-function handleHide(postId: string) {
-  const post = pendingPosts.value.find(p => p.id === postId) || 
-               adminStore.allPosts.find(p => p.id === postId)
+  const post = pendingPosts.value.find((p: AdminPost) => p.id === postId) || 
+               adminStore.allPosts.find((p: AdminPost) => p.id === postId)
   if (post) {
     selectedPost.value = post
     showModerationModal.value = true
@@ -314,17 +298,8 @@ function handleHide(postId: string) {
 }
 
 function handleRemove(postId: string) {
-  const post = pendingPosts.value.find(p => p.id === postId) || 
-               adminStore.allPosts.find(p => p.id === postId)
-  if (post) {
-    selectedPost.value = post
-    showModerationModal.value = true
-  }
-}
-
-function handleSpam(postId: string) {
-  const post = pendingPosts.value.find(p => p.id === postId) || 
-               adminStore.allPosts.find(p => p.id === postId)
+  const post = pendingPosts.value.find((p: AdminPost) => p.id === postId) || 
+               adminStore.allPosts.find((p: AdminPost) => p.id === postId)
   if (post) {
     selectedPost.value = post
     showModerationModal.value = true
@@ -340,60 +315,30 @@ async function handleModalApprove(postId: string) {
     toast.success('Post aprovado com sucesso!')
     showModerationModal.value = false
     selectedPost.value = null
-  } catch (error: any) {
-    toast.error(error.message || 'Erro ao aprovar post')
-    console.error('Error approving post:', error)
+  } catch (err: any) {
+    toast.error(err.message || 'Erro ao aprovar post')
+    console.error('Error approving post:', err)
   }
 }
 
-async function handleModalHide(postId: string, reason: string) {
+async function handleModalRemove(postId: string, reason: string) {
   try {
-    await adminStore.hidePost(postId, reason)
+    await adminStore.removePost(postId, reason)
     await adminStore.fetchPendingPosts()
     await adminStore.fetchAllPosts()
     await adminStore.fetchPostStats()
-    toast.success('Post ocultado')
+    toast.success('Post removido')
     showModerationModal.value = false
     selectedPost.value = null
-  } catch (error: any) {
-    toast.error(error.message || 'Erro ao ocultar post')
-    console.error('Error hiding post:', error)
-  }
-}
-
-async function handleModalRemove(postId: string, reason: string, addStrike: boolean) {
-  try {
-    await adminStore.removePost(postId, reason, addStrike)
-    await adminStore.fetchPendingPosts()
-    await adminStore.fetchAllPosts()
-    await adminStore.fetchPostStats()
-    toast.success('Post removido' + (addStrike ? ' e strike adicionado' : ''))
-    showModerationModal.value = false
-    selectedPost.value = null
-  } catch (error: any) {
-    toast.error(error.message || 'Erro ao remover post')
-    console.error('Error removing post:', error)
-  }
-}
-
-async function handleModalSpam(postId: string) {
-  try {
-    await adminStore.markAsSpam(postId)
-    await adminStore.fetchPendingPosts()
-    await adminStore.fetchAllPosts()
-    await adminStore.fetchPostStats()
-    toast.success('Post marcado como spam e strike adicionado')
-    showModerationModal.value = false
-    selectedPost.value = null
-  } catch (error: any) {
-    toast.error(error.message || 'Erro ao marcar como spam')
-    console.error('Error marking post as spam:', error)
+  } catch (err: any) {
+    toast.error(err.message || 'Erro ao remover post')
+    console.error('Error removing post:', err)
   }
 }
 
 function handleViewFull(postId: string) {
-  const post = pendingPosts.value.find(p => p.id === postId) || 
-               adminStore.allPosts.find(p => p.id === postId)
+  const post = pendingPosts.value.find((p: AdminPost) => p.id === postId) || 
+               adminStore.allPosts.find((p: AdminPost) => p.id === postId)
   if (post) {
     viewedPost.value = post
     showPostViewModal.value = true
@@ -409,19 +354,9 @@ function handleApproveFromView(postId: string) {
   handleApprove(postId)
 }
 
-function handleHideFromView(postId: string) {
-  showPostViewModal.value = false
-  handleHide(postId)
-}
-
 function handleRemoveFromView(postId: string) {
   showPostViewModal.value = false
   handleRemove(postId)
-}
-
-function handleSpamFromView(postId: string) {
-  showPostViewModal.value = false
-  handleSpam(postId)
 }
 
 function handleImageSelect(event: Event) {
@@ -538,9 +473,9 @@ async function handleCreatePost() {
     }
     selectedImageFile.value = null
     imagePreview.value = null
-  } catch (error: any) {
-    console.error('[AdminPosts] Erro ao criar post:', error)
-    toast.error(error.message || 'Erro ao criar post')
+  } catch (err: any) {
+    console.error('[AdminPosts] Erro ao criar post:', err)
+    toast.error(err.message || 'Erro ao criar post')
   } finally {
     submitting.value = false
     console.log('[AdminPosts] Finalizando criação de post')
