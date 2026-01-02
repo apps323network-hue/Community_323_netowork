@@ -4,19 +4,19 @@
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex-1">
         <div class="relative">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xl">search</span>
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xl">search</span>
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Buscar reports..."
-            class="w-full pl-10 pr-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           />
         </div>
       </div>
       <div class="flex gap-2">
         <select
           v-model="filterStatus"
-          class="px-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Todos os status</option>
           <option value="pending">Pendentes</option>
@@ -26,7 +26,7 @@
         </select>
         <select
           v-model="filterItemType"
-          class="px-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Todos os tipos</option>
           <option value="post">Posts</option>
@@ -35,7 +35,7 @@
         </select>
         <select
           v-model="filterReason"
-          class="px-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Todos os motivos</option>
           <option value="spam">Spam</option>
@@ -53,9 +53,9 @@
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="!loading && filteredReports.length === 0" class="flex flex-col items-center justify-center py-12 bg-surface-dark/50 rounded-xl border border-white/10">
-      <span class="material-symbols-outlined text-gray-500 text-6xl mb-4">report</span>
-      <p class="text-gray-400 font-medium">
+    <div v-else-if="!loading && filteredReports.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10">
+      <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-6xl mb-4">report</span>
+      <p class="text-slate-600 dark:text-gray-400 font-medium">
         {{ searchQuery || filterStatus || filterItemType || filterReason ? 'Nenhum report encontrado' : 'Nenhum report cadastrado' }}
       </p>
     </div>
@@ -65,7 +65,7 @@
       <div
         v-for="report in filteredReports"
         :key="report.id"
-        class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-primary/50 transition-all"
+        class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-white/10 hover:border-primary/50 transition-all"
       >
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1 min-w-0">
@@ -92,31 +92,31 @@
             </div>
 
             <!-- Preview do conteúdo reportado -->
-            <div class="bg-surface-card rounded-lg p-4 border border-white/5 mb-3">
-              <p class="text-white/60 text-xs mb-2">Conteúdo reportado:</p>
-              <p class="text-white/80 text-sm line-clamp-2">
+            <div class="bg-slate-50 dark:bg-surface-card rounded-lg p-4 border border-slate-200 dark:border-white/5 mb-3">
+              <p class="text-slate-600 dark:text-white/60 text-xs mb-2">Conteúdo reportado:</p>
+              <p class="text-slate-700 dark:text-white/80 text-sm line-clamp-2">
                 {{ getReportedItemPreview(report) }}
               </p>
             </div>
 
             <!-- Informações do report -->
             <div class="space-y-2 text-sm">
-              <div class="flex items-center gap-2 text-white/60">
+              <div class="flex items-center gap-2 text-slate-600 dark:text-white/60">
                 <span class="material-symbols-outlined text-base">person</span>
-                <span>Reportado por: <span class="text-white font-medium">{{ report.reporter_name || 'Usuário' }}</span></span>
+                <span>Reportado por: <span class="text-slate-900 dark:text-white font-medium">{{ report.reporter_name || 'Usuário' }}</span></span>
               </div>
-              <div class="flex items-center gap-2 text-white/60">
+              <div class="flex items-center gap-2 text-slate-600 dark:text-white/60">
                 <span class="material-symbols-outlined text-base">schedule</span>
                 <span>{{ formatDate(report.created_at) }}</span>
               </div>
-              <div v-if="report.description" class="mt-2 p-3 bg-surface-card rounded-lg border border-white/5">
-                <p class="text-white/60 text-xs mb-1">Descrição:</p>
-                <p class="text-white/80 text-sm">{{ report.description }}</p>
+              <div v-if="report.description" class="mt-2 p-3 bg-slate-50 dark:bg-surface-card rounded-lg border border-slate-200 dark:border-white/5">
+                <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Descrição:</p>
+                <p class="text-slate-700 dark:text-white/80 text-sm">{{ report.description }}</p>
               </div>
-              <div v-if="report.resolved_by" class="flex items-center gap-2 text-white/60 mt-2">
+              <div v-if="report.resolved_by" class="flex items-center gap-2 text-slate-600 dark:text-white/60 mt-2">
                 <span class="material-symbols-outlined text-base">check_circle</span>
-                <span>Resolvido por: <span class="text-white font-medium">{{ report.resolver_name || 'Admin' }}</span></span>
-                <span v-if="report.resolved_at" class="text-white/40">em {{ formatDate(report.resolved_at) }}</span>
+                <span>Resolvido por: <span class="text-slate-900 dark:text-white font-medium">{{ report.resolver_name || 'Admin' }}</span></span>
+                <span v-if="report.resolved_at" class="text-slate-500 dark:text-white/40">em {{ formatDate(report.resolved_at) }}</span>
               </div>
             </div>
           </div>
@@ -126,7 +126,7 @@
             <button
               v-if="report.status === 'pending'"
               @click="$emit('resolve', report)"
-              class="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all text-sm"
+              class="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all text-sm"
             >
               <span class="material-symbols-outlined text-base">check_circle</span>
               <span>Resolver</span>
@@ -134,14 +134,14 @@
             <button
               v-if="report.status === 'pending'"
               @click="$emit('dismiss', report.id)"
-              class="flex items-center gap-2 px-4 py-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 border border-gray-500/30 rounded-lg font-semibold transition-all text-sm"
+              class="flex items-center gap-2 px-4 py-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-600 dark:text-gray-400 border border-gray-500/30 rounded-lg font-semibold transition-all text-sm"
             >
               <span class="material-symbols-outlined text-base">close</span>
               <span>Descartar</span>
             </button>
             <button
               @click="$emit('view-details', report.id)"
-              class="flex items-center gap-2 px-4 py-2 bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10 rounded-lg font-semibold transition-all text-sm"
+              class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-surface-lighter hover:bg-slate-200 dark:hover:bg-surface-highlight text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 rounded-lg font-semibold transition-all text-sm"
             >
               <span class="material-symbols-outlined text-base">visibility</span>
               <span>Ver Detalhes</span>

@@ -301,7 +301,6 @@
               :post="post"
               :show-comments="expandedComments.has(post.id)"
               @toggle-comments="handleToggleComments"
-              @share="handleShare"
               @edit-comment="handleEditComment"
               @delete-comment="handleDeleteComment"
               @delete-post="handleDeletePost"
@@ -493,10 +492,6 @@ function handleToggleComments(postId: string) {
   }
 }
 
-function handleShare(postId: string) {
-  // Implementar compartilhamento se necessário
-  console.log('Share post:', postId)
-}
 
 function handleEditComment(commentId: string) {
   // Implementar edição de comentário se necessário

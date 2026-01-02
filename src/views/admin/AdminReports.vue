@@ -68,7 +68,7 @@ import type { Report } from '@/types/admin'
 const router = useRouter()
 const adminStore = useAdminStore()
 
-const activeTab = ref('pending')
+const activeTab = ref('all')
 const showResolveModal = ref(false)
 const selectedReport = ref<Report | null>(null)
 
@@ -77,6 +77,12 @@ const reportStats = computed(() => adminStore.reportStats)
 const loading = computed(() => adminStore.loading)
 
 const tabs = computed(() => [
+  {
+    id: 'all',
+    label: 'Todos',
+    badge: undefined,
+    badgeClass: '',
+  },
   {
     id: 'pending',
     label: 'Pendentes',
@@ -92,12 +98,6 @@ const tabs = computed(() => [
   {
     id: 'dismissed',
     label: 'Descartados',
-    badge: undefined,
-    badgeClass: '',
-  },
-  {
-    id: 'all',
-    label: 'Todos',
     badge: undefined,
     badgeClass: '',
   },

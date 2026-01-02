@@ -49,14 +49,6 @@
             >
               <span class="material-icons-outlined">photo_camera</span>
             </a>
-            <a
-              href="https://facebook.com/323network"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-white/5 rounded-lg text-slate-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
-            >
-              <span class="material-icons-outlined">facebook</span>
-            </a>
           </div>
         </div>
       </div>

@@ -143,7 +143,7 @@ import { toast } from 'vue-sonner'
 const router = useRouter()
 const adminStore = useAdminStore()
 
-const activeTab = ref<'pending' | 'all' | 'banned'>('all')
+const activeTab = ref<'pending' | 'all' | 'suspended' | 'banned'>('all')
 const showApprovalModal = ref(false)
 const selectedUser = ref<AdminUser | null>(null)
 const showBanModal = ref(false)
@@ -152,14 +152,20 @@ const banReason = ref('')
 
 const tabs = computed(() => [
   {
+    id: 'all' as const,
+    label: 'Todos',
+  },
+  {
     id: 'pending' as const,
     label: 'Pendentes',
     badge: adminStore.userStats.pending > 0 ? adminStore.userStats.pending : undefined,
     badgeClass: 'bg-yellow-500/20 text-yellow-400',
   },
   {
-    id: 'all' as const,
-    label: 'Todos',
+    id: 'suspended' as const,
+    label: 'Suspensos',
+    badge: adminStore.userStats.suspended > 0 ? adminStore.userStats.suspended : undefined,
+    badgeClass: 'bg-orange-500/20 text-orange-400',
   },
   {
     id: 'banned' as const,
@@ -305,7 +311,9 @@ onMounted(async () => {
     return
   }
 
-  await adminStore.fetchAllUsers()
+  // Carregar dados iniciais baseado na aba padrão
+  await adminStore.fetchAllUsers() // Aba padrão é "Todos"
+  await adminStore.fetchPendingUsers()
   await adminStore.fetchUserStats()
 })
 </script>

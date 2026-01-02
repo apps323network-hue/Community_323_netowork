@@ -69,25 +69,61 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Fallback: criar profile se trigger não funcionar
       if (data.user) {
+        const userName = userData?.nome || userData?.firstName 
+          ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() 
+          : email.split('@')[0]
+        const userArea = userData?.role || null
+        
         try {
-          await supabase.from('profiles').insert({
+          const { data: profileData } = await supabase.from('profiles').insert({
             id: data.user.id,
-            nome: userData?.nome || userData?.firstName 
-              ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() 
-              : email.split('@')[0],
-            area_atuacao: userData?.role || null,
+            nome: userName,
+            area_atuacao: userArea,
             plano: 'Free',
             badge: 'Free',
+            status: 'pending', // Novo usuário sempre começa como pending
           }).select().single()
+          
+          // Notificar admins sobre novo usuário
+          if (profileData?.status === 'pending') {
+            import('@/lib/emails').then(({ notifyAdminsNewUser }) => {
+              notifyAdminsNewUser(
+                data.user!.id,
+                userName,
+                userArea || undefined,
+                profileData.created_at || new Date().toISOString()
+              ).catch(err => {
+                console.error('Failed to notify admins about new user:', err)
+              })
+            })
+          }
         } catch (profileError) {
-          // Profile já existe ou erro - tentar atualizar
+          // Profile já existe ou erro - tentar atualizar e verificar status
           try {
+            const { data: existingProfile } = await supabase
+              .from('profiles')
+              .select('status, created_at, area_atuacao')
+              .eq('id', data.user.id)
+              .single()
+            
             await supabase.from('profiles').update({
-              area_atuacao: userData?.role || null,
-              nome: userData?.nome || userData?.firstName 
-                ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() 
-                : email.split('@')[0],
+              area_atuacao: userArea || null,
+              nome: userName,
             }).eq('id', data.user.id)
+            
+            // Se o profile existente estiver pendente, notificar
+            if (existingProfile?.status === 'pending') {
+              import('@/lib/emails').then(({ notifyAdminsNewUser }) => {
+                notifyAdminsNewUser(
+                  data.user!.id,
+                  userName,
+                  existingProfile.area_atuacao || undefined,
+                  existingProfile.created_at || new Date().toISOString()
+                ).catch(err => {
+                  console.error('Failed to notify admins about new user:', err)
+                })
+              })
+            }
           } catch (updateError) {
             // Profile já existe ou erro - não é crítico, trigger pode ter criado
             console.log('Profile creation/update:', updateError)
@@ -216,10 +252,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Escutar mudanças de autenticação ANTES de checkSession para evitar race conditions
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    const onAuthStartTime = performance.now()
-    console.log(`[AUTH] onAuthStateChange: ${event}`)
-    
+  supabase.auth.onAuthStateChange(async (_event, session) => {
     user.value = session?.user ?? null
     
     // Buscar ou limpar profile quando estado de auth mudar (em background, não bloquear)
@@ -229,15 +262,15 @@ export const useAuthStore = defineStore('auth', () => {
       // Usar setTimeout para garantir que não bloqueie o fluxo principal
       setTimeout(() => {
         userStore.fetchProfile(session.user.id).catch((err) => {
-          console.error('[AUTH] Erro ao buscar profile no onAuthStateChange (não crítico):', err)
+          // Apenas logar erros não relacionados a conexão
+          if (!err?.message?.includes('Failed to fetch')) {
+            console.error('[AUTH] Erro ao buscar profile no onAuthStateChange (não crítico):', err)
+          }
         })
       }, 100) // Pequeno delay para não interferir no login
     } else {
       userStore.clearProfile()
     }
-    
-    const onAuthEndTime = performance.now()
-    console.log(`[AUTH] onAuthStateChange completou em ${(onAuthEndTime - onAuthStartTime).toFixed(2)}ms`)
   })
 
   // Inicializar verificando sessão APÓS configurar o listener

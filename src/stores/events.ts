@@ -552,6 +552,31 @@ export const useEventStore = defineStore('events', () => {
       // Add to beginning of events array
       events.value = [newEvent, ...events.value]
 
+      // Notificar admins se evento estiver pendente
+      if (newEvent.status === 'pending') {
+        // Buscar nome do criador
+        const { data: creatorProfile } = await supabase
+          .from('profiles')
+          .select('nome')
+          .eq('id', currentUserId.value)
+          .single()
+        
+        const creatorName = creatorProfile?.nome || 'Usuário'
+        
+        // Chamar notificação de forma assíncrona sem bloquear
+        import('@/lib/emails').then(({ notifyAdminsNewEvent }) => {
+          notifyAdminsNewEvent(
+            newEvent.id,
+            newEvent.titulo,
+            newEvent.data_hora,
+            newEvent.tipo,
+            creatorName
+          ).catch(err => {
+            console.error('Failed to notify admins about new event:', err)
+          })
+        })
+      }
+
       return newEvent
     } catch (err: any) {
       error.value = err.message

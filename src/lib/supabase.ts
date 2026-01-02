@@ -21,7 +21,6 @@ if (!supabaseAnonKey.startsWith('eyJ')) {
   console.warn('[SUPABASE] Chave anon pode estar incorreta (deve ser um JWT)')
 }
 
-console.log('[SUPABASE] Cliente inicializado com URL:', supabaseUrl.replace(/\/\/.*@/, '//***@'))
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {

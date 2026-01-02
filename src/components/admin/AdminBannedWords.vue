@@ -3,8 +3,8 @@
     <!-- Header com botão Adicionar -->
     <div class="flex justify-between items-center">
       <div>
-        <h2 class="text-white text-2xl font-bold mb-1">Palavras Proibidas</h2>
-        <p class="text-white/60 text-sm">Gerencie palavras e frases proibidas para moderação automática</p>
+        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-1">Palavras Proibidas</h2>
+        <p class="text-slate-600 dark:text-white/60 text-sm">Gerencie palavras e frases proibidas para moderação automática</p>
       </div>
       <button
         @click="showFormModal = true; editingWord = null"
@@ -19,19 +19,19 @@
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex-1">
         <div class="relative">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xl">search</span>
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xl">search</span>
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Buscar palavra..."
-            class="w-full pl-10 pr-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           />
         </div>
       </div>
       <div class="flex gap-2">
         <select
           v-model="filterCategory"
-          class="px-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Todas as categorias</option>
           <option value="spam">Spam</option>
@@ -40,7 +40,7 @@
         </select>
         <select
           v-model="filterAction"
-          class="px-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Todas as ações</option>
           <option value="block">Bloquear</option>
@@ -55,9 +55,9 @@
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
     </div>
 
-    <div v-else-if="filteredWords.length === 0" class="flex flex-col items-center justify-center py-12 bg-surface-dark/50 rounded-xl border border-white/10">
-      <span class="material-symbols-outlined text-gray-500 text-6xl mb-4">block</span>
-      <p class="text-gray-400 font-medium">
+    <div v-else-if="filteredWords.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10">
+      <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-6xl mb-4">block</span>
+      <p class="text-slate-600 dark:text-gray-400 font-medium">
         {{ searchQuery || filterCategory || filterAction ? 'Nenhuma palavra encontrada' : 'Nenhuma palavra proibida cadastrada' }}
       </p>
     </div>
@@ -66,12 +66,12 @@
       <div
         v-for="word in filteredWords"
         :key="word.id"
-        class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-primary/50 transition-all"
+        class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-white/10 hover:border-primary/50 transition-all"
       >
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <div class="flex items-center gap-3 mb-3">
-              <h3 class="text-white font-bold text-lg">{{ word.word }}</h3>
+              <h3 class="text-slate-900 dark:text-white font-bold text-lg">{{ word.word }}</h3>
               <span
                 class="px-2 py-1 rounded-full text-xs font-bold"
                 :class="getCategoryClass(word.category)"
@@ -85,21 +85,21 @@
                 {{ getActionLabel(word.action) }}
               </span>
             </div>
-            <p class="text-white/40 text-xs">
+            <p class="text-slate-500 dark:text-white/40 text-xs">
               Criado em {{ formatDate(word.created_at) }}
             </p>
           </div>
           <div class="flex gap-2">
             <button
               @click="editWord(word)"
-              class="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white transition-all"
+              class="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white transition-all"
               title="Editar"
             >
               <span class="material-symbols-outlined text-lg">edit</span>
             </button>
             <button
               @click="confirmDelete(word)"
-              class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 transition-all"
+              class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400 transition-all"
               title="Deletar"
             >
               <span class="material-symbols-outlined text-lg">delete</span>
@@ -117,23 +117,23 @@
     >
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-white mb-2">Palavra ou Frase *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Palavra ou Frase *</label>
           <input
             v-model="formData.word"
             type="text"
             required
-            class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
             placeholder="Ex: palavra proibida ou frase completa"
           />
-          <p class="text-white/40 text-xs mt-1">A verificação é case-insensitive</p>
+          <p class="text-slate-500 dark:text-white/40 text-xs mt-1">A verificação é case-insensitive</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-white mb-2">Categoria *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Categoria *</label>
           <select
             v-model="formData.category"
             required
-            class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           >
             <option value="">Selecione...</option>
             <option value="spam">Spam</option>
@@ -143,11 +143,11 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-white mb-2">Ação *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Ação *</label>
           <select
             v-model="formData.action"
             required
-            class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           >
             <option value="">Selecione...</option>
             <option value="block">Bloquear - Não permite criar o conteúdo</option>
@@ -167,7 +167,7 @@
           <button
             type="button"
             @click="showFormModal = false"
-            class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+            class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
             Cancelar
           </button>
@@ -182,23 +182,23 @@
       size="sm"
     >
       <div class="space-y-4">
-        <p class="text-white/80">
-          Tem certeza que deseja remover a palavra <strong class="text-white">"{{ wordToDelete?.word }}"</strong>?
+        <p class="text-slate-700 dark:text-white/80">
+          Tem certeza que deseja remover a palavra <strong class="text-slate-900 dark:text-white">"{{ wordToDelete?.word }}"</strong>?
         </p>
-        <p class="text-white/60 text-sm">
+        <p class="text-slate-600 dark:text-white/60 text-sm">
           Esta ação não pode ser desfeita.
         </p>
         <div class="flex gap-3 pt-4">
           <button
             @click="handleDelete"
             :disabled="submitting"
-            class="flex-1 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-medium transition-all disabled:opacity-50"
+            class="flex-1 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-600 dark:text-red-400 font-medium transition-all disabled:opacity-50"
           >
             {{ submitting ? 'Deletando...' : 'Deletar' }}
           </button>
           <button
             @click="showDeleteModal = false"
-            class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+            class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
             Cancelar
           </button>
@@ -382,4 +382,5 @@ onMounted(async () => {
   await adminStore.fetchBannedWords()
 })
 </script>
+
 

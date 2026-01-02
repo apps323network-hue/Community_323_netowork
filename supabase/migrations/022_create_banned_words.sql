@@ -98,3 +98,4 @@ COMMENT ON POLICY "Only admins can update banned words" ON public.banned_words I
 COMMENT ON POLICY "Only admins can delete banned words" ON public.banned_words IS 
 'Permite que apenas admins deletem palavras proibidas';
 
+

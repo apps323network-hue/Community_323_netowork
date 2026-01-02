@@ -3,12 +3,11 @@
     <div class="flex gap-3">
       <Avatar :src="userAvatar" :name="userName" size="sm" :border="false" class="flex-shrink-0" />
       <div class="flex-1">
-        <input
+        <MentionAutocomplete
           v-model="content"
-          class="w-full bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-gray-700/50 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all"
           placeholder="Escreva um comentário..."
-          type="text"
-          @keyup.enter="handleSubmit"
+          :rows="1"
+          input-classes="w-full bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-gray-700/50 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all resize-none"
         />
       </div>
       <Button
@@ -30,8 +29,12 @@ import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { usePosts } from '@/composables/usePosts'
+import { useMentions } from '@/composables/useMentions'
+import { useHashtags } from '@/composables/useHashtags'
+import { parseMentions } from '@/lib/mentionParser'
 import Avatar from '@/components/ui/Avatar.vue'
 import Button from '@/components/ui/Button.vue'
+import MentionAutocomplete from './MentionAutocomplete.vue'
 
 interface Props {
   postId: string
@@ -46,6 +49,8 @@ const emit = defineEmits<{
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const { addComment } = usePosts()
+const { saveMentions } = useMentions()
+const { saveHashtags } = useHashtags()
 
 const content = ref('')
 const loading = ref(false)
@@ -61,10 +66,31 @@ async function handleSubmit() {
   error.value = null
 
   try {
-    await addComment({
+    const newComment = await addComment({
       post_id: props.postId,
       conteudo: content.value.trim(),
     })
+
+    // Process and save mentions
+    const mentions = parseMentions(content.value.trim())
+    if (mentions.length > 0 && newComment) {
+      try {
+        await saveMentions(null, newComment.id, mentions)
+      } catch (err) {
+        console.error('Error saving mentions:', err)
+        // Don't block comment creation if mentions fail
+      }
+    }
+
+    // Process and save hashtags
+    if (newComment) {
+      try {
+        await saveHashtags(null, newComment.id, content.value.trim())
+      } catch (err) {
+        console.error('Error saving hashtags:', err)
+        // Don't block comment creation if hashtags fail
+      }
+    }
 
     content.value = ''
     emit('comment-added')

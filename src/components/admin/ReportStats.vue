@@ -11,7 +11,7 @@
       <div class="text-xs text-slate-500 dark:text-white/40">Reports recebidos</div>
     </div>
 
-    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+    <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all group shadow-lg dark:shadow-xl">
       <div class="flex items-center justify-between mb-4">
         <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Pendentes</span>
         <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">
@@ -23,7 +23,7 @@
       <div v-else class="text-xs text-slate-500 dark:text-white/40">Nenhum pendente</div>
     </div>
 
-    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+    <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all group shadow-lg dark:shadow-xl">
       <div class="flex items-center justify-between mb-4">
         <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Resolvidos Hoje</span>
         <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">
@@ -34,7 +34,7 @@
       <div class="text-xs text-slate-500 dark:text-white/40">Resolvidos hoje</div>
     </div>
 
-    <div class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all group">
+    <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all group shadow-lg dark:shadow-xl">
       <div class="flex items-center justify-between mb-4">
         <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Resolvidos</span>
         <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">

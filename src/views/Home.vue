@@ -36,7 +36,6 @@
           :post="post"
           :show-comments="expandedComments.has(post.id)"
           @toggle-comments="handleToggleComments"
-          @share="handleShare"
           @delete-comment="handleDeleteComment"
           @delete-post="handleDeletePost"
         >
@@ -73,6 +72,7 @@ import PostCard from '@/components/features/feed/PostCard.vue'
 import CommentForm from '@/components/features/feed/CommentForm.vue'
 import EventCard from '@/components/features/events/EventCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import Button from '@/components/ui/Button.vue'
 import { toast } from 'vue-sonner'
 import type { PostFilters as PostFiltersType } from '@/types/posts'
 
@@ -154,35 +154,6 @@ async function handleToggleComments(postId: string) {
   }
 }
 
-async function handleShare(postId: string) {
-  const url = `${window.location.origin}/?post=${postId}`
-  
-  try {
-    if (navigator.share) {
-      // Use Web Share API if available
-      await navigator.share({
-        title: '323 Network - Post',
-        text: 'Confira este post na 323 Network',
-        url: url,
-      })
-    } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(url)
-      toast.success(t('posts.linkCopied'))
-    }
-  } catch (error: any) {
-    // User cancelled or error occurred
-    if (error.name !== 'AbortError') {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(url)
-        toast.success(t('posts.linkCopied'))
-      } catch (clipboardError) {
-        console.error('Error copying to clipboard:', clipboardError)
-      }
-    }
-  }
-}
 
 
 async function handleDeleteComment(commentId: string) {

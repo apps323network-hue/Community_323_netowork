@@ -331,11 +331,17 @@ import Card from '@/components/ui/Card.vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
+import MentionAutocomplete from './MentionAutocomplete.vue'
+import { useMentions } from '@/composables/useMentions'
+import { useHashtags } from '@/composables/useHashtags'
+import { parseMentions } from '@/lib/mentionParser'
 import type { PostType } from '@/types/posts'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const { createPost } = usePosts()
+const { saveMentions } = useMentions()
+const { saveHashtags } = useHashtags()
 const { t } = useI18n()
 
 const content = ref('')
@@ -567,6 +573,25 @@ async function handleSubmit() {
       image_url: imageUrl || undefined,
     })
 
+    // Process and save mentions
+    const mentions = parseMentions(content.value.trim())
+    if (mentions.length > 0) {
+      try {
+        await saveMentions(newPost.id, null, mentions)
+      } catch (err) {
+        console.error('Error saving mentions:', err)
+        // Don't block post creation if mentions fail
+      }
+    }
+
+    // Process and save hashtags
+    try {
+      await saveHashtags(newPost.id, null, content.value.trim())
+    } catch (err) {
+      console.error('Error saving hashtags:', err)
+      // Don't block post creation if hashtags fail
+    }
+
     // Reset form
     content.value = ''
     if (editorRef.value) {
@@ -726,6 +751,30 @@ async function handleCreateEvent() {
       })
     }
 
+    console.log('✅ Evento criado com sucesso! ID:', data.id)
+
+    // Notificar admins sobre o evento (se estiver pendente)
+    // O post também será notificado quando for criado abaixo
+    if (data.status === 'pending') {
+      const creatorName = userStore.profile?.nome || 'Usuário'
+      
+      // Chamar notificação de forma assíncrona sem bloquear
+      import('@/lib/emails').then(({ notifyAdminsNewEvent }) => {
+        notifyAdminsNewEvent(
+          data.id,
+          data.titulo,
+          data.data_hora,
+          data.tipo,
+          creatorName
+        ).catch(err => {
+          console.error('Failed to notify admins about new event:', err)
+        })
+      })
+    }
+
+    console.log('11. Criando post sobre o evento...')
+    // Criar post sobre o evento com a imagem do banner
+    // O createPost() já notifica os admins sobre o post pendente
     const newPost = await createPost({
       conteudo: `📅 Novo evento: ${eventForm.value.titulo}\n\n${eventForm.value.descricao || ''}`,
       tipo: 'oportunidade',

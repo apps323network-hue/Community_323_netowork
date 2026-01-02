@@ -59,6 +59,7 @@ export type AdminAction =
     // Common user actions
     | 'user_create_post'
     | 'user_update_post'
+    | 'user_edit_post'
     | 'user_delete_post'
     | 'user_like_post'
     | 'user_unlike_post'
@@ -256,6 +257,7 @@ export const actionLabels: Record<AdminAction, string> = {
     // User actions
     user_create_post: 'Post Criado',
     user_update_post: 'Post Atualizado',
+    user_edit_post: 'Post Editado',
     user_delete_post: 'Post Deletado',
     user_like_post: 'Curtida em Post',
     user_unlike_post: 'Remoção de Curtida',

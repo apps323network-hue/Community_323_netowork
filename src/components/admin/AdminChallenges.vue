@@ -3,8 +3,8 @@
     <!-- Header com botão Adicionar -->
     <div class="flex justify-between items-center">
       <div>
-        <h2 class="text-white text-2xl font-bold mb-1">Desafios</h2>
-        <p class="text-white/60 text-sm">Gerencie desafios para gamificação e engajamento</p>
+        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-1">Desafios</h2>
+        <p class="text-slate-600 dark:text-white/60 text-sm">Gerencie desafios para gamificação e engajamento</p>
       </div>
       <button
         @click="showFormModal = true; editingChallenge = null"
@@ -19,19 +19,19 @@
     <div class="flex flex-col sm:flex-row gap-4">
       <div class="flex-1">
         <div class="relative">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-xl">search</span>
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40 text-xl">search</span>
           <input
             v-model="searchQuery"
             type="text"
             placeholder="Buscar desafio..."
-            class="w-full pl-10 pr-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           />
         </div>
       </div>
       <div class="flex gap-2">
         <select
           v-model="filterType"
-          class="px-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Todos os tipos</option>
           <option value="post">Post</option>
@@ -43,7 +43,7 @@
         </select>
         <select
           v-model="filterActive"
-          class="px-4 py-2 rounded-lg border border-white/10 bg-surface-dark text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Todos</option>
           <option value="true">Ativos</option>
@@ -57,9 +57,9 @@
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
     </div>
 
-    <div v-else-if="filteredChallenges.length === 0" class="flex flex-col items-center justify-center py-12 bg-surface-dark/50 rounded-xl border border-white/10">
-      <span class="material-symbols-outlined text-gray-500 text-6xl mb-4">emoji_events</span>
-      <p class="text-gray-400 font-medium">
+    <div v-else-if="filteredChallenges.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10">
+      <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-6xl mb-4">emoji_events</span>
+      <p class="text-slate-600 dark:text-gray-400 font-medium">
         {{ searchQuery || filterType || filterActive ? 'Nenhum desafio encontrado' : 'Nenhum desafio cadastrado' }}
       </p>
     </div>
@@ -68,12 +68,12 @@
       <div
         v-for="challenge in filteredChallenges"
         :key="challenge.id"
-        class="bg-surface-dark rounded-xl p-6 border border-white/10 hover:border-primary/50 transition-all"
+        class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-white/10 hover:border-primary/50 transition-all"
       >
         <div class="flex items-start justify-between">
           <div class="flex-1">
             <div class="flex items-center gap-3 mb-3 flex-wrap">
-              <h3 class="text-white font-bold text-lg">{{ challenge.nome }}</h3>
+              <h3 class="text-slate-900 dark:text-white font-bold text-lg">{{ challenge.nome }}</h3>
               <span
                 class="px-2 py-1 rounded-full text-xs font-bold"
                 :class="getTypeClass(challenge.tipo)"
@@ -87,8 +87,8 @@
                 {{ challenge.ativo ? 'Ativo' : 'Inativo' }}
               </span>
             </div>
-            <p v-if="challenge.descricao" class="text-white/60 text-sm mb-3">{{ challenge.descricao }}</p>
-            <div class="flex items-center gap-4 text-sm text-white/60">
+            <p v-if="challenge.descricao" class="text-slate-600 dark:text-white/60 text-sm mb-3">{{ challenge.descricao }}</p>
+            <div class="flex items-center gap-4 text-sm text-slate-600 dark:text-white/60">
               <div class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-lg">stars</span>
                 <span class="font-semibold text-primary">{{ challenge.pontos }} pontos</span>
@@ -106,21 +106,21 @@
                 <span>{{ challenge.total_completed || 0 }} completados</span>
               </div>
             </div>
-            <p class="text-white/40 text-xs mt-3">
+            <p class="text-slate-500 dark:text-white/40 text-xs mt-3">
               Criado em {{ formatDate(challenge.created_at) }} por {{ challenge.creator_name || 'Admin' }}
             </p>
           </div>
           <div class="flex gap-2">
             <button
               @click="editChallenge(challenge)"
-              class="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white transition-all"
+              class="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white transition-all"
               title="Editar"
             >
               <span class="material-symbols-outlined text-lg">edit</span>
             </button>
             <button
               @click="confirmDelete(challenge)"
-              class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 transition-all"
+              class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400 transition-all"
               title="Deletar"
             >
               <span class="material-symbols-outlined text-lg">delete</span>
@@ -138,33 +138,33 @@
     >
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-white mb-2">Nome do Desafio *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Nome do Desafio *</label>
           <input
             v-model="formData.nome"
             type="text"
             required
-            class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
             placeholder="Ex: Criar 5 posts esta semana"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-white mb-2">Descrição</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Descrição</label>
           <textarea
             v-model="formData.descricao"
             rows="3"
-            class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
             placeholder="Descreva o desafio em detalhes..."
           />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-white mb-2">Tipo *</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Tipo *</label>
             <select
               v-model="formData.tipo"
               required
-              class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
             >
               <option value="">Selecione...</option>
               <option value="post">Post</option>
@@ -177,13 +177,13 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-white mb-2">Pontos *</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Pontos *</label>
             <input
               v-model.number="formData.pontos"
               type="number"
               min="1"
               required
-              class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
               placeholder="Ex: 10"
             />
           </div>
@@ -191,17 +191,17 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-white mb-2">Prazo (opcional)</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Prazo (opcional)</label>
             <input
               v-model="formData.prazo"
               type="datetime-local"
-              class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
             />
-            <p class="text-white/40 text-xs mt-1">Deixe em branco para desafio sem prazo</p>
+            <p class="text-slate-500 dark:text-white/40 text-xs mt-1">Deixe em branco para desafio sem prazo</p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-white mb-2">Status</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Status</label>
             <div class="flex items-center gap-3 mt-2">
               <label class="flex items-center gap-2 cursor-pointer">
                 <input
@@ -209,10 +209,10 @@
                   type="checkbox"
                   class="w-5 h-5 text-primary focus:ring-primary rounded"
                 />
-                <span class="text-white text-sm">Ativo</span>
+                <span class="text-slate-900 dark:text-white text-sm">Ativo</span>
               </label>
             </div>
-            <p class="text-white/40 text-xs mt-1">Desafios inativos não aparecem para usuários</p>
+            <p class="text-slate-500 dark:text-white/40 text-xs mt-1">Desafios inativos não aparecem para usuários</p>
           </div>
         </div>
 
@@ -227,7 +227,7 @@
           <button
             type="button"
             @click="showFormModal = false"
-            class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+            class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
             Cancelar
           </button>
@@ -242,23 +242,23 @@
       size="sm"
     >
       <div class="space-y-4">
-        <p class="text-white/80">
-          Tem certeza que deseja remover o desafio <strong class="text-white">"{{ challengeToDelete?.nome }}"</strong>?
+        <p class="text-slate-700 dark:text-white/80">
+          Tem certeza que deseja remover o desafio <strong class="text-slate-900 dark:text-white">"{{ challengeToDelete?.nome }}"</strong>?
         </p>
-        <p class="text-white/60 text-sm">
+        <p class="text-slate-600 dark:text-white/60 text-sm">
           Esta ação não pode ser desfeita. O progresso dos usuários neste desafio será mantido, mas o desafio não estará mais disponível.
         </p>
         <div class="flex gap-3 pt-4">
           <button
             @click="handleDelete"
             :disabled="submitting"
-            class="flex-1 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-400 font-medium transition-all disabled:opacity-50"
+            class="flex-1 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-600 dark:text-red-400 font-medium transition-all disabled:opacity-50"
           >
             {{ submitting ? 'Deletando...' : 'Deletar' }}
           </button>
           <button
             @click="showDeleteModal = false"
-            class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all"
+            class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
             Cancelar
           </button>

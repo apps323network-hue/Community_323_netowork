@@ -22,3 +22,4 @@ CREATE POLICY "Active users can create posts (pending by default)"
 COMMENT ON POLICY "Active users can create posts (pending by default)" ON public.posts IS 
 'Permite que admins criem posts com qualquer status, e usuários ativos criem posts com status pending';
 
+

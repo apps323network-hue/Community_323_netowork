@@ -75,3 +75,4 @@ CREATE POLICY "Users can delete own pending events or admin can delete any"
 
 
 
+

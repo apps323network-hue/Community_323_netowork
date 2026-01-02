@@ -5,6 +5,7 @@ import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
 import { logAdminAction } from '@/lib/auditLog'
 import { useGamificationStore } from './gamification'
+import { extractPlainText } from '@/lib/mentionParser'
 import type { Post, Comment, PostCreateInput, CommentCreateInput, PostFilters } from '@/types/posts'
 
 export const usePostStore = defineStore('posts', () => {
@@ -155,6 +156,20 @@ export const usePostStore = defineStore('posts', () => {
         .in('post_id', filteredPostIds)
         .eq('status', 'approved')
 
+      // Fetch bookmarks if user is authenticated
+      const userBookmarksSet = new Set<string>()
+      if (currentUserId.value) {
+        const { data: bookmarksData } = await supabase
+          .from('post_bookmarks')
+          .select('post_id')
+          .eq('user_id', currentUserId.value)
+          .in('post_id', filteredPostIds)
+
+        bookmarksData?.forEach((bookmark: any) => {
+          userBookmarksSet.add(bookmark.post_id)
+        })
+      }
+
       // Create maps for quick lookup (já não preciso mais do profilesMap aqui)
 
       // Count likes and comments per post
@@ -213,6 +228,7 @@ export const usePostStore = defineStore('posts', () => {
             likes_count: likesCountMap.get(post.id) || 0,
             comments_count: commentsCountMap.get(post.id) || 0,
             isLiked: userLikesSet.has(post.id),
+            isBookmarked: userBookmarksSet.has(post.id),
           }
         })
 
@@ -280,6 +296,19 @@ export const usePostStore = defineStore('posts', () => {
         .eq('post_id', postId)
         .eq('status', 'approved')
 
+      // Fetch bookmark status
+      let isBookmarked = false
+      if (currentUserId.value) {
+        const { data: bookmarkData } = await supabase
+          .from('post_bookmarks')
+          .select('id')
+          .eq('user_id', currentUserId.value)
+          .eq('post_id', postId)
+          .single()
+
+        isBookmarked = !!bookmarkData
+      }
+
       const isLiked = currentUserId.value
         ? (likesData?.some((like: any) => like.user_id === currentUserId.value) || false)
         : false
@@ -305,6 +334,7 @@ export const usePostStore = defineStore('posts', () => {
         likes_count: likesData?.length || 0,
         comments_count: commentsData?.length || 0,
         isLiked,
+        isBookmarked,
       }
 
       return post
@@ -327,8 +357,11 @@ export const usePostStore = defineStore('posts', () => {
     error.value = null
 
     try {
-      // Verificar palavras proibidas
-      const bannedCheck = await checkBannedWords(input.conteudo)
+      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
+      const sanitizedContent = extractPlainText(input.conteudo)
+
+      // Verificar palavras proibidas no conteúdo sanitizado
+      const bannedCheck = await checkBannedWords(sanitizedContent)
 
       if (bannedCheck.found) {
         // Bloquear qualquer palavra ofensiva encontrada
@@ -349,7 +382,7 @@ export const usePostStore = defineStore('posts', () => {
         .insert({
           user_id: currentUserId.value,
           tipo: input.tipo,
-          conteudo: input.conteudo,
+          conteudo: sanitizedContent, // Salvar apenas texto puro
           image_url: input.image_url || null,
           status: postStatus,
         })
@@ -416,10 +449,239 @@ export const usePostStore = defineStore('posts', () => {
       // Award points for creating a post (First time only)
       await gamificationStore.awardPoints(10, 'post', data.id, 'Primeiro post criado!', true)
 
+      // Notificar admins se post estiver pendente
+      if (newPost.status === 'pending') {
+        const authorName = profileData?.nome || 'Usuário'
+        // Chamar notificação de forma assíncrona sem bloquear
+        import('@/lib/emails').then(({ notifyAdminsNewPost }) => {
+          notifyAdminsNewPost(
+            newPost.id,
+            newPost.conteudo,
+            authorName,
+            newPost.tipo
+          ).catch(err => {
+            console.error('Failed to notify admins about new post:', err)
+          })
+        })
+      }
+
       return newPost
     } catch (err: any) {
       error.value = err.message
       console.error('Error creating post:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Edit post (with time limit validation)
+  async function editPost(postId: string, newContent: string): Promise<Post> {
+    if (!currentUserId.value) {
+      throw new Error('User must be authenticated to edit posts')
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      // First, fetch the post to check ownership and time limit
+      const { data: postData, error: fetchError } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('id', postId)
+        .single()
+
+      if (fetchError) throw fetchError
+
+      // Check if user is the author
+      if (postData.user_id !== currentUserId.value) {
+        throw new Error('You can only edit your own posts')
+      }
+
+      // Check time limit (5 minutes = 300000 ms)
+      const createdAt = new Date(postData.created_at).getTime()
+      const now = Date.now()
+      const timeDiff = now - createdAt
+      const fiveMinutes = 5 * 60 * 1000
+
+      if (timeDiff > fiveMinutes) {
+        throw new Error('Posts can only be edited within 5 minutes of creation')
+      }
+
+      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
+      const sanitizedContent = extractPlainText(newContent)
+
+      // Check banned words on sanitized content
+      const bannedCheck = await checkBannedWords(sanitizedContent)
+      if (bannedCheck.found) {
+        throw new Error('Your post contains banned words. Please revise the content.')
+      }
+
+      // Update post
+      const { data, error: updateError } = await supabase
+        .from('posts')
+        .update({
+          conteudo: sanitizedContent, // Salvar apenas texto puro
+          edited_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', postId)
+        .select('*')
+        .single()
+
+      if (updateError) throw updateError
+
+      // Fetch profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id, nome, area_atuacao, avatar_url')
+        .eq('id', data.user_id)
+        .single()
+
+      const updatedPost: Post = {
+        id: data.id,
+        user_id: data.user_id,
+        tipo: data.tipo,
+        conteudo: data.conteudo,
+        fixado: data.fixado,
+        image_url: data.image_url || undefined,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        edited_at: data.edited_at,
+        status: data.status || 'approved',
+        author: profileData ? {
+          id: profileData.id,
+          nome: profileData.nome || 'Usuário',
+          area_atuacao: profileData.area_atuacao,
+          avatar_url: profileData.avatar_url,
+        } : {
+          id: data.user_id,
+          nome: 'Usuário',
+        },
+      }
+
+      // Update in local state
+      const index = posts.value.findIndex(p => p.id === postId)
+      if (index !== -1) {
+        posts.value[index] = { ...posts.value[index], ...updatedPost }
+      }
+
+      // Log da ação
+      logAdminAction(currentUserId.value, {
+        action: 'user_edit_post',
+        targetId: postId,
+        targetType: 'post',
+        details: { edited_at: data.edited_at }
+      })
+
+      return updatedPost
+    } catch (err: any) {
+      error.value = err.message
+      console.error('Error editing post:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Edit comment (with time limit validation)
+  async function editComment(commentId: string, newContent: string): Promise<Comment> {
+    if (!currentUserId.value) {
+      throw new Error('User must be authenticated to edit comments')
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      // First, fetch the comment to check ownership and time limit
+      const { data: commentData, error: fetchError } = await supabase
+        .from('post_comments')
+        .select('*')
+        .eq('id', commentId)
+        .single()
+
+      if (fetchError) throw fetchError
+
+      // Check if user is the author
+      if (commentData.user_id !== currentUserId.value) {
+        throw new Error('You can only edit your own comments')
+      }
+
+      // Check time limit (5 minutes = 300000 ms)
+      const createdAt = new Date(commentData.created_at).getTime()
+      const now = Date.now()
+      const timeDiff = now - createdAt
+      const fiveMinutes = 5 * 60 * 1000
+
+      if (timeDiff > fiveMinutes) {
+        throw new Error('Comments can only be edited within 5 minutes of creation')
+      }
+
+      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
+      const sanitizedContent = extractPlainText(newContent)
+
+      // Check banned words on sanitized content
+      const bannedCheck = await checkBannedWords(sanitizedContent)
+      if (bannedCheck.found) {
+        throw new Error('Your comment contains banned words. Please revise the content.')
+      }
+
+      // Update comment
+      const { data, error: updateError } = await supabase
+        .from('post_comments')
+        .update({
+          conteudo: sanitizedContent, // Salvar apenas texto puro
+          edited_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', commentId)
+        .select('*')
+        .single()
+
+      if (updateError) throw updateError
+
+      // Fetch profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('id, nome, area_atuacao, avatar_url')
+        .eq('id', data.user_id)
+        .single()
+
+      const updatedComment: Comment = {
+        id: data.id,
+        post_id: data.post_id,
+        user_id: data.user_id,
+        conteudo: data.conteudo,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        edited_at: data.edited_at,
+        status: data.status || 'approved',
+        author: profileData ? {
+          id: profileData.id,
+          nome: profileData.nome || 'Usuário',
+          area_atuacao: profileData.area_atuacao,
+          avatar_url: profileData.avatar_url,
+        } : {
+          id: data.user_id,
+          nome: 'Usuário',
+        },
+      }
+
+      // Update in local state (find post and update comment)
+      const post = posts.value.find(p => p.id === data.post_id)
+      if (post && post.comments) {
+        const commentIndex = post.comments.findIndex(c => c.id === commentId)
+        if (commentIndex !== -1) {
+          post.comments[commentIndex] = updatedComment
+        }
+      }
+
+      return updatedComment
+    } catch (err: any) {
+      error.value = err.message
+      console.error('Error editing comment:', err)
       throw err
     } finally {
       loading.value = false
@@ -651,8 +913,11 @@ export const usePostStore = defineStore('posts', () => {
     }
 
     try {
-      // Verificar palavras proibidas
-      const bannedCheck = await checkBannedWords(input.conteudo)
+      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
+      const sanitizedContent = extractPlainText(input.conteudo)
+
+      // Verificar palavras proibidas no conteúdo sanitizado
+      const bannedCheck = await checkBannedWords(sanitizedContent)
 
       if (bannedCheck.found) {
         // Bloquear qualquer palavra ofensiva encontrada
@@ -664,7 +929,7 @@ export const usePostStore = defineStore('posts', () => {
         .insert({
           post_id: input.post_id,
           user_id: currentUserId.value,
-          conteudo: input.conteudo,
+          conteudo: sanitizedContent, // Salvar apenas texto puro
         })
         .select('*')
         .single()
@@ -769,6 +1034,128 @@ export const usePostStore = defineStore('posts', () => {
     }
   }
 
+  // Fetch bookmarked posts
+  async function fetchBookmarkedPosts() {
+    if (!currentUserId.value) {
+      return []
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      // First get bookmarked post IDs
+      const { data: bookmarksData, error: bookmarksError } = await supabase
+        .from('post_bookmarks')
+        .select('post_id')
+        .eq('user_id', currentUserId.value)
+        .order('created_at', { ascending: false })
+
+      if (bookmarksError) throw bookmarksError
+
+      if (!bookmarksData || bookmarksData.length === 0) {
+        return []
+      }
+
+      const postIds = bookmarksData.map((b) => b.post_id)
+
+      // Fetch posts using the existing fetchPosts logic but with specific IDs
+      // We'll use a custom query here
+      const { data: postsData, error: postsError } = await supabase
+        .from('posts')
+        .select('*')
+        .in('id', postIds)
+        .order('created_at', { ascending: false })
+
+      if (postsError) throw postsError
+
+      if (!postsData || postsData.length === 0) {
+        return []
+      }
+
+      // Fetch profiles, likes, comments, and bookmarks (similar to fetchPosts)
+      const userIds = [...new Set(postsData.map((p: any) => p.user_id))]
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, nome, area_atuacao, avatar_url, status')
+        .in('id', userIds)
+
+      const profilesMap = new Map<string, any>()
+      profilesData?.forEach((profile: any) => {
+        profilesMap.set(profile.id, profile)
+      })
+
+      const postIdsArray = postsData.map((p: any) => p.id)
+
+      const { data: likesData } = await supabase
+        .from('post_likes')
+        .select('post_id, user_id')
+        .in('post_id', postIdsArray)
+
+      const { data: commentsData } = await supabase
+        .from('post_comments')
+        .select('post_id')
+        .in('post_id', postIdsArray)
+        .eq('status', 'approved')
+
+      const likesCountMap = new Map<string, number>()
+      const commentsCountMap = new Map<string, number>()
+      const userLikesSet = new Set<string>()
+
+      likesData?.forEach((like: any) => {
+        const count = likesCountMap.get(like.post_id) || 0
+        likesCountMap.set(like.post_id, count + 1)
+        if (like.user_id === currentUserId.value) {
+          userLikesSet.add(like.post_id)
+        }
+      })
+
+      commentsData?.forEach((comment: any) => {
+        const count = commentsCountMap.get(comment.post_id) || 0
+        commentsCountMap.set(comment.post_id, count + 1)
+      })
+
+      // All posts are bookmarked by definition
+      const userBookmarksSet = new Set(postIds)
+
+      const transformedPosts: Post[] = postsData.map((post: any) => {
+        const profile = profilesMap.get(post.user_id)
+        return {
+          id: post.id,
+          user_id: post.user_id,
+          tipo: post.tipo,
+          conteudo: post.conteudo,
+          fixado: post.fixado,
+          image_url: post.image_url || undefined,
+          created_at: post.created_at,
+          updated_at: post.updated_at,
+          status: post.status || 'approved',
+          author: profile ? {
+            id: profile.id,
+            nome: profile.nome || 'Usuário',
+            area_atuacao: profile.area_atuacao,
+            avatar_url: profile.avatar_url,
+          } : {
+            id: post.user_id,
+            nome: 'Usuário',
+          },
+          likes_count: likesCountMap.get(post.id) || 0,
+          comments_count: commentsCountMap.get(post.id) || 0,
+          isLiked: userLikesSet.has(post.id),
+          isBookmarked: userBookmarksSet.has(post.id),
+        }
+      })
+
+      return transformedPosts
+    } catch (err: any) {
+      error.value = err.message
+      console.error('Error fetching bookmarked posts:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Reset store
   function reset() {
     posts.value = []
@@ -795,6 +1182,9 @@ export const usePostStore = defineStore('posts', () => {
     fetchComments,
     addComment,
     deleteComment,
+    editPost,
+    editComment,
+    fetchBookmarkedPosts,
     reset,
   }
 })

@@ -1,8 +1,16 @@
 <template>
-  <section class="py-16 sm:py-20 md:py-24 bg-slate-900">
+  <section 
+    id="testimonials"
+    ref="sectionRef"
+    class="py-16 sm:py-20 md:py-24 bg-slate-900 dark:bg-background-dark overflow-hidden"
+  >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Title -->
-      <div class="text-center mb-12 md:mb-16">
+      <div 
+        ref="headerRef"
+        class="text-center mb-12 md:mb-16 section-reveal"
+        :class="{ 'revealed': headerVisible }"
+      >
         <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4">
           {{ t('partners.testimonials.title') }}
         </h2>
@@ -10,11 +18,16 @@
       </div>
 
       <!-- Testimonials Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      <div 
+        ref="gridRef"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+      >
         <div
           v-for="(testimonial, index) in placeholderTestimonials"
           :key="index"
-          class="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-primary/50 transition-all duration-300 hover:shadow-xl"
+          class="testimonial-card bg-slate-800 dark:bg-surface-lighter rounded-xl p-6 border border-slate-700 dark:border-slate-800 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 group"
+          :class="{ 'revealed': cardsVisible }"
+          :style="{ transitionDelay: `${index * 100}ms` }"
         >
           <!-- Quote Icon -->
           <div class="mb-4">
@@ -47,9 +60,19 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+
+const sectionRef = ref<HTMLElement | null>(null)
+const headerRef = ref<HTMLElement | null>(null)
+const gridRef = ref<HTMLElement | null>(null)
+
+const headerVisible = ref(false)
+const cardsVisible = ref(false)
+
+let observer: IntersectionObserver | null = null
 
 // Placeholder testimonials - será substituído por dados reais depois
 const placeholderTestimonials = [
@@ -75,5 +98,84 @@ const placeholderTestimonials = [
     avatar: 'person',
   },
 ]
+
+onMounted(() => {
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (entry.target === headerRef.value) {
+            headerVisible.value = true
+          }
+          if (entry.target === gridRef.value) {
+            cardsVisible.value = true
+          }
+          observer?.unobserve(entry.target)
+        }
+      })
+    },
+    { threshold: 0.15 }
+  )
+
+  if (headerRef.value) observer.observe(headerRef.value)
+  if (gridRef.value) observer.observe(gridRef.value)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
+})
 </script>
+
+<style scoped>
+/* Section reveal animation */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  filter: blur(8px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.section-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Testimonial card staggered animation with blur */
+.testimonial-card {
+  opacity: 0;
+  transform: translateY(40px) scale(0.95);
+  filter: blur(8px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+.testimonial-card.revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* Testimonial card hover effect */
+.testimonial-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .section-reveal,
+  .testimonial-card {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+}
+</style>
 

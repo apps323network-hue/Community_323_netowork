@@ -215,7 +215,7 @@ const router = useRouter()
 const adminStore = useAdminStore()
 const authStore = useAuthStore()
 
-const activeTab = ref<'pending' | 'all' | 'removed'>('pending')
+const activeTab = ref<'pending' | 'all' | 'hidden' | 'removed' | 'spam'>('all')
 const showModerationModal = ref(false)
 const showPostViewModal = ref(false)
 const showCreateModal = ref(false)
@@ -236,20 +236,32 @@ const uploadingImage = ref(false)
 
 const tabs = computed(() => [
   {
+    id: 'all' as const,
+    label: 'Todos',
+  },
+  {
     id: 'pending' as const,
     label: 'Pendentes',
     badge: adminStore.postStats.pending > 0 ? adminStore.postStats.pending : undefined,
     badgeClass: 'bg-yellow-500/20 text-yellow-400',
   },
   {
-    id: 'all' as const,
-    label: 'Todos',
+    id: 'hidden' as const,
+    label: 'Ocultos',
+    badge: adminStore.postStats.hidden > 0 ? adminStore.postStats.hidden : undefined,
+    badgeClass: 'bg-orange-500/20 text-orange-400',
   },
   {
     id: 'removed' as const,
     label: 'Removidos',
     badge: adminStore.postStats.removed > 0 ? adminStore.postStats.removed : undefined,
     badgeClass: 'bg-red-500/20 text-red-400',
+  },
+  {
+    id: 'spam' as const,
+    label: 'Spam',
+    badge: adminStore.postStats.spam > 0 ? adminStore.postStats.spam : undefined,
+    badgeClass: 'bg-indigo-500/20 text-indigo-400',
   },
 ])
 
@@ -264,7 +276,7 @@ const displayedPosts = computed(() => {
   return adminStore.allPosts.filter((p: AdminPost) => p.status === activeTab.value)
 })
 
-async function handleTabChange(tabId: 'pending' | 'all' | 'removed') {
+async function handleTabChange(tabId: 'pending' | 'all' | 'hidden' | 'removed' | 'spam') {
   activeTab.value = tabId
 
   if (tabId === 'pending') {
@@ -478,6 +490,8 @@ onMounted(async () => {
     return
   }
 
+  // Carregar dados iniciais baseado na aba padrão
+  await adminStore.fetchAllPosts() // Aba padrão é "Todos"
   await adminStore.fetchPendingPosts()
   await adminStore.fetchPostStats()
 })

@@ -137,35 +137,66 @@ shadow-lg dark:shadow-xl
 
 ### 3. EVENTOS - Funcionalidades e Correções
 
-#### 3.1 Badge de Eventos Pendentes
+#### 3.1 Sistema de Destaque (Featured Event)
+- ✅ **Migração de Banco**: Campo `destaque` já existia no schema inicial (`001_initial_schema.sql`)
+- ✅ **Função Toggle**: Implementada `toggleEventDestaque` em `src/stores/admin.ts`
+  - Permite marcar/desmarcar evento como destaque
+  - Garante que apenas um evento pode estar em destaque por vez
+  - Ao marcar um evento como destaque, desmarca automaticamente todos os outros
+- ✅ **Lógica de Prioridade**: Implementada em `src/stores/events.ts` na função `fetchFeaturedEvent()`
+  - **Prioridade 1**: Eventos com `destaque = true` e `status = 'approved'`
+  - **Prioridade 2 (Fallback)**: Próximo evento futuro se não houver destaque
+  - Filtra corretamente para não-admins (apenas aprovados)
+  - Permite criadores verem seus próprios eventos pending em destaque
+- ✅ **UI no Admin**: Botão "Definir Destaque" em `src/components/admin/AdminEventCard.vue`
+  - Visual diferenciado quando evento está em destaque (gradiente neon)
+  - Ícone de estrela preenchida/vazia
+  - Texto dinâmico: "Em Destaque" / "Definir Destaque"
+- ✅ **Integração Completa**: 
+  - Exposição via `src/composables/useAdmin.ts`
+  - Handler `handleToggleDestaque` em `src/views/admin/AdminEvents.vue`
+  - Emit `toggle-destaque` em `src/components/admin/AdminEventList.vue`
+
+#### 3.2 Badge de Eventos Pendentes
 - ✅ **Implementação**: Adicionado badge no `AdminSidebar.vue` mostrando quantidade de eventos pendentes
 - **Localização**: Similar ao badge de posts pendentes
 - **Fonte**: `adminStore.stats.pending`
+- **Motivação**: Incentiva admins a revisar eventos pendentes
 
-#### 3.2 Deletar Eventos no Admin
+#### 3.3 Deletar Eventos no Admin
+- ✅ **Bug Corrigido**: Admin não conseguia deletar eventos
 - ✅ **Implementação**: Adicionada funcionalidade completa para deletar eventos
   - Função `deleteEvent` em `src/stores/admin.ts`
+  - Remove evento do banco de dados
+  - Atualiza listas locais (`pendingEvents` e `allEvents`)
+  - Atualiza estatísticas automaticamente
   - Exposição via `src/composables/useAdmin.ts`
   - Botão de deletar em `src/components/admin/AdminEventCard.vue`
   - Handler `handleDelete` em `src/views/admin/AdminEvents.vue`
   - Modal customizado substituindo `confirm()` nativo
 
-#### 3.3 Modal de Confirmação Customizado
+#### 3.4 Modal de Confirmação Customizado
 - ✅ **Substituição**: Removido `confirm()` nativo do navegador
 - **Implementação**: Modal customizado usando componente `Modal` existente
 - **Aplicado em**: Deletar eventos no admin dashboard
+- **Benefícios**: Melhor UX, design consistente com o sistema
 
 ---
 
 ### 4. POSTS - Correções e Melhorias
 
 #### 4.1 Deletar Posts pelo Admin
-- ✅ **Problema**: Admin não conseguia deletar posts (pendentes ou aprovados)
-- **Solução**: Corrigida função `removePost` em `src/stores/admin.ts`
+- ✅ **Bug Crítico Corrigido**: Admin não conseguia deletar posts (pendentes ou aprovados)
+- ✅ **Problema Identificado**: Função `removePost` não atualizava corretamente o estado local
+- ✅ **Solução Implementada**: 
+  - Corrigida função `removePost` em `src/stores/admin.ts`
   - Atualização correta do array `allPosts` no estado local
   - Posts removidos desaparecem de todas as tabs (não apenas 'pending')
-  - Correções similares em `hidePost` e `markAsSpam`
-  - Correção de tipos: `rejection_reason` de `null` para `undefined`
+  - Atualização do status para 'removed' mantendo o post na lista
+  - Correções similares aplicadas em `hidePost` e `markAsSpam`
+  - Correção de tipos: `rejection_reason` de `null` para `undefined` (TypeScript)
+  - Adicionado suporte para strikes ao usuário quando solicitado
+  - Log de ação administrativa implementado
 
 ---
 
@@ -288,7 +319,31 @@ shadow-lg dark:shadow-xl
 #### 5.6 Integração de Imagens
 - ✅ Imagens de eventos fornecidas pelo usuário integradas
 - ✅ Placeholders para galeria e vídeos
-- ✅ Logo utilizada nos emails
+- ✅ Logo utilizada nos emails (URL do Supabase Storage)
+
+### 5.8 Template de Email do Supabase
+- ✅ **Template de Confirmação de Signup**: Criado template HTML elaborado para substituir o template simples do Supabase
+  - Design consistente com outros emails do sistema
+  - Header com logo da 323 Network
+  - Estilo profissional com cores neon
+  - Footer padronizado
+  - Variável `{{ .ConfirmationURL }}` corretamente configurada
+  - Instruções para configuração no Supabase Dashboard
+  - Template fornecido para ser configurado em: Authentication > Email Templates > Confirm signup
+
+### 5.9 Configuração SMTP
+- ✅ **Configuração no Supabase**: 
+  - Edge Function `send-email` configurada para usar SMTP
+  - Variáveis de ambiente necessárias:
+    - `SMTP_HOST`
+    - `SMTP_PORT`
+    - `SMTP_USER`
+    - `SMTP_PASS`
+    - `SMTP_FROM_EMAIL`
+    - `SMTP_FROM_NAME` (opcional, padrão: "323 Network")
+  - Email de remetente configurado como `apps323network@gmail.com`
+  - Função `sendPartnerContactEmail` utiliza a mesma Edge Function
+  - Template de email padronizado com logo e design consistente
 
 #### 5.7 Funcionalidade de Email
 - ✅ **Função de Envio**: `sendPartnerContactEmail` em `src/lib/emails.ts`
@@ -310,6 +365,41 @@ shadow-lg dark:shadow-xl
   - Removido import dinâmico desnecessário
   - Uso do import estático de `supabase`
   - Edge Function `send-email` não requer autenticação
+
+#### 5.8 Template de Email do Supabase
+- ✅ **Template de Confirmação de Signup**: Criado template HTML elaborado para substituir o template simples do Supabase
+  - Design consistente com outros emails do sistema
+  - Header com logo da 323 Network (URL do Supabase Storage)
+  - Estilo profissional com cores neon
+  - Footer padronizado "Building bridges, creating opportunities"
+  - Variável `{{ .ConfirmationURL }}` corretamente configurada (com espaço antes do ponto)
+  - Instruções fornecidas para configuração no Supabase Dashboard
+  - Localização: Authentication > Email Templates > Confirm signup
+  - Template fornecido em formato HTML inline para copiar/colar
+
+#### 5.9 Configuração SMTP
+- ✅ **Edge Function `send-email`**: 
+  - Configurada para usar SMTP para envio de emails
+  - Localização: `supabase/functions/send-email/index.ts`
+  - Suporta CORS para chamadas públicas (formulário de contato)
+  
+- ✅ **Variáveis de Ambiente Necessárias** (configuradas no Supabase Dashboard):
+  - `SMTP_HOST` - Servidor SMTP (ex: smtp.gmail.com)
+  - `SMTP_PORT` - Porta SMTP (ex: 587 para TLS)
+  - `SMTP_USER` - Usuário do email
+  - `SMTP_PASS` - Senha do email
+  - `SMTP_FROM_EMAIL` - Email remetente (padrão: usa SMTP_USER se não definido)
+  - `SMTP_FROM_NAME` - Nome do remetente (padrão: "323 Network")
+  
+- ✅ **Email de Remetente Configurado**:
+  - Email principal: `apps323network@gmail.com`
+  - Nome do remetente: "323 Network - Parceiros" (para formulário de contato)
+  
+- ✅ **Templates Padronizados**:
+  - Todos os emails usam o mesmo design base
+  - Logo da 323 Network no header
+  - Cores e estilos consistentes
+  - Footer padronizado
 
 ---
 
@@ -338,6 +428,8 @@ shadow-lg dark:shadow-xl
 - **1 layout público**
 - **1 view pública**
 - **1 função de email** (sendPartnerContactEmail)
+- **2 templates de email HTML** (reset password PT/EN)
+- **1 documento de análise** (ANALISE_DARK_LIGHT_MODE.md)
 
 ### Arquivos Modificados
 - **~30+ componentes administrativos** (harmonização dark/light)
@@ -386,15 +478,17 @@ shadow-lg dark:shadow-xl
 
 ### Dashboard Admin
 1. ✅ Harmonização completa dark/light mode
-2. ✅ Badge de eventos pendentes
-3. ✅ Deletar eventos
-4. ✅ Modal customizado para confirmações
-5. ✅ Correção de deletar posts pelo admin
+2. ✅ Sistema de destaque de eventos (toggle destaque)
+3. ✅ Badge de eventos pendentes
+4. ✅ Deletar eventos (bug corrigido)
+5. ✅ Modal customizado para confirmações
+6. ✅ Correção de deletar posts pelo admin (bug crítico corrigido)
 
 ### Home Page
-1. ✅ Correção de evento em destaque
+1. ✅ Correção de evento em destaque (prioridade correta)
 2. ✅ Remoção de botão deletar desnecessário
 3. ✅ Evento destacado aparece na lista
+4. ✅ Lógica de fallback para próximo evento se não houver destaque
 
 ### Landing Page Pública
 1. ✅ Estrutura completa (13 seções)
@@ -404,6 +498,14 @@ shadow-lg dark:shadow-xl
 5. ✅ Formulário de contato funcional
 6. ✅ Envio de email integrado
 7. ✅ Integração de imagens
+8. ✅ Template de email padronizado
+
+### Email System
+1. ✅ Template de confirmação de signup para Supabase
+2. ✅ Configuração SMTP documentada
+3. ✅ Edge Function `send-email` funcional
+4. ✅ Função `sendPartnerContactEmail` implementada
+5. ✅ Templates HTML padronizados (logo, design consistente)
 
 ---
 
@@ -411,19 +513,52 @@ shadow-lg dark:shadow-xl
 
 1. ✅ `ANALISE_DARK_LIGHT_MODE.md` - Análise dos padrões de harmonização
 2. ✅ Este relatório completo
+3. ✅ Templates de email HTML (reset password PT/EN)
+4. ✅ Instruções para configuração de templates no Supabase
 
 ---
 
 ## 🐛 BUGS CORRIGIDOS
 
-1. ✅ Evento antigo aparecendo como destaque
-2. ✅ Botão deletar desnecessário no banner
-3. ✅ Evento destacado não aparecendo na lista
-4. ✅ Admin não conseguia deletar posts
-5. ✅ Erros de build no Vercel
-6. ✅ Erros de TypeScript
-7. ✅ Erro de módulo no ReportModal
-8. ✅ Import dinâmico desnecessário no email
+1. ✅ **Evento antigo aparecendo como destaque**
+   - Problema: Lógica de `fetchFeaturedEvent` não priorizava eventos com `destaque = true`
+   - Solução: Corrigida função para buscar primeiro eventos marcados como destaque
+
+2. ✅ **Botão deletar desnecessário no banner**
+   - Problema: Botão de deletar aparecia no banner de evento em destaque na home
+   - Solução: Removido botão e lógica associada de `EventCard.vue`
+
+3. ✅ **Evento destacado não aparecendo na lista**
+   - Problema: `displayedEvents` filtrava o evento destacado da lista principal
+   - Solução: Removida filtragem para permitir evento aparecer em ambos os lugares
+
+4. ✅ **Admin não conseguia deletar posts**
+   - Problema: Função `removePost` não atualizava corretamente o estado local
+   - Solução: Corrigida atualização de arrays locais e status
+
+5. ✅ **Admin não conseguia deletar eventos**
+   - Problema: Função `deleteEvent` não existia ou não estava acessível
+   - Solução: Implementada função completa com atualização de estado
+
+6. ✅ **Erros de build no Vercel**
+   - Problema: Variáveis não utilizadas (`route`, `UserChallenge`, `UserPoint`)
+   - Solução: Removidas variáveis não utilizadas
+
+7. ✅ **Erros de TypeScript**
+   - Problema: Tipos incompatíveis (`null` vs `undefined`, props não utilizados)
+   - Solução: Corrigidos tipos e removidos props não utilizados
+
+8. ✅ **Erro de módulo no ReportModal**
+   - Problema: `useAdminStore` não encontrado (cache do Vite)
+   - Solução: Limpeza de console.logs e cache do Vite
+
+9. ✅ **Import dinâmico desnecessário no email**
+   - Problema: Import dinâmico causando problemas
+   - Solução: Substituído por import estático
+
+10. ✅ **Eventos duplicados**
+    - Problema: Usuário clicava múltiplas vezes no botão criar evento
+    - Solução: Adicionado loading state e desabilitação do botão durante criação
 
 ---
 

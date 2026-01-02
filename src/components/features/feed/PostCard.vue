@@ -37,6 +37,15 @@
               <span class="material-icons-outlined text-[10px] mr-1">schedule</span>
               Pendente
             </Badge>
+            <!-- Badge de post editado -->
+            <Badge 
+              v-if="post.edited_at" 
+              variant="secondary" 
+              size="sm"
+            >
+              <span class="material-icons-outlined text-[10px] mr-1">edit</span>
+              {{ t('posts.edited') }}
+            </Badge>
           </div>
           <p class="text-xs text-gray-400">
             {{ authorRole }} • <span class="text-secondary">{{ formatTime(post.created_at) }}</span>
@@ -64,6 +73,15 @@
             class="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
             @click.stop
           >
+            <!-- Botão Editar (apenas para posts próprios e dentro da janela de 5 minutos) -->
+            <button
+              v-if="isOwnPost && canEditPost"
+              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary dark:text-secondary hover:bg-primary/10 dark:hover:bg-secondary/10 transition-colors text-left"
+              @click="handleEdit"
+            >
+              <span class="material-icons-outlined text-[20px]">edit</span>
+              {{ t('posts.editPost') }}
+            </button>
             <!-- Botão Deletar (apenas para posts próprios) -->
             <button
               v-if="isOwnPost"
@@ -152,9 +170,23 @@
           <span class="font-medium">{{ post.comments_count || 0 }}</span>
         </button>
       </div>
-      <button class="flex items-center gap-1.5 text-sm hover:text-white transition-colors" @click="$emit('share', post.id)">
-        <span class="material-icons-outlined">share</span>
-      </button>
+      <div class="flex gap-3">
+        <button
+          class="flex items-center gap-1.5 text-sm transition-colors group"
+          :class="[
+            post.isBookmarked ? 'text-primary dark:text-secondary' : 'hover:text-white',
+            { 'bookmark-animate': bookmarkAnimating }
+          ]"
+          @click="handleToggleBookmark"
+        >
+          <span 
+            class="material-icons-outlined group-hover:scale-110 transition-transform"
+            :class="{ 'bookmark-icon-animate': bookmarkAnimating }"
+          >
+            {{ post.isBookmarked ? 'bookmark' : 'bookmark_border' }}
+          </span>
+        </button>
+      </div>
     </div>
 
     <!-- Report Modal -->
@@ -163,6 +195,13 @@
       :item-type="'post'"
       :item-id="post.id"
       @reported="handleReportSubmitted"
+    />
+
+    <!-- Edit Post Modal -->
+    <EditPostModal
+      v-model="showEditModal"
+      :post="post"
+      @saved="handleEditSaved"
     />
 
     <!-- Comments Section -->
@@ -186,12 +225,17 @@ import DOMPurify from 'dompurify'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { usePosts } from '@/composables/usePosts'
+import { usePostBookmarks } from '@/composables/usePostBookmarks'
+import { usePostStore } from '@/stores/posts'
+import { formatMentions } from '@/lib/mentionParser'
+import { formatHashtags } from '@/lib/hashtagParser'
 import Card from '@/components/ui/Card.vue'
 import Avatar from '@/components/ui/Avatar.vue'
 import Badge from '@/components/ui/Badge.vue'
 import PostComment from './PostComment.vue'
 import ImageLightbox from '@/components/ui/ImageLightbox.vue'
 import ReportModal from './ReportModal.vue'
+import EditPostModal from './EditPostModal.vue'
 import { toast } from 'vue-sonner'
 import type { Post } from '@/types/posts'
 
@@ -208,19 +252,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'toggle-comments': [postId: string]
-  'share': [postId: string]
   'delete-comment': [commentId: string]
   'delete-post': [postId: string]
+  'like-toggled': [postId: string]
 }>()
 
 const authStore = useAuthStore()
 const { toggleLike, loadComments, deletePost } = usePosts()
+const { toggleBookmark, bookmarks: bookmarksSet } = usePostBookmarks()
 const commentsLoaded = ref(false)
+const bookmarkAnimating = ref(false)
 const showCommentsSection = ref(props.showComments)
 const showMenu = ref(false)
 const menuContainer = ref<HTMLElement | null>(null)
 const showImageLightbox = ref(false)
 const showReportModal = ref(false)
+const showEditModal = ref(false)
 
 const isOwnPost = computed(() => {
   const userId = authStore.user?.id
@@ -229,17 +276,6 @@ const isOwnPost = computed(() => {
   // Garantir que ambos sejam strings e fazer comparação estrita
   const result = userId && postUserId && String(userId).trim() === String(postUserId).trim()
   
-  // Debug temporário - remover depois
-  if (showMenu.value) {
-    console.log('[PostCard] Menu aberto - Debug:', {
-      userId,
-      postUserId,
-      isOwnPost: result,
-      shouldShowReport: !result,
-      postId: props.post.id
-    })
-  }
-  
   return result || false
 })
 
@@ -247,6 +283,18 @@ const isOwnPost = computed(() => {
 const isPendingPost = computed(() => {
   const result = isOwnPost.value && props.post.status === 'pending'
   return result
+})
+
+// Verificar se o post ainda pode ser editado (dentro de 5 minutos)
+const canEditPost = computed(() => {
+  if (!isOwnPost.value) return false
+  
+  const createdAt = new Date(props.post.created_at).getTime()
+  const now = Date.now()
+  const timeDiff = now - createdAt
+  const fiveMinutes = 5 * 60 * 1000
+  
+  return timeDiff <= fiveMinutes
 })
 
 // Computed for author display
@@ -278,8 +326,52 @@ const sanitizedContent = computed(() => {
 async function handleToggleLike() {
   try {
     await toggleLike(props.post.id)
+    emit('like-toggled', props.post.id)
   } catch (error) {
     console.error('Error toggling like:', error)
+  }
+}
+
+async function handleToggleBookmark() {
+  if (!authStore.user) {
+    toast.error(t('common.loginRequired') || 'Você precisa estar logado para salvar posts')
+    return
+  }
+
+  // Ativar animação
+  bookmarkAnimating.value = true
+  setTimeout(() => {
+    bookmarkAnimating.value = false
+  }, 600) // Duração da animação
+
+  try {
+    const wasBookmarked = props.post.isBookmarked || false
+    // Passar o estado atual do post para garantir sincronização
+    const success = await toggleBookmark(props.post.id, wasBookmarked)
+    if (success) {
+      // Update local post state
+      const postStore = usePostStore()
+      const postIndex = postStore.posts.findIndex(p => p.id === props.post.id)
+      if (postIndex !== -1) {
+        postStore.posts[postIndex].isBookmarked = !wasBookmarked
+      }
+      // Também atualizar o estado local do composable para sincronizar
+      if (wasBookmarked) {
+        // Remover do estado local
+        bookmarksSet.value.delete(props.post.id)
+      } else {
+        // Adicionar ao estado local
+        bookmarksSet.value.add(props.post.id)
+      }
+      toast.success(
+        !wasBookmarked 
+          ? (t('posts.bookmarkAdded') || 'Post salvo!') 
+          : (t('posts.bookmarkRemoved') || 'Post removido dos salvos')
+      )
+    }
+  } catch (error) {
+    console.error('Error toggling bookmark:', error)
+    toast.error(t('posts.bookmarkError') || 'Erro ao salvar post')
   }
 }
 
@@ -332,6 +424,17 @@ function handleReportSubmitted() {
   showReportModal.value = false
 }
 
+function handleEdit() {
+  showEditModal.value = true
+  showMenu.value = false
+}
+
+function handleEditSaved() {
+  showEditModal.value = false
+  // Post will be updated in store automatically
+}
+
+
 function handleClickOutside(event: MouseEvent) {
   if (menuContainer.value && !menuContainer.value.contains(event.target as Node)) {
     showMenu.value = false
@@ -372,6 +475,28 @@ onUnmounted(() => {
 
 :deep(.rich-text-content em) {
   @apply italic;
+}
+
+/* Animação do bookmark */
+@keyframes bookmarkBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.bookmark-icon-animate {
+  animation: bookmarkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.bookmark-animate {
+  transform: scale(0.95);
+  transition: transform 0.1s ease-out;
 }
 </style>
 
