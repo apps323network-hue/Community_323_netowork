@@ -37,7 +37,7 @@ onMounted(async () => {
     }
 
     // Validar token e criar sessão
-    const { data, error } = await supabase.auth.setSession({
+    const { error } = await supabase.auth.setSession({
       access_token: token,
       refresh_token: '', // Será gerado automaticamente
     })
