@@ -36,3 +36,4 @@ CREATE POLICY "Users can update own profile or admin can update any"
   );
 
 
+

@@ -87,7 +87,7 @@ Após configurar, o erro deve desaparecer. Se ainda aparecer:
 ```env
 # .env.local
 VITE_SUPABASE_URL=https://abcdefghijklmnop.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG1ub3AiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNjIzOTAyMiwiZXhwIjoxOTMxODE1MDIyfQ.exemplo_de_chave_aqui
+VITE_SUPABASE_ANON_KEY=[OBTER_NO_DASHBOARD_SUPABASE]
 ```
 
 ---

@@ -312,7 +312,7 @@ export async function sendPartnerContactEmail(formData: {
   // Chamar a Edge Function (a função send-email não requer autenticação)
   const { data, error } = await supabase.functions.invoke('send-email', {
     body: { 
-      to: 'apps323network@gmail.com',
+      to: 'admin@323network.com',
       subject,
       html,
       fromName: '323 Network - Parceiros'

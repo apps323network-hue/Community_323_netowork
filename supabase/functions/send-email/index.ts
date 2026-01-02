@@ -33,8 +33,12 @@ serve(async (req) => {
         }
 
         const smtpPort = Number(smtpPortStr)
+        
+        // Determinar se deve usar TLS ou SSL baseado na porta
+        const useTls = smtpPort === 587 || smtpPort === 25
+        const useSsl = smtpPort === 465
 
-        console.log(`Attempting to send email to ${to} via ${smtpHost}:${smtpPort}`)
+        console.log(`Attempting to send email to ${to} via ${smtpHost}:${smtpPort} (TLS: ${useTls}, SSL: ${useSsl})`)
 
         const client = new SmtpClient()
 
@@ -43,6 +47,8 @@ serve(async (req) => {
             port: smtpPort,
             username: smtpUser,
             password: smtpPass,
+            tls: useTls,
+            // SSL é tratado automaticamente pela biblioteca quando a porta é 465
         })
 
         await client.send({

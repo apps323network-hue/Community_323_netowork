@@ -66,6 +66,7 @@
         "dashboardAdmin": "Dashboard Admin",
         "challenges": "Desafios",
         "ranking": "Ranking",
+        "americanDream": "American Dream",
         "logout": "Sair"
     },
     "auth": {
@@ -87,6 +88,12 @@
         "registerSubtitle": "Crie sua conta e comece a expandir sua rede.",
         "firstName": "Nome",
         "lastName": "Sobrenome",
+        "phone": "Telefone",
+        "phonePlaceholder": "(opcional) Ex: +1 555 123 4567",
+        "callback": {
+            "processing": "Processando autenticação...",
+            "pleaseWait": "Por favor, aguarde"
+        },
         "iAm": "Eu sou...",
         "selectPlaceholder": "Selecione...",
         "createAccount": "Criar Conta",
@@ -840,24 +847,25 @@
             "noVideos": "Nenhum vídeo disponível no momento"
         },
         "benefits": {
-            "title": "Por Que Patrocinar a 323 Network?",
+            "title": "Por Que Patrocinar a 323 Network Show?",
+            "subtitle": "American Dream",
             "description": "Alcance um público qualificado e engajado com alto potencial de conversão",
             "items": {
-                "niche": {
-                    "title": "100% Público Nicho",
-                    "description": "Brasileiros nos EUA ou com forte intenção de vir."
+                "attention": {
+                    "title": "Attention (Alcance de Mídia)",
+                    "description": "Instagram, YouTube, X e outras plataformas. Alcance total: 10M atual. Projeção: 50M no próximo trimestre, 100M no próximo ano (projeção/meta, não atual)."
                 },
-                "purchasing": {
-                    "title": "Alto Poder de Compra",
-                    "description": "Audiência com poder de compra acima da média, muitos já empreendedores ou em transição de carreira."
+                "access": {
+                    "title": "Access (Eventos)",
+                    "description": "2-3 eventos por semana. 50-100 participantes por evento. Estes são mentees (alta intenção, não público aleatório)."
                 },
-                "regular": {
-                    "title": "Eventos Regulares",
-                    "description": "Eventos regulares ao longo do ano, gerando exposição consistente da marca."
+                "immersion": {
+                    "title": "Immersion (Viagens de Campo de 3 Dias)",
+                    "description": "Categoria premium de patrocínio: 3 dias de exposição repetida, oportunidades de conteúdo (clipes diários, entrevistas, bastidores)."
                 },
-                "activation": {
-                    "title": "Possibilidades de Ativação",
-                    "description": "Registros, cupons, QR codes, links e ofertas exclusivas."
+                "authority": {
+                    "title": "Authority (Universidades/Colégios Parceiros)",
+                    "description": "Este é o seu motor de confiança. Patrocinadores adoram proximidade com instituições."
                 }
             }
         },

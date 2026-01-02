@@ -61,6 +61,12 @@ const routes: RouteRecordRaw[] = [
     // Não usar requiresGuest pois o Supabase cria uma sessão temporária durante recovery
   },
   {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: () => import('@/views/AuthCallback.vue'),
+    // Página pública - não requer autenticação
+  },
+  {
     path: '/parceiros',
     name: 'PartnersLanding',
     component: () => import('@/views/public/PartnersLanding.vue'),

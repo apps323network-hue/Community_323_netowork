@@ -57,6 +57,84 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     error.value = null
     try {
+      // ✅ NOVO: Se veio do American Dream, usar Edge Function para confirmar email automaticamente
+      if (userData?.source === 'american-dream') {
+        console.log('[SSO] ============================================')
+        console.log('[SSO] REGISTRO VINDO DO AMERICAN DREAM')
+        console.log('[SSO] ============================================')
+        console.log('[SSO] Criando usuário com email já confirmado...')
+        
+        // Chamar Edge Function para criar usuário com email confirmado
+        const { data: result, error: invokeError } = await supabase.functions.invoke('create-user-confirmed', {
+          body: {
+            email,
+            password,
+            user_metadata: {
+              ...userData,
+              source: 'american-dream',
+              phoneCountryCode: userData?.phoneCountryCode || 'BR',
+              nome: userData.nome || `${userData.firstName || ''} ${userData.lastName || ''}`.trim()
+            }
+          }
+        })
+        
+        if (invokeError) {
+          console.error('[SSO] ❌ Erro ao chamar Edge Function:', invokeError)
+          throw invokeError
+        }
+        
+        if (!result?.success || !result?.user) {
+          throw new Error('Falha ao criar usuário')
+        }
+        
+        user.value = result.user
+        
+        console.log('[SSO] ✅ Usuário criado com email confirmado:', result.user.id)
+        
+        // Se a Edge Function retornou token, usar ele
+        // Se não, fazer sign in para obter token
+        let accessToken = result.access_token
+        
+        if (!accessToken) {
+          // Fazer sign in para obter token
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          })
+          
+          if (signInError) {
+            console.error('[SSO] ❌ Erro ao fazer sign in:', signInError)
+            throw signInError
+          }
+          
+          accessToken = signInData.session?.access_token
+        }
+        
+        if (!accessToken) {
+          throw new Error('Falha ao obter token de sessão')
+        }
+        
+        console.log('[SSO] ✅ Token obtido, redirecionando para American Dream...')
+        
+        // Se tiver returnTo, redirecionar com token
+        if (userData?.returnTo && accessToken) {
+          const returnUrl = new URL(userData.returnTo)
+          returnUrl.searchParams.set('token', accessToken)
+          returnUrl.searchParams.set('email', email)
+          returnUrl.searchParams.set('name', userData.nome || `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || email.split('@')[0])
+          if (userData.phone) returnUrl.searchParams.set('phone', userData.phone)
+          if (userData.phoneCountryCode) returnUrl.searchParams.set('phoneCountryCode', userData.phoneCountryCode)
+          
+          console.log('[SSO] Redirecionando para:', returnUrl.toString())
+          window.location.href = returnUrl.toString()
+          return { success: true, redirected: true }
+        }
+        
+        return { success: true }
+      }
+      
+      // ✅ Fluxo normal (não veio do American Dream)
+      console.log('[SSO] Registro normal (não veio do American Dream)')
       const { data, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -67,68 +145,141 @@ export const useAuthStore = defineStore('auth', () => {
       if (authError) throw authError
       user.value = data.user
       
-      // Fallback: criar profile se trigger não funcionar
+      // O trigger handle_new_user() cria o profile automaticamente
+      // Não tentamos criar/atualizar manualmente para evitar erros de RLS
+      // Apenas sincronizamos com American Dream
       if (data.user) {
         const userName = userData?.nome || userData?.firstName 
           ? `${userData.firstName || ''} ${userData.lastName || ''}`.trim() 
           : email.split('@')[0]
         const userArea = userData?.role || null
         
-        try {
-          const { data: profileData } = await supabase.from('profiles').insert({
-            id: data.user.id,
+        console.log('[SSO] Usuário criado:', {
+          id: data.user.id,
+          email: data.user.email,
+          userName,
+          userArea,
+          phone: userData?.phone || null,
+          source: userData?.source || '323-network'
+        })
+        
+        // Sincronizar usuário com American Dream (não bloquear se falhar)
+        // Não esperamos o profile ser criado - a Edge Function pode criar o usuário mesmo assim
+        if (!userData?.source) {
+          // Só sincronizar se não vier do American Dream (evitar loop)
+          console.log('[SSO] ============================================')
+          console.log('[SSO] INICIANDO SINCRONIZAÇÃO COM AMERICAN DREAM')
+          console.log('[SSO] ============================================')
+          console.log('[SSO] Dados a serem sincronizados:', {
+            email,
             nome: userName,
-            area_atuacao: userArea,
-            plano: 'Free',
-            badge: 'Free',
-            status: 'pending', // Novo usuário sempre começa como pending
-          }).select().single()
+            phone: userData?.phone || null,
+            passwordLength: password.length
+          })
           
-          // Notificar admins sobre novo usuário
-          if (profileData?.status === 'pending') {
-            import('@/lib/emails').then(({ notifyAdminsNewUser }) => {
-              notifyAdminsNewUser(
+          try {
+            const { data: result, error: invokeError } = await supabase.functions.invoke('sync-user-to-american-dream', {
+              body: {
+                email: email,
+                password: password, // Senha em texto plano (só existe neste momento)
+                nome: userName,
+                phone: userData?.phone || null,
+              }
+            })
+            
+            if (invokeError) {
+              console.error('[SSO] ❌ Erro ao chamar Edge Function:', invokeError)
+              console.error('[SSO] Detalhes do erro:', {
+                message: invokeError.message,
+                name: invokeError.name,
+                stack: invokeError.stack
+              })
+            } else {
+              console.log('[SSO] ✅ Edge Function chamada com sucesso!')
+              console.log('[SSO] Resultado:', result)
+            }
+          } catch (err: any) {
+            console.error('[SSO] ❌ Exceção ao chamar Edge Function:', err)
+            console.error('[SSO] Tipo do erro:', typeof err)
+            console.error('[SSO] Mensagem:', err?.message)
+            console.error('[SSO] Stack:', err?.stack)
+            // Não bloquear signup se sincronização falhar
+          }
+          
+          console.log('[SSO] ============================================')
+          console.log('[SSO] SINCRONIZAÇÃO CONCLUÍDA')
+          console.log('[SSO] ============================================')
+        } else {
+          console.log('[SSO] ⏭️ Pulando sincronização (source:', userData.source, ')')
+        }
+        
+        // Notificar admins sobre novo usuário (em background, não bloqueia)
+        // Aguardar um pouco para o trigger criar o profile primeiro
+        // Tentar múltiplas vezes com retry
+        let retryCount = 0
+        const maxRetries = 3
+        const retryDelay = 1500 // 1.5 segundos
+        
+        const tryNotifyAdmins = async () => {
+          try {
+            console.log(`[SSO] Tentando buscar profile para notificar admins... (tentativa ${retryCount + 1}/${maxRetries})`)
+            
+            // Usar maybeSingle() ao invés de single() para evitar erro 406 quando não há resultado
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('status, created_at, area_atuacao')
+              .eq('id', data.user!.id)
+              .maybeSingle() // Retorna null se não houver resultado, sem erro
+            
+            if (profileError) {
+              console.log('[SSO] ⚠️ Erro ao buscar profile:', profileError.message)
+              // Se for erro de RLS ou não encontrado, tentar novamente
+              if (retryCount < maxRetries - 1 && (profileError.code === 'PGRST116' || profileError.message.includes('row-level security'))) {
+                retryCount++
+                setTimeout(tryNotifyAdmins, retryDelay)
+                return
+              }
+              console.log('[SSO] Não foi possível buscar profile após múltiplas tentativas')
+              return
+            }
+            
+            // Se profile não existe ainda, tentar novamente
+            if (!profileData) {
+              if (retryCount < maxRetries - 1) {
+                retryCount++
+                console.log(`[SSO] Profile ainda não criado, tentando novamente em ${retryDelay}ms...`)
+                setTimeout(tryNotifyAdmins, retryDelay)
+                return
+              } else {
+                console.log('[SSO] ⚠️ Profile não foi criado após múltiplas tentativas (pode ser que o trigger não tenha executado)')
+                return
+              }
+            }
+            
+            // Profile encontrado!
+            console.log('[SSO] ✅ Profile encontrado:', { status: profileData.status, id: data.user!.id })
+            
+            if (profileData.status === 'pending') {
+              console.log('[SSO] Profile com status pending, notificando admins...')
+              const { notifyAdminsNewUser } = await import('@/lib/emails')
+              await notifyAdminsNewUser(
                 data.user!.id,
                 userName,
                 userArea || undefined,
                 profileData.created_at || new Date().toISOString()
-              ).catch(err => {
-                console.error('Failed to notify admins about new user:', err)
-              })
-            })
-          }
-        } catch (profileError) {
-          // Profile já existe ou erro - tentar atualizar e verificar status
-          try {
-            const { data: existingProfile } = await supabase
-              .from('profiles')
-              .select('status, created_at, area_atuacao')
-              .eq('id', data.user.id)
-              .single()
-            
-            await supabase.from('profiles').update({
-              area_atuacao: userArea || null,
-              nome: userName,
-            }).eq('id', data.user.id)
-            
-            // Se o profile existente estiver pendente, notificar
-            if (existingProfile?.status === 'pending') {
-              import('@/lib/emails').then(({ notifyAdminsNewUser }) => {
-                notifyAdminsNewUser(
-                  data.user!.id,
-                  userName,
-                  existingProfile.area_atuacao || undefined,
-                  existingProfile.created_at || new Date().toISOString()
-                ).catch(err => {
-                  console.error('Failed to notify admins about new user:', err)
-                })
-              })
+              )
+              console.log('[SSO] ✅ Admins notificados com sucesso')
+            } else {
+              console.log('[SSO] Profile encontrado com status:', profileData.status, '- não é necessário notificar')
             }
-          } catch (updateError) {
-            // Profile já existe ou erro - não é crítico, trigger pode ter criado
-            console.log('Profile creation/update:', updateError)
+          } catch (err: any) {
+            // Não crítico - apenas logar
+            console.error('[SSO] ⚠️ Erro ao buscar/notificar profile (não crítico):', err?.message || err)
           }
         }
+        
+        // Iniciar primeira tentativa após delay inicial
+        setTimeout(tryNotifyAdmins, retryDelay)
       }
       
       return { success: true }
