@@ -1,39 +1,39 @@
 <template>
   <AppLayout>
-    <div class="h-[calc(100vh-64px)] flex flex-col">
+    <div class="h-[calc(100vh-64px)] flex flex-col -mx-4 sm:mx-0">
       <!-- Top Navigation Bar -->
-      <div class="bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/5 px-6 py-3 flex items-center justify-between z-20 shadow-sm">
-        <div class="flex items-center gap-6">
+      <div class="bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/5 px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between z-20 shadow-sm shrink-0">
+        <div class="flex items-center gap-3 sm:gap-6 min-w-0">
           <button
             @click="$router.push('/professor')"
-            class="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all group"
+            class="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all group shrink-0"
             title="Voltar"
           >
             <span class="material-symbols-outlined text-slate-600 dark:text-gray-400 group-hover:text-secondary group-hover:-translate-x-1 transition-all">arrow_back</span>
           </button>
           
-          <div v-if="program" class="flex items-center gap-4">
+          <div v-if="program" class="flex items-center gap-3 min-w-0">
             <img
               :src="program.thumbnail_url || '/program_placeholder.png'"
-              class="w-10 h-10 object-cover rounded-lg shadow-md"
+              class="w-10 h-10 object-cover rounded-xl shadow-lg border border-white/10 shrink-0"
             />
-            <div>
-              <h1 class="text-sm font-black text-slate-900 dark:text-white leading-tight">
+            <div class="min-w-0 pr-2">
+              <h1 class="text-sm font-black text-slate-900 dark:text-white leading-tight truncate">
                 {{ getProgramTitle(program) }}
               </h1>
-              <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Painel de Gestão</p>
+              <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em]">Painel de Gestão</p>
             </div>
           </div>
         </div>
 
-        <!-- Center Tabs -->
-        <nav class="flex h-full">
+        <!-- Center Tabs (Visible on Desktop) -->
+        <nav class="hidden lg:flex items-center h-full">
           <button
             v-for="tab in tabs"
             :key="tab.id"
-            @click="activeTab = tab.id"
+            @click="activeTab = tab.id; selectedItem = null; isCreating = false"
             :class="[
-              'px-6 flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all relative h-10',
+              'px-6 flex items-center gap-2 text-xs font-black uppercase tracking-widest transition-all relative h-16 sm:h-20',
               activeTab === tab.id
                 ? 'text-secondary'
                 : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
@@ -41,19 +41,41 @@
           >
             <span class="material-symbols-outlined text-lg">{{ tab.icon }}</span>
             {{ tab.label }}
-            <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 w-full h-1 bg-secondary rounded-t-full"></div>
+            <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 w-full h-1.5 bg-secondary rounded-t-full shadow-[0_0_10px_rgba(255,214,0,0.5)]"></div>
           </button>
         </nav>
 
         <!-- Right Side Actions -->
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 sm:gap-4">
           <button
             @click="$router.push(`/programas/${program?.id}`)"
-            class="px-4 py-2 bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl text-xs font-black shadow-lg hover:scale-105 transition-all"
+            class="w-10 h-10 sm:w-auto sm:px-4 sm:py-2 bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl sm:rounded-xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+            title="Visualizar como Aluno"
           >
-            Visualizar como Aluno
+            <span class="material-symbols-outlined text-xl sm:text-sm">visibility</span>
+            <span class="hidden sm:inline text-xs font-black uppercase">Ver Aluno</span>
           </button>
         </div>
+      </div>
+
+      <!-- Mobile Segmented Control Navigation -->
+      <div class="lg:hidden p-2 bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/5 shrink-0">
+        <nav class="grid grid-cols-3 bg-slate-100 dark:bg-black/40 p-1 rounded-xl">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="activeTab = tab.id; selectedItem = null; isCreating = false"
+            :class="[
+              'flex flex-col items-center justify-center py-2 rounded-lg transition-all gap-0.5',
+              activeTab === tab.id 
+                ? 'bg-white dark:bg-surface-lighter text-secondary shadow-sm' 
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-gray-300'
+            ]"
+          >
+            <span class="material-symbols-outlined text-xl">{{ tab.icon }}</span>
+            <span class="text-[7px] font-black uppercase tracking-widest">{{ getShortLabel(tab.id) }}</span>
+          </button>
+        </nav>
       </div>
 
       <!-- Main Content Area -->
@@ -64,9 +86,15 @@
         </div>
 
         <div v-if="program" class="h-full">
-          <!-- Curriculum Builder View (Split Layout) -->
-          <div v-if="activeTab === 'curriculum'" class="flex h-full">
-            <aside class="w-80 h-full flex-shrink-0">
+          <!-- Curriculum Builder View (Split Layout on Desktop, Switcher on Mobile) -->
+          <div v-if="activeTab === 'curriculum'" class="flex h-full relative">
+            <!-- Sidebar -->
+            <aside 
+              :class="[
+                'w-full sm:w-80 h-full flex-shrink-0 transition-transform duration-300 absolute sm:relative z-10 bg-white dark:bg-surface-dark sm:translate-x-0',
+                selectedItem || isCreating ? '-translate-x-full sm:translate-x-0' : 'translate-x-0'
+              ]"
+            >
                <CurriculumSidebar 
                 :modules="modules" 
                 :selected-id="selectedItem?.id"
@@ -76,7 +104,14 @@
                 @add-lesson="handleStartCreateLesson"
                />
             </aside>
-            <main class="flex-1 h-full bg-slate-50 dark:bg-black/20">
+
+            <!-- Editor -->
+            <main 
+              :class="[
+                'flex-1 h-full bg-slate-50 dark:bg-black/20 transition-transform duration-300 w-full sm:w-auto absolute sm:relative right-0',
+                selectedItem || isCreating ? 'translate-x-0' : 'translate-x-full sm:translate-x-0'
+              ]"
+            >
                <ContentEditor 
                 :selected-item="selectedItem"
                 :mode="editorMode"
@@ -91,7 +126,7 @@
           </div>
 
           <!-- Other Tabs (Full Width) -->
-          <div v-else class="h-full overflow-y-auto w-full max-w-[1400px] mx-auto p-8">
+          <div v-else class="h-full overflow-y-auto w-full max-w-[1400px] mx-auto p-4 sm:p-8">
             <MaterialsTab v-if="activeTab === 'materials'" :program-id="program.id" />
             <StudentsTab v-else-if="activeTab === 'students'" :program-id="program.id" />
           </div>
@@ -150,6 +185,15 @@ const modules = computed(() => modulesStore.getModulesByProgram(program.value?.i
 
 const getProgramTitle = (p: any) => {
   return currentLocale.value === 'pt-BR' ? p.title_pt : p.title_en
+}
+
+const getShortLabel = (id: string) => {
+  const labels: Record<string, string> = {
+    curriculum: 'Grade',
+    materials: 'Materiais',
+    students: 'Alunos'
+  }
+  return labels[id] || id
 }
 
 // Sidebar handlers

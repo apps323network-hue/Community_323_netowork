@@ -1,198 +1,385 @@
 <template>
   <AppLayout>
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div>
       <!-- Loading State -->
-      <div v-if="programsStore.loading" class="flex justify-center items-center h-64">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary dark:border-secondary"></div>
+      <div v-if="programsStore.loading" class="flex flex-col justify-center items-center h-[60vh] gap-4">
+        <div class="relative w-16 h-16">
+          <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <p class="text-slate-400 font-bold uppercase tracking-widest text-xs animate-pulse">Carregando Programa...</p>
       </div>
 
       <!-- Program Content -->
-      <div v-else-if="program" class="space-y-8">
-        <!-- Hero Banner -->
-        <div class="relative h-64 md:h-96 rounded-2xl overflow-hidden">
-          <img
-            v-if="program.banner_url"
-            :src="program.banner_url"
-            :alt="title"
-            class="w-full h-full object-cover"
-          />
-          <div v-else class="w-full h-full bg-gradient-to-br from-primary to-secondary"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-            <div class="p-8">
-              <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">{{ title }}</h1>
-              <p v-if="program.instructor_name" class="text-lg text-white/90">
-                {{ t('programs.instructor') }}: {{ program.instructor_name }}
-              </p>
+      <div v-else-if="program" class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Hero Section (Contained Banner) -->
+        <div class="relative w-full h-[350px] md:h-[450px] rounded-[32px] overflow-hidden shadow-2xl mb-12">
+          <!-- Background Image -->
+          <div class="absolute inset-0">
+            <img
+              v-if="program.banner_url"
+              :src="program.banner_url"
+              :alt="title"
+              class="w-full h-full object-cover"
+            />
+            <div v-else class="w-full h-full bg-gradient-to-br from-slate-900 via-primary/20 to-secondary/20"></div>
+            
+            <!-- Shaded Overlays for Text Readability -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent hidden md:block"></div>
+          </div>
+
+          <!-- Hero Content -->
+          <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
+            <div class="max-w-3xl space-y-4 md:space-y-6">
+              <!-- Category Badge -->
+               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-widest w-fit">
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                {{ program.category.replace('_', ' ') }}
+              </div>
+
+              <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
+                {{ title }}
+              </h1>
+
+              <div class="flex flex-wrap items-center gap-4 md:gap-6 text-white/90">
+                <div v-if="program.instructor_name" class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary p-0.5 shadow-lg">
+                    <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-xs text-white uppercase">
+                      {{ program.instructor_name.substring(0, 2) }}
+                    </div>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-white/50 leading-none mb-1">Instrutor</p>
+                    <p class="font-bold text-white">{{ program.instructor_name }}</p>
+                  </div>
+                </div>
+
+                <div v-if="program.duration_hours" class="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/5">
+                  <span class="material-icons text-primary text-sm">schedule</span>
+                  <span class="font-bold text-sm">{{ program.duration_hours }} Horas</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <!-- Main Content -->
-          <div class="lg:col-span-2 space-y-6">
-            <!-- About -->
-            <div class="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-md border border-slate-200 dark:border-white/5">
-              <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-                {{ t('programs.aboutProgram') }}
-              </h2>
-              <p class="text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed">
-                {{ description }}
-              </p>
-            </div>
-
-            <!-- Curriculum -->
-            <div v-if="curriculum && curriculum.length > 0" class="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-md border border-slate-200 dark:border-white/5">
-              <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-                {{ t('programs.curriculum') }}
-              </h2>
-              <div class="space-y-4">
-                <div v-for="(module, index) in curriculum" :key="index" class="p-4 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5">
-                  <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center">{{ index + 1 }}</span>
-                    {{ module.title }}
-                  </h3>
-                  <p v-if="module.description" class="text-slate-600 dark:text-gray-400 text-sm mt-2 ml-8">{{ module.description }}</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Reviews -->
-            <div class="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-md border border-slate-200 dark:border-white/5">
-              <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">
-                {{ t('programs.reviews') }}
-              </h2>
-              <p class="text-slate-600 dark:text-gray-400 italic">
-                {{ t('programs.noReviews') }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Sidebar -->
-          <div class="lg:col-span-1">
-            <div class="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-xl sticky top-24 space-y-6 border border-slate-200 dark:border-white/5">
-              <!-- Price -->
-              <div class="text-center pb-6 border-b border-slate-200 dark:border-white/10">
-                <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-1">
-                  ${{ program.price_usd }}
-                </div>
-                <div class="text-xs text-slate-500 dark:text-gray-400 font-medium uppercase tracking-widest">
-                  Investimento Único
-                </div>
-              </div>
-
-              <!-- Program Info -->
-              <div class="space-y-4 text-sm">
-                <div v-if="program.duration_hours" class="flex justify-between items-center">
-                  <span class="text-slate-500 dark:text-gray-400 flex items-center gap-2">
-                    <span class="material-icons text-sm">schedule</span>
-                    Duração
-                  </span>
-                  <span class="font-bold text-slate-900 dark:text-white">{{ program.duration_hours }}h</span>
-                </div>
-                <div v-if="program.difficulty_level" class="flex justify-between items-center">
-                  <span class="text-slate-500 dark:text-gray-400 flex items-center gap-2">
-                    <span class="material-icons text-sm">bar_chart</span>
-                    Nível
-                  </span>
-                  <span class="font-bold text-slate-900 dark:text-white capitalize">{{ program.difficulty_level }}</span>
-                </div>
-                <div v-if="program.max_students" class="flex justify-between items-center">
-                  <span class="text-slate-500 dark:text-gray-400 flex items-center gap-2">
-                    <span class="material-icons text-sm">group</span>
-                    Vagas Restantes
-                  </span>
-                  <span class="font-bold text-primary dark:text-secondary">{{ program.max_students - program.current_students }}</span>
-                </div>
-              </div>
-
-              <!-- CTA Button -->
-              <div class="pt-2">
-                <button
-                  v-if="!isEnrolled"
-                  @click="handleRequestEnroll"
-                  :disabled="isSoldOut || submitting"
-                  class="w-full py-4 rounded-xl font-black text-black bg-gradient-to-r from-primary to-secondary shadow-[0_0_20px_rgba(244,37,244,0.3)] hover:shadow-[0_0_30px_rgba(244,37,244,0.5)] hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
-                >
-                  <template v-if="submitting">
-                    <span class="flex items-center justify-center gap-2">
-                      <span class="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin"></span>
-                      PROCESSANDO...
-                    </span>
-                  </template>
-                  <template v-else>
-                    {{ isSoldOut ? 'VAGAS ESGOTADAS' : 'MATRICULAR AGORA' }}
-                  </template>
-                </button>
-                <div v-if="userStore.profile?.role === 'admin' && !isEnrolled" class="pt-4">
-                  <button
-                    @click="handleForceEnroll"
-                    :disabled="submitting"
-                    class="w-full py-2 rounded-lg border border-primary/30 text-primary hover:bg-primary/5 text-xs font-bold transition-all flex items-center justify-center gap-2"
-                  >
-                    <span class="material-icons text-sm">construction</span>
-                    Admin: Forçar Inscrição (Teste)
-                  </button>
-                </div>
-                <div v-else-if="isEnrolled" class="space-y-4">
-                  <div class="py-4 bg-green-500/10 border border-green-500/20 text-green-500 rounded-xl font-bold text-center flex items-center justify-center gap-2">
-                    <span class="material-icons">check_circle</span>
-                    MATRICULADO
+        <div class="relative z-10 pb-20">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Sidebar (Desktop Left/Bottom Mobile) - Moved Right -->
+            <div class="lg:col-span-8 space-y-8">
+              <!-- About -->
+              <section class="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-white/5 transition-all hover:shadow-primary/5">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-icons">description</span>
                   </div>
-                  <div v-if="userStore.profile?.role === 'admin'" class="pt-2">
+                  <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    {{ t('programs.aboutProgram') }}
+                  </h2>
+                </div>
+                <div class="text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed text-lg">
+                  {{ description }}
+                </div>
+              </section>
+
+              <!-- Mobile Price Card (Visible only on mobile) -->
+              <div class="block lg:hidden">
+                <div class="bg-white dark:bg-surface-dark rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-white/5 overflow-hidden relative group">
+                  <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors"></div>
+                  
+                  <div class="relative space-y-8">
+                    <div class="text-center space-y-2">
+                      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest">
+                        Melhor Oferta do Dia
+                      </div>
+                      <div class="flex justify-center items-baseline gap-1">
+                        <span class="text-3xl font-black text-slate-900 dark:text-white leading-none">$</span>
+                        <span class="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-primary to-secondary dark:from-white leading-none tracking-tighter">
+                          {{ program.price_usd }}
+                        </span>
+                      </div>
+                      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} Único</p>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div class="space-y-4">
+                      <button
+                        v-if="!isEnrolled"
+                        @click="handleRequestEnroll"
+                        :disabled="isSoldOut || submitting"
+                        class="w-full group relative py-5 px-6 rounded-2xl font-black text-black overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-2xl shadow-primary/30"
+                      >
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x transition-all"></div>
+                        <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-sm text-black">
+                          <template v-if="submitting">
+                            <span class="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin"></span>
+                            {{ t('programs.paymentModal.processing') }}
+                          </template>
+                          <template v-else>
+                            {{ isSoldOut ? t('programs.programFull') : t('programs.paymentModal.enroll') }}
+                            <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                          </template>
+                        </span>
+                      </button>
+
+                      <div v-else class="space-y-4">
+                        <div class="py-5 bg-green-500/10 border border-green-500/20 text-green-500 rounded-2xl font-black text-center flex items-center justify-center gap-2 uppercase tracking-widest text-sm shadow-inner">
+                          <span class="material-icons text-xl">check_circle</span>
+                          MATRICULADO
+                        </div>
+                        <RouterLink
+                          to="/meus-programas"
+                          class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs hover:opacity-90 transition-all shadow-xl"
+                        >
+                          Acessar Meu Painel
+                          <span class="material-icons text-sm">arrow_forward</span>
+                        </RouterLink>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Prerequisites -->
+              <section v-if="prerequisites" class="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-white/5">
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                    <span class="material-icons">assignment_late</span>
+                  </div>
+                  <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    {{ t('programs.prerequisites') }}
+                  </h2>
+                </div>
+                <div class="text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed bg-slate-50 dark:bg-white/5 p-6 rounded-2xl border border-dashed border-slate-200 dark:border-white/10">
+                  {{ prerequisites }}
+                </div>
+              </section>
+
+              <!-- Curriculum -->
+              <section v-if="curriculum && curriculum.length > 0" class="space-y-6">
+                <div class="flex items-center justify-between px-2">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+                      <span class="material-icons">list_alt</span>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                      {{ t('programs.curriculum') }}
+                    </h2>
+                  </div>
+                  <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ curriculum.length }} Módulos</span>
+                </div>
+                
+                <div class="space-y-4">
+                  <div 
+                    v-for="(module, index) in curriculum" 
+                    :key="index" 
+                    class="group bg-white dark:bg-surface-dark rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-white/5 hover:border-secondary/30 transition-all duration-300"
+                  >
+                    <div class="flex items-start gap-5">
+                      <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center font-black text-slate-400 dark:text-gray-500 transition-colors group-hover:bg-secondary group-hover:text-black">
+                        {{ String(index + 1).padStart(2, '0') }}
+                      </div>
+                      <div class="flex-1">
+                        <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-2 group-hover:text-secondary transition-colors">
+                          {{ module.title }}
+                        </h3>
+                        <p v-if="module.description" class="text-slate-600 dark:text-gray-400 text-sm leading-relaxed">{{ module.description }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Instructor Info -->
+              <section v-if="program.instructor_name" class="bg-gradient-to-br from-slate-900 to-black rounded-3xl p-8 shadow-2xl border border-white/5 relative overflow-hidden group">
+                 <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <span class="material-icons text-9xl">school</span>
+                 </div>
+                 
+                 <div class="relative flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
+                    <div class="w-32 h-32 rounded-3xl bg-gradient-to-tr from-primary to-secondary p-1 rotate-3 group-hover:rotate-6 transition-transform shadow-2xl overflow-hidden shrink-0">
+                       <div class="w-full h-full rounded-[20px] bg-slate-900 flex items-center justify-center">
+                          <span class="text-3xl font-black text-white">{{ program.instructor_name.substring(0, 2).toUpperCase() }}</span>
+                       </div>
+                    </div>
+                    
+                    <div class="space-y-4 max-w-xl">
+                       <div>
+                          <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Instrutor do Programa</p>
+                          <h3 class="text-3xl font-black text-white tracking-tight">{{ program.instructor_name }}</h3>
+                       </div>
+                       <p v-if="program.instructor_bio" class="text-slate-400 leading-relaxed italic">
+                          "{{ program.instructor_bio }}"
+                       </p>
+                       <div class="flex gap-4 justify-center md:justify-start">
+                          <div class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold flex items-center gap-2">
+                             <span class="material-icons text-sm">verified</span>
+                             Especialista Verificado
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </section>
+
+              <!-- Reviews -->
+              <section class="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-white/5">
+                <div class="flex items-center justify-between mb-8">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                      <span class="material-icons">star</span>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                      {{ t('programs.reviews') }}
+                    </h2>
+                  </div>
+                </div>
+                
+                <div class="flex flex-col items-center justify-center py-10 opacity-40">
+                  <span class="material-icons text-6xl mb-4">rate_review</span>
+                  <p class="font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest text-xs">
+                    {{ t('programs.noReviews') }}
+                  </p>
+                </div>
+              </section>
+            </div>
+
+            <!-- Sticky Sidebar Checkout (Visible only on desktop) -->
+            <div class="hidden lg:block lg:col-span-4 lg:sticky lg:top-24 h-fit space-y-6">
+              <div class="bg-white dark:bg-surface-dark rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-white/5 overflow-hidden relative group">
+                <!-- Decorative Elements -->
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors"></div>
+                
+                <div class="relative space-y-8">
+                  <!-- Price Header -->
+                  <div class="text-center space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest">
+                      Melhor Oferta do Dia
+                    </div>
+                    <div class="flex justify-center items-baseline gap-1">
+                      <span class="text-3xl font-black text-slate-900 dark:text-white leading-none">$</span>
+                      <span class="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-primary to-secondary dark:from-white leading-none tracking-tighter">
+                        {{ program.price_usd }}
+                      </span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} Único</p>
+                  </div>
+
+                  <!-- Quick Stats -->
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 text-center">
+                       <span class="material-icons text-primary mb-1">people_alt</span>
+                       <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Alunos</p>
+                       <p class="text-lg font-black text-slate-900 dark:text-white">{{ program.current_students || 0 }}</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 text-center">
+                       <span class="material-icons text-secondary mb-1">verified</span>
+                       <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Vagas</p>
+                       <p class="text-lg font-black text-slate-900 dark:text-white">{{ program.max_students || '∞' }}</p>
+                    </div>
+                  </div>
+
+                  <!-- CTA Button -->
+                  <div class="space-y-4">
                     <button
-                      @click="handleResetEnroll"
-                      :disabled="submitting"
-                      class="w-full py-2 rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500/5 text-xs font-bold transition-all flex items-center justify-center gap-2"
+                      v-if="!isEnrolled"
+                      @click="handleRequestEnroll"
+                      :disabled="isSoldOut || submitting"
+                      class="w-full group relative py-5 px-6 rounded-2xl font-black text-black overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-2xl shadow-primary/30"
                     >
-                      <span class="material-icons text-sm">restart_alt</span>
-                      Admin: Resetar Minha Inscrição
+                      <!-- Gradient Background -->
+                      <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x transition-all"></div>
+                      
+                      <!-- Text content -->
+                      <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-sm">
+                        <template v-if="submitting">
+                          <span class="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin"></span>
+                          {{ t('programs.paymentModal.processing') }}
+                        </template>
+                        <template v-else>
+                          {{ isSoldOut ? t('programs.programFull') : t('programs.paymentModal.enroll') }}
+                          <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </template>
+                      </span>
                     </button>
+
+                    <div v-else class="space-y-4">
+                      <div class="py-5 bg-green-500/10 border border-green-500/20 text-green-500 rounded-2xl font-black text-center flex items-center justify-center gap-2 uppercase tracking-widest text-sm shadow-inner">
+                        <span class="material-icons text-xl">check_circle</span>
+                        {{ t('programs.enrollmentSuccess').split(' ')[0] }}
+                      </div>
+                      
+                      <RouterLink
+                        to="/meus-programas"
+                        class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs hover:opacity-90 transition-all shadow-xl"
+                      >
+                        Acessar Meu Painel
+                        <span class="material-icons text-sm">arrow_forward</span>
+                      </RouterLink>
+                    </div>
                   </div>
-                  <RouterLink
-                    to="/meus-programas"
-                    class="block text-center text-primary dark:text-secondary font-bold hover:underline py-2"
-                  >
-                    Ver Meus Programas →
-                  </RouterLink>
+
+                  <!-- Program Metadata -->
+                  <div class="space-y-4 pt-4 border-t border-slate-100 dark:border-white/10">
+                    <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                       <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                          <span class="material-icons text-sm">history</span>
+                       </div>
+                       <div>
+                          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Última Atualização</p>
+                          <p class="text-xs font-bold text-slate-700 dark:text-white">{{ new Date(program.updated_at).toLocaleDateString() }}</p>
+                       </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                       <div class="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+                          <span class="material-icons text-sm">language</span>
+                       </div>
+                       <div>
+                          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Idioma</p>
+                          <p class="text-xs font-bold text-slate-700 dark:text-white">Português (Brasil)</p>
+                       </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Classroom Link (if enrolled and enabled) -->
-              <div v-if="isEnrolled && program.classroom_enabled" class="pt-6 border-t border-slate-200 dark:border-white/10">
-                <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center space-y-3">
-                  <div class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">
-                    Integração Google Classroom
-                  </div>
-                  <a
-                    href="https://classroom.google.com"
-                    target="_blank"
-                    class="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-lg shadow-blue-600/20"
-                  >
-                    <span class="material-icons text-lg">school</span>
-                    ABRIR CLASSROOM
-                  </a>
-                </div>
+              <!-- Support Card -->
+              <div class="p-6 rounded-3xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-4 border border-white/10 shadow-xl group cursor-pointer overflow-hidden relative">
+                 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:rotate-12 transition-transform">
+                    <span class="material-icons text-7xl">support_agent</span>
+                 </div>
+                 <div class="w-12 h-12 rounded-2xl bg-white/10 dark:bg-black/10 flex items-center justify-center shrink-0">
+                    <span class="material-icons">help_outline</span>
+                 </div>
+                 <div>
+                    <h4 class="font-bold text-sm leading-tight">Dúvidas sobre o curso?</h4>
+                    <p class="text-xs opacity-60">Fale com nosso suporte especializado</p>
+                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
 
       <!-- Not Found -->
-      <div v-else class="text-center py-20 bg-white dark:bg-surface-dark rounded-3xl border border-slate-200 dark:border-white/5 shadow-xl">
-        <div class="text-8xl mb-6 opacity-20">🔍</div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight">
-          Programa não encontrado
+      <div v-else class="container mx-auto px-4 py-32 text-center">
+        <div class="inline-flex w-24 h-24 items-center justify-center bg-slate-200 dark:bg-white/10 rounded-[32px] mb-8 animate-bounce">
+           <span class="text-5xl">🔭</span>
+        </div>
+        <h3 class="text-4xl font-black text-slate-900 dark:text-white mb-4 uppercase tracking-tighter">
+          Programa Perdido na Galáxia
         </h3>
-        <p class="text-slate-500 dark:text-gray-400 mb-8">O programa que você procura não existe ou foi removido.</p>
-        <RouterLink to="/programas" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:scale-105 transition-transform">
-          <span class="material-icons text-sm rotate-180">arrow_forward</span>
-          Explorar Programas
+        <p class="text-slate-500 dark:text-gray-400 mb-10 max-w-md mx-auto text-lg">O programa que você procura não está mais nesta órbita. Verifique o link ou explore nossos novos programas.</p>
+        <RouterLink to="/programas" class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-sm shadow-2xl shadow-primary/30 hover:scale-105 transition-all">
+          <span class="material-icons">explore</span>
+          Explorar Novos Cursos
         </RouterLink>
       </div>
     </div>
 
-    <!-- Modal de Matrícula / Checkout -->
+    <!-- Modal de Matrícula / Checkout (Keep Original Logic for now, style can be polished if needed) -->
     <Modal
       v-if="program"
       v-model="showCheckoutModal"
@@ -225,14 +412,6 @@
                 </span>
               </div>
             </div>
-          </div>
-
-          <!-- Nota sobre conversão PIX -->
-          <div v-if="paymentMethod === 'pix'" class="flex items-start gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-            <span class="material-icons text-blue-400">info</span>
-            <p class="text-[11px] text-blue-300 leading-relaxed font-medium">
-              Pagamentos via PIX são processados em Reais. Valor calculado com câmbio de R$ {{ exchangeRate.toFixed(2) }}.
-            </p>
           </div>
         </div>
 
@@ -268,7 +447,7 @@
           <button
             @click="handleCheckout"
             :disabled="submitting || !paymentMethod"
-            class="w-full rounded-2xl bg-gradient-to-r from-primary to-secondary py-5 text-sm font-black text-black shadow-2xl shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-widest"
+            class="w-full rounded-2xl bg-gradient-to-r from-primary to-secondary py-5 text-sm font-black text-black shadow-2xl shadow-primary/30 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-widest"
           >
             <template v-if="submitting">
               <span class="flex items-center justify-center gap-3">
@@ -280,15 +459,6 @@
               Finalizar Inscrição
             </template>
           </button>
-          <div class="flex flex-col items-center gap-2">
-             <p class="text-[10px] text-slate-500 dark:text-gray-500 font-bold uppercase tracking-tighter flex items-center gap-1">
-              <span class="material-icons text-[14px]">lock</span>
-              Pagamento Seguro via Stripe Infrastructure
-            </p>
-            <div class="flex gap-2">
-               <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" class="h-4 dark:invert opacity-50" alt="Stripe" />
-            </div>
-          </div>
         </div>
       </div>
     </Modal>
@@ -300,8 +470,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLocale } from '@/composables/useLocale'
 import { useProgramsStore } from '@/stores/programs'
-import { useAuthStore } from '@/stores/auth'
-import { useUserStore } from '@/stores/user'
 import { useSupabase } from '@/composables/useSupabase'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Modal from '@/components/ui/Modal.vue'
@@ -312,8 +480,6 @@ const route = useRoute()
 const { t, locale: currentLocale } = useLocale()
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
-const authStore = useAuthStore()
-const userStore = useUserStore()
 
 const programId = computed(() => route.params.id as string)
 const program = computed(() => programsStore.currentProgram)
@@ -338,6 +504,14 @@ const description = computed(() =>
     : ''
 )
 
+const prerequisites = computed(() =>
+  program.value
+    ? currentLocale.value === 'pt-BR'
+      ? program.value.prerequisites_pt
+      : program.value.prerequisites_en
+    : null
+)
+
 const curriculum = computed(() =>
   program.value
     ? currentLocale.value === 'pt-BR'
@@ -356,7 +530,6 @@ const isSoldOut = computed(() => {
 // Taxas Stripe
 const CARD_FEE_PERCENTAGE = 0.039
 const CARD_FEE_FIXED = 30 // cents
-const PIX_FEE_PERCENTAGE = 0.0179
 
 function formatPrice(cents: number, currency: string = 'USD'): string {
   const amount = cents / 100
@@ -372,7 +545,7 @@ function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
   } else {
     const usdAmount = basePriceCents / 100
     const grossAmountBRL = calculatePixAmount(usdAmount, exchangeRate.value)
-    const baseAmountBRL = usdAmount * exchangeRate.value // Valor base real sem margem
+    const baseAmountBRL = usdAmount * exchangeRate.value
     const feeAmountBRL = grossAmountBRL - baseAmountBRL
     return Math.round(feeAmountBRL * 100)
   }
@@ -398,14 +571,12 @@ const handleCheckout = async () => {
   try {
     submitting.value = true
     
-    // Validar sessão
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
       toast.error('Você precisa estar logado para se matricular')
       return
     }
 
-    // Chamar Edge Function de Checkout
     const { data, error } = await supabase.functions.invoke('create-program-checkout', {
       body: {
         program_id: program.value.id,
@@ -429,87 +600,8 @@ const handleCheckout = async () => {
   }
 }
 
-const handleForceEnroll = async () => {
-  if (!program.value || !authStore.user) return
-  
-  const confirm = window.confirm('Deseja forçar sua inscrição neste programa para teste? Isso vai ignorar o pagamento e ativar seu acesso imediatamente.')
-  if (!confirm) return
-
-  try {
-    submitting.value = true
-    
-    // 1. Criar/Atualizar Matrícula como Ativa
-    const { error: enrollError } = await supabase
-      .from('program_enrollments')
-      .upsert({
-        program_id: program.value.id,
-        user_id: authStore.user.id,
-        status: 'active',
-        payment_status: 'paid',
-        payment_method: 'admin_bypass',
-        payment_amount: 0,
-        paid_at: new Date().toISOString()
-      }, { onConflict: 'program_id,user_id' })
-
-    if (enrollError) throw enrollError
-
-    // 2. Tentar disparar convite do Classroom se estiver ativado
-    if (program.value.classroom_enabled && program.value.classroom_course_id) {
-       toast.info('Disparando convite do Classroom...')
-       await supabase.functions.invoke('classroom_invite', {
-         body: {
-           courseId: program.value.classroom_course_id,
-           studentEmail: authStore.user.email
-         }
-       })
-    }
-
-    toast.success('Inscrição forçada com sucesso! Atualizando página...')
-    
-    // Recarregar dados do programa
-    await programsStore.fetchProgramById(programId.value)
-    
-  } catch (err: any) {
-    console.error('Force enroll error:', err)
-    toast.error('Erro ao forçar inscrição: ' + (err.message || 'Erro desconhecido'))
-  } finally {
-    submitting.value = false
-  }
-}
-
-const handleResetEnroll = async () => {
-  if (!program.value || !authStore.user) return
-  
-  const confirm = window.confirm('Deseja REMOVER sua inscrição deste programa? Isso permitirá que você teste o fluxo de pagamento/matrícula do zero.')
-  if (!confirm) return
-
-  try {
-    submitting.value = true
-    
-    const { error } = await supabase
-      .from('program_enrollments')
-      .delete()
-      .eq('program_id', program.value.id)
-      .eq('user_id', authStore.user.id)
-
-    if (error) throw error
-
-    toast.success('Inscrição removida! Você já pode testar o fluxo novamente.')
-    
-    // Atualizar estado local
-    await programsStore.fetchProgramById(programId.value)
-    
-  } catch (err: any) {
-    console.error('Reset enroll error:', err)
-    toast.error('Erro ao resetar inscrição: ' + (err.message || 'Erro desconhecido'))
-  } finally {
-    submitting.value = false
-  }
-}
-
 onMounted(async () => {
   programsStore.fetchProgramById(programId.value)
-  // Buscar taxa de câmbio real
   const rate = await fetchExchangeRate()
   exchangeRate.value = rate
 })
@@ -518,5 +610,15 @@ onMounted(async () => {
 <style scoped>
 .material-icons {
   font-family: 'Material Icons';
+}
+
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
 }
 </style>

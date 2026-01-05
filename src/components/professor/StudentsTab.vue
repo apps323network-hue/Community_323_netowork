@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-black text-slate-900 dark:text-white">Alunos Matriculados</h2>
-      <div class="text-sm font-bold text-slate-600 dark:text-gray-400">
+    <div class="flex items-center justify-between mb-4 sm:mb-6">
+      <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Alunos Matriculados</h2>
+      <div class="text-xs sm:text-sm font-bold text-slate-600 dark:text-gray-400">
         Total: {{ students.length }} alunos
       </div>
     </div>

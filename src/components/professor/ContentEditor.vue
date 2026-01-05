@@ -12,39 +12,46 @@
       </div>
     </div>
 
-    <div v-else class="max-w-4xl mx-auto p-8 sm:p-12">
-      <!-- Breadcrumb -->
-      <div class="flex items-center gap-2 mb-8 text-xs font-bold text-slate-400 uppercase tracking-widest">
-        <span>{{ programName }}</span>
-        <span class="material-symbols-outlined text-sm">chevron_right</span>
-        <span class="text-secondary">{{ isCreating ? 'Novo' : 'Editando' }} {{ mode === 'module' ? 'Módulo' : 'Aula' }}</span>
+    <div v-else class="max-w-4xl mx-auto p-4 sm:p-12">
+      <!-- Breadcrumb / Mobile Back -->
+      <div class="flex items-center gap-3 mb-6 sm:mb-8">
+        <button 
+          @click="$emit('cancel')"
+          class="sm:hidden p-2 -ml-2 hover:bg-slate-200 dark:hover:bg-white/5 rounded-full transition-all text-slate-600 dark:text-gray-400"
+        >
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest overflow-hidden">
+          <span class="truncate">{{ programName }}</span>
+          <span class="material-symbols-outlined text-sm flex-shrink-0">chevron_right</span>
+          <span class="text-secondary flex-shrink-0">{{ isCreating ? 'Novo' : 'Editando' }} {{ mode === 'module' ? 'Módulo' : 'Aula' }}</span>
+        </div>
       </div>
 
       <!-- Editor Header -->
-      <div class="flex items-center justify-between mb-10">
-        <h2 class="text-3xl font-black text-slate-900 dark:text-white">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-10 gap-6">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
           {{ mode === 'module' ? 'Configurações do Módulo' : 'Detalhes da Aula' }}
         </h2>
-        <div class="flex gap-4">
+        <div class="flex gap-3 sm:gap-4">
           <button 
             @click="$emit('cancel')" 
-            class="px-6 py-2 rounded-xl font-bold text-slate-600 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-white/5 transition-all"
+            class="flex-1 sm:flex-none px-4 sm:px-6 py-3 sm:py-2 rounded-xl font-bold text-slate-600 dark:text-gray-400 bg-white dark:bg-white/5 sm:bg-transparent border border-slate-200 dark:border-white/10 sm:border-0 hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-sm sm:text-base"
           >
             Cancelar
           </button>
           <button 
             @click="handleSubmit" 
             :disabled="loading"
-            class="px-8 py-2 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 shadow-lg shadow-secondary/20 transition-all disabled:opacity-50"
+            class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 sm:py-2 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 shadow-lg shadow-secondary/20 transition-all disabled:opacity-50 text-sm sm:text-base"
           >
-            {{ loading ? 'Salvando...' : 'Salvar Alterações' }}
+            {{ loading ? 'Salvando...' : 'Salvar' }}
           </button>
         </div>
       </div>
 
-      <!-- Form Card -->
-      <div class="bg-white dark:bg-surface-dark rounded-3xl border border-slate-200 dark:border-white/5 shadow-xl overflow-hidden">
-        <div class="p-8 space-y-8">
+      <div class="bg-white dark:bg-surface-dark rounded-[2rem] sm:rounded-3xl border border-slate-200 dark:border-white/5 shadow-xl overflow-hidden mb-12">
+        <div class="p-6 sm:p-8 space-y-6 sm:space-y-8">
           
           <!-- Shared Fields for both Module and Lesson -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

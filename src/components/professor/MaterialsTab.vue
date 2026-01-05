@@ -3,90 +3,90 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
       <div>
-        <h2 class="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-          <span class="w-1.5 h-8 bg-red-500 rounded-full"></span>
+        <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <span class="w-1.5 h-6 sm:h-8 bg-red-500 rounded-full"></span>
           Materiais de Apoio
         </h2>
-        <p class="text-slate-500 dark:text-gray-400 font-medium mt-1">Gerencie arquivos PDF e documentos complementares</p>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-medium mt-1">Gerencie arquivos PDF e documentos complementares</p>
       </div>
       <button
         @click="openUploadModal"
         :disabled="modules.length === 0"
-        class="flex items-center justify-center gap-2 px-8 py-4 bg-slate-900 text-white dark:bg-white dark:text-black font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white dark:bg-white dark:text-black font-black rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
       >
-        <span class="material-symbols-outlined">upload_file</span>
+        <span class="material-symbols-outlined text-lg">upload_file</span>
         Novo Material
       </button>
     </div>
 
     <!-- No modules state -->
-    <div v-if="modules.length === 0" class="text-center py-24 bg-white dark:bg-surface-dark rounded-[40px] border border-slate-200 dark:border-white/5 shadow-xl">
-      <div class="bg-secondary/10 p-10 rounded-full w-fit mx-auto mb-8">
-        <span class="material-symbols-outlined text-7xl text-secondary">folder_open</span>
+    <div v-if="modules.length === 0" class="text-center py-16 sm:py-24 bg-white dark:bg-surface-dark rounded-[32px] border border-slate-200 dark:border-white/5 shadow-xl">
+      <div class="bg-secondary/10 p-8 rounded-full w-fit mx-auto mb-6">
+        <span class="material-symbols-outlined text-5xl sm:text-6xl text-secondary">folder_open</span>
       </div>
-      <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">Crie módulos primeiro</h3>
-      <p class="text-slate-600 dark:text-gray-400 text-lg max-w-sm mx-auto">
+      <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">Crie módulos primeiro</h3>
+      <p class="text-slate-600 dark:text-gray-400 text-sm sm:text-base max-w-sm mx-auto px-4">
         Você precisa organizar sua grade curricular antes de fazer o upload de materiais.
       </p>
     </div>
 
     <!-- Materials List -->
-    <div v-else-if="materials.length === 0" class="text-center py-24 bg-white dark:bg-surface-dark rounded-[40px] border border-slate-200 dark:border-white/5 shadow-xl">
-      <div class="bg-slate-100 dark:bg-white/5 p-10 rounded-full w-fit mx-auto mb-8">
-        <span class="material-symbols-outlined text-7xl text-slate-400">description</span>
+    <div v-else-if="materials.length === 0" class="text-center py-16 sm:py-24 bg-white dark:bg-surface-dark rounded-[32px] border border-slate-200 dark:border-white/5 shadow-xl">
+      <div class="bg-slate-100 dark:bg-white/5 p-8 rounded-full w-fit mx-auto mb-6">
+        <span class="material-symbols-outlined text-5xl sm:text-6xl text-slate-400">description</span>
       </div>
-      <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">Nenhum material ainda</h3>
-      <p class="text-slate-600 dark:text-gray-400 text-lg mb-8 max-w-sm mx-auto">
+      <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">Nenhum material ainda</h3>
+      <p class="text-slate-600 dark:text-gray-400 text-sm sm:text-base mb-6 max-w-sm mx-auto px-4">
         Comece enviando PDFs, slides ou apostilas para enriquecer suas aulas.
       </p>
       <button
         @click="openUploadModal"
-        class="px-10 py-4 bg-secondary text-black font-black rounded-2xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 inline-flex items-center gap-3"
+        class="px-8 py-3 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 inline-flex items-center gap-2 text-xs sm:text-sm"
       >
-        <span class="material-symbols-outlined">add_circle</span>
+        <span class="material-symbols-outlined text-lg">add_circle</span>
         Upload do Primeiro Material
       </button>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
       <div
         v-for="material in materials"
         :key="material.id"
-        class="group bg-white dark:bg-surface-dark rounded-[32px] border border-slate-200 dark:border-white/5 p-6 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1 relative"
+        class="group bg-white dark:bg-surface-dark rounded-2xl sm:rounded-[32px] border border-slate-200 dark:border-white/5 p-5 sm:p-6 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1 relative"
       >
-        <div class="flex items-start justify-between mb-6">
-          <div class="bg-red-500/10 p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500">
-            <span class="material-symbols-outlined text-3xl text-red-500">picture_as_pdf</span>
+        <div class="flex items-start justify-between mb-4 sm:mb-6">
+          <div class="bg-red-500/10 p-3 sm:p-4 rounded-xl sm:rounded-2xl group-hover:scale-110 transition-transform duration-500">
+            <span class="material-symbols-outlined text-2xl sm:text-3xl text-red-500">picture_as_pdf</span>
           </div>
           <button
             @click="confirmDelete(material)"
-            class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
+            class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all scale-90 sm:scale-100"
             title="Excluir Material"
           >
             <span class="material-symbols-outlined text-xl">delete</span>
           </button>
         </div>
 
-        <h4 class="text-lg font-black text-slate-900 dark:text-white mb-4 line-clamp-2 leading-tight">
+        <h4 class="text-sm sm:text-base font-black text-slate-900 dark:text-white mb-3 line-clamp-2 leading-tight">
           {{ getMaterialTitle(material) }}
         </h4>
 
-        <div class="space-y-3 mb-8">
-          <div class="flex items-center gap-3 text-xs font-bold text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-black/20 p-2.5 rounded-xl">
+        <div class="space-y-2 mb-6">
+          <div class="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-black/20 p-2 rounded-lg">
              <span class="material-symbols-outlined text-sm text-secondary">folder_open</span>
              <span class="truncate">{{ getModuleName(material.module_id) }}</span>
           </div>
-          <div class="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
-             <span class="material-symbols-outlined text-sm">attachment</span>
+          <div class="flex items-center gap-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">
+             <span class="material-symbols-outlined text-xs sm:text-sm">attachment</span>
              {{ formatFileSize(material.file_size_bytes) }}
           </div>
         </div>
 
         <button
           @click="downloadMaterial(material)"
-          class="w-full py-3.5 bg-slate-900 text-white dark:bg-white dark:text-black font-black rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg"
+          class="w-full py-2.5 sm:py-3.5 bg-slate-900 text-white dark:bg-white dark:text-black font-black rounded-xl sm:rounded-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg text-xs sm:text-sm"
         >
-          <span class="material-symbols-outlined text-xl">download</span>
+          <span class="material-symbols-outlined text-lg sm:text-xl">download</span>
           Baixar Arquivo
         </button>
       </div>

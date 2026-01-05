@@ -2,41 +2,41 @@
   <AppLayout>
     <div class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Header Overlay with Stats -->
-      <div class="relative overflow-hidden rounded-3xl bg-slate-900 mb-10 p-8 sm:p-12 shadow-2xl">
+      <div class="relative overflow-hidden rounded-[2rem] sm:rounded-3xl bg-slate-900 mb-8 sm:mb-10 p-6 sm:p-12 shadow-2xl">
         <!-- Abstract Background Shapes -->
-        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-secondary/20 blur-[120px] rounded-full"></div>
-        <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-64 h-64 bg-primary/10 blur-[80px] rounded-full"></div>
+        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-secondary/20 blur-[80px] sm:blur-[120px] rounded-full"></div>
+        <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-48 sm:w-64 h-48 sm:h-64 bg-primary/10 blur-[60px] sm:blur-[80px] rounded-full"></div>
         
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div class="flex items-center gap-3 text-secondary mb-4">
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8 sm:gap-6">
+          <div class="text-center lg:text-left">
+            <div class="flex items-center justify-center lg:justify-start gap-3 text-secondary mb-4">
               <div class="bg-secondary/10 p-2 rounded-lg">
-                <span class="material-symbols-outlined text-2xl">school</span>
+                <span class="material-symbols-outlined text-xl sm:text-2xl">school</span>
               </div>
-              <span class="text-sm font-black uppercase tracking-[0.2em]">Área do Professor</span>
+              <span class="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em]">Área do Professor</span>
             </div>
-            <h1 class="text-4xl sm:text-5xl font-black text-white mb-4 leading-tight">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 leading-[1.1]">
               Seja bem-vindo,<br/>
               <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-secondary/60">Professor</span>
             </h1>
-            <p class="text-slate-400 max-w-xl text-lg font-medium leading-relaxed">
-              Aqui você gerencia seus programas de treinamento, acompanha o progresso dos alunos e organiza todo o material didático.
+            <p class="text-slate-400 max-w-xl text-sm sm:text-lg font-medium leading-relaxed mx-auto lg:mx-0">
+              Aqui você gerencia seus programas, acompanha o progresso dos alunos e organiza todo o material didático.
             </p>
           </div>
-
+ 
           <!-- Quick Stats Overlay -->
-          <div class="flex gap-4 sm:gap-6">
-            <div class="hidden sm:block bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 min-w-[120px] text-center">
-              <p class="text-3xl font-black text-white mb-1">{{ myPrograms.length }}</p>
-              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Programas</p>
+          <div class="grid grid-cols-3 sm:flex gap-3 sm:gap-6">
+            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 min-w-0 sm:min-w-[120px] text-center">
+              <p class="text-xl sm:text-3xl font-black text-white mb-1">{{ myPrograms.length }}</p>
+              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Programas</p>
             </div>
-            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 min-w-[120px] text-center">
-              <p class="text-3xl font-black text-white mb-1">{{ totalStudents }}</p>
-              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Alunos</p>
+            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 min-w-0 sm:min-w-[120px] text-center">
+              <p class="text-xl sm:text-3xl font-black text-white mb-1">{{ totalStudents }}</p>
+              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Alunos</p>
             </div>
-            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 min-w-[120px] text-center">
-              <p class="text-3xl font-black text-white mb-1">{{ totalLessons }}</p>
-              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aulas</p>
+            <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 min-w-0 sm:min-w-[120px] text-center">
+              <p class="text-xl sm:text-3xl font-black text-white mb-1">{{ totalLessons }}</p>
+              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Aulas</p>
             </div>
           </div>
         </div>
@@ -44,14 +44,14 @@
 
       <!-- Programs Grid Section -->
       <div class="mb-10">
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <h2 class="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
             <span class="w-2 h-8 bg-secondary rounded-full"></span>
             Meus Programas
           </h2>
           <button
             @click="showCreateModal = true"
-            class="px-8 py-4 bg-secondary text-black font-black rounded-2xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 flex items-center gap-2"
+            class="w-full sm:w-auto px-8 py-4 bg-secondary text-black font-black rounded-2xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 flex items-center justify-center gap-2"
           >
             <span class="material-symbols-outlined">add_circle</span>
             Criar Novo Programa
@@ -146,145 +146,146 @@
     <!-- Create Program Modal -->
     <div
       v-if="showCreateModal"
-      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4"
       @click.self="closeCreateModal"
     >
-      <div class="bg-white dark:bg-surface-dark rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 dark:border-white/10 max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-white dark:bg-surface-dark px-8 py-6 border-b border-slate-200 dark:border-white/10 flex items-center justify-between z-10">
-          <h3 class="text-2xl font-black text-slate-900 dark:text-white">Criar Novo Programa</h3>
+      <div 
+        class="bg-white dark:bg-surface-dark w-full sm:max-w-3xl sm:rounded-3xl shadow-2xl border-t sm:border border-slate-200 dark:border-white/10 h-[92vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden animate-slide-up sm:animate-fade-in"
+      >
+        <!-- Modal Header -->
+        <div class="px-6 py-4 sm:px-8 sm:py-6 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0">
+          <div>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Criar Novo Programa</h3>
+            <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-0.5">Preencha os dados do treinamento</p>
+          </div>
           <button
             @click="closeCreateModal"
-            class="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl"
+            class="w-10 h-10 flex items-center justify-center text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors bg-slate-100 dark:bg-white/5 rounded-xl"
           >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <form @submit.prevent="createProgram" class="p-8 space-y-6">
+        <form @submit.prevent="createProgram" class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 custom-scrollbar">
           <!-- Thumbnail Upload -->
-          <div>
-            <label class="block text-sm font-black text-slate-700 dark:text-gray-300 mb-3 uppercase tracking-wider">
-              Imagem de Capa
+          <div class="space-y-3">
+            <label class="block text-[10px] sm:text-xs font-black text-slate-500 dark:text-gray-400 uppercase tracking-[0.2em]">
+              Imagem de Capa (Recomendado 1280x720)
             </label>
-            <div class="relative border-2 border-dashed border-slate-300 dark:border-white/10 rounded-2xl p-8 text-center hover:border-secondary transition-colors">
+            <div class="relative group border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl p-6 sm:p-10 text-center hover:border-secondary transition-all bg-slate-50 dark:bg-black/20">
               <input
                 type="file"
                 accept="image/*"
                 @change="handleThumbnailSelect"
-                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
-              <div v-if="!thumbnailPreview" class="space-y-2">
-                <span class="material-symbols-outlined text-5xl text-slate-400">image</span>
-                <p class="text-sm font-bold text-slate-600 dark:text-gray-400">Clique ou arraste uma imagem</p>
+              <div v-if="!thumbnailPreview" class="space-y-3">
+                <div class="bg-white dark:bg-surface-dark w-12 h-12 rounded-xl shadow-md flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                  <span class="material-symbols-outlined text-2xl text-secondary">add_photo_alternate</span>
+                </div>
+                <p class="text-xs font-bold text-slate-600 dark:text-gray-400">Clique para selecionar imagem</p>
               </div>
-              <img v-else :src="thumbnailPreview" class="max-h-48 mx-auto rounded-xl" />
+              <div v-else class="relative inline-block">
+                <img :src="thumbnailPreview" class="max-h-40 sm:max-h-48 rounded-xl shadow-2xl mx-auto" />
+                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl">
+                  <span class="text-white text-xs font-black uppercase">Trocar Imagem</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Title PT -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                Título (Português) *
-              </label>
-              <input
-                v-model="newProgram.title_pt"
-                type="text"
-                required
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium"
-                placeholder="Ex: Programa de Liderança Executiva"
-              />
+          <!-- Basic Info -->
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Título (Português) *</label>
+                <input
+                  v-model="newProgram.title_pt"
+                  type="text"
+                  required
+                  class="w-full px-4 py-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-bold text-sm"
+                  placeholder="Ex: Formação em Gestão"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Título (Inglês) *</label>
+                <input
+                  v-model="newProgram.title_en"
+                  type="text"
+                  required
+                  class="w-full px-4 py-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-bold text-sm"
+                  placeholder="Ex: Management Training"
+                />
+              </div>
             </div>
 
-            <!-- Title EN -->
-            <div>
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                Título (Inglês) *
-              </label>
-              <input
-                v-model="newProgram.title_en"
-                type="text"
-                required
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium"
-                placeholder="Ex: Executive Leadership Program"
-              />
-            </div>
-          </div>
+            <!-- Short Descriptions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Resumo (PT) *</label>
+                <textarea
+                  v-model="newProgram.short_description_pt"
+                  rows="3"
+                  required
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium text-sm resize-none"
+                  placeholder="Uma frase rápida sobre o curso..."
+                ></textarea>
+              </div>
 
-          <!-- Short Description PT -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                Descrição Curta (PT) *
-              </label>
-              <textarea
-                v-model="newProgram.short_description_pt"
-                rows="3"
-                required
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium resize-none"
-                placeholder="Descrição breve do programa..."
-              ></textarea>
+              <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Resumo (EN) *</label>
+                <textarea
+                  v-model="newProgram.short_description_en"
+                  rows="3"
+                  required
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium text-sm resize-none"
+                  placeholder="A quick summary of the course..."
+                ></textarea>
+              </div>
             </div>
 
-            <!-- Short Description EN -->
-            <div>
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                Descrição Curta (EN) *
-              </label>
-              <textarea
-                v-model="newProgram.short_description_en"
-                rows="3"
-                required
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium resize-none"
-                placeholder="Brief program description..."
-              ></textarea>
-            </div>
-          </div>
+            <!-- Full Descriptions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Descrição Completa (PT)</label>
+                <textarea
+                  v-model="newProgram.full_description_pt"
+                  rows="4"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium text-sm resize-none"
+                ></textarea>
+              </div>
 
-          <!-- Full Description PT -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                Descrição Completa (PT)
-              </label>
-              <textarea
-                v-model="newProgram.full_description_pt"
-                rows="5"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium resize-none"
-              ></textarea>
+              <div class="space-y-2">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Descrição Completa (EN)</label>
+                <textarea
+                  v-model="newProgram.full_description_en"
+                  rows="4"
+                  class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/20 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium text-sm resize-none"
+                ></textarea>
+              </div>
             </div>
-
-            <!-- Full Description EN -->
-            <div>
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
-                Descrição Completa (EN)
-              </label>
-              <textarea
-                v-model="newProgram.full_description_en"
-                rows="5"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium resize-none"
-              ></textarea>
-            </div>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex items-center justify-end gap-4 pt-6 border-t border-slate-200 dark:border-white/10">
-            <button
-              type="button"
-              @click="closeCreateModal"
-              class="px-8 py-3 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              :disabled="creatingProgram"
-              class="px-8 py-3 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 transition-all shadow-lg hover:shadow-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {{ creatingProgram ? 'Criando...' : 'Criar Programa' }}
-            </button>
           </div>
         </form>
+
+        <!-- Fixed Footer Actions -->
+        <div class="p-4 pb-8 sm:p-6 bg-slate-50 dark:bg-black/20 border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-end gap-3 shrink-0">
+          <button
+            type="button"
+            @click="closeCreateModal"
+            class="w-full sm:w-auto px-8 py-4 text-slate-600 dark:text-gray-400 font-bold hover:bg-slate-200 dark:hover:bg-white/5 rounded-2xl transition-all"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="createProgram"
+            :disabled="creatingProgram || !newProgram.title_pt"
+            class="w-full sm:w-auto px-12 py-4 bg-secondary text-black font-black rounded-2xl hover:bg-secondary/90 transition-all shadow-xl shadow-secondary/20 disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            <span v-if="creatingProgram" class="animate-spin material-symbols-outlined text-lg">sync</span>
+            {{ creatingProgram ? 'Criando...' : 'Criar Programa' }}
+          </button>
+        </div>
       </div>
     </div>
   </AppLayout>
