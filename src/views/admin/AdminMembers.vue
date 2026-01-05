@@ -56,6 +56,7 @@
           @unban="handleUnban"
           @unsuspend="handleUnsuspend"
           @view-history="handleViewHistory"
+          @update-role="handleUpdateRole"
         />
       </div>
 
@@ -301,6 +302,16 @@ function handleUnsuspend(_userId: string) {
 
 function handleViewHistory(userId: string) {
   router.push({ name: 'UserHistory', params: { userId } })
+}
+
+async function handleUpdateRole(userId: string, role: string) {
+  try {
+    await adminStore.updateUserRole(userId, role)
+    toast.success('Cargo do usuário atualizado!')
+  } catch (error: any) {
+    toast.error(error.message || 'Erro ao atualizar cargo')
+    console.error('Error updating user role:', error)
+  }
 }
 
 onMounted(async () => {

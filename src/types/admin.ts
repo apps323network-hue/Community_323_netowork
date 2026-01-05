@@ -1,6 +1,6 @@
 import type { Event, EventStatus } from './events'
 
-export type UserRole = 'user' | 'partner' | 'admin'
+export type UserRole = 'user' | 'partner' | 'admin' | 'professor'
 export type UserStatus = 'pending' | 'active' | 'suspended' | 'banned'
 
 export interface AdminEvent extends Event {
@@ -37,6 +37,7 @@ export interface AdminUser {
   cidade?: string
   pais?: string
   avatar_url?: string
+  role?: UserRole
   status: UserStatus
   approved_by?: string
   approved_at?: string

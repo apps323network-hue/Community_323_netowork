@@ -21,7 +21,7 @@
     <div
       v-for="user in users"
       :key="user.id"
-      class="bg-white dark:bg-gradient-to-br dark:from-surface-dark dark:to-surface-darker rounded-2xl p-6 border-2 border-slate-200 dark:border-white/10 hover:border-secondary/50 dark:hover:border-primary/30 transition-all shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-primary/10 group"
+      class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-secondary/50 dark:hover:border-primary/50 transition-all shadow-sm hover:shadow-md"
     >
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <!-- Avatar and Info -->
@@ -32,10 +32,10 @@
             size="lg"
           />
           <div class="flex-1 min-w-0">
-            <h3 class="text-slate-900 dark:text-white text-xl font-black mb-2 truncate">
+            <h3 class="text-slate-900 dark:text-white text-xl font-bold mb-1 truncate">
               {{ user.nome || 'Usuário sem nome' }}
             </h3>
-            <div class="space-y-2 text-sm text-slate-600 dark:text-white/70">
+            <div class="space-y-1 text-sm text-slate-600 dark:text-slate-300">
               <p v-if="user.area_atuacao" class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-base">work</span>
                 <span class="truncate">{{ user.area_atuacao }}</span>
@@ -44,7 +44,7 @@
                 <span class="material-symbols-outlined text-base">location_on</span>
                 <span class="truncate">{{ [user.cidade, user.pais].filter(Boolean).join(', ') }}</span>
               </p>
-              <p class="flex items-center gap-2">
+              <p class="flex items-center gap-2 text-xs opacity-75">
                 <span class="material-symbols-outlined text-base">calendar_today</span>
                 <span>Cadastrado em {{ formattedDate(user.created_at) }}</span>
               </p>
@@ -55,24 +55,28 @@
         <!-- Actions -->
         <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <button
-            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500/20 to-green-500/10 hover:from-green-500/30 hover:to-green-500/20 text-green-400 border-2 border-green-500/40 hover:border-green-500/60 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:shadow-green-500/20"
+            class="flex items-center justify-center gap-2 px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-600 dark:text-green-400 border border-green-500/20 hover:border-green-500/40 rounded-lg font-semibold transition-all"
+            title="Aprovar"
             @click="$emit('approve', user.id)"
           >
-            <span class="material-symbols-outlined text-xl">check_circle</span>
-            <span>Aprovar</span>
+            <span class="material-symbols-outlined">check</span>
+            <span class="sm:hidden">Aprovar</span>
           </button>
+          
           <button
-            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500/20 to-red-500/10 hover:from-red-500/30 hover:to-red-500/20 text-red-400 border-2 border-red-500/40 hover:border-red-500/60 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:shadow-red-500/20"
+            class="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 hover:border-red-500/40 rounded-lg font-semibold transition-all"
+            title="Rejeitar"
             @click="$emit('reject', user.id)"
           >
-            <span class="material-symbols-outlined text-xl">cancel</span>
-            <span>Rejeitar</span>
+            <span class="material-symbols-outlined">close</span>
+            <span class="sm:hidden">Rejeitar</span>
           </button>
+
           <button
-            class="flex items-center justify-center gap-2 px-6 py-3 bg-white dark:bg-gradient-to-r dark:from-white/5 dark:to-white/0 hover:bg-slate-50 dark:hover:from-white/10 dark:hover:to-white/5 text-slate-700 dark:text-white border-2 border-slate-200 dark:border-white/20 hover:border-secondary dark:hover:border-white/30 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl"
+            class="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-lg font-semibold transition-all"
             @click="$emit('view-profile', user.id)"
           >
-            <span class="material-symbols-outlined text-xl">visibility</span>
+            <span class="material-symbols-outlined">visibility</span>
             <span>Ver Perfil</span>
           </button>
         </div>

@@ -57,6 +57,7 @@
             <tr>
               <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Usuário</th>
               <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80 hidden sm:table-cell">Área</th>
+              <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Cargo</th>
               <th class="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Status</th>
               <th class="px-4 py-3 text-right text-xs sm:text-sm font-semibold text-slate-700 dark:text-white/80">Ações</th>
             </tr>
@@ -84,8 +85,21 @@
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-4 text-slate-600 dark:text-white/70 text-sm hidden sm:table-cell">
+              <td class="px-4 py-4 hidden sm:table-cell">
                 {{ user.area_atuacao || '-' }}
+              </td>
+              <td class="px-4 py-4">
+                <select
+                  :value="user.role || 'user'"
+                  @change="(e) => $emit('update-role', user.id, (e.target as HTMLSelectElement).value)"
+                  class="bg-white dark:bg-slate-700 border border-slate-200 dark:border-white/10 rounded px-2 py-1 text-sm text-slate-700 dark:text-white focus:outline-none focus:border-secondary dark:focus:border-primary"
+                  :disabled="loading"
+                >
+                  <option value="user" class="text-slate-900 bg-white">Membro</option>
+                  <option value="professor" class="text-slate-900 bg-white">Professor</option>
+                  <option value="partner" class="text-slate-900 bg-white">Parceiro</option>
+                  <option value="admin" class="text-slate-900 bg-white">Admin</option>
+                </select>
               </td>
               <td class="px-4 py-4">
                 <UserStatusBadge :status="user.status" />
@@ -144,6 +158,7 @@ defineEmits<{
   ban: [userId: string]
   unban: [userId: string]
   'view-history': [userId: string]
+  'update-role': [userId: string, role: string]
 }>()
 
 const searchQuery = ref('')

@@ -66,7 +66,7 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
 
     try {
       console.log('[ADMIN] Buscando todos os usuários...', { statusFilter })
-      
+
       let query = supabase
         .from('profiles')
         .select('*')
@@ -299,7 +299,7 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
   async function fetchUserStats() {
     try {
       console.log('[ADMIN] Buscando estatísticas de usuários...')
-      
+
       const { data, error: queryError } = await supabase
         .from('profiles')
         .select('status, created_at')
@@ -341,6 +341,51 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
     }
   }
 
+  // Atualizar cargo do usuário
+  async function updateUserRole(userId: string, role: string) {
+    if (!authStore.user) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      console.log('[ADMIN] Atualizando cargo do usuário:', userId, 'para:', role)
+
+      const { data, error: updateError } = await supabase
+        .from('profiles')
+        .update({ role })
+        .eq('id', userId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      // Atualizar lista local
+      const index = allUsers.value.findIndex(u => u.id === userId)
+      if (index !== -1) {
+        allUsers.value[index] = { ...allUsers.value[index], role }
+      }
+
+      // Log da ação
+      logAdminAction(authStore.user.id, {
+        action: 'update_user_role',
+        targetId: userId,
+        targetType: 'user',
+        details: { role }
+      })
+
+      return data
+    } catch (err: any) {
+      error.value = err.message
+      console.error('Error updating user role:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     pendingUsers,
     allUsers,
@@ -351,6 +396,7 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
     rejectUser,
     banUser,
     unbanUser,
+    updateUserRole,
     fetchUserStats,
   }
 })
