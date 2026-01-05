@@ -15,3 +15,4 @@ COMMENT ON COLUMN public.events.image_url IS 'URL da imagem/banner do evento (ar
 
 
 
+

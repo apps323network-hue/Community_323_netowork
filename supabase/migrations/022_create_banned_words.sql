@@ -100,3 +100,4 @@ COMMENT ON POLICY "Only admins can delete banned words" ON public.banned_words I
 
 
 
+
