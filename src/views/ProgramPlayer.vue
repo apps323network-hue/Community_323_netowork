@@ -36,13 +36,26 @@
       <!-- Video Player Area -->
       <div class="flex-1 flex flex-col min-w-0">
         <!-- Player -->
-        <div class="relative bg-black aspect-video w-full shadow-2xl">
+        <div class="relative bg-black aspect-video w-full shadow-2xl overflow-hidden group/player">
           <YouTubePlayer
-            v-if="currentLesson"
+            v-if="currentLesson && isAuthenticated"
             :videoId="currentLesson.youtube_video_id"
             :title="getLessonTitle(currentLesson)"
             @ended="handleVideoEnded"
           />
+          
+          <!-- Guest Blocker Over Video -->
+          <div v-if="!isAuthenticated" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md z-20">
+            <div class="max-w-md w-full mx-4">
+              <GuestBlocker
+                :show="true"
+                variant="inline"
+                title="Assista a esta Aula"
+                message="Cadastre-se para acessar todas as aulas e materiais complementares deste programa."
+                cta="Começar Agora"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- Lesson Header & Quick Navigation (Visible on all tabs) -->
@@ -160,7 +173,7 @@
                   v-for="material in lessonMaterials"
                   :key="material.id"
                   class="group relative bg-surface-dark/50 hover:bg-surface-dark border border-white/5 hover:border-secondary/30 rounded-2xl p-5 transition-all duration-300 cursor-pointer overflow-hidden"
-                  @click="downloadMaterial(material)"
+                  @click="isAuthenticated ? downloadMaterial(material) : showAuthModal('signup')"
                 >
                   <div class="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   
@@ -245,11 +258,14 @@ import { supabase } from '@/lib/supabase'
 import type { ProgramLesson, ProgramMaterial } from '@/types/modules'
 import YouTubePlayer from '@/components/features/programs/YouTubePlayer.vue'
 import ModulesList from '@/components/features/programs/ModulesList.vue'
+import GuestBlocker from '@/components/common/GuestBlocker.vue'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 
 const route = useRoute()
 const router = useRouter()
 const { locale: currentLocale, t } = useLocale()
 const modulesStore = useModulesStore()
+const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 const program = ref<any>(null)
 const loading = ref(true)
@@ -356,25 +372,8 @@ async function fetchProgramAndLessons() {
   try {
     const programId = route.params.id as string
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      router.push('/login')
-      return
-    }
-
-    // Check enrollment
-    const { data: enrollment } = await supabase
-      .from('program_enrollments')
-      .select('*')
-      .eq('program_id', programId)
-      .eq('user_id', user.id)
-      .single()
-
-    if (!enrollment) {
-      loading.value = false
-      return
-    }
-
-    // Fetch program
+    
+    // Fetch program info (public)
     const { data: programData, error: programError } = await supabase
       .from('programs')
       .select('*')
@@ -382,8 +381,20 @@ async function fetchProgramAndLessons() {
       .single()
 
     if (programError) throw programError
-
     program.value = programData
+
+    // Se estiver logado, verificar matrícula
+    if (user) {
+      const { data: _enrollment } = await supabase
+        .from('program_enrollments')
+        .select('*')
+        .eq('program_id', programId)
+        .eq('user_id', user.id)
+        .single()
+      
+      // Se não for aluno e nem professor/admin, ele pode ver o preview se for publicAccess
+      // (Já lidamos com as limitações no template)
+    }
 
     // Fetch modules and lessons
     await modulesStore.fetchModulesWithLessons(programId)

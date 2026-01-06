@@ -1,63 +1,66 @@
 <template>
   <section
     v-if="program"
-    class="rounded-2xl overflow-hidden relative shadow-2xl shadow-secondary/10 border border-slate-200 dark:border-white/5 min-h-[400px] flex items-center"
+    class="relative w-full h-[70vh] lg:h-[85vh] flex items-center overflow-hidden"
   >
     <!-- Background Image -->
-    <div
-      class="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
-      :style="{ backgroundImage: `url(${program.banner_url || program.thumbnail_url || '/program_placeholder.png'})` }"
-    ></div>
-    
-    <!-- Gradient Overlay - Optimized for readability -->
-    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-    
+    <div class="absolute inset-0 z-0">
+      <div 
+        class="absolute inset-0 bg-cover bg-center scale-105"
+        :style="{ backgroundImage: `url(${program.banner_url || program.thumbnail_url || '/program_placeholder.png'})` }"
+      ></div>
+      <!-- Gradient Overlays -->
+      <div class="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/60 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/10 to-transparent"></div>
+    </div>
+
     <!-- Content -->
-    <div class="relative z-10 p-8 lg:p-16 flex flex-col gap-6 max-w-3xl w-full">
-      <!-- Category -->
-      <div class="text-secondary font-black text-sm tracking-widest uppercase flex items-center gap-2 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">
-        <span class="material-symbols-outlined text-sm">school</span>
-        {{ getCategoryLabel(program.category) }}
-      </div>
-
-      <!-- Title -->
-      <h1 class="text-white text-4xl sm:text-5xl lg:text-7xl font-black leading-tight tracking-tight uppercase">
-        <template v-if="getProgramTitle(program).includes(':')">
-          {{ getProgramTitle(program).split(':')[0] }}:
-          <span class="neon-gradient-text">
-            {{ getProgramTitle(program).split(':')[1]?.trim() || '' }}
+    <div class="relative z-10 w-full max-w-[1800px] mx-auto px-4 md:px-10 flex flex-col justify-center h-full pt-10 pb-20">
+      <div class="max-w-2xl animate-fade-in-up space-y-6">
+        <!-- Category Badge -->
+        <div class="flex items-center gap-2 mb-2">
+          <div class="bg-gradient-to-r from-secondary to-primary w-1 h-10 rounded-full"></div>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-white font-black tracking-[0.2em] uppercase text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">
+            {{ getCategoryBadge(program.category) }}
           </span>
-        </template>
-        <template v-else>
-          {{ getProgramTitle(program) }}
-        </template>
-      </h1>
-      
-      <!-- Description -->
-      <p class="text-white/70 text-lg md:text-xl font-medium leading-relaxed max-w-xl line-clamp-3 italic">
-        {{ getProgramDescription(program) }}
-      </p>
-      
-      <!-- Meta Info -->
-      <div class="flex flex-wrap gap-6 text-white/50 font-bold uppercase tracking-widest text-xs">
-         <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary text-sm">schedule</span>
-            {{ program.duration_hours }}h
-         </div>
+        </div>
 
-      </div>
+        <!-- Title -->
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] drop-shadow-2xl">
+          <template v-if="getProgramTitle(program).includes(':')">
+            {{ getProgramTitle(program).split(':')[0] }}<br/>
+            <span class="text-neon-gradient">
+              {{ getProgramTitle(program).split(':')[1]?.trim() || '' }}
+            </span>
+          </template>
+          <template v-else>
+            {{ getProgramTitle(program) }}
+          </template>
+        </h1>
 
-      <!-- Buttons -->
-      <div class="flex flex-wrap gap-4 mt-6">
-        <button
-          class="flex items-center justify-center rounded-xl h-14 px-10 bg-secondary hover:bg-secondary/90 text-black text-lg font-black transition-all shadow-[0_0_30px_rgba(0,240,255,0.3)] hover:shadow-[0_0_40px_rgba(0,240,255,0.5)] transform hover:-translate-y-1 active:scale-95 uppercase tracking-tighter"
-          @click="$emit('details', program.id)"
-        >
-          {{ t('programs.getStarted') || 'Começar Agora' }}
-        </button>
-        <div class="flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-6 h-14 backdrop-blur-md">
-           <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">{{ t('programs.price') }}</span>
-           <span class="text-white text-2xl font-black">${{ program.price_usd }}</span>
+        <!-- Meta Info -->
+        <div class="flex items-center flex-wrap gap-4 text-sm md:text-base font-medium text-gray-200">
+          <span v-if="program.duration_hours">{{ program.duration_hours }}h de conteúdo</span>
+          <span v-if="program.duration_hours && program.category" class="text-gray-400">•</span>
+          <span>{{ getCategoryLabel(program.category) }}</span>
+        </div>
+
+        <!-- Description -->
+        <p class="text-lg md:text-xl text-gray-300 leading-relaxed drop-shadow-md max-w-xl line-clamp-3">
+          {{ getProgramDescription(program) }}
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+          <button
+            class="px-10 py-4 rounded bg-white text-black font-black text-xl hover:bg-secondary transition-all flex items-center justify-center gap-3 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            @click="handleAction"
+          >
+            <span class="material-symbols-outlined text-3xl fill-current">
+              {{ isEnrolled ? 'play_arrow' : 'shopping_cart' }}
+            </span>
+            {{ isEnrolled ? 'Acessar Agora' : (isAuthenticated ? 'Quero Garantir Minha Vaga' : t('auth.login')) }}
+          </button>
         </div>
       </div>
     </div>
@@ -66,18 +69,37 @@
 
 <script setup lang="ts">
 import { useLocale } from '@/composables/useLocale'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 
 const { t, locale: currentLocale } = useLocale()
+const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 interface Props {
   program: any | null
+  isEnrolled?: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
-defineEmits<{
+const emit = defineEmits<{
   details: [id: string]
+  play: [id: string]
 }>()
+
+const handleAction = () => {
+  if (props.isEnrolled) {
+    emit('play', props.program.id)
+  } else {
+    // Se nao estiver matriculado
+    if (!isAuthenticated.value) {
+      // Se for guest, pede login
+      showAuthModal('login')
+    } else {
+      // Se estiver logado, prossegue para compra (emit play que no pai redireciona/abre checkout)
+      emit('play', props.program.id)
+    }
+  }
+}
 
 const getProgramTitle = (program: any) => {
   return currentLocale.value === 'pt-BR' ? program.title_pt : program.title_en
@@ -88,7 +110,6 @@ const getProgramDescription = (program: any) => {
 }
 
 const getCategoryLabel = (catValue: string) => {
-  // Mapping for display
   const categories: Record<string, string> = {
     'curso': t('programs.filterCourse'),
     'mentoria': t('programs.filterMentoring'),
@@ -98,28 +119,39 @@ const getCategoryLabel = (catValue: string) => {
   }
   return categories[catValue] || catValue
 }
+
+const getCategoryBadge = (catValue: string) => {
+  const badges: Record<string, string> = {
+    'curso': 'Curso Premium',
+    'mentoria': 'Mentoria Exclusiva',
+    'workshop': 'Workshop Intensivo',
+    'evento_premium': 'Evento Premium',
+    'servico_especializado': 'Serviço Especializado'
+  }
+  return badges[catValue] || 'Programa'
+}
 </script>
 
 <style scoped>
-.bg-neon-gradient {
-  background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
-}
-
-.bg-neon-gradient-hover {
-  background: linear-gradient(135deg, #d914d9 0%, #00cce6 100%);
-}
-
-.neon-gradient-text {
-  background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+.text-neon-gradient {
+  background: linear-gradient(90deg, #00f0ff, #ff0099);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: #00f0ff;
-  display: inline-block;
-  text-shadow: 0 0 20px rgba(244, 37, 244, 0.5), 0 0 20px rgba(0, 240, 255, 0.5);
 }
 
-.shadow-neon-blue {
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

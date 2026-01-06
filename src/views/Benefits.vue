@@ -117,14 +117,41 @@
             </div>
           </div>
           
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
             <BenefitCard
-              v-for="benefit in otherBenefits"
+              v-for="(benefit, index) in displayedOtherBenefits"
               :key="benefit.id"
               :benefit="benefit"
               :is-claimed="isBenefitClaimed(benefit.id)"
+              :class="{
+                'blur-sm opacity-60 pointer-events-none': !isAuthenticated && index >= guestLimit - 3
+              }"
               @claim="handleClaimBenefit(benefit.id)"
             />
+            
+            <!-- Guest Blocker Overlay -->
+            <div 
+              v-if="!isAuthenticated && otherBenefits.length > guestLimit"
+              class="absolute inset-0 flex items-center justify-center pointer-events-none"
+            >
+              <div class="pointer-events-auto bg-white/95 dark:bg-surface-card/95 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8 max-w-md text-center shadow-2xl">
+                <div class="mb-4">
+                  <span class="material-symbols-outlined text-5xl text-secondary">lock_open</span>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">
+                  Veja Todos os {{ benefits.length }} Benefícios
+                </h3>
+                <p class="text-slate-600 dark:text-gray-300 mb-6">
+                  Cadastre-se gratuitamente para acessar descontos exclusivos e parcerias premium
+                </p>
+                <button 
+                  @click="showAuthModal('signup')"
+                  class="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white font-black rounded-lg hover:shadow-lg hover:scale-105 transition-all"
+                >
+                  Criar Conta Grátis
+                </button>
+              </div>
+            </div>
             
             <!-- Card "Sugerir Parceiro" -->
             <!-- <div class="bg-[#1a0a1f] p-6 rounded-2xl border border-white/10 hover:border-white/20 transition-colors flex flex-col items-center justify-center gap-4 group cursor-pointer text-center h-full">
@@ -176,6 +203,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BenefitCard from '@/components/features/benefits/BenefitCard.vue'
 import BenefitCardFeatured from '@/components/features/benefits/BenefitCardFeatured.vue'
@@ -184,9 +212,12 @@ import { useBenefits } from '@/composables/useBenefits'
 import { toast } from 'vue-sonner'
 
 const { benefits, loading, fetchBenefits, fetchUserBenefits, claimBenefit, isBenefitClaimed } = useBenefits()
+const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 const { t } = useI18n()
 const activeFilter = ref('all')
 const benefitsSection = ref<HTMLElement | null>(null)
+
+const guestLimit = getContentLimit('benefits')
 
 function scrollToBenefits() {
   if (benefitsSection.value) {
@@ -218,7 +249,19 @@ const otherBenefits = computed(() => {
   return filteredBenefits.value.filter(b => !b.destaque_mes)
 })
 
+const displayedOtherBenefits = computed(() => {
+  if (isAuthenticated.value) {
+    return otherBenefits.value
+  }
+  return otherBenefits.value.slice(0, guestLimit)
+})
+
 async function handleClaimBenefit(benefitId: string) {
+  if (!isAuthenticated.value) {
+    showAuthModal('signup')
+    return
+  }
+  
   const success = await claimBenefit(benefitId)
   if (success) {
     toast.success(t('benefits.claimSuccess'))

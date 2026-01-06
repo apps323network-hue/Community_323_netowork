@@ -91,9 +91,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 import type { Event } from '@/types/events'
 
 const { t } = useI18n()
+const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 interface Props {
   event: Event
@@ -289,6 +291,12 @@ const buttonIcon = computed(() => {
 })
 
 function handleAction() {
+  // Guests must sign up to confirm attendance
+  if (!isAuthenticated.value) {
+    showAuthModal('signup')
+    return
+  }
+  
   if (props.event.is_confirmed) {
     emit('cancel', props.event.id)
   } else {

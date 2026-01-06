@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'Home',
     component: () => import('@/views/Home.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true, limitedForGuests: true },
   },
   {
     path: '/posts-salvos',
@@ -76,7 +76,7 @@ const routes: RouteRecordRaw[] = [
     path: '/comunidade',
     name: 'Members',
     component: () => import('@/views/Members.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true, limitedForGuests: true },
   },
   {
     path: '/comunidade/:id',
@@ -88,13 +88,13 @@ const routes: RouteRecordRaw[] = [
     path: '/eventos',
     name: 'Events',
     component: () => import('@/views/Events.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true },
   },
   {
     path: '/eventos/:id',
     name: 'EventDetail',
     component: () => import('@/views/EventDetail.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true },
   },
   {
     path: '/eventos/calendario',
@@ -106,7 +106,7 @@ const routes: RouteRecordRaw[] = [
     path: '/servicos',
     name: 'Services',
     component: () => import('@/views/Services.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true },
   },
   {
     path: '/meus-servicos',
@@ -130,7 +130,7 @@ const routes: RouteRecordRaw[] = [
     path: '/beneficios',
     name: 'Benefits',
     component: () => import('@/views/Benefits.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true, limitedForGuests: true },
   },
   {
     path: '/perfil',
@@ -179,13 +179,13 @@ const routes: RouteRecordRaw[] = [
     path: '/programas',
     name: 'Programs',
     component: () => import('@/views/Programs.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true },
   },
   {
     path: '/programas/:id',
     name: 'ProgramDetail',
     component: () => import('@/views/ProgramDetail.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true },
   },
   {
     path: '/meus-programas',
@@ -210,7 +210,7 @@ const routes: RouteRecordRaw[] = [
     path: '/programas/:id/assistir',
     name: 'ProgramPlayer',
     component: () => import('@/views/ProgramPlayer.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false, publicAccess: true },
   },
   {
     path: '/admin',
@@ -308,6 +308,13 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(_to, _from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  },
 })
 
 // Guard de autenticação
@@ -348,12 +355,20 @@ router.beforeEach(async (to, _from, next) => {  // Detectar se é uma URL de rec
 
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
+  const publicAccess = to.matched.some(record => record.meta.publicAccess)
   const requiresPlan = to.matched.some(record => record.meta.requiresPlan) ?
     (to.matched.find(record => record.meta.requiresPlan)?.meta.requiresPlan as string) : undefined
 
   // Páginas públicas que podem ser acessadas mesmo logado (forgot-password, reset-password)
   const publicPages = ['/forgot-password', '/reset-password']
   const isPublicPage = publicPages.includes(to.path)
+
+  // Allow public access routes even without authentication
+  // Components will handle showing limited content
+  if (publicAccess && !authStore.user) {
+    next()
+    return
+  }
 
   // Verificar se precisa de autenticação
   if (requiresAuth && !authStore.user) {

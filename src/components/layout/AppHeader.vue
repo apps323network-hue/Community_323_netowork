@@ -111,26 +111,6 @@
               ></span>
             </RouterLink>
             <RouterLink
-              v-if="authStore.user"
-              to="/meus-programas"
-              class="relative px-3 py-2 text-sm font-medium transition-colors group"
-              :class="
-                route.path === '/meus-programas'
-                  ? 'text-slate-900 dark:text-white'
-                  : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
-              "
-            >
-              {{ t('programs.myPrograms') }}
-              <span
-                v-if="route.path === '/meus-programas'"
-                class="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-secondary transform scale-x-100 transition-transform"
-              ></span>
-              <span
-                v-else
-                class="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform"
-              ></span>
-            </RouterLink>
-            <RouterLink
               to="/servicos"
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="
@@ -171,8 +151,24 @@
           </div>
         </div>
 
+        <!-- Auth Actions - Desktop -->
+        <div v-if="!isAuthenticated && props.showNavigation" class="hidden md:flex items-center gap-3">
+          <button
+            @click="showAuthModal('login')"
+            class="px-4 py-2 text-sm font-bold text-slate-600 dark:text-gray-300 hover:text-primary dark:hover:text-secondary transition-colors"
+          >
+            {{ t('auth.login') || 'Entrar' }}
+          </button>
+          <button
+            @click="showAuthModal('signup')"
+            class="px-5 py-2 text-sm font-bold bg-gradient-to-r from-secondary to-primary text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all"
+          >
+            {{ t('auth.register') || 'Cadastrar' }}
+          </button>
+        </div>
+
         <!-- Mobile Menu - User -->
-        <div v-if="props.showNavigation" class="md:hidden flex items-center gap-3">
+        <div v-if="isAuthenticated && props.showNavigation" class="md:hidden flex items-center gap-3">
           
           <!-- User Menu Mobile -->
           <div class="relative" ref="userMenuContainerMobile">
@@ -472,7 +468,7 @@
           </div>
           
           <!-- User Menu (only when logged in) -->
-          <template v-if="props.showNavigation">
+          <template v-if="isAuthenticated && props.showNavigation">
             <div class="relative group cursor-pointer" ref="userMenuContainer">
             <div class="flex items-center gap-2 lg:gap-3" @click.stop="toggleUserMenu">
               <div class="relative">
@@ -607,6 +603,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { useLocale } from '@/composables/useLocale'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 
@@ -623,6 +620,7 @@ const props = withDefaults(defineProps<Props>(), {
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const { isAuthenticated, showAuthModal } = usePublicAccess()
 const { locale: currentLocale, setLocale, availableLocales, t } = useLocale()
 // Theme toggle is now handled by AnimatedThemeToggler component
 

@@ -130,25 +130,42 @@
         <!-- Members List/Grid -->
         <div
           v-if="viewMode === 'list'"
-          class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden"
+          class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden relative"
         >
           <MemberCard
-            v-for="member in allMembers"
+            v-for="(member, index) in displayMembers"
             :key="member.id"
             :member="member"
             variant="list"
+            :class="{ 'blur-[1px] opacity-60 pointer-events-none': !isAuthenticated && index >= guestLimit - 2 }"
             @view-profile="handleViewProfile"
             @bookmark-changed="handleBookmarkChanged"
           />
         </div>
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
           <MemberCard
-            v-for="member in allMembers"
+            v-for="(member, index) in displayMembers"
             :key="member.id"
             :member="member"
             variant="featured"
+            :class="{ 'blur-[1px] opacity-60 pointer-events-none': !isAuthenticated && index >= guestLimit - 3 }"
             @view-profile="handleViewProfile"
             @bookmark-changed="handleBookmarkChanged"
+          />
+        </div>
+
+        <!-- Guest Blocker -->
+        <div 
+          v-if="!isAuthenticated && allMembers.length > guestLimit"
+          class="relative mt-8"
+        >
+          <div class="absolute -top-32 left-0 right-0 h-32 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent pointer-events-none z-10"></div>
+          <GuestBlocker
+            :show="true"
+            variant="inline"
+            title="Conecte-se com a Comunidade"
+            message="Cadastre-se para ver todos os membros, acessar perfis detalhados e fazer networking direto."
+            cta="Criar Conta Grátis"
           />
         </div>
 
@@ -161,7 +178,7 @@
         />
 
         <!-- Load More Button -->
-        <div v-if="!loading && hasMore" class="mt-6 sm:mt-8 flex justify-center">
+        <div v-if="!loading && hasMore && (isAuthenticated || allMembers.length < guestLimit)" class="mt-6 sm:mt-8 flex justify-center">
           <button
             class="px-6 sm:px-8 py-3 sm:py-4 rounded-xl border border-white/10 text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5 hover:shadow-neon-blue transition-all duration-300 text-xs sm:text-sm font-bold tracking-wide uppercase"
             @click="loadMore"
@@ -182,20 +199,24 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import MemberFilters from '@/components/features/members/MemberFilters.vue'
 import MemberCard from '@/components/features/members/MemberCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import GuestBlocker from '@/components/common/GuestBlocker.vue'
 import { useMembers } from '@/composables/useMembers'
 import { useBookmarks } from '@/composables/useBookmarks'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 import type { MemberFilters as MemberFiltersType, Member } from '@/types/members'
 
 const router = useRouter()
 const { t } = useI18n()
 const { members, loading, pagination, totalPages, fetchMembers } = useMembers()
 const { fetchBookmarkedMembers, fetchBookmarks } = useBookmarks()
+const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 
 const viewMode = ref<'grid' | 'list'>('list')
 const filters = ref<MemberFiltersType>({})
 const searchQuery = ref('')
 const showFilters = ref(false)
 const featuredMembersList = ref<Member[]>([])
+const guestLimit = getContentLimit('community')
 
 // Featured members (membros com bookmark) com filtro aplicado
 const featuredMembers = computed(() => {
@@ -232,6 +253,13 @@ const featuredMembers = computed(() => {
 // Todos os membros (mostrar todos, incluindo os 3 primeiros)
 const allMembers = computed(() => members.value)
 
+const displayMembers = computed(() => {
+  if (isAuthenticated.value) {
+    return allMembers.value
+  }
+  return allMembers.value.slice(0, guestLimit)
+})
+
 // Check if there are more pages
 const hasMore = computed(() => pagination.value.page < totalPages.value)
 
@@ -265,12 +293,16 @@ function handleSearch() {
 }
 
 function handleViewProfile(memberId: string) {
+  if (!isAuthenticated.value) {
+    showAuthModal('signup')
+    return
+  }
   router.push(`/comunidade/${memberId}`)
 }
 
 function loadMore() {
   const nextPage = pagination.value.page + 1
-  fetchMembers(filters.value, nextPage)
+  fetchMembers(filters.value, nextPage, true)
 }
 
 async function handleBookmarkChanged(_memberId: string, _isBookmarked: boolean) {

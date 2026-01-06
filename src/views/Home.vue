@@ -1,8 +1,20 @@
 <template>
   <HomeLayout>
     <div class="space-y-8 w-full">
-      <!-- Post Form -->
-      <PostForm @post-created="handlePostCreated" @event-created="handleEventCreated" />
+      <!-- Post Form (only for authenticated users) -->
+      <PostForm v-if="isAuthenticated" @post-created="handlePostCreated" @event-created="handleEventCreated" />
+      
+      <!-- Guest Banner -->
+      <div v-else class="bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/20 rounded-xl p-6 text-center">
+        <h3 class="text-xl font-bold text-white mb-2">Junte-se à Comunidade</h3>
+        <p class="text-gray-300 mb-4">Conecte-se com brasileiros nos EUA e compartilhe suas experiências</p>
+        <button 
+          @click="showAuthModal('signup')"
+          class="px-6 py-2 bg-gradient-to-r from-secondary to-primary text-white font-bold rounded-lg hover:shadow-lg transition-all"
+        >
+          Criar Conta Grátis
+        </button>
+      </div>
 
       <!-- Featured Event Card -->
       <EventCard
@@ -29,9 +41,9 @@
       />
 
       <!-- Posts List -->
-      <div v-else class="space-y-8">
+      <div v-else class="space-y-8 relative">
         <PostCard
-          v-for="post in posts"
+          v-for="post in displayPosts"
           :key="post.id"
           :post="post"
           :show-comments="expandedComments.has(post.id)"
@@ -40,9 +52,26 @@
           @delete-post="handleDeletePost"
         >
           <template #comment-form>
-            <CommentForm :post-id="post.id" @comment-added="handleCommentAdded(post.id)" />
+            <CommentForm v-if="isAuthenticated" :post-id="post.id" @comment-added="handleCommentAdded(post.id)" />
           </template>
         </PostCard>
+        
+        <!-- Guest Blocker -->
+        <div 
+          v-if="!isAuthenticated && posts.length > guestLimit"
+          class="relative mt-4"
+        >
+          <!-- Fade out overlay on the last post area -->
+          <div class="absolute -top-64 left-0 right-0 h-64 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent pointer-events-none z-10"></div>
+          
+          <GuestBlocker
+            :show="true"
+            variant="inline"
+            title="Quer ver mais?"
+            message="Cadastre-se gratuitamente para acessar todo o conteúdo da comunidade e interagir com outros brasileiros."
+            cta="Criar Conta Grátis"
+          />
+        </div>
 
         <!-- Load More -->
         <div v-if="hasMore" ref="loadMoreRef" class="flex justify-center py-4">
@@ -61,11 +90,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePosts } from '@/composables/usePosts'
 import { useEvents } from '@/composables/useEvents'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 import HomeLayout from '@/components/layout/HomeLayout.vue'
 import PostForm from '@/components/features/feed/PostForm.vue'
 import PostCard from '@/components/features/feed/PostCard.vue'
@@ -73,6 +103,7 @@ import CommentForm from '@/components/features/feed/CommentForm.vue'
 import EventCard from '@/components/features/events/EventCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Button from '@/components/ui/Button.vue'
+import GuestBlocker from '@/components/common/GuestBlocker.vue'
 import { toast } from 'vue-sonner'
 import type { PostFilters as PostFiltersType } from '@/types/posts'
 
@@ -86,12 +117,21 @@ const {
 } = usePosts()
 
 const { featuredEvent, loadFeaturedEvent: fetchFeaturedEvent } = useEvents()
+const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 
 const router = useRouter()
 const { t } = useI18n()
 const expandedComments = ref(new Set<string>())
 const loadMoreRef = ref<HTMLElement | null>(null)
 const filters = ref<PostFiltersType>({ sortBy: 'recent' })
+
+const guestLimit = getContentLimit('feed')
+const displayPosts = computed(() => {
+  if (isAuthenticated.value) {
+    return posts.value
+  }
+  return posts.value.slice(0, guestLimit)
+})
 
 async function handlePostCreated() {
   // Reload posts to show the new one

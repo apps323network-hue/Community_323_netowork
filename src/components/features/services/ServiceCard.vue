@@ -32,9 +32,17 @@
       </p>
 
       <!-- Price Section -->
-      <div v-if="service.preco" class="flex items-baseline gap-2 mb-4">
-        <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatPrice(service.preco, service.moeda) }}</span>
-        <span class="text-xs text-slate-500 dark:text-gray-500 uppercase">{{ service.moeda || 'USD' }}</span>
+      <div v-if="service.preco" class="mb-4">
+        <div v-if="isAuthenticated" class="flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-slate-900 dark:text-white">{{ formatPrice(service.preco, service.moeda) }}</span>
+          <span class="text-xs text-slate-500 dark:text-gray-500 uppercase">{{ service.moeda || 'USD' }}</span>
+        </div>
+        <div v-else class="flex items-center gap-2">
+          <div class="px-3 py-1 bg-white/5 border border-white/10 rounded-md backdrop-blur-sm grayscale opacity-50 select-none cursor-pointer" @click="showAuthModal('signup')">
+            <span class="text-sm font-bold text-white/50 blur-[2px]">$99.99</span>
+          </div>
+          <span class="text-[10px] font-bold text-secondary uppercase tracking-tight">Login para ver preço</span>
+        </div>
       </div>
 
       <!-- Benefit Section -->
@@ -55,7 +63,7 @@
       :class="service.preco 
         ? 'bg-gradient-to-r from-primary to-secondary text-black hover:shadow-[0_0_20px_rgba(244,37,244,0.4)]' 
         : 'border border-secondary/50 bg-transparent text-secondary group-hover:bg-secondary group-hover:text-black hover:shadow-[0_0_15px_rgba(0,243,255,0.4)]'"
-      @click="$emit('request-service', service)"
+      @click="handleAction"
     >
       {{ service.preco ? t('services.contractService') : t('services.requestSupport') }}
     </button>
@@ -64,8 +72,10 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 
 const { t } = useI18n()
+const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 interface Service {
   id: string
@@ -79,11 +89,11 @@ interface Service {
   moeda?: string
 }
 
-defineProps<{
+const props = defineProps<{
   service: Service
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'request-service': [service: Service]
 }>()
 
@@ -103,5 +113,13 @@ function formatPrice(cents: number, currency: string = 'USD'): string {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(amount)
   }
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+}
+
+function handleAction() {
+  if (!isAuthenticated.value) {
+    showAuthModal('signup')
+    return
+  }
+  emit('request-service', props.service)
 }
 </script>

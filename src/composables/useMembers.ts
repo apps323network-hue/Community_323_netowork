@@ -13,11 +13,11 @@ export function useMembers() {
     total: 0,
   })
 
-  const totalPages = computed(() => 
+  const totalPages = computed(() =>
     Math.ceil(pagination.value.total / pagination.value.perPage)
   )
 
-  async function fetchMembers(filters: MemberFilters = {}, page = 1) {
+  async function fetchMembers(filters: MemberFilters = {}, page = 1, append = false) {
     loading.value = true
     error.value = null
 
@@ -67,7 +67,11 @@ export function useMembers() {
 
       if (queryError) throw queryError
 
-      members.value = data || []
+      if (append) {
+        members.value = [...members.value, ...(data || [])]
+      } else {
+        members.value = data || []
+      }
       pagination.value = {
         ...pagination.value,
         page,
@@ -88,11 +92,11 @@ export function useMembers() {
     try {
       // Check if it's a valid UUID format
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrUsername)
-      
+
       let query = supabase
         .from('profiles')
         .select('*')
-      
+
       if (isUUID) {
         // If it's a UUID, search by id
         query = query.eq('id', idOrUsername)
@@ -106,18 +110,18 @@ export function useMembers() {
           .from('profiles')
           .select('*')
           .ilike('nome', idOrUsername)
-        
+
         if (listError) throw listError
-        
+
         if (!dataList || dataList.length === 0) {
           return null // User not found
         }
-        
+
         // Find exact match (case-insensitive)
-        const exactMatch = dataList.find(profile => 
+        const exactMatch = dataList.find(profile =>
           profile.nome && profile.nome.toLowerCase() === idOrUsername.toLowerCase()
         )
-        
+
         return exactMatch || dataList[0] // Return exact match or first result
       }
     } catch (err: any) {

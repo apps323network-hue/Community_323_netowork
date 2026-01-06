@@ -1,7 +1,7 @@
 <template>
   <aside class="lg:sticky lg:top-20 h-fit space-y-6">
-    <!-- Profile Card -->
-    <div class="bg-white dark:bg-surface-dark rounded-xl p-6 relative overflow-hidden shadow-xl border-t border-slate-200 dark:border-gray-800 group">
+    <!-- Profile Card (Authenticated) -->
+    <div v-if="isAuthenticated" class="bg-white dark:bg-surface-dark rounded-xl p-6 relative overflow-hidden shadow-xl border-t border-slate-200 dark:border-gray-800 group">
       <!-- Neon glow effects -->
       <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-primary/20 transition-all duration-500"></div>
       <div class="absolute bottom-0 left-0 w-24 h-24 bg-secondary/10 blur-3xl rounded-full -ml-10 -mb-10 group-hover:bg-secondary/20 transition-all duration-500"></div>
@@ -18,6 +18,21 @@
           @click="$emit('edit-profile')"
         >
           {{ t('profile.editProfile') }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Register CTA (Guest) -->
+    <div v-else class="bg-gradient-to-br from-indigo-900 via-slate-900 to-black rounded-xl p-6 relative overflow-hidden shadow-2xl border border-white/10 group">
+      <div class="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 blur-3xl rounded-full group-hover:bg-secondary/30 transition-all"></div>
+      <div class="relative z-10">
+        <h2 class="text-xl font-black text-white mb-2 leading-tight">Faça parte da Rede 323</h2>
+        <p class="text-sm text-gray-300 mb-6">Conecte-se, aprenda e cresça com brasileiros nos EUA.</p>
+        <button
+          class="w-full bg-gradient-to-r from-secondary to-primary text-white font-black py-3 px-4 rounded-lg transition-all shadow-lg hover:shadow-secondary/40 hover:scale-[1.02]"
+          @click="showAuthModal('signup')"
+        >
+          Criar Conta Grátis
         </button>
       </div>
     </div>
@@ -162,6 +177,7 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 
 defineEmits<{
   'edit-profile': []
@@ -170,6 +186,7 @@ defineEmits<{
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const { t } = useI18n()
+const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 // Pegar o primeiro nome do perfil, ou fallback para email
 const userName = computed(() => {

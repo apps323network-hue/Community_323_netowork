@@ -118,7 +118,7 @@
                             {{ t('programs.paymentModal.processing') }}
                           </template>
                           <template v-else>
-                            {{ isSoldOut ? t('programs.programFull') : t('programs.paymentModal.enroll') }}
+                            {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : 'Garantir Minha Vaga') }}
                             <span class="material-icons text-sm font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
                           </template>
                         </span>
@@ -325,7 +325,7 @@
                           {{ t('programs.paymentModal.processing') }}
                         </template>
                         <template v-else>
-                          {{ isSoldOut ? t('programs.programFull') : t('programs.paymentModal.enroll') }}
+                          {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : 'Garantir Minha Vaga') }}
                           <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </template>
                       </span>
@@ -499,6 +499,7 @@ import { useLocale } from '@/composables/useLocale'
 import { useProgramsStore } from '@/stores/programs'
 import { useModulesStore } from '@/stores/modules'
 import { useSupabase } from '@/composables/useSupabase'
+import { usePublicAccess } from '@/composables/usePublicAccess'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Modal from '@/components/ui/Modal.vue'
 import { toast } from 'vue-sonner'
@@ -509,6 +510,7 @@ const { t, locale: currentLocale } = useLocale()
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
 const modulesStore = useModulesStore()
+const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 const programId = computed(() => route.params.id as string)
 const program = computed(() => programsStore.currentProgram)
@@ -597,6 +599,10 @@ function calculateTotal(basePriceCents: number, method: 'card' | 'pix'): number 
 }
 
 const handleRequestEnroll = () => {
+    if (!isAuthenticated.value) {
+        showAuthModal('login')
+        return
+    }
   showCheckoutModal.value = true
 }
 
