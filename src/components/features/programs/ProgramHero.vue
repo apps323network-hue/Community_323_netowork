@@ -44,10 +44,7 @@
             <span class="material-symbols-outlined text-secondary text-sm">schedule</span>
             {{ program.duration_hours }}h
          </div>
-         <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary text-sm">bar_chart</span>
-            {{ t(`programs.${program.difficulty_level?.toLowerCase()}`) || program.difficulty_level }}
-         </div>
+
       </div>
 
       <!-- Buttons -->

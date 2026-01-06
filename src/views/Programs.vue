@@ -120,10 +120,7 @@
                     <span class="material-symbols-outlined text-sm text-secondary">schedule</span>
                     {{ program.duration_hours }}h
                   </div>
-                  <div class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-sm text-secondary">bar_chart</span>
-                    {{ t(`programs.${program.difficulty_level?.toLowerCase()}`) || program.difficulty_level }}
-                  </div>
+
                 </div>
                 
                 <span class="material-symbols-outlined text-secondary group-hover:translate-x-1 transition-transform">arrow_forward</span>

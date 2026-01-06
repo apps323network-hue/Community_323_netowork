@@ -30,7 +30,7 @@
           </div>
 
           <!-- Hero Content -->
-          <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
+          <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-12">
             <div class="max-w-3xl space-y-4 md:space-y-6">
               <!-- Category Badge -->
                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-widest w-fit">
@@ -38,26 +38,26 @@
                 {{ program.category.replace('_', ' ') }}
               </div>
 
-              <h1 class="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
+              <h1 class="text-2xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
                 {{ title }}
               </h1>
 
               <div class="flex flex-wrap items-center gap-4 md:gap-6 text-white/90">
                 <div v-if="program.instructor_name" class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary p-0.5 shadow-lg">
-                    <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-xs text-white uppercase">
+                  <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary p-0.5 shadow-lg">
+                    <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-[10px] text-white uppercase">
                       {{ program.instructor_name.substring(0, 2) }}
                     </div>
                   </div>
                   <div>
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-white/50 leading-none mb-1">Instrutor</p>
-                    <p class="font-bold text-white">{{ program.instructor_name }}</p>
+                    <p class="text-[8px] font-bold uppercase tracking-wider text-white/50 leading-none mb-1">Instrutor</p>
+                    <p class="font-bold text-xs md:text-base text-white">{{ program.instructor_name }}</p>
                   </div>
                 </div>
 
-                <div v-if="program.duration_hours" class="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/5">
-                  <span class="material-icons text-primary text-sm">schedule</span>
-                  <span class="font-bold text-sm">{{ program.duration_hours }} Horas</span>
+                <div v-if="program.duration_hours" class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/5">
+                  <span class="material-icons text-primary text-xs md:text-sm">schedule</span>
+                  <span class="font-bold text-[10px] md:text-sm">{{ program.duration_hours }} Horas</span>
                 </div>
               </div>
             </div>
@@ -70,37 +70,37 @@
             <!-- Sidebar (Desktop Left/Bottom Mobile) - Moved Right -->
             <div class="lg:col-span-8 space-y-8">
               <!-- About -->
-              <section class="bg-white dark:bg-surface-dark rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-white/5 transition-all hover:shadow-primary/5">
+              <section class="bg-white dark:bg-surface-dark rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-white/5 transition-all hover:shadow-primary/5">
                 <div class="flex items-center gap-3 mb-6">
-                  <div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                    <span class="material-icons">description</span>
+                  <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                    <span class="material-icons text-lg md:text-2xl">description</span>
                   </div>
-                  <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                  <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
                     {{ t('programs.aboutProgram') }}
                   </h2>
                 </div>
-                <div class="text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed text-lg">
+                <div class="text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed text-base md:text-lg">
                   {{ description }}
                 </div>
               </section>
 
               <!-- Mobile Price Card (Visible only on mobile) -->
-              <div class="block lg:hidden">
-                <div class="bg-white dark:bg-surface-dark rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-white/5 overflow-hidden relative group">
+              <div class="block lg:hidden px-2">
+                <div class="bg-white dark:bg-surface-dark rounded-[32px] p-6 md:p-8 shadow-2xl border border-slate-200 dark:border-white/5 overflow-hidden relative group">
                   <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors"></div>
                   
-                  <div class="relative space-y-8">
+                  <div class="relative space-y-6">
                     <div class="text-center space-y-2">
                       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest">
                         Melhor Oferta do Dia
                       </div>
                       <div class="flex justify-center items-baseline gap-1">
-                        <span class="text-3xl font-black text-slate-900 dark:text-white leading-none">$</span>
-                        <span class="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-primary to-secondary dark:from-white leading-none tracking-tighter">
+                        <span class="text-2xl font-black text-slate-900 dark:text-white leading-none">$</span>
+                        <span class="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-primary to-secondary dark:from-white leading-none tracking-tighter">
                           {{ program.price_usd }}
                         </span>
                       </div>
-                      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} Único</p>
+                      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} Único</p>
                     </div>
 
                     <!-- CTA Button -->
@@ -109,29 +109,29 @@
                         v-if="!isEnrolled"
                         @click="handleRequestEnroll"
                         :disabled="isSoldOut || submitting"
-                        class="w-full group relative py-5 px-6 rounded-2xl font-black text-black overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-2xl shadow-primary/30"
+                        class="w-full group relative py-4 px-6 rounded-2xl font-black text-black overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-2xl shadow-primary/30"
                       >
                         <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x transition-all"></div>
-                        <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-sm text-black">
+                        <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-xs text-black">
                           <template v-if="submitting">
-                            <span class="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin"></span>
+                            <span class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
                             {{ t('programs.paymentModal.processing') }}
                           </template>
                           <template v-else>
                             {{ isSoldOut ? t('programs.programFull') : t('programs.paymentModal.enroll') }}
-                            <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            <span class="material-icons text-sm font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
                           </template>
                         </span>
                       </button>
 
                       <div v-else class="space-y-4">
-                        <div class="py-5 bg-green-500/10 border border-green-500/20 text-green-500 rounded-2xl font-black text-center flex items-center justify-center gap-2 uppercase tracking-widest text-sm shadow-inner">
-                          <span class="material-icons text-xl">check_circle</span>
+                        <div class="py-4 bg-green-500/10 border border-green-500/20 text-green-500 rounded-2xl font-black text-center flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-inner">
+                          <span class="material-icons text-lg">check_circle</span>
                           MATRICULADO
                         </div>
                         <RouterLink
                           to="/meus-programas"
-                          class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs hover:opacity-90 transition-all shadow-xl"
+                          class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[10px] hover:opacity-90 transition-all shadow-xl"
                         >
                           Acessar Meu Painel
                           <span class="material-icons text-sm">arrow_forward</span>
@@ -158,34 +158,61 @@
               </section>
 
               <!-- Curriculum -->
-              <section v-if="curriculum && curriculum.length > 0" class="space-y-6">
-                <div class="flex items-center justify-between px-2">
+              <section class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2">
                   <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+                    <div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0">
                       <span class="material-icons">list_alt</span>
                     </div>
-                    <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
                       {{ t('programs.curriculum') }}
                     </h2>
                   </div>
-                  <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ curriculum.length }} Módulos</span>
+                  <div class="flex gap-4 sm:text-right px-1 md:px-0">
+                    <div>
+                      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">{{ modules.length }} Módulos</span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">{{ totalLessons }} Aulas</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div class="space-y-4">
                   <div 
-                    v-for="(module, index) in curriculum" 
-                    :key="index" 
-                    class="group bg-white dark:bg-surface-dark rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-white/5 hover:border-secondary/30 transition-all duration-300"
+                    v-for="(module, index) in modules" 
+                    :key="module.id" 
+                    class="group bg-white dark:bg-surface-dark rounded-2xl p-5 md:p-6 shadow-sm border border-slate-200 dark:border-white/5 hover:border-secondary/30 transition-all duration-300"
                   >
-                    <div class="flex items-start gap-5">
-                      <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center font-black text-slate-400 dark:text-gray-500 transition-colors group-hover:bg-secondary group-hover:text-black">
+                    <div class="flex flex-col sm:flex-row items-start gap-4 md:gap-5">
+                      <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center font-black text-slate-400 dark:text-gray-500 transition-colors group-hover:bg-secondary group-hover:text-black shrink-0">
                         {{ String(index + 1).padStart(2, '0') }}
                       </div>
-                      <div class="flex-1">
-                        <h3 class="font-bold text-lg text-slate-900 dark:text-white mb-2 group-hover:text-secondary transition-colors">
-                          {{ module.title }}
-                        </h3>
-                        <p v-if="module.description" class="text-slate-600 dark:text-gray-400 text-sm leading-relaxed">{{ module.description }}</p>
+                      <div class="flex-1 w-full">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                          <h3 class="font-bold text-base md:text-lg text-slate-900 dark:text-white group-hover:text-secondary transition-colors leading-tight">
+                            {{ getTranslatedTitle(module) }}
+                          </h3>
+                          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0">{{ module.lessons?.length || 0 }} Aulas</span>
+                        </div>
+                        <p v-if="getTranslatedDescription(module)" class="text-slate-600 dark:text-gray-400 text-sm leading-relaxed mb-4">{{ getTranslatedDescription(module) }}</p>
+                        
+                        <!-- List of lessons (compact) -->
+                        <div v-if="module.lessons && module.lessons.length > 0" class="space-y-3 mt-4 pl-4 border-l-2 border-slate-100 dark:border-white/5">
+                          <div 
+                            v-for="lesson in module.lessons" 
+                            :key="lesson.id"
+                            class="flex items-start gap-3 text-sm text-slate-500 dark:text-gray-400"
+                          >
+                             <span class="material-icons text-xs mt-0.5 opacity-50 shrink-0">play_circle</span>
+                             <div class="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+                               <span class="font-bold text-slate-700 dark:text-gray-300 leading-tight">
+                                 {{ getTranslatedTitle(lesson) }}
+                               </span>
+                               <span v-if="lesson.is_preview" class="text-[8px] font-black uppercase text-secondary border border-secondary/30 px-1.5 py-0.5 rounded shrink-0">Preview</span>
+                             </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -470,6 +497,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLocale } from '@/composables/useLocale'
 import { useProgramsStore } from '@/stores/programs'
+import { useModulesStore } from '@/stores/modules'
 import { useSupabase } from '@/composables/useSupabase'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Modal from '@/components/ui/Modal.vue'
@@ -480,6 +508,7 @@ const route = useRoute()
 const { t, locale: currentLocale } = useLocale()
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
+const modulesStore = useModulesStore()
 
 const programId = computed(() => route.params.id as string)
 const program = computed(() => programsStore.currentProgram)
@@ -512,13 +541,19 @@ const prerequisites = computed(() =>
     : null
 )
 
-const curriculum = computed(() =>
-  program.value
-    ? currentLocale.value === 'pt-BR'
-      ? program.value.curriculum_pt
-      : program.value.curriculum_en
-    : null
-)
+const modules = computed(() => modulesStore.getModulesByProgram(programId.value))
+
+const totalLessons = computed(() => {
+  return modules.value.reduce((sum, m) => sum + (m.lessons?.length || 0), 0)
+})
+
+const getTranslatedTitle = (item: any) => {
+  return currentLocale.value === 'pt-BR' ? item.title_pt : item.title_en
+}
+
+const getTranslatedDescription = (item: any) => {
+  return currentLocale.value === 'pt-BR' ? item.description_pt : item.description_en
+}
 
 const isEnrolled = computed(() => !!program.value?.user_enrollment && program.value.user_enrollment.status === 'active')
 
@@ -602,6 +637,7 @@ const handleCheckout = async () => {
 
 onMounted(async () => {
   programsStore.fetchProgramById(programId.value)
+  modulesStore.fetchModulesWithLessons(programId.value)
   const rate = await fetchExchangeRate()
   exchangeRate.value = rate
 })
