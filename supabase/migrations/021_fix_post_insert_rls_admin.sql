@@ -23,3 +23,4 @@ COMMENT ON POLICY "Active users can create posts (pending by default)" ON public
 'Permite que admins criem posts com qualquer status, e usuários ativos criem posts com status pending';
 
 
+

@@ -11,9 +11,12 @@
         class="text-center mb-12 md:mb-16 section-reveal"
         :class="{ 'revealed': headerVisible }"
       >
-        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-2">
           {{ t('partners.benefits.title') }}
         </h2>
+        <p class="text-xl sm:text-2xl font-bold text-primary dark:text-secondary mb-4">
+          {{ t('partners.benefits.subtitle') }}
+        </p>
         <p class="text-lg text-slate-600 dark:text-gray-400 max-w-2xl mx-auto">
           {{ t('partners.benefits.description') }}
         </p>
@@ -23,7 +26,7 @@
       <!-- Benefits Grid -->
       <div 
         ref="gridRef"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
       >
         <div
           v-for="(benefit, index) in benefits"
@@ -73,10 +76,10 @@ const cardsVisible = ref(false)
 let observer: IntersectionObserver | null = null
 
 const benefits = [
-  { key: 'niche', icon: 'target' },
-  { key: 'purchasing', icon: 'trending_up' },
-  { key: 'regular', icon: 'event_repeat' },
-  { key: 'activation', icon: 'qr_code_scanner' },
+  { key: 'attention', icon: 'campaign' },
+  { key: 'access', icon: 'event' },
+  { key: 'immersion', icon: 'explore' },
+  { key: 'authority', icon: 'school' },
 ]
 
 onMounted(() => {

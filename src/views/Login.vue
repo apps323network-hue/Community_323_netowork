@@ -237,6 +237,18 @@
               />
             </div>
             <div>
+              <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="reg-phone"
+                >{{ t('auth.phone') }}</label
+              >
+              <input
+                id="reg-phone"
+                v-model="registerForm.phone"
+                type="tel"
+                class="block w-full px-3 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all duration-300 sm:text-sm"
+                :placeholder="t('auth.phonePlaceholder')"
+              />
+            </div>
+            <div>
               <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="reg-password"
                 >{{ t('auth.password') }}</label
               >
@@ -421,6 +433,27 @@ const loginErrorModal = ref({
   isEmailNotConfirmed: false,
 })
 
+// Ler query parameters para integração com American Dream
+const source = route.query.source as string
+// Decodificar returnTo se estiver URL-encoded (Vue Router pode já decodificar, mas garantir)
+let returnTo = route.query.returnTo as string
+if (returnTo) {
+  try {
+    returnTo = decodeURIComponent(returnTo)
+  } catch {
+    // Se falhar, usar o valor original
+  }
+}
+const prefillEmail = route.query.email as string
+const prefillName = route.query.name as string
+const prefillPhone = route.query.phone as string
+const prefillCountryCode = route.query.phoneCountryCode as string || 'BR'
+
+// Se veio do American Dream, ativar aba de registro e pré-preencher
+if (source === 'american-dream') {
+  activeTab.value = 'register'
+}
+
 const loginForm = ref({
   email: '',
   password: '',
@@ -429,9 +462,17 @@ const loginForm = ref({
 const registerForm = ref({
   firstName: '',
   lastName: '',
-  email: '',
+  email: prefillEmail || '',
+  phone: prefillPhone || '',
   password: '',
 })
+
+// Pré-preencher nome se veio do American Dream
+if (source === 'american-dream' && prefillName) {
+  const nameParts = prefillName.split(' ')
+  registerForm.value.firstName = nameParts[0] || ''
+  registerForm.value.lastName = nameParts.slice(1).join(' ') || ''
+}
 
 async function handleLogin() {
   const startTime = performance.now()
@@ -459,6 +500,21 @@ async function handleLogin() {
 
     const redirectStartTime = performance.now()
     console.log(`[LOGIN] Redirecionando para: ${redirectTo}`)
+
+    // Verificar se é URL externa (American Dream)
+    if (redirectTo.startsWith('http://') || redirectTo.startsWith('https://')) {
+      // URL externa - redirecionar com token
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) {
+        // Adicionar token à URL se ainda não tiver
+        const url = new URL(redirectTo)
+        if (!url.searchParams.has('token')) {
+          url.searchParams.set('token', session.access_token)
+        }
+        window.location.href = url.toString()
+        return
+      }
+    }
 
     // Redirecionar usando Vue Router para evitar refresh da página
     await router.push(redirectTo)
@@ -614,52 +670,43 @@ onUnmounted(() => {
 async function handleRegister() {
   loading.value = true
   try {
-    const { data, error } = await supabase.auth.signUp({
-      email: registerForm.value.email,
-      password: registerForm.value.password,
-      options: {
-        data: {
-          nome: `${registerForm.value.firstName} ${registerForm.value.lastName}`,
-        },
-      },
-    })
-    if (error) throw error
-
-    // Atualizar o perfil após o signUp
-    if (data.user) {
-      try {
-        await supabase
-          .from('profiles')
-          .update({
-            nome: `${registerForm.value.firstName} ${registerForm.value.lastName}`,
-          })
-          .eq('id', data.user.id)
-      } catch (profileError) {
-        // Se o perfil ainda não existe (trigger não executou), criar manualmente
-        console.log('Tentando criar perfil manualmente:', profileError)
-        try {
-          await supabase.from('profiles').insert({
-            id: data.user.id,
-            nome: `${registerForm.value.firstName} ${registerForm.value.lastName}`,
-            plano: 'Free',
-            badge: 'Free',
-          })
-        } catch (insertError) {
-          console.error('Erro ao criar/atualizar perfil:', insertError)
-          // Não bloquear o fluxo se houver erro no perfil
-        }
+    const result = await authStore.signUp(
+      registerForm.value.email,
+      registerForm.value.password,
+      {
+        firstName: registerForm.value.firstName,
+        lastName: registerForm.value.lastName,
+        nome: `${registerForm.value.firstName} ${registerForm.value.lastName}`,
+        phone: registerForm.value.phone || null,
+        source: source || '323-network', // ✅ Passar source
+        returnTo: returnTo || null, // ✅ Passar returnTo
+        phoneCountryCode: prefillCountryCode || 'BR' // ✅ Passar phoneCountryCode
       }
+    )
+
+    if (!result.success) {
+      throw new Error(result.error || 'Erro ao criar conta')
     }
 
-    // Mostrar modal de verificação de email
-    showEmailVerificationModal.value = true
+    // Se veio do American Dream, não mostrar modal (já redirecionou)
+    if (result.redirected) {
+      // Redirecionamento já foi feito, não fazer nada
+      return
+    }
 
-    // Limpar formulário
-    registerForm.value = {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
+    // Só mostrar modal se não veio do American Dream (já redirecionou)
+    if (source !== 'american-dream') {
+      // Mostrar modal de verificação de email
+      showEmailVerificationModal.value = true
+
+      // Limpar formulário
+      registerForm.value = {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        password: '',
+      }
     }
   } catch (error: any) {
     console.error('Register error:', error)

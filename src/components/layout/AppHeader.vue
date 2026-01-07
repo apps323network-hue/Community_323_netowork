@@ -326,6 +326,32 @@
                   <!-- Divider -->
                   <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
                   
+                  <!-- American Dream Link -->
+                  <button
+                    @click="goToAmericanDream"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors w-full text-left"
+                    @click.stop="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">launch</span>
+                    {{ t('navigation.americanDream') }}
+                  </button>
+                  
+                  <!-- Divider -->
+                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
+                  
+                  <!-- American Dream Link -->
+                  <button
+                    @click="goToAmericanDream"
+                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors w-full text-left"
+                    @click.stop="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">launch</span>
+                    {{ t('navigation.americanDream') }}
+                  </button>
+                  
+                  <!-- Divider -->
+                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
+                  
                   <!-- Dashboard Professor (para profs e admins) -->
                   <div v-if="isProfessor" class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
                     <RouterLink
@@ -598,7 +624,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { useLocale } from '@/composables/useLocale'
-import { usePublicAccess } from '@/composables/usePublicAccess'
+import { useSSO } from '@/composables/useSSO'
 import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 
@@ -617,6 +643,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 const { locale: currentLocale, setLocale, availableLocales, t } = useLocale()
+const { redirectToAmericanDream } = useSSO()
 // Theme toggle is now handled by AnimatedThemeToggler component
 
 const showUserMenu = ref(false)
@@ -695,6 +722,11 @@ async function handleLogout() {
 
   // Redirecionar para página de login usando router
   router.push({ name: 'Login' })
+}
+
+function goToAmericanDream() {
+  showUserMenu.value = false
+  redirectToAmericanDream('/payment')
 }
 
 function handleClickOutside(event: MouseEvent) {

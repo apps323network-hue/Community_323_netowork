@@ -68,6 +68,7 @@
         "dashboardProfessor": "Professor Area",
         "challenges": "Challenges",
         "ranking": "Ranking",
+        "americanDream": "American Dream",
         "logout": "Logout"
     },
     "auth": {
@@ -89,6 +90,12 @@
         "registerSubtitle": "Create your account and start expanding your network.",
         "firstName": "First Name",
         "lastName": "Last Name",
+        "phone": "Phone",
+        "phonePlaceholder": "(optional) Ex: +1 555 123 4567",
+        "callback": {
+            "processing": "Processing authentication...",
+            "pleaseWait": "Please wait"
+        },
         "iAm": "I am...",
         "selectPlaceholder": "Select...",
         "createAccount": "Create Account",
@@ -841,24 +848,25 @@
             "noVideos": "No videos available at the moment"
         },
         "benefits": {
-            "title": "Why Sponsor 323 Network?",
+            "title": "Why Sponsor 323 Network Show?",
+            "subtitle": "American Dream",
             "description": "Reach a qualified, engaged audience with high conversion potential",
             "items": {
-                "niche": {
-                    "title": "100% Niche Audience",
-                    "description": "Brazilians in the USA or with strong intention to come."
+                "attention": {
+                    "title": "Attention (Media Reach)",
+                    "description": "Instagram, YouTube, X, etc. Total reach: 10M now. Projected: 50M next quarter, 100M next year (label as projection/target, not current)."
                 },
-                "purchasing": {
-                    "title": "High Purchasing Power",
-                    "description": "Audience with above-average purchasing power, many already entrepreneurs or in career transition."
+                "access": {
+                    "title": "Access (Events)",
+                    "description": "2-3 events/week. 50-100 attendees/event. These are mentees (high intent, not random audience)."
                 },
-                "regular": {
-                    "title": "Regular Events",
-                    "description": "Regular events throughout the year, generating consistent brand exposure."
+                "immersion": {
+                    "title": "Immersion (3-Day Field Trips / Site Visits)",
+                    "description": "This is a premium sponsorship category by itself: Sponsor gets 3 days of repeated exposure. Content opportunities (daily recap clips, interviews, behind-the-scenes)."
                 },
-                "activation": {
-                    "title": "Activation Possibilities",
-                    "description": "Registrations, coupons, QR codes, links, and exclusive offers."
+                "authority": {
+                    "title": "Authority (Partner Universities/Colleges)",
+                    "description": "This is your trust engine. Sponsors love proximity to institutions."
                 }
             }
         },
