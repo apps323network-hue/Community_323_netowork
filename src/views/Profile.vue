@@ -87,6 +87,8 @@
             v-model:city="editableProfile.cidade"
             v-model:state="editableProfile.estado"
             v-model:nationality="editableProfile.nacionalidade"
+            v-model:email="editableProfile.email"
+            v-model:whatsapp="editableProfile.whatsapp"
             v-model:bio="editableProfile.bio"
             :readonly="isPreviewMode"
           />
@@ -328,7 +330,9 @@ function initEditableState() {
       show_whatsapp: userStore.profile.show_whatsapp ?? false,
       show_email: userStore.profile.show_email ?? false,
       nacionalidade: userStore.profile.nacionalidade || '',
-      estado: userStore.profile.estado || ''
+      estado: userStore.profile.estado || '',
+      email: userStore.profile.email || '',
+      whatsapp: userStore.profile.whatsapp || ''
     }
     
     // Update editable profile

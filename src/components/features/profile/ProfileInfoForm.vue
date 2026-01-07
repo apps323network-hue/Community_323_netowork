@@ -113,6 +113,38 @@
         </div>
       </label>
 
+      <!-- Email -->
+      <label class="block space-y-2 group">
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.contactEmail') }}</span>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-lg">mail</span>
+          <input
+            :value="email"
+            @input="$emit('update:email', ($event.target as HTMLInputElement).value)"
+            type="email"
+            :disabled="readonly"
+            placeholder="seu@email.com"
+            class="form-input w-full pl-11 pr-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm"
+          />
+        </div>
+      </label>
+
+      <!-- WhatsApp -->
+      <label class="block space-y-2 group">
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.whatsapp') }}</span>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-green-500 text-lg">chat</span>
+          <input
+            :value="whatsapp"
+            @input="$emit('update:whatsapp', ($event.target as HTMLInputElement).value)"
+            type="text"
+            :disabled="readonly"
+            placeholder="+55 (00) 00000-0000"
+            class="form-input w-full pl-11 pr-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm"
+          />
+        </div>
+      </label>
+
       <!-- Bio -->
       <label class="block space-y-2 md:col-span-2 group">
         <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.bioPlaceholder') }}</span>
@@ -143,6 +175,8 @@ const props = defineProps<{
   city: string
   state: string
   nationality?: string
+  email?: string
+  whatsapp?: string
   bio: string
   readonly?: boolean
 }>()
@@ -154,6 +188,8 @@ const emit = defineEmits<{
   (e: 'update:city', value: string): void
   (e: 'update:state', value: string): void
   (e: 'update:nationality', value: string): void
+  (e: 'update:email', value: string): void
+  (e: 'update:whatsapp', value: string): void
   (e: 'update:bio', value: string): void
 }>()
 

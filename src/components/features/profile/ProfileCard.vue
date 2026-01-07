@@ -62,6 +62,13 @@
         </span>
         <span class="text-secondary font-black">{{ points }}</span>
       </div>
+      <div class="flex items-center justify-between text-sm group/stat cursor-default">
+        <span class="text-text-muted flex items-center gap-2 group-hover/stat:text-primary transition-colors">
+          <span class="material-symbols-outlined text-[18px]">article</span>
+          Publicações
+        </span>
+        <span class="text-white font-medium">{{ posts }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -83,13 +90,15 @@ interface Props {
   country?: string
   connections?: string | number
   points?: number
+  posts?: number
   readonly?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   country: 'USA',
   connections: 0,
-  points: 0
+  points: 0,
+  posts: 0
 })
 
 defineEmits<{

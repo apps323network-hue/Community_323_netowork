@@ -19,6 +19,9 @@ export interface Member {
   show_email?: boolean
   tags?: string[]
   goals?: string[]
+  bio?: string
+  instagram?: string
+  total_points?: number
 }
 
 export interface MemberFilters {

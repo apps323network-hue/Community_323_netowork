@@ -24,6 +24,7 @@ export interface UserProfile {
   is_public?: boolean
   job_notifications?: boolean
   nacionalidade?: string
+  email?: string
   show_whatsapp?: boolean
   show_email?: boolean
   role?: UserRole

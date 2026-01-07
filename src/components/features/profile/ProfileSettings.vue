@@ -31,10 +31,6 @@
         </button>
       </div>
 
-      <div class="w-full h-px bg-input-border"></div>
-
-      <div class="w-full h-px bg-input-border"></div>
-
       <!-- Show WhatsApp Toggle -->
       <div class="flex items-center justify-between py-2 p-3 rounded-lg hover:bg-white/5 transition-colors">
         <div>
