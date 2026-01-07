@@ -5,7 +5,8 @@
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Currículo</h3>
         <button 
-          @click="$emit('add-module')" 
+          type="button"
+          @click.prevent="$emit('add-module')" 
           class="p-1 hover:bg-secondary/10 rounded-md group transition-all"
           title="Novo Módulo"
         >
@@ -21,7 +22,8 @@
         <span class="material-symbols-outlined text-slate-300 dark:text-gray-700 text-5xl mb-4">account_tree</span>
         <p class="text-sm font-bold text-slate-500 dark:text-gray-400">Nenhum módulo criado ainda.</p>
         <button 
-          @click="$emit('add-module')" 
+          type="button"
+          @click.prevent="$emit('add-module')" 
           class="mt-4 text-xs font-black text-secondary hover:underline"
         >
           + Criar Primeiro Módulo
@@ -51,7 +53,8 @@
             </span>
           </div>
           <button 
-            @click.stop="$emit('add-lesson', module)" 
+            type="button"
+            @click.stop.prevent="$emit('add-lesson', module)" 
             class="hidden group-hover:flex p-1 hover:bg-secondary/20 rounded text-secondary"
             title="Nova Aula"
           >

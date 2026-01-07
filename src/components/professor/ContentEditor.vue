@@ -16,7 +16,8 @@
       <!-- Breadcrumb / Mobile Back -->
       <div class="flex items-center gap-3 mb-6 sm:mb-8">
         <button 
-          @click="$emit('cancel')"
+          type="button"
+          @click.prevent="$emit('cancel')"
           class="sm:hidden p-2 -ml-2 hover:bg-slate-200 dark:hover:bg-white/5 rounded-full transition-all text-slate-600 dark:text-gray-400"
         >
           <span class="material-symbols-outlined">arrow_back</span>
@@ -35,13 +36,15 @@
         </h2>
         <div class="flex gap-3 sm:gap-4">
           <button 
-            @click="$emit('cancel')" 
+            type="button"
+            @click.prevent="$emit('cancel')" 
             class="flex-1 sm:flex-none px-4 sm:px-6 py-3 sm:py-2 rounded-xl font-bold text-slate-600 dark:text-gray-400 bg-white dark:bg-white/5 sm:bg-transparent border border-slate-200 dark:border-white/10 sm:border-0 hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-sm sm:text-base"
           >
             Cancelar
           </button>
           <button 
-            @click="handleSubmit" 
+            type="button"
+            @click.prevent="handleSubmit" 
             :disabled="loading"
             class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 sm:py-2 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 shadow-lg shadow-secondary/20 transition-all disabled:opacity-50 text-sm sm:text-base"
           >
@@ -106,7 +109,8 @@
               <!-- Source Toggle -->
               <div class="flex p-1 bg-slate-100 dark:bg-black/40 rounded-xl w-fit">
                 <button 
-                  @click="videoSource = 'link'"
+                  type="button"
+                  @click.prevent="videoSource = 'link'"
                   :class="[
                     'px-4 py-2 rounded-lg text-xs font-black uppercase transition-all',
                     videoSource === 'link' ? 'bg-white dark:bg-surface-dark text-secondary shadow-md' : 'text-slate-500'
@@ -115,7 +119,8 @@
                   Colar Link
                 </button>
                 <button 
-                  @click="videoSource = 'upload'"
+                  type="button"
+                  @click.prevent="videoSource = 'upload'"
                   :class="[
                     'px-4 py-2 rounded-lg text-xs font-black uppercase transition-all',
                     videoSource === 'upload' ? 'bg-white dark:bg-surface-dark text-secondary shadow-md' : 'text-slate-500'
@@ -248,8 +253,8 @@
                   <p class="text-xs text-slate-500 mt-1">Arquivos complementares para esta aula</p>
                 </div>
                 <button
-                  @click="showMaterialUpload = true"
                   type="button"
+                  @click.prevent="showMaterialUpload = true"
                   class="px-4 py-2 bg-primary text-white dark:bg-secondary dark:text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm flex items-center gap-2"
                 >
                   <span class="material-symbols-outlined text-sm">add</span>
@@ -309,7 +314,8 @@
               </p>
             </div>
             <button 
-              @click="$emit('delete', selectedItem)" 
+              type="button"
+              @click.prevent="$emit('delete', selectedItem)" 
               class="px-6 py-2 border-2 border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-xl font-black transition-all text-sm flex items-center gap-2"
             >
               <span class="material-symbols-outlined text-sm">delete_sweep</span>

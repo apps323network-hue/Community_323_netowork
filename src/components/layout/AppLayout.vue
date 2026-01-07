@@ -4,31 +4,27 @@
 
     <main
       :class="[
-        'mx-auto flex-1 min-h-[calc(100vh-200px)]',
+        'mx-auto flex-1 min-h-[calc(100vh-200px)] w-full',
         fluid ? 'pb-20 lg:pb-0' : 'pb-20 lg:pb-8',
         hideSidebars 
-          ? `w-full ${isHeroHeroPage ? 'pt-0' : 'pt-8'} ${fluid ? 'px-0' : 'px-4 sm:px-6 lg:px-8'}` 
-          : 'max-w-7xl py-8 px-4 sm:px-6 lg:pl-0 lg:pr-8'
+          ? `${isHeroHeroPage ? 'pt-0' : 'pt-8'} ${fluid ? 'px-0' : 'px-4 sm:px-6 lg:px-8 max-w-[1440px]'}` 
+          : 'max-w-[1440px] py-8 px-4 sm:px-6 lg:px-8'
       ]"
     >
-      <div :class="hideSidebars ? 'w-full' : 'grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12'">
+      <div :class="hideSidebars ? 'w-full' : 'grid grid-cols-1 lg:grid-cols-12 gap-8'">
         <!-- Sidebar Esquerda - Desktop -->
-        <div v-if="!hideSidebars" class="hidden lg:block lg:col-span-2 -ml-32">
-          <div class="w-[280px]">
-            <AppSidebar v-if="!hideSidebars" @edit-profile="handleEditProfile" />
-          </div>
+        <div v-if="!hideSidebars" class="hidden lg:block lg:col-span-3 xl:col-span-2">
+          <AppSidebar v-if="!hideSidebars" @edit-profile="handleEditProfile" />
         </div>
 
         <!-- Conteúdo Principal -->
-        <div :class="hideSidebars ? `w-full ${fluid ? '' : 'max-w-[1400px]'} mx-auto ${isHeroHeroPage ? 'pt-0' : ''}` : 'lg:col-span-8'">
+        <div :class="hideSidebars ? `w-full ${isHeroHeroPage ? 'pt-0' : ''}` : 'lg:col-span-6 xl:col-span-8'">
           <slot />
         </div>
 
         <!-- Sidebar Direita -->
-        <div v-if="!hideSidebars" class="hidden lg:block lg:col-span-2 -mr-32">
-          <div class="w-[280px] ml-auto">
-            <AppRightSidebar v-if="!hideSidebars" />
-          </div>
+        <div v-if="!hideSidebars" class="hidden lg:block lg:col-span-3 xl:col-span-2">
+          <AppRightSidebar v-if="!hideSidebars" />
         </div>
       </div>
     </main>
@@ -39,7 +35,7 @@
 
     <!-- Mobile Menu - Sempre visível -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-50 bg-surface-dark border-t border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
+      class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
     >
       <nav class="flex justify-around items-center h-16 px-2">
         <RouterLink
@@ -49,7 +45,7 @@
           class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group"
           :class="$route.path === item.path 
             ? 'text-primary' 
-            : 'text-white/60 hover:text-primary'"
+            : 'text-slate-500 dark:text-white/60 hover:text-primary'"
         >
           <span 
             class="material-symbols-outlined text-[24px] transition-all"
@@ -59,7 +55,7 @@
           >
             {{ item.icon }}
           </span>
-          <span class="text-[10px] mt-0.5 font-medium text-white/60 group-hover:text-primary" :class="$route.path === item.path ? 'text-primary' : ''">{{ item.label }}</span>
+          <span class="text-[10px] mt-0.5 font-medium" :class="$route.path === item.path ? 'text-primary' : 'text-slate-500 dark:text-white/60'">{{ item.label }}</span>
           <!-- Indicador ativo -->
           <span
             v-if="$route.path === item.path"

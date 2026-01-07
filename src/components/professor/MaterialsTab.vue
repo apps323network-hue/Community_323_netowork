@@ -10,7 +10,8 @@
         <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-medium mt-1">Gerencie arquivos PDF e documentos complementares</p>
       </div>
       <button
-        @click="openUploadModal"
+        type="button"
+        @click.prevent="openUploadModal"
         :disabled="modules.length === 0"
         class="flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white dark:bg-white dark:text-black font-black rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
       >
@@ -40,7 +41,8 @@
         Comece enviando PDFs, slides ou apostilas para enriquecer suas aulas.
       </p>
       <button
-        @click="openUploadModal"
+        type="button"
+        @click.prevent="openUploadModal"
         class="px-8 py-3 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 inline-flex items-center gap-2 text-xs sm:text-sm"
       >
         <span class="material-symbols-outlined text-lg">add_circle</span>
@@ -58,7 +60,8 @@
       >
         <!-- Module Header -->
         <button
-          @click="toggleModule(module.id)"
+          type="button"
+          @click.prevent="toggleModule(module.id)"
           class="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
         >
           <div class="flex items-center gap-4">
@@ -146,6 +149,7 @@
         <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
           <h3 class="text-xl font-black text-slate-900 dark:text-white">Upload de Material</h3>
           <button
+            type="button"
             @click="closeModal"
             class="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
@@ -153,7 +157,7 @@
           </button>
         </div>
 
-        <form @submit.prevent="uploadMaterial" class="p-6 space-y-6">
+        <div class="p-6 space-y-6">
           <!-- File Upload -->
           <div>
             <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">
@@ -243,14 +247,15 @@
               Cancelar
             </button>
             <button
-              type="submit"
+              type="button"
+              @click="uploadMaterial"
               :disabled="modulesStore.loading || !selectedFile"
               class="px-6 py-3 bg-secondary text-black font-bold rounded-xl hover:bg-secondary/90 transition-all shadow-lg hover:shadow-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ modulesStore.loading ? 'Enviando...' : 'Upload Material' }}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
@@ -284,7 +289,8 @@
 
       <div class="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-end gap-3">
         <button
-          @click="handleDeleteCancel"
+          type="button"
+          @click.prevent="handleDeleteCancel"
           class="px-6 py-2.5 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
         >
           Cancelar
@@ -292,6 +298,7 @@
         <button
           @click="handleDeleteConfirm"
           :disabled="modulesStore.loading"
+          type="button"
           class="px-6 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           <span class="material-symbols-outlined text-sm">delete</span>

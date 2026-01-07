@@ -43,10 +43,12 @@ export default {
         'glow-primary': '0 0 20px rgba(244, 37, 244, 0.5)',
         'glow-secondary': '0 0 20px rgba(0, 240, 255, 0.5)',
         'neon-mixed': '-5px 0 15px rgba(244, 37, 244, 0.2), 5px 0 15px rgba(0, 240, 255, 0.2)',
-        // Light mode shadows (sutis)
-        'light-primary': '0 0 30px -10px rgba(244, 37, 244, 0.15)',
-        'light-secondary': '0 0 20px rgba(0, 243, 255, 0.3)',
-        'light-card': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        // Light mode shadows (sutis e elegantes)
+        'light-primary': '0 0 30px -10px rgba(244, 37, 244, 0.25)',
+        'light-secondary': '0 0 20px rgba(0, 243, 255, 0.35)',
+        'light-card': '0 4px 20px -10px rgba(0, 0, 0, 0.08)',
+        'premium': '0 10px 40px -15px rgba(0, 0, 0, 0.1)',
+        'premium-hover': '0 20px 50px -12px rgba(0, 0, 0, 0.15)',
       },
       backgroundImage: {
         'neon-gradient': 'linear-gradient(135deg, #f425f4 0%, #00f0ff 100%)',

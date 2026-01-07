@@ -261,7 +261,8 @@
                 <button 
                   v-for="subTab in contentSubTabs" 
                   :key="subTab.id"
-                  @click="activeContentSubTab = subTab.id"
+                  type="button"
+                  @click.prevent="activeContentSubTab = subTab.id"
                   class="px-6 py-4 text-xs font-black uppercase tracking-widest transition-all relative"
                   :class="activeContentSubTab === subTab.id ? 'text-primary' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'"
                 >

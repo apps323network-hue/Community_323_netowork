@@ -2,25 +2,21 @@
   <div class="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
     <AppHeader />
     
-    <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:pl-0 lg:pr-8 py-8 flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)]">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12">
+    <main class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)] w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Sidebar Esquerda -->
-        <div class="hidden lg:block lg:col-span-2 -ml-32">
-          <div class="w-[280px]">
-            <AppSidebar @edit-profile="handleEditProfile" />
-          </div>
+        <div class="hidden lg:block lg:col-span-3 xl:col-span-2">
+          <AppSidebar @edit-profile="handleEditProfile" />
         </div>
         
         <!-- Conteúdo Principal -->
-        <div class="lg:col-span-8">
+        <div class="lg:col-span-6 xl:col-span-8">
           <slot />
         </div>
         
         <!-- Sidebar Direita -->
-        <div class="hidden lg:block lg:col-span-2 -mr-32">
-          <div class="w-[280px] ml-auto">
-            <AppRightSidebar />
-          </div>
+        <div class="hidden lg:block lg:col-span-3 xl:col-span-2">
+          <AppRightSidebar />
         </div>
       </div>
     </main>

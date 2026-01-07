@@ -1,7 +1,7 @@
 <template>
-  <aside class="lg:sticky lg:top-20 h-fit space-y-6">
+  <aside class="lg:sticky lg:top-24 h-fit space-y-8">
     <!-- Profile Card (Authenticated) -->
-    <div v-if="isAuthenticated" class="bg-white dark:bg-surface-dark rounded-xl p-6 relative overflow-hidden shadow-xl border-t border-slate-200 dark:border-gray-800 group">
+    <div v-if="isAuthenticated" class="bg-white dark:bg-surface-dark rounded-2xl p-6 relative overflow-hidden shadow-premium dark:shadow-2xl border border-slate-200/60 dark:border-white/5 group">
       <!-- Neon glow effects -->
       <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-primary/20 transition-all duration-500"></div>
       <div class="absolute bottom-0 left-0 w-24 h-24 bg-secondary/10 blur-3xl rounded-full -ml-10 -mb-10 group-hover:bg-secondary/20 transition-all duration-500"></div>
@@ -38,7 +38,7 @@
     </div>
 
     <!-- Navigation Menu Card -->
-    <div class="bg-white dark:bg-surface-dark rounded-xl p-4 shadow-xl border-t border-slate-200 dark:border-gray-800">
+    <div class="bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-premium dark:shadow-2xl border border-slate-200/60 dark:border-white/5">
       <nav class="space-y-2">
         <RouterLink
           to="/"
