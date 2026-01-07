@@ -165,6 +165,7 @@
         <!-- Mobile Menu - User -->
         <div v-if="isAuthenticated && props.showNavigation" class="md:hidden flex items-center gap-3">
           <AnimatedThemeToggler />
+          <NotificationsDropdown />
           
           <!-- User Menu Mobile -->
           <div class="relative" ref="userMenuContainerMobile">
@@ -378,6 +379,7 @@
         <!-- User Menu -->
         <div class="hidden md:flex items-center gap-5">
           <AnimatedThemeToggler />
+          <NotificationsDropdown />
           
           <!-- Language Switcher -->
           <div class="relative" ref="languageMenuContainer">
@@ -547,6 +549,7 @@ import { useUserStore } from '@/stores/user'
 import { useLocale } from '@/composables/useLocale'
 import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
+import NotificationsDropdown from '@/components/layout/NotificationsDropdown.vue'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 
 interface Props {

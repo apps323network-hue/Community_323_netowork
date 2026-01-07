@@ -1148,6 +1148,19 @@
             "markCompleted": "Marcar como Concluído",
             "issueCertificate": "Emitir Certificado",
             "removeEnrollment": "Remover Matrícula"
+        },
+        "youtubeUpload": {
+            "uploadSuccess": "Vídeo enviado! O processamento pelo YouTube continuará em segundo plano. Você pode sair desta página; avisaremos no sininho 🔔 quando estiver pronto.",
+            "uploadError": "Erro ao enviar vídeo. Por favor, tente novamente.",
+            "uploading": "Enviando vídeo...",
+            "processing": "Processando...",
+            "dragDropTitle": "Arraste seu vídeo ou clique aqui",
+            "dragDropSubtitle": "MP4, MOV ou AVI (Recomendado: 1080p)",
+            "uploadingStatus": "Fazendo Upload...",
+            "finishingStatus": "Upload concluído! Sua aula estará disponível em instantes.",
+            "uploadSuccessTitle": "Upload Concluído!",
+            "uploadAnother": "Enviar outro vídeo",
+            "metadataSynced": "Dados do vídeo sincronizados com sucesso!"
         }
     }
 }

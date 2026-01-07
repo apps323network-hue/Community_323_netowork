@@ -198,9 +198,11 @@ async function handleNotificationClick(notification: any) {
   
   // Redirecionar baseado no tipo de notificação
   if (notification.type === 'connection_request') {
-    router.push('/comunidade') // Ou para uma aba específica de solicitações
+    router.push('/comunidade')
   } else if (notification.type === 'post_like' && notification.metadata?.post_id) {
     router.push(`/?post=${notification.metadata.post_id}`)
+  } else if (notification.type === 'youtube_upload' && notification.metadata?.program_id) {
+    router.push(`/professor/programa/${notification.metadata.program_id}`)
   }
 }
 
@@ -211,6 +213,7 @@ function getIcon(type: string) {
     case 'post_comment': return 'chat_bubble'
     case 'event_reminder': return 'event'
     case 'service_update': return 'assignment'
+    case 'youtube_upload': return 'play_circle'
     default: return 'notifications'
   }
 }
@@ -222,6 +225,7 @@ function getIconBg(type: string) {
     case 'post_comment': return 'bg-blue-500/10 text-blue-500'
     case 'event_reminder': return 'bg-yellow-500/10 text-yellow-500'
     case 'service_update': return 'bg-green-500/10 text-green-500'
+    case 'youtube_upload': return 'bg-red-600/10 text-red-600'
     default: return 'bg-primary/10 text-primary'
   }
 }
