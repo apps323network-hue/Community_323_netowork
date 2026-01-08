@@ -9,7 +9,7 @@
           <div
             :class="[
               'font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform',
-              props.showNavigation ? 'text-3xl' : 'text-2xl'
+              props.showNavigation ? 'text-2xl md:text-3xl' : 'text-2xl'
             ]"
           >
             <span class="text-primary dark:text-secondary">(323</span>
@@ -164,6 +164,8 @@
 
         <!-- Mobile Menu - User -->
         <div v-if="isAuthenticated && props.showNavigation" class="md:hidden flex items-center gap-3">
+          <AnimatedThemeToggler />
+          <NotificationsDropdown />
           
           <!-- User Menu Mobile -->
           <div class="relative" ref="userMenuContainerMobile">
@@ -220,7 +222,7 @@
                 <div class="p-2">
                   <RouterLink
                     to="/conexoes"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">groups</span>
@@ -228,7 +230,7 @@
                   </RouterLink>
                   <RouterLink
                     to="/meus-servicos"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
@@ -236,121 +238,57 @@
                   </RouterLink>
                   <RouterLink
                     to="/meus-programas"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">school</span>
                     {{ t('programs.myPrograms') }}
                   </RouterLink>
                   <RouterLink
+                    to="/beneficios"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    @click="showUserMenu = false"
+                  >
+                    <span class="material-symbols-outlined text-[20px]">workspace_premium</span>
+                    {{ t('navigation.benefits') }}
+                  </RouterLink>
+                  <RouterLink
                     to="/perfil"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     {{ t('navigation.myProfile') }}
                   </RouterLink>
-                  <RouterLink
-                    to="/desafios"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
-                    @click="showUserMenu = false"
-                  >
-                    <span class="material-symbols-outlined text-[20px]">emoji_events</span>
-                    {{ t('navigation.challenges') }}
-                  </RouterLink>
-                  <RouterLink
-                    to="/posts-salvos"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
-                    @click="showUserMenu = false"
-                  >
-                    <span class="material-symbols-outlined text-[20px]">bookmark</span>
-                    {{ t('navigation.savedPosts') }}
-                  </RouterLink>
                   
                   <!-- Divider -->
-                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
+                  <div class="border-t border-slate-200 dark:border-white/10 mt-2 mb-1"></div>
+
                   
-                  <!-- Theme & Language Row -->
-                  <div class="grid grid-cols-2 gap-2 p-2">
-                    <!-- Theme Toggle -->
-                    <button
-                      class="flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-sm font-medium text-slate-700  transition-colors"
-                    >
-                      <AnimatedThemeToggler />
-                    </button>
-                    
-                    <!-- Language Switcher -->
-                    <div class="relative">
+                  <!-- Language Selection -->
+                  <div class="px-4 py-2">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 text-center">Language</p>
+                    <div class="flex items-center justify-center gap-2 max-w-[140px] mx-auto">
                       <button
-                        @click="toggleMobileLanguageMenu"
-                        class="w-full flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
+                        v-for="locale in availableLocales"
+                        :key="locale.code"
+                        @click="handleLocaleChange(locale.code)"
+                        class="flex-1 py-1.5 flex items-center justify-center rounded-lg border-2 transition-all text-xs font-bold"
+                        :class="[
+                          currentLocale === locale.code
+                            ? 'bg-primary text-white border-primary shadow-md shadow-primary/20 scale-105'
+                            : 'bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-gray-400 border-transparent hover:border-slate-200 dark:hover:border-white/10'
+                        ]"
                       >
-                        <span class="text-lg">{{ currentLocaleData.flag }}</span>
-                        <span>{{ currentLocaleData.code.split('-')[0].toUpperCase() }}</span>
+                        {{ locale.code === 'pt-BR' ? 'BR' : 'US' }}
                       </button>
-                      
-                      <!-- Language Dropdown -->
-                      <Transition
-                        enter-active-class="transition-all duration-200"
-                        enter-from-class="opacity-0 scale-95 translate-y-2"
-                        enter-to-class="opacity-100 scale-100 translate-y-0"
-                        leave-active-class="transition-all duration-200"
-                        leave-from-class="opacity-100 scale-100 translate-y-0"
-                        leave-to-class="opacity-0 scale-95 translate-y-2"
-                      >
-                        <div
-                          v-if="showMobileLanguageMenu"
-                          class="absolute -top-24 right-0 w-40 rounded-lg bg-white dark:bg-surface-lighter border border-slate-200 dark:border-white/10 shadow-xl z-50 overflow-hidden"
-                          @click.stop
-                        >
-                          <button
-                            v-for="locale in availableLocales"
-                            :key="locale.code"
-                            @click="handleLocaleChangeMobile(locale.code)"
-                            class="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium transition-colors text-left"
-                            :class="[
-                              currentLocale === locale.code
-                                ? 'bg-primary/10 text-primary dark:bg-secondary/10 dark:text-secondary'
-                                : 'text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter'
-                            ]"
-                          >
-                            <span class="text-base">{{ locale.flag }}</span>
-                            <span>{{ locale.name }}</span>
-                            <span v-if="currentLocale === locale.code" class="material-icons text-sm ml-auto">check</span>
-                          </button>
-                        </div>
-                      </Transition>
                     </div>
                   </div>
-                  
+
                   <!-- Divider -->
-                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
+                  <div class="border-t border-slate-200 dark:border-white/10 mt-2 mb-1"></div>
                   
-                  <!-- American Dream Link -->
-                  <button
-                    @click="goToAmericanDream"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors w-full text-left"
-                    @click.stop="showUserMenu = false"
-                  >
-                    <span class="material-symbols-outlined text-[20px]">launch</span>
-                    {{ t('navigation.americanDream') }}
-                  </button>
-                  
-                  <!-- Divider -->
-                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
-                  
-                  <!-- American Dream Link -->
-                  <button
-                    @click="goToAmericanDream"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors w-full text-left"
-                    @click.stop="showUserMenu = false"
-                  >
-                    <span class="material-symbols-outlined text-[20px]">launch</span>
-                    {{ t('navigation.americanDream') }}
-                  </button>
-                  
-                  <!-- Divider -->
-                  <div class="border-t border-slate-200 dark:border-white/10 mt-2"></div>
+
                   
                   <!-- Dashboard Professor (para profs e admins) -->
                   <div v-if="isProfessor" class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
@@ -441,6 +379,7 @@
         <!-- User Menu -->
         <div class="hidden md:flex items-center gap-5">
           <AnimatedThemeToggler />
+          <NotificationsDropdown />
           
           <!-- Language Switcher -->
           <div class="relative" ref="languageMenuContainer">
@@ -560,22 +499,6 @@
                     <span class="material-symbols-outlined text-[20px]">person</span>
                     {{ t('navigation.myProfile') }}
                   </RouterLink>
-                  <RouterLink
-                    to="/desafios"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
-                    @click="showUserMenu = false"
-                  >
-                    <span class="material-symbols-outlined text-[20px]">emoji_events</span>
-                    {{ t('navigation.challenges') }}
-                  </RouterLink>
-                  <RouterLink
-                    to="/posts-salvos"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
-                    @click="showUserMenu = false"
-                  >
-                    <span class="material-symbols-outlined text-[20px]">bookmark</span>
-                    {{ t('navigation.savedPosts') }}
-                  </RouterLink>
                   <!-- Dashboard Professor (para profs e admins) -->
                   <div v-if="isProfessor" class="border-t border-slate-200 dark:border-white/10 mt-1 pt-1">
                     <RouterLink
@@ -624,9 +547,9 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { useLocale } from '@/composables/useLocale'
-import { useSSO } from '@/composables/useSSO'
 import Avatar from '@/components/ui/Avatar.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
+import NotificationsDropdown from '@/components/layout/NotificationsDropdown.vue'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 
 interface Props {
@@ -644,12 +567,10 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 const { locale: currentLocale, setLocale, availableLocales, t } = useLocale()
-const { redirectToAmericanDream } = useSSO()
 // Theme toggle is now handled by AnimatedThemeToggler component
 
 const showUserMenu = ref(false)
 const showLanguageMenu = ref(false)
-const showMobileLanguageMenu = ref(false)
 const userMenuContainer = ref<HTMLElement | null>(null)
 const userMenuContainerMobile = ref<HTMLElement | null>(null)
 const languageMenuContainer = ref<HTMLElement | null>(null)
@@ -679,18 +600,13 @@ function toggleLanguageMenu() {
   showUserMenu.value = false
 }
 
-function toggleMobileLanguageMenu() {
-  showMobileLanguageMenu.value = !showMobileLanguageMenu.value
-}
+
 
 function handleLocaleChange(newLocale: string) {
   setLocale(newLocale)
   showLanguageMenu.value = false
-}
-
-function handleLocaleChangeMobile(newLocale: string) {
-  setLocale(newLocale)
-  showMobileLanguageMenu.value = false
+  // Não fechamos o menu de usuário se estiver no mobile, 
+  // permitindo que o usuário veja a mudança de idioma
 }
 
 const currentLocaleData = computed(() => {
@@ -722,11 +638,6 @@ async function handleLogout() {
 
   // Redirecionar para página de login usando router
   router.push({ name: 'Login' })
-}
-
-function goToAmericanDream() {
-  showUserMenu.value = false
-  redirectToAmericanDream('/payment')
 }
 
 function handleClickOutside(event: MouseEvent) {

@@ -149,7 +149,7 @@
                     :disabled="fetchingMetadata || !formData.youtube_video_id"
                     class="px-6 bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl font-black hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2 disabled:opacity-50"
                   >
-                    <span class="material-symbols-outlined text-sm">{{ fetchingMetadata ? 'sync' : 'auto_fix' }}</span>
+                    <span class="material-symbols-outlined text-sm" :class="{ 'animate-spin': fetchingMetadata }">{{ fetchingMetadata ? 'sync' : 'auto_fix' }}</span>
                     {{ fetchingMetadata ? 'Buscando...' : 'Auto-Preencher' }}
                   </button>
                 </div>
@@ -173,20 +173,43 @@
                     @change="handleVideoFileSelect"
                   />
                   
-                  <div v-if="!uploadState.isUploading" class="space-y-4">
+                  <!-- Success State -->
+                  <div v-if="uploadState.status === 'success'" class="space-y-6 py-6">
+                    <div class="flex flex-col items-center justify-center text-center space-y-4">
+                      <div class="bg-green-500/10 p-6 rounded-full w-fit mx-auto shadow-inner shadow-green-500/20">
+                        <span class="material-symbols-outlined text-6xl text-green-500 animate-in zoom-in duration-500">check_circle</span>
+                      </div>
+                      <div class="space-y-2">
+                        <h3 class="text-xl font-black text-slate-900 dark:text-white">{{ t('programs.youtubeUpload.uploadSuccessTitle') || 'Upload Concluído!' }}</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 font-medium max-w-xs mx-auto">
+                          {{ uploadState.message }}
+                        </p>
+                      </div>
+                      <button 
+                        @click="resetUpload"
+                        type="button"
+                        class="text-secondary text-xs font-black uppercase tracking-widest hover:underline pt-2"
+                      >
+                        {{ t('programs.youtubeUpload.uploadAnother') || 'Enviar outro vídeo' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Idle State (Drop Zone) -->
+                  <div v-else-if="!uploadState.isUploading" class="space-y-4">
                     <div class="bg-secondary/10 p-4 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
                       <span class="material-symbols-outlined text-4xl text-secondary">cloud_upload</span>
                     </div>
                     <div>
-                      <p class="text-slate-900 dark:text-white font-black">Arraste seu vídeo ou clique aqui</p>
-                      <p class="text-slate-500 dark:text-gray-400 text-xs mt-1">MP4, MOV ou AVI (Recomendado: 1080p)</p>
+                      <p class="text-slate-900 dark:text-white font-black">{{ t('programs.youtubeUpload.dragDropTitle') }}</p>
+                      <p class="text-slate-500 dark:text-gray-400 text-xs mt-1">{{ t('programs.youtubeUpload.dragDropSubtitle') }}</p>
                     </div>
                   </div>
 
                   <!-- Uploading State -->
                   <div v-else class="space-y-6">
                     <div class="flex items-center justify-between text-sm font-black mb-2">
-                       <span class="text-slate-900 dark:text-white uppercase tracking-wider">{{ uploadState.progress === 100 ? 'Finalizando...' : 'Fazendo Upload...' }}</span>
+                       <span class="text-slate-900 dark:text-white uppercase tracking-wider">{{ uploadState.progress === 100 ? t('programs.youtubeUpload.finishingStatus') : t('programs.youtubeUpload.uploadingStatus') }}</span>
                        <span class="text-secondary">{{ uploadState.progress }}%</span>
                     </div>
                     <div class="w-full h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
@@ -196,6 +219,14 @@
                       ></div>
                     </div>
                     <p class="text-[10px] text-slate-500 font-bold uppercase">{{ uploadState.fileName }}</p>
+                    
+                    <!-- Error Message (Only show here if error) -->
+                    <div v-if="uploadState.status === 'error'" class="mt-4 p-4 rounded-xl flex items-start gap-3 bg-red-500/10 border border-red-500/20">
+                      <span class="material-symbols-outlined text-xl text-red-500">error</span>
+                      <p class="text-sm font-bold flex-1 text-red-700 dark:text-red-400">
+                        {{ uploadState.message }}
+                      </p>
+                    </div>
                   </div>
                 </div>
             </div>
@@ -450,8 +481,8 @@
 import { ref, watch, computed } from 'vue'
 import { extractYouTubeVideoId, getYouTubeThumbnail } from '@/lib/youtube'
 import { useModulesStore } from '@/stores/modules'
-import { supabase } from '@/lib/supabase'
 import { useLocale } from '@/composables/useLocale'
+import { toast } from 'vue-sonner'
 
 const props = defineProps<{
   selectedItem: any | null
@@ -464,14 +495,23 @@ const props = defineProps<{
 const emit = defineEmits(['save', 'cancel', 'delete'])
 
 const modulesStore = useModulesStore()
+const { t } = useLocale()
 const { locale: currentLocale } = useLocale()
 const fetchingMetadata = ref(false)
 const videoSource = ref<'link' | 'upload'>('link')
 const isDragging = ref(false)
-const uploadState = ref({
+const uploadState = ref<{
+  isUploading: boolean
+  progress: number
+  fileName: string
+  status?: 'success' | 'error'
+  message?: string
+}>({
   isUploading: false,
   progress: 0,
-  fileName: ''
+  fileName: '',
+  status: undefined,
+  message: undefined
 })
 
 // Material management
@@ -499,6 +539,7 @@ const formData = ref<any>({
   description_en: '',
   youtube_video_id: '',
   duration_seconds: null,
+  youtube_thumbnail_url: null,
   is_preview: false,
 })
 
@@ -511,12 +552,18 @@ watch(() => props.selectedItem, (newItem) => {
       description_en: newItem.description_en || '',
       youtube_video_id: newItem.youtube_video_id || '',
       duration_seconds: newItem.duration_seconds || null,
+      youtube_thumbnail_url: newItem.youtube_thumbnail_url || null,
       is_preview: newItem.is_preview || false
     }
   } else if (props.isCreating) {
     resetForm()
   }
 }, { immediate: true })
+
+// Debug: watch uploadState changes
+watch(() => uploadState.value, (newVal, oldVal) => {
+  console.log('uploadState changed:', { old: oldVal, new: newVal })
+}, { deep: true })
 
 function resetForm() {
   formData.value = {
@@ -526,6 +573,7 @@ function resetForm() {
     description_en: '',
     youtube_video_id: '',
     duration_seconds: null,
+    youtube_thumbnail_url: null,
     is_preview: false,
   }
 }
@@ -544,12 +592,24 @@ async function fetchYouTubeMetadata() {
   try {
     const details = await modulesStore.getYouTubeVideoDetails(formData.value.youtube_video_id)
     if (details) {
+      // Prioritize manually entered titles, only fill if empty or if we want to sync
       if (!formData.value.title_pt) formData.value.title_pt = details.title
       if (!formData.value.title_en) formData.value.title_en = details.title
+      
+      // Also sync descriptions if they are empty
+      if (!formData.value.description_pt && details.description) formData.value.description_pt = details.description
+      if (!formData.value.description_en && details.description) formData.value.description_en = details.description
+      
       formData.value.duration_seconds = details.duration_seconds
+      formData.value.youtube_thumbnail_url = details.thumbnail_url
+      
+      console.log('Metadata synced from n8n:', details)
+      
+      toast.success(t('programs.youtubeUpload.metadataSynced') || 'Metadados sincronizados!')
     }
   } catch (err) {
     console.error('Error fetching youtube metadata:', err)
+    toast.error('Erro ao buscar metadados do vídeo')
   } finally {
     fetchingMetadata.value = false
   }
@@ -571,6 +631,16 @@ function handleVideoFileSelect(e: Event) {
   }
 }
 
+function resetUpload() {
+  uploadState.value = {
+    isUploading: false,
+    progress: 0,
+    fileName: '',
+    status: undefined,
+    message: undefined
+  }
+}
+
 async function startYouTubeUpload(file: File) {
   uploadState.value = {
     isUploading: true,
@@ -579,54 +649,71 @@ async function startYouTubeUpload(file: File) {
   }
 
   try {
-    // 1. Get resumable upload URL from Edge Function
-    const { data, error } = await supabase.functions.invoke('youtube-init-upload', {
-      body: { 
-        title: formData.value.title_pt || file.name.split('.')[0],
-        description: formData.value.description_pt || ''
-      }
-    })
+    const { uploadVideoToYouTubeWithProgress } = await import('@/lib/n8n')
+    const { useAuthStore } = await import('@/stores/auth')
+    const authStore = useAuthStore()
 
-    if (error) throw error
-    if (!data.uploadUrl) throw new Error('Failed to get upload URL')
-
-    // 2. Upload file directly to YouTube via XHR (to track progress)
-    const xhr = new XMLHttpRequest()
-    xhr.open('PUT', data.uploadUrl, true)
-    
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) {
-        uploadState.value.progress = Math.round((e.loaded / e.total) * 100)
-      }
+    if (!authStore.user?.id) {
+      throw new Error('User not authenticated')
     }
 
-    xhr.onload = async () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        const response = JSON.parse(xhr.responseText)
-        formData.value.youtube_video_id = response.id
-        uploadState.value.isUploading = false
-        // Fetch metadata to get duration/thumbnail
-        await fetchYouTubeMetadata()
-      } else {
-        throw new Error('Upload failed with status ' + xhr.status)
+    if (!props.selectedItem?.id) {
+      throw new Error('Lesson ID not available')
+    }
+
+    const programId = props.selectedItem.program_id
+    if (!programId) {
+      throw new Error('Program ID not available')
+    }
+
+    // Reset duration while uploading
+    formData.value.duration_seconds = null
+
+    // Upload to n8n webhook (asynchronous - n8n will send notification when complete)
+    const response = await uploadVideoToYouTubeWithProgress(
+      {
+        videoFile: file,
+        title_pt: formData.value.title_pt || file.name.split('.')[0],
+        title_en: formData.value.title_en || file.name.split('.')[0],
+        description_pt: formData.value.description_pt || '',
+        description_en: formData.value.description_en || '',
+        professor_id: authStore.user.id,
+        lesson_id: props.selectedItem.id,
+        program_id: programId,
+        privacy_status: 'unlisted'
+      },
+      (progress) => {
+        uploadState.value.progress = progress
+        if (progress === 100) {
+          toast.info(t('programs.youtubeUpload.finishingStatus') || 'Finalizando...')
+        }
       }
+    )
+
+    if (response.success) {
+      uploadState.value.status = 'success'
+      uploadState.value.message = t('programs.youtubeUpload.uploadSuccess')
+      uploadState.value.progress = 100
+      
+      console.log('Upload success state:', uploadState.value)
+    } else {
+      throw new Error(response.message || 'Upload failed')
     }
 
-    xhr.onerror = () => {
-      throw new Error('Network error during upload')
-    }
-
-    xhr.send(file)
-
-  } catch (err) {
+  } catch (err: any) {
     console.error('Upload error:', err)
-    alert('Erro no upload: ' + (err as Error).message)
+    uploadState.value.status = 'error'
+    uploadState.value.message = t('programs.youtubeUpload.uploadError')
     uploadState.value.isUploading = false
+    toast.error('Erro no upload: ' + (err.message || 'Erro desconhecido'))
   }
 }
 
+
 function formatDuration(seconds: number | null) {
-  if (!seconds) return '--:--'
+  if (seconds === null || seconds === undefined) {
+    return t('programs.youtubeUpload.processing') || 'Processando...'
+  }
   const hours = Math.floor(seconds / 3600)
   const mins = Math.floor((seconds % 3600) / 60)
   const secs = seconds % 60

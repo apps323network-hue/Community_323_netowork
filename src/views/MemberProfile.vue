@@ -1,9 +1,13 @@
 <template>
-  <AppLayout>
-    <div class="max-w-5xl mx-auto space-y-8">
+  <AppLayout :hideSidebars="true">
+    <div class="max-w-7xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Background Neon Effects -->
+      <div class="fixed top-20 left-10 w-64 h-64 bg-secondary rounded-full filter blur-[120px] opacity-10 pointer-events-none z-0"></div>
+      <div class="fixed bottom-20 right-10 w-64 h-64 bg-primary rounded-full filter blur-[120px] opacity-10 pointer-events-none z-0"></div>
+
       <!-- Back Button -->
       <button
-        class="flex items-center gap-2 text-gray-400 hover:text-secondary transition-colors group"
+        class="flex items-center gap-2 text-gray-400 hover:text-secondary transition-colors group relative z-10"
         @click="router.back()"
       >
         <span class="material-icons text-[20px] group-hover:-translate-x-1 transition-transform"
@@ -37,256 +41,165 @@
 
       <!-- Profile Content -->
       <template v-else-if="member">
-        <!-- Profile Card -->
-        <div
-          class="relative group rounded-2xl overflow-hidden bg-card-dark border border-white/5 shadow-xl"
-        >
-          <!-- Gradient Cover -->
-          <div class="h-32 sm:h-48 bg-gradient-to-r from-blue-700 via-blue-500 to-blue-400"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+          <!-- Left Column - Sidebar -->
+          <div class="lg:col-span-4 xl:col-span-3 space-y-6">
+            <ProfileCard
+              :name="member.nome"
+              :profession="member.area_atuacao || ''"
+              :avatarUrl="member.avatar_url"
+              :verified="member.badge === 'Verified' || member.plano === 'Premium'"
+              :memberSince="formatYearOnly(member.created_at)"
+              :city="member.cidade"
+              :state="member.estado"
+              :country="member.pais || 'USA'"
+              :connections="memberConnections"
+              :points="member.total_points || 0"
+              :posts="memberPosts.length"
+              :readonly="true"
+            />
 
-          <!-- Profile Info -->
-          <div class="px-6 sm:px-8 pb-8 relative">
-            <!-- Avatar -->
-            <div class="absolute -top-16 sm:-top-20 left-6 sm:left-8">
-              <Avatar
-                :src="member.avatar_url"
-                :name="member.nome"
-                size="2xl"
-                :border="false"
-                class="ring-2 ring-transparent group-hover:ring-secondary/50 transition-all shadow-2xl rounded-2xl"
-              />
-            </div>
-
-            <!-- Actions Row (Top Right) -->
-            <div class="flex justify-end pt-4 gap-2">
+            <!-- Connection Actions -->
+            <div class="space-y-3">
               <button
+                class="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border font-bold transition-all shadow-lg overflow-hidden group/btn relative"
                 :class="[
-                  'p-3 rounded-xl border transition-all duration-300',
+                  connectionStatus === 'accepted'
+                  ? 'border-green-500/40 text-green-500 bg-green-500/5 cursor-default'
+                  : connectionStatus === 'pending'
+                  ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/5 cursor-default'
+                  : 'bg-gradient-to-r from-secondary/20 to-primary/20 border-secondary/40 text-white hover:border-secondary hover:shadow-neon-blue'
+                ]"
+                @click="handleConnect"
+                :disabled="requesting || !!connectionStatus"
+              >
+                <div v-if="requesting" class="w-5 h-5 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
+                <template v-else>
+                  <span class="material-symbols-outlined">{{ connectionStatus === 'accepted' ? 'check_circle' : connectionStatus === 'pending' ? 'schedule' : 'person_add' }}</span>
+                  {{ connectionStatus === 'accepted' ? 'Conectado' : connectionStatus === 'pending' ? 'Pendente' : 'Conectar' }}
+                </template>
+              </button>
+
+              <button
+                class="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl border transition-all duration-300 font-bold"
+                :class="[
                   isBookmarked
-                    ? 'border-secondary/40 text-secondary bg-secondary/10 hover:bg-secondary/20 hover:shadow-neon-blue'
-                    : 'border-gray-700 hover:border-secondary hover:bg-secondary/10 hover:text-secondary hover:shadow-neon-blue text-gray-400'
+                    ? 'border-secondary/40 text-secondary bg-secondary/10 hover:bg-secondary/20 shadow-neon-blue'
+                    : 'border-white/10 hover:border-white/20 bg-white/5 text-gray-400 hover:text-white'
                 ]"
                 @click="handleToggleBookmark"
                 :disabled="bookmarkLoading"
               >
-                <span class="material-icons">
-                  {{ isBookmarked ? 'bookmark' : 'bookmark_border' }}
+                <span class="material-symbols-outlined text-lg">
+                  {{ isBookmarked ? 'bookmark_added' : 'bookmark_add' }}
                 </span>
+                {{ isBookmarked ? 'Salvo' : 'Salvar Perfil' }}
               </button>
             </div>
 
-            <!-- Name and Info -->
-            <div class="pt-20 sm:pt-24 space-y-4">
-              <div>
-                <div class="flex items-center gap-3 flex-wrap mb-2">
-                  <h1 class="text-3xl sm:text-4xl font-bold text-white">
-                    {{ member.nome }}
-                  </h1>
-                  <BadgeDisplay v-if="member.badge" :badge-id="member.badge" size="md" />
+            <ProfileSocialLinks
+              :linkedin="member.linkedin"
+              :instagram="member.instagram"
+              :readonly="true"
+            />
+
+            <!-- Quick Contacts (Email/WhatsApp) -->
+            <div v-if="(member.show_whatsapp && member.whatsapp) || (member.show_email && member.email)" class="bg-surface-dark border border-white/5 rounded-2xl p-5 space-y-4">
+              <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest">Contatos Diretos</h4>
+              
+              <a v-if="member.show_whatsapp && member.whatsapp" :href="whatsappLink" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-green-500/10 border border-transparent hover:border-green-500/30 transition-all group">
+                <span class="material-symbols-outlined text-green-400">chat</span>
+                <span class="text-sm text-gray-300 group-hover:text-white truncate">WhatsApp</span>
+              </a>
+
+              <a v-if="member.show_email && member.email" :href="`mailto:${member.email}`" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-secondary/10 border border-transparent hover:border-secondary/30 transition-all group">
+                <span class="material-symbols-outlined text-secondary">mail</span>
+                <span class="text-sm text-gray-300 group-hover:text-white truncate">Enviar E-mail</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Column - Main Content -->
+          <div class="lg:col-span-8 xl:col-span-9 space-y-6">
+            <!-- Detailed Info Section -->
+            <ProfileInfoForm
+              :name="member.nome"
+              :profession="member.area_atuacao || ''"
+              :country="member.pais || 'USA'"
+              :city="member.cidade || ''"
+              :state="member.estado || ''"
+              :nationality="member.nacionalidade || ''"
+              :email="member.show_email ? member.email : ''"
+              :whatsapp="member.show_whatsapp ? member.whatsapp : ''"
+              :bio="member.bio || member.objetivo || ''"
+              :readonly="true"
+            />
+
+            <!-- Achievements Section -->
+            <div class="bg-surface-dark border border-white/5 rounded-2xl p-8 shadow-xl">
+              <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary">stars</span>
+                Conquistas e Desafios
+              </h3>
+              
+              <div v-if="memberChallenges.length === 0" class="text-center py-8 border border-dashed border-white/10 rounded-2xl">
+                <p class="text-gray-500 text-sm italic">Este membro ainda não completou desafios.</p>
+              </div>
+              
+              <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div 
+                  v-for="uc in memberChallenges" 
+                  :key="uc.id"
+                  class="flex flex-col items-center text-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-secondary/30 transition-all group"
+                >
+                  <div class="p-3 bg-secondary/10 rounded-full mb-3 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,240,255,0.1)]">
+                    <span class="material-symbols-outlined text-secondary text-2xl">{{ getIconForType(uc.challenge?.tipo || 'other') }}</span>
+                  </div>
+                  <p class="text-[11px] font-black text-white uppercase tracking-tighter line-clamp-1 mb-1">{{ uc.challenge?.nome }}</p>
+                  <p class="text-[10px] text-secondary font-bold">{{ uc.challenge?.pontos }} PTS</p>
                 </div>
-                <p
-                  v-if="member.area_atuacao"
-                  class="text-secondary font-bold text-lg tracking-wide uppercase"
-                >
-                  {{ member.area_atuacao }}
-                </p>
-                <div
-                  v-if="member.cidade || member.pais"
-                  class="flex items-center gap-1 text-gray-400 mt-2"
-                >
-                  <span class="material-icons text-[18px]">place</span>
-                  {{ [member.cidade, member.pais].filter(Boolean).join(', ') }}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Interests -->
+              <div class="bg-surface-dark border border-white/5 rounded-2xl p-8 shadow-xl">
+                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary">interests</span>
+                  Interesses
+                </h3>
+                <div v-if="member.tags?.length" class="flex flex-wrap gap-2">
+                  <span v-for="tag in member.tags" :key="tag" class="px-3 py-1.5 rounded-lg bg-secondary/10 border border-secondary/20 text-secondary text-xs font-bold">
+                    #{{ tag }}
+                  </span>
                 </div>
+                <p v-else class="text-gray-500 text-sm italic">Nenhum interesse listado.</p>
               </div>
 
-
-              <!-- Action Buttons -->
-              <div class="flex flex-wrap gap-3 pt-4">
-                <button
-                  class="flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border font-bold transition-all min-w-[160px]"
-                  :class="[
-                    connectionStatus === 'accepted'
-                    ? 'border-green-500/40 text-green-500 bg-green-500/5 cursor-default'
-                    : connectionStatus === 'pending'
-                    ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/5 cursor-default'
-                    : 'border-secondary/40 text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-neon-blue'
-                  ]"
-                  @click="handleConnect"
-                  :disabled="requesting || !!connectionStatus"
-                >
-                  <div v-if="requesting" class="w-5 h-5 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
-                  <template v-else>
-                    <span class="material-icons">{{ connectionStatus === 'accepted' ? 'check' : connectionStatus === 'pending' ? 'schedule' : 'person_add' }}</span>
-                    {{ connectionStatus === 'accepted' ? 'Conectado' : connectionStatus === 'pending' ? 'Pendente' : 'Conectar' }}
-                  </template>
-                </button>
-                <button
-                  class="flex items-center gap-2 px-8 py-3.5 rounded-xl border border-gray-700 hover:border-secondary hover:bg-secondary/10 hover:text-secondary hover:shadow-neon-blue text-gray-400 transition-all duration-300 font-bold"
-                >
-                  <span class="material-icons">chat_bubble_outline</span>
-                  Mensagem
-                </button>
+              <!-- Goals -->
+              <div class="bg-surface-dark border border-white/5 rounded-2xl p-8 shadow-xl">
+                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary">rocket_launch</span>
+                  Metas
+                </h3>
+                <div v-if="member.goals?.length" class="space-y-3">
+                  <div v-for="goal in member.goals" :key="goal" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                    <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                    <span class="text-gray-300 text-sm font-medium">{{ goal }}</span>
+                  </div>
+                </div>
+                <p v-else class="text-gray-500 text-sm italic">Nenhuma meta definida.</p>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Info Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- Plano Card -->
-          <div
-            class="bg-card-dark rounded-xl p-6 border border-white/5 shadow-lg hover:shadow-neon-blue/20 transition-all"
-          >
-            <div class="flex items-center gap-3 mb-4">
-              <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/20">
-                <span class="material-icons text-secondary text-xl">workspace_premium</span>
-              </div>
-              <h3
-                class="text-sm font-semibold text-gray-400 uppercase tracking-wide"
-              >
-                Plano
-              </h3>
-            </div>
-            <div class="flex items-center gap-2">
-              <span
-                :class="[
-                  'px-4 py-2 rounded-full text-sm font-bold',
-                  member.plano === 'Premium'
-                    ? 'bg-gradient-to-r from-secondary to-purple-600 text-white shadow-neon-pink'
-                    : member.plano === 'Member'
-                      ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white shadow-neon-blue'
-                      : 'bg-gray-800 text-gray-400',
-                ]"
-              >
-                {{ member.plano || 'Free' }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Membro Desde Card -->
-          <div
-            class="bg-card-dark rounded-xl p-6 border border-white/5 shadow-lg hover:shadow-neon-blue/20 transition-all"
-          >
-            <div class="flex items-center gap-3 mb-4">
-              <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/20">
-                <span class="material-icons text-secondary text-xl">calendar_today</span>
-              </div>
-              <h3
-                class="text-sm font-semibold text-gray-400 uppercase tracking-wide"
-              >
-                Membro desde
-              </h3>
-            </div>
-            <p class="text-white text-lg font-semibold">
-              {{ formatDate(member.created_at) }}
-            </p>
-          </div>
-
-          <!-- Posts Count Card -->
-          <div
-            class="bg-card-dark rounded-xl p-6 border border-white/5 shadow-lg hover:shadow-neon-blue/20 transition-all"
-          >
-            <div class="flex items-center gap-3 mb-4">
-              <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/20">
-                <span class="material-icons text-secondary text-xl">article</span>
-              </div>
-              <h3
-                class="text-sm font-semibold text-gray-400 uppercase tracking-wide"
-              >
-                Posts
-              </h3>
-            </div>
-            <p class="text-white text-2xl font-bold">
-              {{ memberPosts.length }}
-            </p>
-          </div>
-
-          <!-- Localização Card -->
-          <div
-            class="bg-card-dark rounded-xl p-6 border border-white/5 shadow-lg hover:shadow-neon-blue/20 transition-all"
-          >
-            <div class="flex items-center gap-3 mb-4">
-              <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/20">
-                <span class="material-icons text-secondary text-xl">place</span>
-              </div>
-              <h3
-                class="text-sm font-semibold text-gray-400 uppercase tracking-wide"
-              >
-                Localização
-              </h3>
-            </div>
-            <p class="text-white text-lg font-semibold">
-              {{ [member.cidade, member.pais].filter(Boolean).join(', ') || 'Não informado' }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Contact & Social Section -->
-        <div v-if="member.whatsapp || member.linkedin" class="bg-card-dark rounded-xl p-6 border border-white/5 shadow-lg">
-          <h3 class="text-white font-bold mb-6 flex items-center gap-2 text-lg">
-            <span class="material-icons text-secondary">link</span>
-            <span>Redes Sociais e Contato</span>
-          </h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <a
-              v-if="member.whatsapp"
-              :href="whatsappLink"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/20 hover:border-green-500/40 hover:bg-green-500/20 transition-all group"
-            >
-              <div class="p-3 rounded-lg bg-green-500/20 group-hover:bg-green-500/30 transition-colors">
-                <span class="material-icons text-green-400 text-2xl">chat</span>
-              </div>
-              <div class="flex-1">
-                <p class="text-gray-400 text-sm uppercase tracking-wide">WhatsApp</p>
-                <p class="text-white font-semibold">{{ member.whatsapp }}</p>
-              </div>
-              <span class="material-icons text-gray-400 group-hover:text-green-400 transition-colors">open_in_new</span>
-            </a>
-            <a
-              v-if="member.linkedin"
-              :href="linkedinLink"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-600/10 to-blue-700/10 border border-blue-600/20 hover:border-blue-600/40 hover:bg-blue-600/20 transition-all group"
-            >
-              <div class="p-3 rounded-lg bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
-                <span class="material-icons text-blue-400 text-2xl">link</span>
-              </div>
-              <div class="flex-1">
-                <p class="text-gray-400 text-sm uppercase tracking-wide">LinkedIn</p>
-                <p class="text-white font-semibold truncate">{{ member.linkedin.replace('https://linkedin.com/in/', '').replace('https://www.linkedin.com/in/', '') }}</p>
-              </div>
-              <span class="material-icons text-gray-400 group-hover:text-blue-400 transition-colors">open_in_new</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- About Section -->
-        <div v-if="member.objetivo || member.area_atuacao" class="bg-card-dark rounded-xl p-6 border border-white/5 shadow-lg">
-          <h3 class="text-white font-bold mb-4 flex items-center gap-2 text-lg">
-            <span class="material-icons text-secondary">info</span>
-            <span>Sobre</span>
-          </h3>
-          <div class="space-y-4">
-            <div v-if="member.area_atuacao">
-              <p class="text-gray-400 text-sm uppercase tracking-wide mb-2">Área de Atuação</p>
-              <p class="text-white text-lg font-semibold">{{ member.area_atuacao }}</p>
-            </div>
-            <div v-if="member.objetivo">
-              <p class="text-gray-400 text-sm uppercase tracking-wide mb-2">Objetivo</p>
-              <p class="text-white text-lg">{{ member.objetivo }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Posts Section -->
-        <div class="space-y-6">
-          <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-            <span class="material-icons text-secondary">article</span>
-            Posts
-          </h2>
+            <!-- Posts Section -->
+            <div class="space-y-8 pt-4">
+              <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/30">
+                  <span class="material-symbols-outlined text-secondary">feed</span>
+                </div>
+                Publicações Recentes
+              </h2>
 
           <!-- Loading Posts -->
           <div v-if="postsLoading" class="flex justify-center py-12">
@@ -323,14 +236,9 @@
             </div>
           </div>
 
-          <!-- Empty State for Posts -->
-          <div v-else class="text-center py-12 bg-card-dark rounded-xl border border-white/5">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-500/10 mb-4">
-              <span class="material-icons text-4xl text-gray-400">article</span>
-            </div>
-            <p class="text-gray-400">Este membro ainda não publicou nenhum post.</p>
-          </div>
-        </div>
+            </div> <!-- End Posts Area -->
+          </div> <!-- End Right Column -->
+        </div> <!-- End Grid -->
       </template>
 
       <!-- Not Found -->
@@ -359,10 +267,11 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import Avatar from '@/components/ui/Avatar.vue'
-import BadgeDisplay from '@/components/ui/BadgeDisplay.vue'
 import PostCard from '@/components/features/feed/PostCard.vue'
 import CommentForm from '@/components/features/feed/CommentForm.vue'
+import ProfileCard from '@/components/features/profile/ProfileCard.vue'
+import ProfileSocialLinks from '@/components/features/profile/ProfileSocialLinks.vue'
+import ProfileInfoForm from '@/components/features/profile/ProfileInfoForm.vue'
 import { useMembers } from '@/composables/useMembers'
 import { usePosts } from '@/composables/usePosts'
 import { useBookmarks } from '@/composables/useBookmarks'
@@ -379,10 +288,12 @@ const { fetchMemberById, loading, error } = useMembers()
 loading.value = true // Prevent flash of not found state
 const { posts: memberPosts, loading: postsLoading, hasMore: postsHasMore, loadPosts, loadMorePosts, removeComment } = usePosts()
 const { isBookmarked: checkBookmarked, toggleBookmark, fetchBookmarks, loading: bookmarkLoading } = useBookmarks()
-const { sendConnectionRequest, getConnectionStatus } = useConnections()
+const { sendConnectionRequest, getConnectionStatus, fetchConnectionsCount } = useConnections()
 const authStore = useAuthStore()
 
 const member = ref<Member | null>(null)
+const memberConnections = ref(0)
+const memberChallenges = ref<any[]>([])
 const expandedComments = ref(new Set<string>())
 const requesting = ref(false)
 const connectionStatus = ref<string | null>(null)
@@ -399,6 +310,10 @@ onMounted(async () => {
     member.value = await fetchMemberById(id)
     if (member.value) {
       await loadMemberPosts()
+      // Fetch member connections and challenges
+      memberConnections.value = await fetchConnectionsCount(member.value.id)
+      await fetchMemberChallenges(member.value.id)
+      
       // Verificar status de conexão
       if (authStore.user) {
         connectionStatus.value = await getConnectionStatus(authStore.user.id, member.value.id)
@@ -407,9 +322,26 @@ onMounted(async () => {
   }
 })
 
+async function fetchMemberChallenges(id: string) {
+  try {
+    const { data, error } = await supabase
+      .from('user_challenges')
+      .select('*, challenge:challenges(*)')
+      .eq('user_id', id)
+      .eq('completado', true)
+    
+    if (error) throw error
+    memberChallenges.value = data || []
+  } catch (err) {
+    console.error('Error fetching member challenges:', err)
+  }
+}
+
 watch(() => member.value?.id, async (newId) => {
   if (newId) {
     await loadMemberPosts()
+    memberConnections.value = await fetchConnectionsCount(newId)
+    await fetchMemberChallenges(newId)
   }
 })
 
@@ -508,7 +440,7 @@ function handleDeletePost(postId: string) {
   console.log('Delete post:', postId)
 }
 
-function handleCommentAdded(_postId: string) {
+async function handleCommentAdded(_postId: string) {
   // Recarregar posts para atualizar contagem de comentários
   loadMemberPosts()
 }
@@ -519,17 +451,20 @@ const whatsappLink = computed(() => {
   return `https://wa.me/${phone}`
 })
 
-const linkedinLink = computed(() => {
-  if (!member.value?.linkedin) return ''
-  if (member.value.linkedin.startsWith('http')) {
-    return member.value.linkedin
-  }
-  return `https://linkedin.com/in/${member.value.linkedin}`
-})
+function formatYearOnly(dateString?: string): string {
+  if (!dateString) return new Date().getFullYear().toString()
+  return new Date(dateString).getFullYear().toString()
+}
 
-function formatDate(dateString?: string): string {
-  if (!dateString) return 'data desconhecida'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+function getIconForType(type: string) {
+  const icons: Record<string, string> = {
+    post: 'article',
+    comment: 'chat_bubble',
+    event: 'event_available',
+    connection: 'person_add',
+    engagement: 'thumb_up',
+    other: 'extension'
+  }
+  return icons[type] || 'emoji_events'
 }
 </script>

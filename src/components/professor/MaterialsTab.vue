@@ -81,17 +81,25 @@
         <!-- Module Content (Lessons + Materials) -->
         <div v-show="expandedModules.includes(module.id)" class="border-t border-slate-200 dark:border-white/10">
           <!-- Module-level materials -->
-          <div v-if="getModuleLevelMaterials(module.id).length > 0" class="p-4 bg-slate-50/50 dark:bg-black/10">
+          <div class="p-4 bg-slate-50/50 dark:bg-black/10">
             <p class="text-xs font-black text-slate-500 uppercase tracking-wider mb-3 px-2">Materiais do Módulo</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <MaterialCard
-                v-for="material in getModuleLevelMaterials(module.id)"
-                :key="material.id"
-                :material="material"
-                @download="downloadMaterial"
-                @delete="confirmDelete"
-              />
-            </div>
+            <draggable
+              :model-value="getModuleLevelMaterials(module.id)"
+              @update:model-value="(newList: ProgramMaterial[]) => handleMaterialUpdate(newList, module.id, null)"
+              item-key="id"
+              group="materials"
+              handle=".material-handle"
+              ghost-class="opacity-50"
+              class="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[50px]"
+            >
+              <template #item="{ element: material }">
+                <MaterialCard
+                  :material="material"
+                  @download="downloadMaterial"
+                  @delete="confirmDelete"
+                />
+              </template>
+            </draggable>
           </div>
 
           <!-- Lessons with materials -->
@@ -106,16 +114,27 @@
                 <h4 class="text-sm font-bold text-slate-700 dark:text-gray-300">{{ getLessonTitle(lesson) }}</h4>
                 <span class="text-xs text-slate-400 font-medium">({{ getLessonMaterialCount(lesson.id) }})</span>
               </div>
-              <div v-if="getLessonMaterials(lesson.id).length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-3 pl-6">
-                <MaterialCard
-                  v-for="material in getLessonMaterials(lesson.id)"
-                  :key="material.id"
-                  :material="material"
-                  @download="downloadMaterial"
-                  @delete="confirmDelete"
-                />
-              </div>
-              <p v-else class="text-xs text-slate-400 italic pl-6">Nenhum material nesta aula</p>
+              
+              <draggable
+                :model-value="getLessonMaterials(lesson.id)"
+                @update:model-value="(newList: ProgramMaterial[]) => handleMaterialUpdate(newList, module.id, lesson.id)"
+                item-key="id"
+                group="materials"
+                handle=".material-handle"
+                ghost-class="opacity-50"
+                class="grid grid-cols-1 md:grid-cols-2 gap-3 pl-6 min-h-[50px]"
+              >
+                <template #item="{ element: material }">
+                  <MaterialCard
+                    :material="material"
+                    @download="downloadMaterial"
+                    @delete="confirmDelete"
+                  />
+                </template>
+                <template #footer>
+                  <p v-if="getLessonMaterials(lesson.id).length === 0" class="text-xs text-slate-400 italic col-span-2">Solte materiais aqui para vincular à aula</p>
+                </template>
+              </draggable>
             </div>
           </div>
         </div>
@@ -127,15 +146,23 @@
           <span class="material-symbols-outlined text-slate-400">description</span>
           Materiais Gerais
         </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <MaterialCard
-            v-for="material in getGeneralMaterials()"
-            :key="material.id"
-            :material="material"
-            @download="downloadMaterial"
-            @delete="confirmDelete"
-          />
-        </div>
+        <draggable
+          :model-value="getGeneralMaterials()"
+          @update:model-value="(newList: ProgramMaterial[]) => handleMaterialUpdate(newList, null, null)"
+          item-key="id"
+          group="materials"
+          handle=".material-handle"
+          ghost-class="opacity-50"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[50px]"
+        >
+          <template #item="{ element: material }">
+            <MaterialCard
+              :material="material"
+              @download="downloadMaterial"
+              @delete="confirmDelete"
+            />
+          </template>
+        </draggable>
       </div>
     </div>
 
@@ -311,6 +338,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import draggable from 'vuedraggable'
 import { useLocale } from '@/composables/useLocale'
 import { useModulesStore } from '@/stores/modules'
 import type { ProgramModule, ProgramMaterial } from '@/types/modules'
@@ -459,6 +487,17 @@ async function handleDeleteConfirm() {
     console.error('Error deleting material:', error)
   }
 }
+
+async function handleMaterialUpdate(newList: ProgramMaterial[], moduleId: string | null, lessonId: string | null) {
+  try {
+    // Persist the new order immediately
+    await modulesStore.updateMaterialsOrder(lessonId, moduleId, newList)
+    console.log('Materials reordered successfully', { lessonId, moduleId, count: newList.length })
+  } catch (error) {
+    console.error('Error reordering materials:', error)
+  }
+}
+
 
 function handleDeleteCancel() {
   showDeleteModal.value = false

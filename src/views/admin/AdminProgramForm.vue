@@ -545,31 +545,38 @@ function handleCancelContent() {
 async function handleSaveContent(formData: any) {
   try {
     const programId = route.params.id as string
+    let savedItem = null
+
     if (contentEditorMode.value === 'module') {
       if (isCreatingContent.value) {
-        await modulesStore.createModule({
+        savedItem = await modulesStore.createModule({
           ...formData,
           program_id: programId,
           order_index: modules.value.length
         })
       } else {
-        await modulesStore.updateModule(selectedContentItem.value.id, formData)
+        savedItem = await modulesStore.updateModule(selectedContentItem.value.id, formData)
       }
     } else {
       if (isCreatingContent.value) {
-        await modulesStore.createLesson({
+        savedItem = await modulesStore.createLesson({
           ...formData,
           program_id: programId,
           module_id: targetModuleForLesson.value.id,
           order_index: targetModuleForLesson.value.lessons?.length || 0
         }, true)
       } else {
-        await modulesStore.updateLesson(selectedContentItem.value.id, formData, true)
+        savedItem = await modulesStore.updateLesson(selectedContentItem.value.id, formData, true)
       }
     }
     
     await modulesStore.fetchModulesWithLessons(programId)
-    selectedContentItem.value = null
+    
+    // Crucial: Manter o item salvo selecionado para não fechar o editor
+    if (savedItem) {
+      selectedContentItem.value = savedItem
+    }
+    
     isCreatingContent.value = false
     toast.success('Salvo com sucesso!')
   } catch (error: any) {

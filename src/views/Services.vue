@@ -18,7 +18,7 @@
         
         <div class="relative z-10 flex flex-col gap-3 sm:gap-4 md:gap-6 px-3 sm:px-4 md:px-6 lg:px-12 py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 text-center md:text-left items-center md:items-start">
           <div class="flex flex-col gap-2 sm:gap-3 max-w-2xl w-full">
-            <div class="inline-flex items-center gap-1 sm:gap-1.5 sm:gap-2 self-center md:self-start px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm shadow-[0_0_15px_rgba(0,243,255,0.1)]">
+            <div class="inline-flex items-center gap-1 sm:gap-2 self-center md:self-start px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm shadow-[0_0_15px_rgba(0,243,255,0.1)]">
               <span class="material-symbols-outlined text-secondary text-sm sm:text-base md:text-[18px]">verified</span>
               <span class="text-secondary text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
             </div>

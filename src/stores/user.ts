@@ -9,6 +9,7 @@ export interface UserProfile {
   nome?: string
   area_atuacao?: string
   cidade?: string
+  estado?: string
   pais?: string
   objetivo?: string
   whatsapp?: string
@@ -22,6 +23,10 @@ export interface UserProfile {
   badge?: string
   is_public?: boolean
   job_notifications?: boolean
+  nacionalidade?: string
+  email?: string
+  show_whatsapp?: boolean
+  show_email?: boolean
   role?: UserRole
   status?: UserStatus
   strikes?: number
@@ -82,7 +87,7 @@ export const useUserStore = defineStore('user', () => {
         }
         console.error('[USER] fetchProfile erro:', errorDetails)
       }
-      
+
       // Não definir profile como null para manter o último valor conhecido em caso de erro de conexão
       // Apenas limpar se for um erro diferente (ex: usuário não encontrado)
       if (!error?.message?.includes('Failed to fetch')) {

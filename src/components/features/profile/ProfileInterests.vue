@@ -20,29 +20,35 @@
       </div>
     </div>
     
-    <div v-if="tags.length === 0" class="text-sm text-text-muted italic py-2 mb-2">
-      {{ t('profile.noInterests') }}
-    </div>
-    <div v-if="!readonly" class="mt-auto pt-2 group relative">
-      <span class="absolute left-0 top-1/2 -translate-y-1/2 text-primary material-symbols-outlined text-[20px]">add</span>
-      <input
-        v-model="newTag"
-        @keyup.enter="handleAddTag"
-        type="text"
-        :placeholder="t('profile.addTagPlaceholder')"
-        class="w-full bg-transparent border-0 border-b border-input-border focus:border-primary focus:ring-0 text-white placeholder-text-muted text-sm pl-7 py-2 transition-colors"
-      />
+    <div v-if="!readonly" class="mt-4">
+      <p class="text-xs text-text-muted mb-3 font-medium uppercase tracking-wider">{{ t('profile.availableTags') }}</p>
+      <div class="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+        <button
+          v-for="tag in availableTags"
+          :key="tag"
+          @click="toggleTag(tag)"
+          class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all duration-300"
+          :class="[
+            tags.includes(tag)
+              ? 'bg-primary/20 border-primary text-primary shadow-[0_0_10px_rgba(255,0,153,0.3)]'
+              : 'bg-input-bg border-input-border text-gray-400 hover:border-gray-500 hover:text-white'
+          ]"
+        >
+          {{ tag }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { INTEREST_TAGS } from '@/types/members'
 
 const { t } = useI18n()
 
-defineProps<{
+const props = defineProps<{
   tags: string[]
   readonly?: boolean
 }>()
@@ -52,12 +58,33 @@ const emit = defineEmits<{
   (e: 'remove-tag', index: number): void
 }>()
 
-const newTag = ref('')
+const availableTags = computed(() => {
+  return INTEREST_TAGS.filter(tag => !props.tags.includes(tag))
+})
 
-function handleAddTag() {
-  if (newTag.value.trim()) {
-    emit('add-tag', newTag.value.trim().replace('#', ''))
-    newTag.value = ''
+function toggleTag(tag: string) {
+  if (props.tags.includes(tag)) {
+    const index = props.tags.indexOf(tag)
+    emit('remove-tag', index)
+  } else {
+    emit('add-tag', tag)
   }
 }
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+</style>

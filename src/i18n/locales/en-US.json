@@ -537,6 +537,7 @@
         "socialMedia": "Social Media",
         "linkedin": "LinkedIn",
         "whatsapp": "WhatsApp",
+        "contactEmail": "Contact Email",
         "instagram": "Instagram",
         "saveChanges": "Save Changes",
         "saving": "Saving...",
@@ -551,6 +552,16 @@
         "backToEdit": "Back to Editing",
         "editAvatar": "Edit Avatar",
         "uploading": "Uploading...",
+        "nationality": "Nationality",
+        "selectNationality": "Select your nationality",
+        "showWhatsApp": "Show WhatsApp",
+        "showWhatsAppDesc": "Allow other members to see your WhatsApp number",
+        "showEmail": "Show Email",
+        "showEmailDesc": "Allow other members to see your email address",
+        "privacySettings": "Privacy Settings",
+        "contactInfoVisibility": "Contact Visibility",
+        "interestsTags": "Interests and Tags",
+        "availableTags": "Available Tags",
         "clickToUpload": "Click to upload",
         "formatHint": "JPG, PNG or GIF (Max. 2MB)",
         "newImagePreview": "New image preview",
@@ -1137,6 +1148,19 @@
             "markCompleted": "Mark as Completed",
             "issueCertificate": "Issue Certificate",
             "removeEnrollment": "Remove Enrollment"
+        },
+        "youtubeUpload": {
+            "uploadSuccess": "Video sent! YouTube processing will continue in the background. You can leave this page; we'll notify you with the bell 🔔 when it's ready.",
+            "uploadError": "Error uploading video. Please try again.",
+            "uploading": "Uploading video...",
+            "processing": "Processing...",
+            "dragDropTitle": "Drag your video or click here",
+            "dragDropSubtitle": "MP4, MOV or AVI (Recommended: 1080p)",
+            "uploadingStatus": "Uploading...",
+            "finishingStatus": "Upload complete! Your lesson will be available shortly.",
+            "uploadSuccessTitle": "Upload Complete!",
+            "uploadAnother": "Upload another video",
+            "metadataSynced": "Video metadata synced successfully!"
         }
     }
 }

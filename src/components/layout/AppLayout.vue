@@ -74,6 +74,7 @@ import AppHeader from './AppHeader.vue'
 import AppSidebar from './AppSidebar.vue'
 import AppRightSidebar from './AppRightSidebar.vue'
 import AppFooter from './AppFooter.vue'
+import { useLocale } from '@/composables/useLocale'
 
 
 const props = defineProps<{
@@ -83,6 +84,7 @@ const props = defineProps<{
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useLocale()
 
 // Hide sidebars on Members, MemberProfile, Services, Benefits, Events, and Profile pages
 // Also check if prop is passed
@@ -113,11 +115,11 @@ function handleEditProfile() {
   router.push('/perfil')
 }
 
-const mobileMenuItems = [
-  { path: '/', label: 'Home', icon: 'home' },
-  { path: '/comunidade', label: 'Comunidade', icon: 'people' },
-  { path: '/eventos', label: 'Eventos', icon: 'event' },
-  { path: '/programas', label: 'Programas', icon: 'school' },
-  { path: '/servicos', label: 'Serviços', icon: 'business_center' },
-]
+const mobileMenuItems = computed(() => [
+  { path: '/', label: t('navigation.home'), icon: 'home' },
+  { path: '/comunidade', label: t('navigation.community'), icon: 'people' },
+  { path: '/eventos', label: t('navigation.events'), icon: 'event' },
+  { path: '/programas', label: t('navigation.programs'), icon: 'school' },
+  { path: '/servicos', label: t('navigation.services'), icon: 'business_center' },
+])
 </script>

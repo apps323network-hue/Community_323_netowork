@@ -415,15 +415,120 @@ export const useModulesStore = defineStore('modules', {
 
         async getYouTubeVideoDetails(videoId: string): Promise<YouTubeVideoDetails | null> {
             try {
-                const { data, error } = await supabase.functions.invoke('get-youtube-video-details', {
-                    body: { videoId }
+                // Redirecionando para o n8n para usar as mesmas credenciais do upload
+                const baseUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || 'https://nwh.suaiden.com/webhook-test'
+                const response = await fetch(`${baseUrl}/youtube-metadata`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ videoId })
                 })
 
-                if (error) throw error
-                return data
+                if (!response.ok) throw new Error('Failed to fetch from n8n')
+
+                return await response.json()
             } catch (err: any) {
-                console.error('Error fetching YouTube details:', err)
+                console.error('Error fetching YouTube details via n8n:', err)
                 return null
+            }
+        },
+
+        // ============================================
+        // DRAG & DROP REORDERING ACTIONS
+        // ============================================
+
+        async updateModulesOrder(_programId: string, orderedModules: ProgramModule[]) {
+            this.loading = true
+            try {
+                // 1. Update local state
+                orderedModules.forEach((mod, index) => {
+                    const idx = this.modules.findIndex(m => m.id === mod.id)
+                    if (idx !== -1) {
+                        this.modules[idx].order_index = index
+                    }
+                })
+
+                // 2. Persist to DB - update each module individually
+                for (let i = 0; i < orderedModules.length; i++) {
+                    const { error } = await supabase
+                        .from('program_modules')
+                        .update({ order_index: i })
+                        .eq('id', orderedModules[i].id)
+
+                    if (error) throw error
+                }
+            } catch (err: any) {
+                console.error('Error updating modules order:', err)
+                throw err
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async updateLessonsOrder(moduleId: string, orderedLessons: ProgramLesson[]) {
+            this.loading = true
+            try {
+                // 1. Local update first
+                orderedLessons.forEach((lesson, index) => {
+                    const idx = this.lessons.findIndex(l => l.id === lesson.id)
+                    if (idx !== -1) {
+                        this.lessons[idx] = { ...this.lessons[idx], order_index: index, module_id: moduleId }
+                    }
+                })
+
+                // 2. Persist to DB - update each lesson individually
+                for (let i = 0; i < orderedLessons.length; i++) {
+                    const { error } = await supabase
+                        .from('program_lessons')
+                        .update({
+                            order_index: i,
+                            module_id: moduleId
+                        })
+                        .eq('id', orderedLessons[i].id)
+
+                    if (error) throw error
+                }
+            } catch (err: any) {
+                console.error('Error updating lessons order:', err)
+                throw err
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async updateMaterialsOrder(lessonId: string | null, moduleId: string | null, orderedMaterials: ProgramMaterial[]) {
+            this.loading = true
+            try {
+                // 1. Update local state
+                orderedMaterials.forEach((mat, index) => {
+                    const idx = this.materials.findIndex(m => m.id === mat.id)
+                    if (idx !== -1) {
+                        this.materials[idx] = {
+                            ...this.materials[idx],
+                            order_index: index,
+                            lesson_id: lessonId,
+                            module_id: moduleId
+                        }
+                    }
+                })
+
+                // 2. Persist - update each material individually
+                for (let i = 0; i < orderedMaterials.length; i++) {
+                    const { error } = await supabase
+                        .from('program_materials')
+                        .update({
+                            order_index: i,
+                            lesson_id: lessonId,
+                            module_id: moduleId
+                        })
+                        .eq('id', orderedMaterials[i].id)
+
+                    if (error) throw error
+                }
+            } catch (err: any) {
+                console.error('Error updating materials order:', err)
+                throw err
+            } finally {
+                this.loading = false
             }
         },
 

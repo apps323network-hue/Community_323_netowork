@@ -3,6 +3,7 @@ export interface Member {
   nome: string
   area_atuacao?: string
   cidade?: string
+  estado?: string
   pais?: string
   objetivo?: string
   whatsapp?: string
@@ -13,6 +14,14 @@ export interface Member {
   created_at?: string
   updated_at?: string
   email?: string
+  nacionalidade?: string
+  show_whatsapp?: boolean
+  show_email?: boolean
+  tags?: string[]
+  goals?: string[]
+  bio?: string
+  instagram?: string
+  total_points?: number
 }
 
 export interface MemberFilters {
@@ -50,4 +59,25 @@ export const OBJETIVOS = [
   'Mentorias',
   'Oportunidades',
   'Comunidade',
+] as const
+
+export const INTEREST_TAGS = [
+  'Tecnologia',
+  'Marketing',
+  'Vendas',
+  'Design',
+  'Empreendedorismo',
+  'Investimentos',
+  'Networking',
+  'Educação',
+  'Saúde',
+  'Arte',
+  'Música',
+  'Esportes',
+  'Viagens',
+  'Gastronomia',
+  'Sustentabilidade',
+  'Inovação',
+  'Liderança',
+  'Carreira'
 ] as const

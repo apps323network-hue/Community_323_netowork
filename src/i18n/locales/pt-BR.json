@@ -538,6 +538,7 @@
         "socialMedia": "Redes Sociais",
         "linkedin": "LinkedIn",
         "whatsapp": "WhatsApp",
+        "contactEmail": "Email de Contato",
         "instagram": "Instagram",
         "saveChanges": "Salvar Alterações",
         "saving": "Salvando...",
@@ -552,6 +553,16 @@
         "backToEdit": "Voltar para Edição",
         "editAvatar": "Editar Avatar",
         "uploading": "Enviando...",
+        "nationality": "Nacionalidade",
+        "selectNationality": "Selecione sua nacionalidade",
+        "showWhatsApp": "Mostrar WhatsApp",
+        "showWhatsAppDesc": "Permitir que outros membros vejam seu número de WhatsApp",
+        "showEmail": "Mostrar Email",
+        "showEmailDesc": "Permitir que outros membros vejam seu endereço de email",
+        "privacySettings": "Configurações de Privacidade",
+        "contactInfoVisibility": "Visibilidade de Contato",
+        "interestsTags": "Interesses e Tags",
+        "availableTags": "Tags Disponíveis",
         "clickToUpload": "Clique para fazer upload",
         "formatHint": "JPG, PNG ou GIF (Max. 2MB)",
         "newImagePreview": "Preview da nova imagem",
@@ -1138,6 +1149,19 @@
             "markCompleted": "Marcar como Concluído",
             "issueCertificate": "Emitir Certificado",
             "removeEnrollment": "Remover Matrícula"
+        },
+        "youtubeUpload": {
+            "uploadSuccess": "Vídeo enviado! O processamento pelo YouTube continuará em segundo plano. Você pode sair desta página; avisaremos no sininho 🔔 quando estiver pronto.",
+            "uploadError": "Erro ao enviar vídeo. Por favor, tente novamente.",
+            "uploading": "Enviando vídeo...",
+            "processing": "Processando...",
+            "dragDropTitle": "Arraste seu vídeo ou clique aqui",
+            "dragDropSubtitle": "MP4, MOV ou AVI (Recomendado: 1080p)",
+            "uploadingStatus": "Fazendo Upload...",
+            "finishingStatus": "Upload concluído! Sua aula estará disponível em instantes.",
+            "uploadSuccessTitle": "Upload Concluído!",
+            "uploadAnother": "Enviar outro vídeo",
+            "metadataSynced": "Dados do vídeo sincronizados com sucesso!"
         }
     }
 }

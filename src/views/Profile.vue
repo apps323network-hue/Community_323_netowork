@@ -83,8 +83,12 @@
           <ProfileInfoForm
             v-model:name="editableProfile.nome"
             v-model:profession="editableProfile.area_atuacao"
+            v-model:country="editableProfile.pais"
             v-model:city="editableProfile.cidade"
-            v-model:state="tempState"
+            v-model:state="editableProfile.estado"
+            v-model:nationality="editableProfile.nacionalidade"
+            v-model:email="editableProfile.email"
+            v-model:whatsapp="editableProfile.whatsapp"
             v-model:bio="editableProfile.bio"
             :readonly="isPreviewMode"
           />
@@ -134,9 +138,11 @@
           <ProfileSettings
             v-if="!isPreviewMode"
             :isPublic="editableProfile.is_public"
-            :jobNotifications="editableProfile.job_notifications"
+            :showWhatsapp="editableProfile.show_whatsapp"
+            :showEmail="editableProfile.show_email"
             @toggle-public="editableProfile.is_public = !editableProfile.is_public"
-            @toggle-notifications="editableProfile.job_notifications = !editableProfile.job_notifications"
+            @toggle-whatsapp="editableProfile.show_whatsapp = !editableProfile.show_whatsapp"
+            @toggle-email="editableProfile.show_email = !editableProfile.show_email"
           />
 
           <!-- Mobile Sticky Footer -->
@@ -267,9 +273,8 @@ const { t } = useI18n()
 const saving = ref(false)
 const statusMessage = ref('')
 const statusType = ref<'success' | 'error'>('success')
-const tempState = ref('FL')
-const hasChanges = ref(false)
 const isPreviewMode = ref(false)
+const hasChanges = ref(false)
 
 // Avatar Modal
 const showAvatarModal = ref(false)
@@ -294,6 +299,10 @@ const editableProfile = reactive<any>({
   goals: [],
   is_public: true,
   job_notifications: false,
+  show_whatsapp: false,
+  show_email: false,
+  nacionalidade: '',
+  estado: '',
   avatar_url: ''
 })
 
@@ -317,7 +326,13 @@ function initEditableState() {
       goals: userStore.profile.goals || [],
       // Ensure booleans are initialized
       is_public: userStore.profile.is_public ?? true,
-      job_notifications: userStore.profile.job_notifications ?? false
+      job_notifications: userStore.profile.job_notifications ?? false,
+      show_whatsapp: userStore.profile.show_whatsapp ?? false,
+      show_email: userStore.profile.show_email ?? false,
+      nacionalidade: userStore.profile.nacionalidade || '',
+      estado: userStore.profile.estado || '',
+      email: userStore.profile.email || '',
+      whatsapp: userStore.profile.whatsapp || ''
     }
     
     // Update editable profile
