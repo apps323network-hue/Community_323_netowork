@@ -13,3 +13,4 @@ WHERE nome = 'MatrículaUSA' AND is_external = true;
 
 
 
+

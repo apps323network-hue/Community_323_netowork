@@ -167,3 +167,4 @@ curl -X POST https://pgdvbanwumqjmqeybqnw.supabase.co/functions/v1/sync-american
 
 **Última atualização**: 2026-01-02
 
+
