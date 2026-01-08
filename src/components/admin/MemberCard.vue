@@ -89,16 +89,8 @@ interface Props {
   user: AdminUser
 }
 
-interface Emits {
-  (e: 'view-profile', userId: string): void
-  (e: 'suspend', userId: string): void
-  (e: 'unsuspend', userId: string): void
-  (e: 'ban', userId: string): void
-  (e: 'unban', userId: string): void
-}
 
 const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
 
 
 

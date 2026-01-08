@@ -112,7 +112,7 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="usersStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
+        <div v-if="baseStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
           <div class="relative w-20 h-20">
             <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
             <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>

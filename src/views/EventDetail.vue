@@ -275,7 +275,7 @@ const currentUser = computed(() => authStore.user)
 
 const isUserConfirmed = computed(() => {
   if (!event.value?.confirmed_users || !currentUser.value) return false
-  return event.value.confirmed_users.some(u => u.user_id === currentUser.value.id)
+  return event.value.confirmed_users.some(u => u.user_id === currentUser.value?.id)
 })
 
 const formattedDate = computed(() => {
