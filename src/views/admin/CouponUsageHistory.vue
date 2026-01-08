@@ -68,10 +68,10 @@
                   <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center overflow-hidden shrink-0">
                       <img v-if="use.profiles?.avatar_url" :src="use.profiles.avatar_url" class="w-full h-full object-cover" />
-                      <span v-else class="text-xs font-bold text-slate-400 uppercase">{{ (use.profiles?.full_name || 'U').substring(0, 1) }}</span>
+                      <span v-else class="text-xs font-bold text-slate-400 uppercase">{{ (use.profiles?.nome || 'U').substring(0, 1) }}</span>
                     </div>
                     <div class="flex flex-col min-w-0">
-                      <span class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ use.profiles?.full_name || 'Usuário Desconhecido' }}</span>
+                      <span class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ use.profiles?.nome || 'Usuário Desconhecido' }}</span>
                       <span class="text-[10px] text-slate-400 truncate">{{ use.profiles?.email }}</span>
                     </div>
                   </div>
@@ -87,7 +87,7 @@
                 <!-- Discount -->
                 <td class="p-6 text-center">
                   <span class="text-sm font-black text-green-500">
-                    -${{ use.discount_applied }}
+                    -${{ Number(use.discount_applied).toFixed(2) }}
                   </span>
                 </td>
 
@@ -143,7 +143,7 @@ const filteredUsages = computed(() => {
   const query = search.value.toLowerCase()
   return usages.value.filter(u => 
     (u.coupons?.code || '').toLowerCase().includes(query) ||
-    (u.profiles?.full_name || '').toLowerCase().includes(query) ||
+    (u.profiles?.nome || '').toLowerCase().includes(query) ||
     (u.profiles?.email || '').toLowerCase().includes(query) ||
     (u.programs?.title_pt || '').toLowerCase().includes(query) ||
     (u.programs?.title_en || '').toLowerCase().includes(query)
@@ -158,7 +158,7 @@ async function fetchUsages() {
       .select(`
         *,
         coupons (code),
-        profiles (full_name, email, avatar_url),
+        profiles (nome, email, avatar_url),
         programs (title_pt, title_en)
       `)
       .order('used_at', { ascending: false })
