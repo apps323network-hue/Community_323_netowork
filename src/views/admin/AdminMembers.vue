@@ -1,72 +1,232 @@
 <template>
   <AdminLayout>
-    <div class="w-full flex flex-col gap-8">
-      <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
-          Gestão de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Membros</span>
-        </h1>
-        <p class="text-slate-600 dark:text-white/60 text-lg">
-          Aprove, rejeite e gerencie membros da comunidade
-        </p>
-      </div>
+    <div class="relative overflow-x-hidden pb-20">
+      <!-- Decorative Background Elements Removed -->
 
-      <!-- Stats -->
-      <UserStats :stats="userStats" />
+      <div class="relative z-10 max-w-[1600px] mx-auto px-4 lg:px-10 py-8">
+        <!-- Hero Header -->
+        <div class="mb-8">
+          <h1 class="text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight mb-4">
+            Gestão de <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary animate-gradient-x bg-[length:200%_auto]">Membros</span>
+          </h1>
+          <p class="text-white/60 text-lg">
+            Gerencie, filtre e analise todos os membros da comunidade com métricas de engajamento em tempo real
+          </p>
+        </div>
 
-      <!-- Tabs -->
-      <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-slate-200 dark:border-white/10">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          class="flex h-9 sm:h-10 shrink-0 items-center justify-center rounded-t-lg px-4 sm:px-6 text-xs sm:text-sm font-medium transition-all relative"
-          :class="activeTab === tab.id
-            ? 'bg-white dark:bg-surface-card text-slate-900 dark:text-white border-t-2 border-primary'
-            : 'text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white border-t-2 border-transparent'"
-          @click="handleTabChange(tab.id)"
-        >
-          {{ tab.label }}
-          <span
-            v-if="tab.badge"
-            class="ml-2 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
-            :class="tab.badgeClass"
+        <!-- Stats Dashboard -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          <!-- Total Members -->
+          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="p-3 rounded-xl bg-primary/10 border border-primary/20">
+                <span class="material-symbols-outlined text-primary text-2xl">group</span>
+              </div>
+              <div>
+                <p class="text-white/50 text-xs font-medium mb-1">Total de Membros</p>
+                <p class="text-white text  -2xl font-black">{{ usersStore.userStats.total }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Members -->
+          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-green-500/50 transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
+                <span class="material-symbols-outlined text-green-500 text-2xl">check_circle</span>
+              </div>
+              <div>
+                <p class="text-white/50 text-xs font-medium mb-1">Membros Ativos</p>
+                <p class="text-white text-2xl font-black">{{ usersStore.userStats.active }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Approvals -->
+          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-yellow-500/50 transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                <span class="material-symbols-outlined text-yellow-500 text-2xl">pending_actions</span>
+              </div>
+              <div>
+                <p class="text-white/50 text-xs font-medium mb-1">Pendentes</p>
+                <p class="text-white text-2xl font-black">{{ usersStore.userStats.pending }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- New Today -->
+          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-secondary/50 transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="p-3 rounded-xl bg-secondary/10 border border-secondary/20">
+                <span class="material-symbols-outlined text-secondary text-2xl">person_add</span>
+              </div>
+              <div>
+                <p class="text-white/50 text-xs font-medium mb-1">Novos Hoje</p>
+                <p class="text-white text-2xl font-black">{{ usersStore.userStats.newToday }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Engagement Rate -->
+          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-purple-500/50 transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                <span class="material-symbols-outlined text-purple-500 text-2xl">trending_up</span>
+              </div>
+              <div>
+                <p class="text-white/50 text-xs font-medium mb-1">Engajamento</p>
+                <p class="text-white text-2xl font-black">{{ engagementRateText }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <MemberFilters v-model="currentFilters" @update:modelValue="handleFiltersChange" />
+
+        <!-- Results Info -->
+        <div class="flex items-center justify-between mb-6">
+          <p class="text-white/60 text-sm">
+            Mostrando <span class="text-white font-bold">{{ usersStore.paginatedMembers.length }}</span> de 
+            <span class="text-white font-bold">{{ usersStore.pagination.totalItems }}</span> membros
+          </p>
+
+          <!-- View Toggle -->
+          <div class="flex items-center gap-2">
+            <button
+              @click="viewMode = 'grid'"
+              class="p-2 rounded-lg transition-all"
+              :class="viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'"
+            >
+              <span class="material-symbols-outlined">grid_view</span>
+            </button>
+            <button
+              @click="viewMode = 'list'"
+              class="p-2 rounded-lg transition-all"
+              :class="viewMode === 'list' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'"
+            >
+              <span class="material-symbols-outlined">view_list</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div v-if="usersStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
+          <div class="relative w-20 h-20">
+            <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div class="absolute inset-0 rounded-full shadow-[0_0_30px_rgba(244,37,244,0.3)] animate-pulse"></div>
+          </div>
+          <p class="text-white/60 font-medium animate-pulse tracking-widest uppercase text-sm">Carregando membros...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="usersStore.paginatedMembers.length === 0" class="flex flex-col items-center justify-center py-20 gap-6">
+          <div class="w-20 h-20 rounded-[24px] bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-4xl text-white/40">search_off</span>
+          </div>
+          <h3 class="text-2xl font-black text-white uppercase tracking-tight">Nenhum membro encontrado</h3>
+          <p class="text-white/60 text-center max-w-md">
+            Não há membros que correspondam aos filtros selecionados. Tente ajustar os critérios de busca.
+          </p>
+          <button
+            @click="handleClearFilters"
+            class="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all"
           >
-            {{ tab.badge }}
-          </span>
-        </button>
-      </div>
+            Limpar Filtros
+          </button>
+        </div>
 
-      <!-- Content based on active tab -->
-      <div v-if="activeTab === 'pending'">
-        <AdminPendingUsersList
-          :users="pendingUsers"
-          :loading="loading"
-          @approve="handleApprove"
-          @reject="handleReject"
-          @view-profile="handleViewProfile"
-        />
-      </div>
+        <!-- Members Grid -->
+        <div v-else>
+          <div 
+            v-if="viewMode === 'grid'"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+          >
+            <MemberCard
+              v-for="member in usersStore.paginatedMembers"
+              :key="member.id"
+              :user="member"
+              @view-profile="handleViewProfile"
+              @suspend="handleSuspend"
+              @unsuspend="handleUnsuspend"
+              @ban="handleBan"
+              @unban="handleUnban"
+            />
+          </div>
 
-      <div v-else>
-        <AdminUsersList
-          :users="displayedUsers"
-          :loading="loading"
-          @suspend="handleSuspend"
-          @ban="handleBan"
-          @unban="handleUnban"
-          @unsuspend="handleUnsuspend"
-          @view-history="handleViewHistory"
-          @update-role="handleUpdateRole"
-        />
-      </div>
+          <!-- List View (Alternative layout) -->
+          <div v-else class="space-y-4">
+            <MemberCard
+              v-for="member in usersStore.paginatedMembers"
+              :key="member.id"
+              :user="member"
+              @view-profile="handleViewProfile"
+              @suspend="handleSuspend"
+              @unsuspend="handleUnsuspend"
+              @ban="handleBan"
+              @unban="handleUnban"
+            />
+          </div>
+        </div>
 
-      <!-- Approval Modal -->
-      <UserApprovalModal
-        v-model="showApprovalModal"
-        :user="selectedUser"
-        @approve="handleModalApprove"
-        @reject="handleModalReject"
-      />
+        <!-- Pagination Controls -->
+        <div v-if="usersStore.pagination.totalPages > 1" class="mt-12 flex flex-col items-center gap-6">
+          <div class="flex items-center gap-2">
+            <!-- Previous Button -->
+            <button
+              @click="handlePageChange(usersStore.pagination.currentPage - 1)"
+              :disabled="usersStore.pagination.currentPage === 1"
+              class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined">chevron_left</span>
+              Anterior
+            </button>
+
+            <!-- Page Numbers -->
+            <div class="flex items-center gap-2">
+              <template v-for="page in visiblePages" :key="page">
+                <button
+                  v-if="typeof page === 'number'"
+                  @click="handlePageChange(page)"
+                  class="w-10 h-10 rounded-xl font-bold transition-all"
+                  :class="page === usersStore.pagination.currentPage 
+                    ? 'bg-gradient-to-r from-primary to-secondary text-black' 
+                    : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'"
+                >
+                  {{ page }}
+                </button>
+                <span v-else class="text-white/40 px-2">...</span>
+              </template>
+            </div>
+
+            <!-- Next Button -->
+            <button
+              @click="handlePageChange(usersStore.pagination.currentPage + 1)"
+              :disabled="usersStore.pagination.currentPage === usersStore.pagination.totalPages"
+              class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              Próximo
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+
+          <!-- Page Size Selector -->
+          <div class="flex items-center gap-3 text-white/60 text-sm">
+            <span>Itens por página:</span>
+            <select
+              :value="usersStore.pagination.pageSize"
+              @change="handlePageSizeChange"
+              class="px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+            >
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Ban Confirmation Modal -->
@@ -131,121 +291,80 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAdminStore } from '@/stores/admin'
+import { useAdminUsersStore } from '@/stores/admin/users'
+import { useAdminBaseStore } from '@/stores/admin/base'
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
-import UserStats from '@/components/admin/UserStats.vue'
-import AdminPendingUsersList from '@/components/admin/AdminPendingUsersList.vue'
-import AdminUsersList from '@/components/admin/AdminUsersList.vue'
-import UserApprovalModal from '@/components/admin/UserApprovalModal.vue'
+import MemberCard from '@/components/admin/MemberCard.vue'
+import MemberFilters from '@/components/admin/MemberFilters.vue'
 import Modal from '@/components/ui/Modal.vue'
-import type { AdminUser, UserRole } from '@/types/admin'
+import type { AdminUser, MemberFilters as MemberFiltersType } from '@/types/admin'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
-const adminStore = useAdminStore()
+const usersStore = useAdminUsersStore()
+const baseStore = useAdminBaseStore()
 
-const activeTab = ref<'pending' | 'all' | 'suspended' | 'banned'>('all')
-const showApprovalModal = ref(false)
-const selectedUser = ref<AdminUser | null>(null)
+const currentFilters = ref<MemberFiltersType>({})
+const viewMode = ref<'grid' | 'list'>('list')
 const showBanModal = ref(false)
 const userToBan = ref<AdminUser | null>(null)
 const banReason = ref('')
 
-const tabs = computed(() => [
-  {
-    id: 'all' as const,
-    label: 'Todos',
-  },
-  {
-    id: 'pending' as const,
-    label: 'Pendentes',
-    badge: adminStore.userStats.pending > 0 ? adminStore.userStats.pending : undefined,
-    badgeClass: 'bg-yellow-500/20 text-yellow-400',
-  },
-  {
-    id: 'suspended' as const,
-    label: 'Suspensos',
-    badge: adminStore.userStats.suspended > 0 ? adminStore.userStats.suspended : undefined,
-    badgeClass: 'bg-orange-500/20 text-orange-400',
-  },
-  {
-    id: 'banned' as const,
-    label: 'Banidos',
-    badge: adminStore.userStats.banned > 0 ? adminStore.userStats.banned : undefined,
-    badgeClass: 'bg-red-500/20 text-red-400',
-  },
-])
-
-const pendingUsers = computed(() => adminStore.pendingUsers)
-const userStats = computed(() => adminStore.userStats)
-const loading = computed(() => adminStore.loading)
-
-const displayedUsers = computed(() => {
-  if (activeTab.value === 'all') {
-    return adminStore.allUsers
-  }
-  return adminStore.allUsers.filter((u: AdminUser) => u.status === activeTab.value)
+const engagementRateText = computed(() => {
+  const rate = usersStore.userStats.engagementRate || 0
+  return `${Math.round(rate)}%`
 })
 
-async function handleTabChange(tabId: 'pending' | 'all' | 'suspended' | 'banned') {
-  activeTab.value = tabId
+const visiblePages = computed(() => {
+  const current = usersStore.pagination.currentPage
+  const total = usersStore.pagination.totalPages
+  const pages: (number | string)[] = []
 
-  if (tabId === 'pending') {
-    await adminStore.fetchPendingUsers()
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) {
+      pages.push(i)
+    }
   } else {
-    const statusFilter = tabId === 'all' ? undefined : tabId
-    await adminStore.fetchAllUsers(statusFilter)
+    pages.push(1)
+    
+    if (current > 3) {
+      pages.push('...')
+    }
+    
+    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+      pages.push(i)
+    }
+    
+    if (current < total - 2) {
+      pages.push('...')
+    }
+    
+    pages.push(total)
   }
-  await adminStore.fetchUserStats()
+
+  return pages
+})
+
+async function handleFiltersChange(filters: MemberFiltersType) {
+  usersStore.setFilters(filters)
+  await usersStore.fetchMembersPaginated(1, usersStore.pagination.pageSize)
 }
 
-function handleApprove(userId: string) {
-  const user = pendingUsers.value.find((u: AdminUser) => u.id === userId)
-  if (user) {
-    selectedUser.value = user
-    showApprovalModal.value = true
-  }
+async function handleClearFilters() {
+  currentFilters.value = {}
+  usersStore.clearFilters()
+  await usersStore.fetchMembersPaginated(1, usersStore.pagination.pageSize)
 }
 
-function handleReject(userId: string) {
-  const user = pendingUsers.value.find((u: AdminUser) => u.id === userId)
-  if (user) {
-    selectedUser.value = user
-    showApprovalModal.value = true
-  }
+async function handlePageChange(page: number) {
+  await usersStore.fetchMembersPaginated(page, usersStore.pagination.pageSize)
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-async function handleModalApprove(userId: string) {
-  try {
-    await adminStore.approveUser(userId)
-    // A função approveUser já recarrega a lista, mas vamos garantir
-    await adminStore.fetchPendingUsers()
-    await adminStore.fetchAllUsers()
-    await adminStore.fetchUserStats()
-    toast.success('Usuário aprovado com sucesso!')
-    showApprovalModal.value = false
-    selectedUser.value = null
-  } catch (error: any) {
-    toast.error(error.message || 'Erro ao aprovar usuário')
-    console.error('Error approving user:', error)
-    // Recarregar mesmo em caso de erro para garantir sincronização
-    await adminStore.fetchPendingUsers()
-    await adminStore.fetchUserStats()
-  }
-}
-
-async function handleModalReject(userId: string, reason: string) {
-  try {
-    await adminStore.rejectUser(userId, reason)
-    await adminStore.fetchPendingUsers()
-    await adminStore.fetchUserStats()
-    toast.success('Usuário rejeitado')
-    showApprovalModal.value = false
-    selectedUser.value = null
-  } catch (error: any) {
-    toast.error(error.message || 'Erro ao rejeitar usuário')
-    console.error('Error rejecting user:', error)
-  }
+async function handlePageSizeChange(event: Event) {
+  const size = parseInt((event.target as HTMLSelectElement).value)
+  usersStore.setPageSize(size)
+  await usersStore.fetchMembersPaginated(1, size)
 }
 
 function handleViewProfile(userId: string) {
@@ -253,12 +372,15 @@ function handleViewProfile(userId: string) {
 }
 
 function handleSuspend(_userId: string) {
-  // TODO: Implementar suspensão (Sprint 2)
   toast.info('Funcionalidade de suspensão será implementada em breve')
 }
 
+function handleUnsuspend(_userId: string) {
+  toast.info('Funcionalidade será implementada em breve')
+}
+
 function handleBan(userId: string) {
-  const user = displayedUsers.value.find((u: AdminUser) => u.id === userId)
+  const user = usersStore.paginatedMembers.find((u: AdminUser) => u.id === userId)
   if (user) {
     userToBan.value = user
     banReason.value = ''
@@ -270,10 +392,10 @@ async function confirmBan() {
   if (!userToBan.value) return
 
   try {
-    await adminStore.banUser(userToBan.value.id, banReason.value || undefined)
+    await usersStore.banUser(userToBan.value.id, banReason.value || undefined)
     toast.success('Usuário banido com sucesso')
-    await adminStore.fetchAllUsers()
-    await adminStore.fetchUserStats()
+    await usersStore.fetchMembersPaginated(usersStore.pagination.currentPage, usersStore.pagination.pageSize)
+    await usersStore.fetchUserStats()
     showBanModal.value = false
     userToBan.value = null
     banReason.value = ''
@@ -285,76 +407,39 @@ async function confirmBan() {
 
 async function handleUnban(userId: string) {
   try {
-    await adminStore.unbanUser(userId)
+    await usersStore.unbanUser(userId)
     toast.success('Usuário desbanido com sucesso')
-    await adminStore.fetchAllUsers()
-    await adminStore.fetchUserStats()
+    await usersStore.fetchMembersPaginated(usersStore.pagination.currentPage, usersStore.pagination.pageSize)
+    await usersStore.fetchUserStats()
   } catch (error: any) {
     toast.error(error.message || 'Erro ao desbanir usuário')
     console.error('Error unbanning user:', error)
   }
 }
 
-function handleUnsuspend(_userId: string) {
-  // TODO: Implementar remoção de suspensão (Sprint 2)
-  toast.info('Funcionalidade será implementada em breve')
-}
-
-function handleViewHistory(userId: string) {
-  router.push({ name: 'UserHistory', params: { userId } })
-}
-
-async function handleUpdateRole(userId: string, role: string) {
-  try {
-    await adminStore.updateUserRole(userId, role as UserRole)
-    toast.success('Cargo do usuário atualizado!')
-  } catch (error: any) {
-    toast.error(error.message || 'Erro ao atualizar cargo')
-    console.error('Error updating user role:', error)
-  }
-}
-
 onMounted(async () => {
-  // Verificar se é admin
-  const isAdmin = await adminStore.checkIsAdmin()
+  // Check admin permissions
+  const isAdmin = await baseStore.checkIsAdmin()
   if (!isAdmin) {
     router.push('/')
     return
   }
 
-  // Carregar dados iniciais baseado na aba padrão
-  await adminStore.fetchAllUsers() // Aba padrão é "Todos"
-  await adminStore.fetchPendingUsers()
-  await adminStore.fetchUserStats()
+  // Load initial data
+  await usersStore.fetchUserStats()
+  await usersStore.fetchMembersPaginated(1, 20)
 })
 </script>
 
 <style scoped>
-.bg-neon-gradient {
-  background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+.animate-gradient-x {
+  background-size: 200% auto;
+  animation: gradient-x 3s linear infinite;
 }
 
-@keyframes gradient {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 3s ease infinite;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 </style>
-

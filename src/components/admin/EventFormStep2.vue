@@ -1,7 +1,21 @@
 <template>
   <div class="space-y-4">
     <div>
-      <label class="block text-sm font-medium text-white mb-2">Data *</label>
+      <div class="flex justify-between items-center mb-2">
+        <label class="block text-sm font-medium text-white">Data *</label>
+        
+        <!-- Info Datas Programa -->
+        <span v-if="program" class="text-xs">
+          <span v-if="isProgramExpired(program)" class="text-red-400 font-medium flex items-center gap-1">
+             <span class="material-symbols-outlined text-[14px]">warning</span>
+             Expirado: {{ formatDate(program.program_end_date) }}
+          </span>
+          <span v-else class="text-emerald-400 font-medium tracking-wide">
+             Validade: {{ formatDate(program.program_start_date) }} - {{ formatDate(program.program_end_date) }}
+          </span>
+        </span>
+      </div>
+
       <div class="grid grid-cols-3 gap-3">
         <div>
           <label class="block text-xs text-slate-600 dark:text-white/60 mb-1">Dia</label>
@@ -185,6 +199,7 @@ interface EventFormData {
   local: string
   image_url: string
   status: EventStatus
+  program_id: string
 }
 
 interface DateTimeData {
@@ -199,6 +214,7 @@ interface Props {
   formData: EventFormData
   dateTime: DateTimeData
   imagePreview: string | null
+  program?: any
 }
 
 interface Emits {
@@ -217,6 +233,16 @@ const dateTime = ref<DateTimeData>({ ...props.dateTime })
 watch(() => props.dateTime, (newVal) => {
   dateTime.value = { ...newVal }
 }, { deep: true })
+
+function formatDate(dateString: string | null) {
+  if (!dateString) return 'Data indefinida'
+  return new Date(dateString).toLocaleDateString()
+}
+
+function isProgramExpired(program: any) {
+  if (!program?.program_end_date) return false
+  return new Date(program.program_end_date) < new Date()
+}
 
 function getMonthName(month: number): string {
   const months = [

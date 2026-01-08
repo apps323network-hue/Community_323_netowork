@@ -182,19 +182,19 @@ const routes: RouteRecordRaw[] = [
   },
   // Programs routes
   {
-    path: '/programas',
+    path: '/programs',
     name: 'Programs',
     component: () => import('@/views/Programs.vue'),
     meta: { publicAccess: true },
   },
   {
-    path: '/programas/:id',
+    path: '/programs/:id',
     name: 'ProgramDetail',
     component: () => import('@/views/ProgramDetail.vue'),
     meta: { publicAccess: true },
   },
   {
-    path: '/meus-programas',
+    path: '/my-programs',
     name: 'MyPrograms',
     component: () => import('@/views/MyPrograms.vue'),
     meta: { requiresAuth: true },
@@ -213,7 +213,7 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, requiresRole: 'professor' },
   },
   {
-    path: '/programas/:id/assistir',
+    path: '/programs/:id/assistir',
     name: 'ProgramPlayer',
     component: () => import('@/views/ProgramPlayer.vue'),
     meta: { requiresAuth: false, publicAccess: true },
@@ -266,27 +266,39 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/admin/AdminChallenges.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
+  {
+    path: '/admin/cupons',
+    name: 'AdminCoupons',
+    component: () => import('@/views/admin/AdminCoupons.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/cupons/historico',
+    name: 'AdminCouponUsage',
+    component: () => import('@/views/admin/CouponUsageHistory.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
   // Admin Programs routes
   {
-    path: '/admin/programas',
+    path: '/admin/programs',
     name: 'AdminPrograms',
     component: () => import('@/views/admin/AdminPrograms.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
   {
-    path: '/admin/programas/criar',
+    path: '/admin/programs/criar',
     name: 'AdminCreateProgram',
     component: () => import('@/views/admin/AdminProgramForm.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
   {
-    path: '/admin/programas/:id/editar',
+    path: '/admin/programs/:id/editar',
     name: 'AdminEditProgram',
     component: () => import('@/views/admin/AdminProgramForm.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
   {
-    path: '/admin/programas/:id/matriculas',
+    path: '/admin/programs/:id/matriculas',
     name: 'AdminProgramEnrollments',
     component: () => import('@/views/admin/AdminProgramEnrollments.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },

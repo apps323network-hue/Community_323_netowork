@@ -87,17 +87,17 @@
               ></span>
             </RouterLink>
             <RouterLink
-              to="/programas"
+              to="/programs"
               class="relative px-3 py-2 text-sm font-medium transition-colors group"
               :class="
-                route.path === '/programas' || route.path.startsWith('/programas/')
+                route.path === '/programs' || route.path.startsWith('/programs/')
                   ? 'text-slate-900 dark:text-white'
                   : 'text-slate-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary'
               "
             >
               {{ t('navigation.programs') }}
               <span
-                v-if="route.path === '/programas' || route.path.startsWith('/programas/')"
+                v-if="route.path === '/programs' || route.path.startsWith('/programs/')"
                 class="absolute bottom-0 left-0 w-full h-0.5 bg-primary dark:bg-secondary transform scale-x-100 transition-transform"
               ></span>
               <span
@@ -237,7 +237,7 @@
                     {{ t('navigation.myServices') }}
                   </RouterLink>
                   <RouterLink
-                    to="/meus-programas"
+                    to="/my-programs"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
                     @click="showUserMenu = false"
                   >
@@ -484,7 +484,7 @@
                     {{ t('navigation.myServices') }}
                   </RouterLink>
                   <RouterLink
-                    to="/meus-programas"
+                    to="/my-programs"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors"
                     @click="showUserMenu = false"
                   >

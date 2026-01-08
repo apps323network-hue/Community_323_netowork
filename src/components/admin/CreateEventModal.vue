@@ -24,6 +24,7 @@
         v-if="currentStep === 1"
         :form-data="formData"
         @update:form-data="handleFormDataUpdate"
+        @select-program="(p) => selectedProgram = p"
       />
 
       <!-- Step 2: Date, Time and Location -->
@@ -32,6 +33,7 @@
         :form-data="formData"
         :date-time="dateTime"
         :image-preview="imagePreview"
+        :program="selectedProgram"
         @update:form-data="handleFormDataUpdate"
         @update:date-time="handleDateTimeUpdate"
         @image-select="handleImageSelect"
@@ -92,6 +94,7 @@ interface EventFormData {
   local: string
   image_url: string
   status: EventStatus
+  program_id: string
 }
 
 interface DateTimeData {
@@ -131,7 +134,10 @@ const formData = ref<EventFormData>({
   local: '',
   image_url: '',
   status: 'approved',
+  program_id: '',
 })
+
+const selectedProgram = ref<any>(null)
 
 const dateTime = ref<DateTimeData>({
   day: '',
@@ -160,6 +166,7 @@ function resetForm() {
     local: '',
     image_url: '',
     status: 'approved',
+    program_id: '',
   }
   dateTime.value = {
     day: '',
@@ -198,7 +205,7 @@ function handleImageRemove() {
 
 function nextStep() {
   // Validar campos da etapa 1
-  if (!formData.value.titulo || !formData.value.tipo) {
+  if (!formData.value.titulo || !formData.value.tipo || !formData.value.program_id) {
     emit('validation-error', 'Por favor, preencha todos os campos obrigatórios')
     return false
   }

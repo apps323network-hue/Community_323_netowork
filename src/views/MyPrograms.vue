@@ -96,7 +96,7 @@
             <!-- Actions -->
             <div class="flex flex-col sm:flex-row gap-3">
               <RouterLink
-                :to="`/programas/${enrollment.program_id}/assistir`"
+                :to="`/programs/${enrollment.program_id}/assistir`"
                 class="flex-1 py-3 px-4 bg-secondary text-black rounded-xl text-center font-black hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-secondary/20"
               >
                 <span class="material-icons text-lg">play_circle</span>
@@ -114,7 +114,7 @@
               </a>
               
               <RouterLink
-                :to="`/programas/${enrollment.program_id}`"
+                :to="`/programs/${enrollment.program_id}`"
                 class="py-3 px-4 bg-slate-100 dark:bg-white/5 text-slate-500 rounded-xl hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center"
                 title="Detalhes"
               >
@@ -144,7 +144,7 @@
           {{ t('programs.noEnrollmentsFound') }}
         </h3>
         <RouterLink
-          to="/programas"
+          to="/programs"
           class="inline-block mt-4 px-6 py-3 bg-primary dark:bg-secondary text-white rounded-lg font-medium hover:opacity-90 transition"
         >
           {{ t('programs.explorePrograms') }}

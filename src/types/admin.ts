@@ -14,6 +14,7 @@ export interface AdminEvent extends Event {
   creator_name?: string
   creator_email?: string
   partner_name?: string
+  program_name?: string
 }
 
 export interface EventApprovalAction {
@@ -35,6 +36,7 @@ export interface AdminUser {
   email?: string
   area_atuacao?: string
   cidade?: string
+  estado?: string
   pais?: string
   avatar_url?: string
   role?: UserRole
@@ -45,6 +47,16 @@ export interface AdminUser {
   suspended_until?: string
   created_at: string
   updated_at?: string
+  last_seen_at?: string
+  // Gamification
+  pontos?: number
+  strikes?: number
+  badge?: string
+  plano?: string
+  // Engagement metrics
+  post_count?: number
+  comment_count?: number
+  connections_count?: number
 }
 
 export interface UserStats {
@@ -54,7 +66,27 @@ export interface UserStats {
   suspended: number
   banned: number
   newToday: number
+  activeThisMonth?: number
+  engagementRate?: number
 }
+
+export interface MemberFilters {
+  search?: string
+  roles?: UserRole[]
+  plans?: string[]
+  statuses?: UserStatus[]
+  countries?: string[]
+}
+
+export interface PaginationMeta {
+  currentPage: number
+  pageSize: number
+  totalItems: number
+  totalPages: number
+}
+
+export type SortColumn = 'created_at' | 'pontos' | 'last_seen_at' | 'nome'
+export type SortDirection = 'asc' | 'desc'
 
 import type { Post, PostStatus } from './posts'
 export type { PostStatus }

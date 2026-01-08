@@ -53,18 +53,24 @@
             type="button"
             v-for="option in filteredOptions"
             :key="option.value"
+            :disabled="option.disabled"
             :class="[
-              'w-full text-left px-4 py-2 text-sm transition-colors',
-              'hover:bg-slate-50 dark:hover:bg-surface-lighter',
+              'w-full text-left px-4 py-2 text-sm transition-colors flex items-center justify-between',
+              option.disabled ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:bg-slate-50 dark:hover:bg-surface-lighter cursor-pointer',
               modelValue === option.value && [
                 'bg-primary/10 dark:bg-primary/20',
                 'text-primary dark:text-secondary',
                 'font-semibold'
               ]
             ]"
-            @click="selectOption(option)"
+            @click="!option.disabled && selectOption(option)"
+            :title="option.disabled ? (option.disabledMessage || 'Opção desabilitada') : ''"
           >
-            {{ option.label }}
+            <div class="flex items-center gap-2">
+              <span v-if="option.disabled" class="material-symbols-outlined text-base">lock</span>
+              <span>{{ option.label }}</span>
+            </div>
+            <span v-if="modelValue === option.value" class="material-symbols-outlined text-base">check</span>
           </button>
           <div v-if="filteredOptions.length === 0" class="px-4 py-2 text-sm text-slate-400 dark:text-gray-500 text-center">
             Nenhuma opção encontrada
@@ -81,6 +87,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 interface Option {
   value: string | number
   label: string
+  disabled?: boolean
+  disabledMessage?: string
 }
 
 interface Props {

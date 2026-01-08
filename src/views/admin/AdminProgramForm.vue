@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-4">
           <RouterLink
-            to="/admin/programas"
+            to="/admin/programs"
             class="flex items-center justify-center p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition"
           >
             <span class="material-icons">arrow_back</span>
@@ -95,7 +95,7 @@
                   <div>
                     <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-2">Categoria *</label>
                     <select v-model="form.category" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 outline-none transition-all">
-                      <option value="curso">Curso</option>
+                      <option value="curso">Conteúdo</option>
                       <option value="mentoria">Mentoria</option>
                       <option value="workshop">Workshop</option>
                       <option value="evento_premium">Evento Premium</option>
@@ -344,7 +344,7 @@
                       <p class="text-xs text-slate-500 mt-1">Este link será mostrado ao aluno após a matrícula.</p>
                     </div>
                     <div>
-                      <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">ID do Curso (Opcional)</label>
+                      <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">ID do Conteúdo (Opcional)</label>
                       <input v-model="form.classroom_course_id" type="text" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white" placeholder="Ex: 123456789" />
                     </div>
 
@@ -506,7 +506,7 @@ onMounted(async () => {
       await modulesStore.fetchMaterials(programId)
     } else {
       // Handle not found
-      router.push('/admin/programas')
+      router.push('/admin/programs')
     }
   }
 })
@@ -689,7 +689,7 @@ const handleSubmit = async () => {
       toast.success('Programa criado com sucesso!')
     }
 
-    router.push('/admin/programas')
+    router.push('/admin/programs')
   } catch (error: any) {
     console.error('Error saving program:', error)
     toast.error(error.message || 'Erro ao salvar o programa. Verifique o console.')

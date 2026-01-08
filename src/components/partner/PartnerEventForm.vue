@@ -5,6 +5,27 @@
     </h2>
 
     <form @submit.prevent="handleSubmit" class="space-y-6">
+      <!-- Programa -->
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-white/80 text-sm font-semibold">
+            Programa <span class="text-red-400">*</span>
+          </label>
+          <router-link to="/programs" class="text-xs text-primary hover:underline flex items-center gap-1">
+            {{ t('programs.viewPrograms') }} <span class="material-symbols-outlined text-xs">open_in_new</span>
+          </router-link>
+        </div>
+        <Select
+          v-model="form.program_id"
+          :options="programOptions"
+          placeholder="Selecione um programa..."
+          class="w-full"
+        />
+        <p v-if="programs.length > 0 && !programs.some(p => p.isEnrolled) && !processing" class="text-xs text-yellow-500 mt-1">
+          Você precisa estar matriculado em um programa para criar eventos.
+        </p>
+      </div>
+
       <!-- Título -->
       <div>
         <label class="block text-white/80 text-sm font-semibold mb-2">
@@ -107,8 +128,8 @@
           :disabled="!canSubmit || processing"
           class="flex-1 px-4 py-3 bg-neon-gradient hover:bg-neon-gradient-hover text-black font-black rounded-lg transition-all shadow-neon-pink disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span v-if="processing">Processando...</span>
-          <span v-else>{{ isEditing ? 'Salvar Alterações' : 'Criar Evento' }}</span>
+          <span v-if="processing">{{ t('common.processing') }}</span>
+          <span v-else>{{ isEditing ? t('common.saveChanges') : t('events.createEvent') }}</span>
         </button>
       </div>
     </form>
@@ -117,6 +138,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import Select from '@/components/ui/Select.vue'
 import { supabase } from '@/lib/supabase'
 import { usePartner } from '@/composables/usePartner'
 import type { Event, EventCreateInput } from '@/types/events'
@@ -133,6 +156,7 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
 const { createEvent, updateEvent } = usePartner()
 
 const isEditing = computed(() => !!props.event)
@@ -144,16 +168,29 @@ const form = ref<EventCreateInput>({
   tipo: 'presencial',
   local: '',
   image_url: '',
+  program_id: '',
 })
 
 const imageFile = ref<File | null>(null)
 const imagePreview = ref<string | null>(null)
+const programs = ref<any[]>([])
+
+const programOptions = computed(() => {
+  return programs.value.map(p => ({
+    value: p.id,
+    label: p.title_pt,
+    disabled: !p.isEnrolled,
+    disabledMessage: 'Você precisa estar matriculado neste programa para criar um evento.'
+  }))
+})
 const error = ref<string | null>(null)
 const success = ref<string | null>(null)
 const processing = ref(false)
 
 const canSubmit = computed(() => {
-  return form.value.titulo.trim().length > 0 && form.value.data_hora.length > 0
+  return form.value.titulo.trim().length > 0 && 
+         form.value.data_hora.length > 0 && 
+         form.value.program_id.length > 0
 })
 
 watch(() => props.event, (newEvent) => {
@@ -165,12 +202,54 @@ watch(() => props.event, (newEvent) => {
       tipo: newEvent.tipo,
       local: newEvent.local || '',
       image_url: newEvent.image_url || '',
+      program_id: newEvent.program_id || '',
     }
     imagePreview.value = newEvent.image_url || null
   } else {
     resetForm()
   }
 }, { immediate: true })
+
+import { useAuthStore } from '@/stores/auth'
+import { onMounted } from 'vue'
+
+const authStore = useAuthStore()
+
+onMounted(async () => {
+  await fetchProgramsForSelection()
+})
+
+async function fetchProgramsForSelection() {
+  if (!authStore.user) return
+  
+  try {
+    // Buscar todos os programas
+    const { data: allPrograms, error: programsError } = await supabase
+      .from('programs')
+      .select('id, title_pt')
+      .order('title_pt')
+
+    if (programsError) throw programsError
+
+    // Buscar matrículas do usuário
+    const { data: enrollments, error: enrollmentsError } = await supabase
+      .from('program_enrollments')
+      .select('program_id')
+      .eq('user_id', authStore.user.id)
+      .eq('status', 'active')
+
+    if (enrollmentsError) throw enrollmentsError
+
+    const enrolledIds = new Set(enrollments?.map(e => e.program_id) || [])
+    
+    programs.value = (allPrograms || []).map(p => ({
+      ...p,
+      isEnrolled: enrolledIds.has(p.id)
+    }))
+  } catch (err: any) {
+    console.error('Error fetching programs:', err)
+  }
+}
 
 function resetForm() {
   form.value = {
@@ -180,6 +259,7 @@ function resetForm() {
     tipo: 'presencial',
     local: '',
     image_url: '',
+    program_id: '',
   }
   imageFile.value = null
   imagePreview.value = null

@@ -39,7 +39,7 @@ serve(async (req) => {
     // 1. Buscar dados do aluno
     const { data: student, error: studentError } = await supabase
       .from('profiles')
-      .select('id, full_name, email')
+      .select('id, nome, email')
       .eq('id', user_id)
       .single()
 
@@ -67,7 +67,7 @@ serve(async (req) => {
                 professor_id,
                 professor:profiles!program_professors_professor_id_fkey(
                     id,
-                    full_name,
+                    nome,
                     email
                 )
             `)
@@ -132,7 +132,7 @@ serve(async (req) => {
                     <tr>
                       <td style="padding: 40px;">
                         <p style="margin: 0 0 24px; font-size: 18px; color: #1a1a1a; font-weight: 600;">
-                          Olá, ${professor.full_name || 'Professor'}!
+                          Olá, ${professor.nome || 'Professor'}!
                         </p>
                         
                         <p style="margin: 0 0 32px; font-size: 16px; line-height: 1.6; color: #4a4a4a;">
@@ -147,7 +147,7 @@ serve(async (req) => {
                           <table cellpadding="0" cellspacing="0" width="100%">
                             <tr>
                               <td style="padding: 8px 0; font-size: 14px; color: #666; font-weight: 600;">Nome:</td>
-                              <td style="padding: 8px 0; font-size: 14px; color: #1a1a1a; font-weight: 600;">${student.full_name || 'Nome não disponível'}</td>
+                              <td style="padding: 8px 0; font-size: 14px; color: #1a1a1a; font-weight: 600;">${student.nome || 'Nome não disponível'}</td>
                             </tr>
                             <tr>
                               <td style="padding: 8px 0; font-size: 14px; color: #666; font-weight: 600;">Email:</td>

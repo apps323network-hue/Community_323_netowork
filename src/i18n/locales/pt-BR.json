@@ -223,10 +223,11 @@
         "presenceConfirmed": "Presença Confirmada",
         "cancel": "Cancelar",
         "register": "Confirmar Presença",
+        "beTheFirstToConfirm": "Seja o primeiro a confirmar!",
         "learnMore": "Saiba Mais",
         "viewFullCalendar": "Ver calendário completo",
         "inPerson": "Presencial",
-        "webinar": "Webinar",
+        "online": "Online",
         "noEventsFound": "Nenhum evento encontrado",
         "noEventsFoundDesc": "Não há eventos disponíveis no momento. Verifique os filtros ou tente novamente mais tarde.",
         "loadMoreEvents": "Carregar mais eventos",
@@ -995,12 +996,14 @@
     },
     "programs": {
         "title": "Programas",
-        "description": "Cursos, mentorias e programas exclusivos da 323 Network",
+        "description": "Conteúdos, mentorias e programas exclusivos da 323 Network",
+        "enrollmentRequired": "Matrícula exigida",
+        "viewPrograms": "Ver Programas",
         "featured": "Destaque",
         "getStarted": "Começar Agora",
         "searchPlaceholder": "Buscar programas...",
         "filterAll": "Todos",
-        "filterCourse": "Cursos",
+        "filterCourse": "Conteúdo",
         "filterMentoring": "Mentorias",
         "filterWorkshop": "Workshops",
         "filterPremiumEvent": "Eventos Premium",
@@ -1087,7 +1090,7 @@
             "featured": "DESTAQUE"
         },
         "categoryBadges": {
-            "curso": "Curso Premium",
+            "curso": "Conteúdo Premium",
             "mentoria": "Mentoria Exclusiva",
             "workshop": "Workshop Intensivo",
             "evento_premium": "Evento Premium",
@@ -1095,7 +1098,7 @@
         },
         "actions": {
             "accessNow": "Acessar Agora",
-            "secureMySpot": "Quero Garantir Minha Vaga"
+            "secureMySpot": "Assistir Agora"
         },
         "admin": {
             "createProgram": "Criar Programa",
@@ -1122,7 +1125,7 @@
             "programEndDate": "Fim do Programa",
             "classroomIntegration": "Integração Google Classroom",
             "classroomEnabled": "Habilitar Google Classroom",
-            "classroomCourseId": "ID do Curso no Classroom",
+            "classroomCourseId": "ID do Conteúdo no Classroom",
             "classroomInviteLink": "Link de Convite",
             "media": "Mídia",
             "thumbnail": "Miniatura",
@@ -1167,6 +1170,31 @@
             "uploadSuccessTitle": "Upload Concluído!",
             "uploadAnother": "Enviar outro vídeo",
             "metadataSynced": "Dados do vídeo sincronizados com sucesso!"
+        }
+    },
+    "coupons": {
+        "title": "Cupons de Desconto",
+        "createNew": "Criar Novo Cupom",
+        "code": "Cupom de Desconto",
+        "applied": "Cupom aplicado com sucesso!",
+        "errors": {
+            "invalid": "Cupom inválido ou expirado",
+            "expired": "Este cupom já expirou",
+            "notYetValid": "Este cupom ainda não está válido",
+            "maxUsesReached": "Este cupom atingiu o limite de usos",
+            "alreadyUsed": "Você já usou este cupom",
+            "notApplicable": "Este cupom não é aplicável para este programa"
+        }
+    },
+    "admin": {
+        "events": {
+            "errors": {
+                "fillAllDateFields": "Por favor, preencha todos os campos de data e hora",
+                "programNotFound": "Programa não encontrado para validação de datas",
+                "programExpired": "Não é possível criar eventos para o programa \"{programTitle}\" pois ele já está expirado (encerrado em {endDate}).",
+                "eventBeforeStart": "A data do evento está antes do início do programa ({startDate}).",
+                "eventAfterEnd": "A data do evento está após o fim do programa ({endDate})."
+            }
         }
     }
 }
