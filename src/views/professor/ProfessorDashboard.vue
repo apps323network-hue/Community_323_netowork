@@ -143,7 +143,7 @@
                 </button>
 
                 <button
-                  @click.stop="$router.push(`/programas/${program.id}`)"
+                  @click="$router.push(`/programs/${program?.id}`)"
                   class="w-full py-3 text-slate-400 dark:text-gray-500 font-bold rounded-2xl hover:text-slate-600 dark:hover:text-white transition-all text-[10px] uppercase tracking-widest"
                 >
                   Visualizar como Aluno

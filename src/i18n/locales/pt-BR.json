@@ -222,10 +222,11 @@
         "presenceConfirmed": "Presença Confirmada",
         "cancel": "Cancelar",
         "register": "Confirmar Presença",
+        "beTheFirstToConfirm": "Seja o primeiro a confirmar!",
         "learnMore": "Saiba Mais",
         "viewFullCalendar": "Ver calendário completo",
         "inPerson": "Presencial",
-        "webinar": "Webinar",
+        "online": "Online",
         "noEventsFound": "Nenhum evento encontrado",
         "noEventsFoundDesc": "Não há eventos disponíveis no momento. Verifique os filtros ou tente novamente mais tarde.",
         "loadMoreEvents": "Carregar mais eventos",
@@ -991,6 +992,8 @@
     "programs": {
         "title": "Programas",
         "description": "Conteúdos, mentorias e programas exclusivos da 323 Network",
+        "enrollmentRequired": "Matrícula exigida",
+        "viewPrograms": "Ver Programas",
         "featured": "Destaque",
         "getStarted": "Começar Agora",
         "searchPlaceholder": "Buscar programas...",
@@ -1176,6 +1179,17 @@
             "maxUsesReached": "Este cupom atingiu o limite de usos",
             "alreadyUsed": "Você já usou este cupom",
             "notApplicable": "Este cupom não é aplicável para este programa"
+        }
+    },
+    "admin": {
+        "events": {
+            "errors": {
+                "fillAllDateFields": "Por favor, preencha todos os campos de data e hora",
+                "programNotFound": "Programa não encontrado para validação de datas",
+                "programExpired": "Não é possível criar eventos para o programa \"{programTitle}\" pois ele já está expirado (encerrado em {endDate}).",
+                "eventBeforeStart": "A data do evento está antes do início do programa ({startDate}).",
+                "eventAfterEnd": "A data do evento está após o fim do programa ({endDate})."
+            }
         }
     }
 }

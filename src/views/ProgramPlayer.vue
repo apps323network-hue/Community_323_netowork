@@ -5,7 +5,7 @@
       <div class="px-4 md:px-10 py-3 mx-auto max-w-[1800px]">
         <div class="flex items-center justify-between">
           <button
-            @click="$router.push('/programas')"
+            @click="$router.push('/programs')"
             class="flex items-center gap-2 text-text-muted hover:text-white transition-colors"
           >
             <span class="material-symbols-outlined">arrow_back</span>
@@ -239,7 +239,7 @@
           Você não tem acesso a este programa ou ele não existe.
         </p>
         <button
-          @click="$router.push('/programas')"
+          @click="$router.push('/programs')"
           class="px-8 py-3 bg-secondary text-black font-bold rounded-xl hover:bg-secondary/90 transition-all"
         >
           Voltar aos Programas

@@ -59,7 +59,7 @@
         <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
           <RouterLink
             v-if="paymentType === 'program' && programId"
-            :to="'/programas/' + programId + '/assistir'"
+            :to="'/programs/' + programId + '/assistir'"
             class="group relative px-8 py-5 rounded-2xl font-black text-black overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/20"
           >
             <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x"></div>
@@ -71,7 +71,7 @@
           
           <RouterLink
             v-else
-            :to="paymentType === 'program' ? '/meus-programas' : '/meus-pedidos'"
+            :to="paymentType === 'program' ? '/my-programs' : '/meus-pedidos'"
             class="group relative px-8 py-5 rounded-2xl font-black text-black overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/20"
           >
             <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x"></div>
@@ -82,7 +82,7 @@
           </RouterLink>
 
           <RouterLink
-            :to="paymentType === 'program' ? '/programas' : '/servicos'"
+            :to="paymentType === 'program' ? '/programs' : '/servicos'"
             class="px-8 py-5 rounded-2xl border-2 border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white/5 transition-all flex items-center justify-center gap-2"
           >
             Voltar para a Exploração
@@ -121,7 +121,7 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
             <RouterLink
-              :to="paymentType === 'program' ? `/programas/${route.query.program_id || ''}` : '/servicos'"
+              :to="paymentType === 'program' ? `/programs/${route.query.program_id || ''}` : '/servicos'"
               class="px-8 py-4 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-sm hover:scale-105 transition-all shadow-xl"
             >
               Tentar Novamente

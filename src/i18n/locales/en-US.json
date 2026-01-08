@@ -990,6 +990,8 @@
     "programs": {
         "title": "Shows",
         "description": "Courses, mentorships and exclusive programs from 323 Network",
+        "enrollmentRequired": "Enrollment required",
+        "viewPrograms": "View Programs",
         "featured": "Featured",
         "getStarted": "Get Started",
         "searchPlaceholder": "Search programs...",

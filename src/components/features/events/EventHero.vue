@@ -1,7 +1,8 @@
 <template>
   <section
     v-if="event"
-    class="rounded-xl overflow-hidden relative shadow-2xl shadow-secondary/10 border border-slate-200 dark:border-white/5"
+    class="rounded-xl overflow-hidden relative shadow-2xl shadow-secondary/10 border border-slate-200 dark:border-white/5 cursor-pointer group"
+    @click="$emit('learn-more')"
   >
     <!-- Background Image -->
     <div

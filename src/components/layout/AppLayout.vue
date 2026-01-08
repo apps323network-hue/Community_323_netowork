@@ -96,8 +96,8 @@ const hideSidebars = computed(() => {
     route.path === '/beneficios' || 
     route.path === '/eventos' || 
     route.path.startsWith('/eventos/') ||
-    route.path === '/programas' ||
-    route.path.startsWith('/programas/') ||
+    route.path === '/programs' ||
+    route.path.startsWith('/programs/') ||
     route.path.startsWith('/professor') ||
     route.path === '/perfil'
 })
@@ -106,8 +106,8 @@ const hideSidebars = computed(() => {
 const isHeroHeroPage = computed(() => {
   return route.path === '/eventos' || 
          route.path.startsWith('/eventos/') ||
-         route.path === '/programas' ||
-         route.path.startsWith('/programas/') ||
+         route.path === '/programs' ||
+         route.path.startsWith('/programs/') ||
          route.path === '/pagamento/sucesso'
 })
 
@@ -119,7 +119,7 @@ const mobileMenuItems = computed(() => [
   { path: '/', label: t('navigation.home'), icon: 'home' },
   { path: '/comunidade', label: t('navigation.community'), icon: 'people' },
   { path: '/eventos', label: t('navigation.events'), icon: 'event' },
-  { path: '/programas', label: t('navigation.programs'), icon: 'school' },
+  { path: '/programs', label: t('navigation.programs'), icon: 'school' },
   { path: '/servicos', label: t('navigation.services'), icon: 'business_center' },
 ])
 </script>

@@ -130,7 +130,7 @@
                           MATRICULADO
                         </div>
                         <RouterLink
-                          :to="`/programas/${program.id}/assistir`"
+                          :to="`/programs/${program.id}/assistir`"
                           class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-secondary text-black font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all shadow-xl shadow-secondary/20"
                         >
                           <span class="material-icons">play_circle</span>
@@ -338,7 +338,7 @@
                       </div>
                       
                       <RouterLink
-                        :to="`/programas/${program.id}/assistir`"
+                        :to="`/programs/${program.id}/assistir`"
                         class="flex items-center justify-center gap-3 w-full py-5 rounded-2xl bg-secondary text-black font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-secondary/20"
                       >
                         <span class="material-icons text-xl">play_circle</span>
@@ -399,7 +399,7 @@
           Programa Perdido na Galáxia
         </h3>
         <p class="text-slate-500 dark:text-gray-400 mb-10 max-w-md mx-auto text-lg">O programa que você procura não está mais nesta órbita. Verifique o link ou explore nossos novos programas.</p>
-        <RouterLink to="/programas" class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-sm shadow-2xl shadow-primary/30 hover:scale-105 transition-all">
+        <RouterLink to="/programs" class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-sm shadow-2xl shadow-primary/30 hover:scale-105 transition-all">
           <span class="material-icons">explore</span>
           Explorar Novos Conteúdos
         </RouterLink>

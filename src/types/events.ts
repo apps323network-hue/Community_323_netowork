@@ -10,20 +10,28 @@ export interface Event {
   local?: string
   link_gravacao?: string
   image_url?: string
+  program_id?: string
   created_by?: string
   created_at: string
   updated_at: string
   // Approval fields
   status?: EventStatus
   partner_id?: string
-  approved_by?: string
-  approved_at?: string
+  reviewed_by?: string
+  reviewed_at?: string
   rejection_reason?: string
   // Featured event
   destaque?: boolean
   // Joined data
   confirmations_count?: number
   is_confirmed?: boolean
+  confirmed_users?: EventConfirmedUser[]
+}
+
+export interface EventConfirmedUser {
+  user_id: string
+  avatar_url?: string
+  nome?: string
 }
 
 export interface EventConfirmation {
@@ -49,6 +57,7 @@ export interface EventCreateInput {
   local?: string
   image_url?: string
   partner_id?: string
+  program_id: string
 }
 
 export interface EventApprovalInput {

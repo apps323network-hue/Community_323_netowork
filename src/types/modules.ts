@@ -52,7 +52,7 @@ export interface ProgramProfessor {
     assigned_at: string
     professor?: {
         id: string
-        full_name: string
+        nome: string
         avatar_url: string | null
     }
 }

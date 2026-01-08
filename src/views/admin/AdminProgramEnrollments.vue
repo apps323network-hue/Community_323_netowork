@@ -5,7 +5,7 @@
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div class="space-y-1">
           <RouterLink
-            to="/admin/programas"
+            to="/admin/programs"
             class="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-2"
           >
             <span class="material-icons text-sm mr-1">arrow_back</span>

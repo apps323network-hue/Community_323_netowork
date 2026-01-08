@@ -117,10 +117,29 @@
   <Modal v-model="showEventModal" :title="t('events.createEvent')" size="lg">
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">Título do Evento</label>
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-sm font-semibold text-gray-300">Programa *</label>
+          <router-link to="/programs" class="text-xs text-primary hover:underline flex items-center gap-1">
+            {{ t('programs.viewPrograms') }} <span class="material-symbols-outlined text-xs">open_in_new</span>
+          </router-link>
+        </div>
+        <Select
+          v-model="eventForm.program_id"
+          :options="programOptions"
+          placeholder="Selecione um programa..."
+          class="w-full"
+        />
+        <p v-if="programs.length > 0 && !programs.some(p => p.isEnrolled) && !loading" class="text-xs text-yellow-500 mt-1">
+          Você precisa estar matriculado em um programa para criar eventos.
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-300 mb-2">Título do Evento *</label>
         <input
           v-model="eventForm.titulo"
           type="text"
+          required
           class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           placeholder="Ex: Networking em Miami"
         />
@@ -165,7 +184,18 @@
       </div>
       <!-- Data -->
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">Data *</label>
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-sm font-semibold text-gray-300">Data *</label>
+          <div v-if="selectedProgram" class="text-xs">
+            <span v-if="isProgramExpired(selectedProgram)" class="text-red-400 font-medium flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">warning</span>
+              Expirado: {{ formatDate(selectedProgram.program_end_date) }}
+            </span>
+            <span v-else class="text-emerald-400 font-medium tracking-wide">
+              Validade: {{ formatDate(selectedProgram.program_start_date) }} - {{ formatDate(selectedProgram.program_end_date) }}
+            </span>
+          </div>
+        </div>
         <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block text-xs text-gray-400 mb-1">Dia</label>
@@ -233,7 +263,7 @@
           class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
         >
           <option value="presencial">{{ t('events.inPerson') }}</option>
-          <option value="webinar">{{ t('events.webinar') }}</option>
+          <option value="webinar">{{ t('events.online') }}</option>
         </select>
       </div>
 
@@ -268,9 +298,8 @@
                 class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
                 <option value="">Minuto</option>
-                <option v-for="m in 60" :key="m - 1" :value="(m - 1).toString().padStart(2, '0')">
-                  {{ (m - 1).toString().padStart(2, '0') }}
-                </option>
+                <option value="00">00</option>
+                <option value="30">30</option>
               </select>
               <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                 expand_more
@@ -299,17 +328,13 @@
         <Button variant="outline" @click="closeEventModal">{{ t('common.cancel') }}</Button>
         <Button 
           variant="primary" 
-          :disabled="!eventForm.titulo || !buildDateTimeString() || loading" 
+          :disabled="!eventForm.titulo || !eventForm.program_id || !buildDateTimeString() || loading" 
           :loading="loading"
           @click="handleCreateEvent"
         >
-          <span v-if="loading" class="flex items-center gap-2">
-            <span class="material-icons-outlined animate-spin text-base">refresh</span>
-            {{ t('common.loading') }}
-          </span>
-          <span v-else class="flex items-center gap-2">
+          <span class="flex items-center gap-2">
             <span class="material-icons-outlined text-base">event</span>
-            {{ t('events.createEvent') }}
+            {{ loading ? t('common.loading') : t('events.createEvent') }}
           </span>
         </Button>
       </div>
@@ -333,6 +358,7 @@ import Modal from '@/components/ui/Modal.vue'
 import Button from '@/components/ui/Button.vue'
 import { useMentions } from '@/composables/useMentions'
 import { useHashtags } from '@/composables/useHashtags'
+import Select from '@/components/ui/Select.vue'
 import { parseMentions } from '@/lib/mentionParser'
 import type { PostType } from '@/types/posts'
 
@@ -355,6 +381,30 @@ const showPostModal = ref(false)
 const showEventModal = ref(false)
 const eventImageFile = ref<File | null>(null)
 const eventImagePreview = ref<string | null>(null)
+const programs = ref<any[]>([])
+
+const selectedProgram = computed(() => {
+  return programs.value.find(p => p.id === eventForm.value.program_id)
+})
+
+function formatDate(dateString: string | null) {
+  if (!dateString) return 'Data indefinida'
+  return new Date(dateString).toLocaleDateString()
+}
+
+function isProgramExpired(program: any) {
+  if (!program?.program_end_date) return false
+  return new Date(program.program_end_date) < new Date()
+}
+
+const programOptions = computed(() => {
+  return programs.value.map(p => ({
+    value: p.id,
+    label: p.title_pt,
+    disabled: !p.isEnrolled,
+    disabledMessage: 'Você precisa estar matriculado neste programa para criar um evento.'
+  }))
+})
 
 const eventForm = ref({
   titulo: '',
@@ -362,6 +412,7 @@ const eventForm = ref({
   data_hora: '',
   tipo: 'presencial' as 'presencial' | 'webinar',
   local: '',
+  program_id: '',
 })
 
 const dateTime = ref({
@@ -410,7 +461,9 @@ watch(showEventModal, (newValue) => {
       data_hora: '',
       tipo: 'presencial',
       local: '',
+      program_id: '',
     }
+    error.value = null
     dateTime.value = {
       day: '',
       month: '',
@@ -421,8 +474,43 @@ watch(showEventModal, (newValue) => {
     eventImageFile.value = null
     eventImagePreview.value = null
     error.value = null
+  } else {
+    // Buscar programas quando o modal abrir
+    fetchProgramsForSelection()
   }
 })
+
+async function fetchProgramsForSelection() {
+  if (!authStore.user) return
+  
+  try {
+    // Buscar todos os programas
+    const { data: allPrograms, error: programsError } = await supabase
+      .from('programs')
+      .select('id, title_pt, program_start_date, program_end_date')
+      .order('title_pt')
+
+    if (programsError) throw programsError
+
+    // Buscar matrículas do usuário
+    const { data: enrollments, error: enrollmentsError } = await supabase
+      .from('program_enrollments')
+      .select('program_id')
+      .eq('user_id', authStore.user.id)
+      .eq('status', 'active')
+
+    if (enrollmentsError) throw enrollmentsError
+
+    const enrolledIds = new Set(enrollments?.map(e => e.program_id) || [])
+    
+    programs.value = (allPrograms || []).map(p => ({
+      ...p,
+      isEnrolled: enrolledIds.has(p.id)
+    }))
+  } catch (err: any) {
+    console.error('Error fetching programs:', err)
+  }
+}
 
 async function handleImageSelect(event: Event) {
   const target = event.target as HTMLInputElement
@@ -654,6 +742,7 @@ function closeEventModal() {
     data_hora: '',
     tipo: 'presencial',
     local: '',
+    program_id: '',
   }
   dateTime.value = {
     day: '',
@@ -677,6 +766,11 @@ async function handleCreateEvent() {
     return
   }
   
+  if (!eventForm.value.program_id) {
+    error.value = 'Por favor, selecione o programa do evento'
+    return
+  }
+  
   const dataHora = buildDateTimeString()
   
   if (!dataHora) {
@@ -689,6 +783,48 @@ async function handleCreateEvent() {
     
     error.value = `Por favor, preencha todos os campos de data e hora. Faltando: ${missingFields.join(', ')}`
     return
+  }
+
+  // Validações de data do programa
+  const program = programs.value.find(p => p.id === eventForm.value.program_id)
+  if (program) {
+    const eventDate = new Date(dataHora)
+    const now = new Date()
+    now.setHours(0, 0, 0, 0) // Reset time for date-only comparison
+
+    const programEndDate = program.program_end_date ? new Date(program.program_end_date) : null
+    const programStartDate = program.program_start_date ? new Date(program.program_start_date) : null
+
+    if (programEndDate) {
+      programEndDate.setHours(23, 59, 59, 999) // End of day
+      if (programEndDate < now) {
+        error.value = t('admin.events.errors.programExpired', { 
+          programTitle: program.title_pt, 
+          endDate: programEndDate.toLocaleDateString() 
+        })
+        loading.value = false
+        return
+      }
+    }
+
+    if (programStartDate) {
+      programStartDate.setHours(0, 0, 0, 0) // Start of day
+      if (eventDate < programStartDate) {
+        error.value = t('admin.events.errors.eventBeforeStart', {
+          startDate: programStartDate.toLocaleDateString()
+        })
+        loading.value = false
+        return
+      }
+    }
+
+    if (programEndDate && eventDate > programEndDate) {
+      error.value = t('admin.events.errors.eventAfterEnd', {
+        endDate: programEndDate.toLocaleDateString()
+      })
+      loading.value = false
+      return
+    }
   }
 
   loading.value = true
@@ -712,7 +848,6 @@ async function handleCreateEvent() {
     
     let finalTitulo = eventForm.value.titulo
     let finalDescricao = eventForm.value.descricao
-
     let eventImageUrl: string | null = null
     if (eventImageFile.value) {
       eventImageUrl = await uploadEventImage()
@@ -731,6 +866,7 @@ async function handleCreateEvent() {
       image_url: eventImageUrl || null,
       status: 'pending',
       created_by: authStore.user?.id,
+      program_id: eventForm.value.program_id,
     }
 
     const { data, error: eventError } = await supabase

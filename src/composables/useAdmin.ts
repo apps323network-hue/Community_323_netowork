@@ -44,7 +44,7 @@ export function useAdmin() {
     return await adminStore.handleEventApproval(action)
   }
 
-  async function createEvent(eventData: { titulo: string; descricao?: string; data_hora: string; tipo: string; local?: string; status?: EventStatus; image_url?: string; partner_id?: string }) {
+  async function createEvent(eventData: { titulo: string; descricao?: string; data_hora: string; tipo: string; local?: string; status?: EventStatus; image_url?: string; partner_id?: string; program_id: string }) {
     if (!adminStore.createEvent) {
       console.error('[useAdmin] createEvent não está disponível no store')
       throw new Error('Função createEvent não está disponível. Por favor, recarregue a página.')
@@ -60,7 +60,7 @@ export function useAdmin() {
     // Verificar se a função existe no store
     const storeKeys = Object.keys(adminStore)
     const hasDeleteEvent = 'deleteEvent' in adminStore && typeof adminStore.deleteEvent === 'function'
-    
+
     if (!hasDeleteEvent) {
       console.error('[useAdmin] deleteEvent não está disponível no store')
       console.error('[useAdmin] Store keys (primeiras 20):', storeKeys.slice(0, 20))
@@ -69,18 +69,18 @@ export function useAdmin() {
       console.error('[useAdmin] deleteEvent in store:', 'deleteEvent' in adminStore)
       console.error('[useAdmin] adminStore.deleteEvent:', adminStore.deleteEvent)
       console.error('[useAdmin] Verificando funções relacionadas a eventos:', storeKeys.filter(k => k.toLowerCase().includes('event')))
-      
+
       // Tentar acessar diretamente do store
       const adminStoreDirect = useAdminStore()
       console.log('[useAdmin] Tentando acessar store direto...')
       console.log('[useAdmin] Store direto keys (primeiras 20):', Object.keys(adminStoreDirect).slice(0, 20))
       console.log('[useAdmin] deleteEvent no store direto:', 'deleteEvent' in adminStoreDirect, typeof adminStoreDirect.deleteEvent)
-      
+
       if (typeof adminStoreDirect.deleteEvent === 'function') {
         console.log('[useAdmin] Encontrado deleteEvent no store direto, usando...')
         return await adminStoreDirect.deleteEvent(eventId)
       }
-      
+
       throw new Error('Função deleteEvent não está disponível. Por favor, recarregue a página completamente (F5) ou reinicie o servidor de desenvolvimento.')
     }
     return await adminStore.deleteEvent(eventId)

@@ -116,18 +116,16 @@
           {{ t('navigation.savedEvents') }}
         </RouterLink>
         <RouterLink
-          to="/meus-programas"
+          to="/my-programs"
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
-          :class="$route.path === '/meus-programas' 
-            ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-secondary shadow-neon-blue/10' 
-            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+          :class="$route.path === '/my-programs' 
+            ? 'bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white lg:bg-transparent lg:shadow-none' 
+            : 'text-gray-500 hover:text-slate-900 dark:hover:text-white'"
         >
           <span 
-            class="material-icons-outlined mr-3 transition-colors"
-            :class="$route.path === '/meus-programas' ? 'text-secondary' : 'text-gray-500 group-hover:text-secondary'"
-          >
-            school
-          </span>
+            class="material-symbols-outlined text-[20px] transition-colors"
+            :class="$route.path === '/my-programs' ? 'text-secondary' : 'text-gray-500 group-hover:text-secondary'"
+          >school</span>
           {{ t('programs.myPrograms') }}
         </RouterLink>
         <RouterLink

@@ -48,7 +48,7 @@
         <!-- Right Side Actions -->
         <div class="flex items-center gap-2 sm:gap-4">
           <button
-            @click="$router.push(`/programas/${program?.id}`)"
+            @click="$router.push(`/programs/${program?.id}`)"
             class="w-10 h-10 sm:w-auto sm:px-4 sm:py-2 bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl sm:rounded-xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
             title="Visualizar como Aluno"
           >

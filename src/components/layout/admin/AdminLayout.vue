@@ -122,7 +122,7 @@ const mobileMenuItems = computed(() => [
     badgeClass: '',
   },
   {
-    path: '/admin/programas',
+    path: '/admin/programs',
     label: 'Programas',
     icon: 'school',
     badge: undefined,

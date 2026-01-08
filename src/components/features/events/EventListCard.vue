@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex flex-col bg-white dark:bg-surface-card rounded-xl overflow-hidden border border-slate-200 dark:border-white/5 transition-all duration-300 hover:-translate-y-2"
+    class="group flex flex-col bg-white dark:bg-surface-card rounded-xl overflow-hidden border border-slate-200 dark:border-white/5 transition-all duration-300 hover:-translate-y-2 cursor-pointer"
     :class="cardHoverClass"
     @click="$emit('click', event.id)"
   >

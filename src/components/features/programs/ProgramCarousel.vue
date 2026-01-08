@@ -17,6 +17,7 @@
         :aspectRatio="aspectRatio"
         :progress="getProgress(program.id)"
         :badge="getBadge(program)"
+        :isEnrolled="isEnrolled(program.id)"
         @click="handleCardClick(program)"
         @play="handlePlay(program)"
         @add="handleAdd(program)"
@@ -63,6 +64,12 @@ function getProgress(programId: string): number {
   return enrollment?.progress_percentage || 0
 }
 
+function isEnrolled(programId: string): boolean {
+  return programsStore.myEnrollments.some(
+    e => e.program_id === programId && (e.status === 'active' || e.status === 'completed')
+  )
+}
+
 function getBadge(program: any): string {
   // Check if new (created in last 30 days)
   if (program.created_at) {
@@ -84,9 +91,9 @@ function handleCardClick(program: any) {
   )
   
   if (isEnrolled) {
-    router.push(`/programas/${program.id}/assistir`)
+    router.push(`/programs/${program.id}/assistir`)
   } else {
-    router.push(`/programas/${program.id}`)
+    router.push(`/programs/${program.id}`)
   }
 }
 
@@ -96,9 +103,9 @@ function handlePlay(program: any) {
   )
   
   if (isEnrolled) {
-    router.push(`/programas/${program.id}/assistir`)
+    router.push(`/programs/${program.id}/assistir`)
   } else {
-    router.push(`/programas/${program.id}`)
+    router.push(`/programs/${program.id}`)
   }
 }
 
@@ -108,7 +115,7 @@ function handleAdd(program: any) {
 }
 
 function handleInfo(program: any) {
-  router.push(`/programas/${program.id}`)
+  router.push(`/programs/${program.id}`)
 }
 </script>
 

@@ -41,6 +41,10 @@
           <span class="material-symbols-outlined text-secondary text-base">person</span>
           <span>{{ event.creator_name || 'Usuário' }}</span>
         </div>
+        <div v-if="event.program_name" class="flex items-center gap-2 text-white/70 text-sm">
+          <span class="material-symbols-outlined text-secondary text-base">school</span>
+          <span class="font-medium text-primary">{{ event.program_name }}</span>
+        </div>
       </div>
 
       <!-- Actions -->
