@@ -1,6 +1,6 @@
 <template>
   <AppLayout :hideSidebars="true">
-    <div class="max-w-7xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto space-y-4 px-4 sm:px-6 lg:px-8 pb-8">
       <!-- Background Neon Effects -->
       <div class="fixed top-20 left-10 w-64 h-64 bg-secondary rounded-full filter blur-[120px] opacity-10 pointer-events-none z-0"></div>
       <div class="fixed bottom-20 right-10 w-64 h-64 bg-primary rounded-full filter blur-[120px] opacity-10 pointer-events-none z-0"></div>
