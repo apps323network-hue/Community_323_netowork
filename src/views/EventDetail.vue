@@ -1,227 +1,247 @@
 <template>
-  <AppLayout>
-    <!-- Loading State -->
-    <div v-if="loading || !isCorrectEvent" class="flex flex-col justify-center items-center min-h-[60vh] gap-6">
-      <div class="relative">
-        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-secondary"></div>
-        <div class="absolute inset-0 rounded-full shadow-[0_0_15px_rgba(0,240,255,0.5)] animate-pulse"></div>
-      </div>
-      <p class="text-slate-600 dark:text-white/60 font-medium animate-pulse">{{ t('common.loading') }}</p>
-    </div>
+  <AppLayout hideSidebars fluid>
+    <div class="min-h-screen bg-background-dark relative overflow-x-hidden pb-20">
+      <!-- Decorative Background Elements -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-primary/10 rounded-full blur-[150px] pointer-events-none"></div>
+      <div class="absolute top-[40%] left-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-    <div v-else-if="!event" class="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <h2 class="text-slate-900 dark:text-white text-2xl font-bold">{{ t('events.notFound') }}</h2>
-      <button
-        class="px-6 py-3 bg-neon-gradient text-black rounded-lg hover:bg-neon-gradient-hover transition-all shadow-lg hover:shadow-neon-pink"
-        @click="router.push('/eventos')"
-      >
-        {{ t('events.backToEvents') }}
-      </button>
-    </div>
-
-    <div v-else class="mx-auto max-w-7xl px-4 lg:px-10 py-6 space-y-8">
-      <!-- Back Button -->
-      <button
-        class="flex items-center gap-2 text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white transition-colors"
-        @click="router.push('/eventos')"
-      >
-        <span class="material-symbols-outlined">arrow_back</span>
-        {{ t('events.backToEvents') }}
-      </button>
-
-      <!-- Event Header -->
-      <div class="relative rounded-xl overflow-hidden shadow-2xl border border-slate-200 dark:border-white/5">
-        <!-- Background Image -->
-        <div
-          v-if="event.image_url"
-          class="absolute inset-0 bg-cover bg-center"
-          :style="{ backgroundImage: `url(${event.image_url})` }"
-        ></div>
-        <div v-else class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 dark:from-gray-900 dark:to-black"></div>
-        
-        <!-- Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-t from-white/90 dark:from-background-dark via-white/70 dark:via-background-dark/80 to-transparent"></div>
-        
-        <!-- Content -->
-        <div class="relative z-10 p-8 lg:p-16">
-          <div class="inline-flex items-center gap-2 bg-white/80 dark:bg-black/40 backdrop-blur-md border border-secondary/50 rounded-full px-4 py-1 shadow-[0_0_10px_rgba(0,240,255,0.2)] mb-6">
-            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse shadow-[0_0_5px_#00f0ff]"></span>
-            <span class="text-secondary text-xs font-bold uppercase tracking-wider">
-              {{ isPastEvent ? t('events.eventFinished') : t('events.upcomingEvent') }}
-            </span>
-          </div>
-          
-          <h1 class="text-slate-900 dark:text-white text-4xl lg:text-6xl font-black leading-tight mb-4">
-            {{ event.titulo }}
-          </h1>
-          
-          <p class="text-slate-700 dark:text-white/80 text-lg leading-relaxed max-w-2xl mb-6">
-            {{ event.descricao || 'Junte-se a profissionais brasileiros para uma noite de conexões e oportunidades de negócios.' }}
-          </p>
-
-          <!-- Event Details -->
-          <div class="flex flex-wrap gap-6 mb-6">
-            <div class="flex items-center gap-2 text-slate-700 dark:text-white/80">
-              <span class="material-symbols-outlined text-secondary">calendar_today</span>
-              <span>{{ formattedDate }}</span>
-            </div>
-            <div class="flex items-center gap-2 text-slate-700 dark:text-white/80">
-              <span class="material-symbols-outlined text-secondary">schedule</span>
-              <span>{{ formattedTime }}</span>
-            </div>
-            <div v-if="event.local" class="flex items-center gap-2 text-slate-700 dark:text-white/80">
-              <span class="material-symbols-outlined text-secondary">location_on</span>
-              <span>{{ event.local }}</span>
-            </div>
-            <div v-else-if="event.tipo === 'webinar'" class="flex items-center gap-2 text-slate-700 dark:text-white/80">
-              <span class="material-symbols-outlined text-secondary">videocam</span>
-              <span>Online (Zoom)</span>
-            </div>
-          </div>
-
-          <!-- Confirmation Button -->
-          <div v-if="!isPastEvent" class="flex gap-4">
-            <button
-              v-if="!event.is_confirmed"
-              class="flex items-center justify-center rounded-lg h-12 px-8 bg-neon-gradient hover:bg-neon-gradient-hover text-black text-base font-black transition-all shadow-[0_0_20px_rgba(244,37,244,0.4)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] transform hover:-translate-y-1"
-              @click="handleConfirm"
-            >
-              <span class="material-symbols-outlined mr-2">check_circle</span>
-              {{ t('events.confirmPresence') }}
-            </button>
-            <button
-              v-else
-              class="flex items-center justify-center rounded-lg h-12 px-8 bg-secondary/10 dark:bg-secondary/20 hover:bg-secondary/20 dark:hover:bg-secondary/30 text-secondary border border-secondary/50 dark:border-secondary text-base font-bold transition-all shadow-lg hover:shadow-neon-blue"
-              @click="handleCancel"
-            >
-              <span class="material-symbols-outlined mr-2">cancel</span>
-              {{ t('events.cancelConfirmation') }}
-            </button>
-            <div class="flex items-center gap-2 text-slate-600 dark:text-white/60 text-sm">
-              <span class="material-symbols-outlined">people</span>
-              <span>{{ event.confirmations_count || 0 }} {{ t('events.confirmed_count') }}</span>
-            </div>
-          </div>
-
-          <!-- Recording Link (if past event) -->
-          <div v-if="isPastEvent && event.link_gravacao" class="mt-6">
-            <a
-              :href="event.link_gravacao"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-secondary/10 dark:bg-secondary/20 hover:bg-secondary/20 dark:hover:bg-secondary/30 text-secondary border border-secondary/50 dark:border-secondary rounded-lg font-bold transition-all shadow-lg hover:shadow-neon-blue"
-            >
-              <span class="material-symbols-outlined">play_circle</span>
-              {{ t('events.watchRecording') }}
-            </a>
-          </div>
+      <!-- Loading State -->
+      <div v-if="loading || !isCorrectEvent" class="flex flex-col items-center justify-center min-h-[80vh] gap-8 relative z-10">
+        <div class="relative w-24 h-24">
+          <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <div class="absolute inset-0 rounded-full shadow-[0_0_30px_rgba(244,37,244,0.3)] animate-pulse"></div>
         </div>
+        <p class="text-white/60 font-medium animate-pulse tracking-widest uppercase text-sm">{{ t('common.loading') }}</p>
       </div>
 
-      <!-- Event Information -->
-      <div class="bg-white dark:bg-surface-card rounded-xl p-8 border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
-        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-6">{{ t('events.eventInfo') }}</h2>
-        
-        <div class="space-y-4">
-          <div>
-            <h3 class="text-slate-600 dark:text-white/80 text-sm font-semibold mb-2">{{ t('events.dateTimeLabel') }}</h3>
-            <p class="text-slate-900 dark:text-white">{{ formattedFullDate }}</p>
-          </div>
-          
-          <div v-if="event.local">
-            <h3 class="text-slate-600 dark:text-white/80 text-sm font-semibold mb-2">{{ t('events.locationLabel') }}</h3>
-            <p class="text-slate-900 dark:text-white">{{ event.local }}</p>
-          </div>
-          
-          <div v-if="event.tipo === 'webinar'">
-            <h3 class="text-slate-600 dark:text-white/80 text-sm font-semibold mb-2">{{ t('events.formatLabel') }}</h3>
-            <p class="text-slate-900 dark:text-white">Webinar Online (Zoom)</p>
-          </div>
-          
-          <div v-if="event.descricao">
-            <h3 class="text-slate-600 dark:text-white/80 text-sm font-semibold mb-2">{{ t('events.descriptionLabel') }}</h3>
-            <p class="text-slate-900 dark:text-white leading-relaxed whitespace-pre-line">{{ event.descricao }}</p>
-          </div>
+      <!-- Not Found State -->
+      <div v-else-if="!event" class="flex flex-col items-center justify-center min-h-[80vh] gap-6 relative z-10 text-center px-4">
+        <div class="w-20 h-20 rounded-[24px] bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-4xl text-white/40">event_busy</span>
         </div>
+        <h2 class="text-3xl font-black text-white uppercase tracking-tight">{{ t('events.notFound') }}</h2>
+        <button
+          class="group relative px-8 py-4 rounded-xl font-bold text-black overflow-hidden transition-all hover:scale-105 active:scale-95"
+          @click="router.push('/eventos')"
+        >
+          <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x"></div>
+          <span class="relative flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">arrow_back</span>
+            {{ t('events.backToEvents') }}
+          </span>
+        </button>
       </div>
 
-      <!-- Confirmed Attendees -->
-      <div v-if="event.confirmations_count && event.confirmations_count > 0" class="bg-white dark:bg-surface-card rounded-xl p-8 border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
-        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-4">
-          {{ t('events.confirmedLabel') }} ({{ event.confirmations_count }})
-        </h2>
-        <p class="text-slate-600 dark:text-white/60">
-          {{ event.confirmations_count }} {{ event.confirmations_count === 1 ? t('events.personConfirmed') : t('events.peopleConfirmed') }}
-        </p>
-      </div>
+      <!-- Content -->
+      <div v-else class="relative z-10">
+        <!-- Back Navigation -->
+        <div class="max-w-7xl mx-auto px-4 lg:px-10 pt-8 mb-8">
+          <button
+            class="flex items-center gap-2 text-white/50 hover:text-white transition-colors group"
+            @click="router.push('/eventos')"
+          >
+            <div class="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+              <span class="material-symbols-outlined text-sm">arrow_back</span>
+            </div>
+            <span class="text-sm font-bold uppercase tracking-wider">{{ t('events.backToEvents') }}</span>
+          </button>
+        </div>
 
-      <!-- Services CTA (Post-Event) -->
-      <div v-if="isPastEvent" class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/5 shadow-2xl bg-white dark:bg-surface-card">
-        <!-- Background Gradient -->
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/10 dark:from-primary/20 via-secondary/5 dark:via-secondary/10 to-primary/10 dark:to-primary/20"></div>
-        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 dark:bg-primary/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 dark:bg-secondary/10 blur-[100px] rounded-full -ml-32 -mb-32"></div>
-        
-        <!-- Content -->
-        <div class="relative z-10 p-8 lg:p-12">
-          <div class="flex flex-col lg:flex-row items-center gap-8">
-            <!-- Icon and Text -->
-            <div class="flex-1 text-center lg:text-left">
-              <div class="inline-flex items-center justify-center lg:justify-start mb-4">
-                <div class="size-16 rounded-full bg-neon-gradient flex items-center justify-center shadow-[0_0_30px_rgba(244,37,244,0.4)]">
-                  <span class="material-symbols-outlined text-black text-3xl">business_center</span>
+        <div class="max-w-7xl mx-auto px-4 lg:px-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          
+          <!-- Left Column: Main Info -->
+          <div class="lg:col-span-8 space-y-8">
+            <!-- Hero Card -->
+            <div class="relative rounded-[40px] overflow-hidden border border-white/10 bg-slate-900/50 backdrop-blur-sm shadow-2xl">
+              <!-- Image -->
+              <div class="relative h-[300px] sm:h-[400px] group">
+                <div v-if="event.image_url" class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 " :style="{ backgroundImage: `url(${event.image_url})` }"></div>
+                <div v-else class="absolute inset-0 bg-gradient-to-br from-slate-800 to-black"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                
+                <!-- Date Badge Floating -->
+                <div class="absolute top-6 left-6 flex flex-col items-center bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-3 min-w-[70px] shadow-xl">
+                  <span class="text-xs font-bold text-white/80 uppercase tracking-widest">{{ formattedDate.split('de')[0] }}</span>
+                  <span class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">{{ new Date(event.data_hora).getDate() }}</span>
+                </div>
+
+                <!-- Status Badge -->
+                 <div class="absolute top-6 right-6 inline-flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-4 py-2">
+                  <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" :class="isPastEvent ? 'bg-slate-500' : 'bg-secondary'"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5" :class="isPastEvent ? 'bg-slate-500' : 'bg-secondary'"></span>
+                  </span>
+                  <span class="text-xs font-bold uppercase tracking-widest text-white/90">
+                    {{ isPastEvent ? t('events.eventFinished') : t('events.upcomingEvent') }}
+                  </span>
                 </div>
               </div>
-              <h2 class="text-slate-900 dark:text-white text-3xl lg:text-4xl font-black mb-4">
-                {{ t('events.continueYour') }} <span class="neon-text-gradient">{{ t('events.journey') }}</span>
-              </h2>
-              <p class="text-slate-700 dark:text-white/80 text-lg leading-relaxed max-w-2xl mb-6">
-                {{ t('events.postEventMessage') }}
-              </p>
-              <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
-                <button
-                  @click="router.push('/servicos')"
-                  class="flex items-center justify-center gap-2 px-8 py-4 bg-neon-gradient hover:bg-neon-gradient-hover text-black text-base font-black rounded-lg transition-all shadow-[0_0_20px_rgba(244,37,244,0.4)] hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] transform hover:-translate-y-1"
-                >
-                  <span class="material-symbols-outlined">explore</span>
-                  {{ t('events.exploreServices') }}
-                </button>
-                <button
-                  @click="router.push('/eventos')"
-                  class="flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-surface-card hover:bg-slate-50 dark:hover:bg-surface-highlight text-slate-900 dark:text-white border border-slate-200 dark:border-white/10 hover:border-secondary rounded-lg font-bold transition-all shadow-lg hover:shadow-neon-blue"
-                >
-                  <span class="material-symbols-outlined">event</span>
-                  {{ t('events.viewUpcoming') }}
-                </button>
+
+              <!-- Title & Desc -->
+              <div class="relative -mt-20 p-8 sm:p-10 z-20">
+                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter mb-6 drop-shadow-lg">
+                  {{ event.titulo }}
+                </h1>
+                
+                <div class="flex flex-wrap gap-4 mb-8">
+                   <!-- Details Chips -->
+                   <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white/80">
+                      <span class="material-symbols-outlined text-primary">schedule</span>
+                      {{ formattedTime }}
+                   </div>
+                   <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white/80">
+                      <span class="material-symbols-outlined text-secondary">{{ event.tipo === 'webinar' ? 'videocam' : 'location_on' }}</span>
+                      {{ event.local || (event.tipo === 'webinar' ? 'Online' : 'Local a definir') }}
+                   </div>
+                </div>
+
+                <div class="prose prose-invert max-w-none text-white/70 text-lg leading-relaxed">
+                   <p class="whitespace-pre-line">{{ event.descricao }}</p>
+                </div>
               </div>
             </div>
-            
-            <!-- Services Preview -->
-            <div class="flex-1 w-full lg:w-auto">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div
-                  v-for="service in featuredServices"
-                  :key="service.id"
-                  class="bg-white/80 dark:bg-surface-card/80 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-lg p-4 hover:border-primary/50 transition-all cursor-pointer group shadow-md hover:shadow-lg"
-                  @click="router.push('/servicos')"
-                >
-                  <div class="flex items-start gap-3">
-                    <div class="size-10 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-                      <span class="material-symbols-outlined text-primary">{{ service.icon }}</span>
+
+            <!-- Services CTA (Post-Event) -->
+            <div v-if="isPastEvent" class="relative rounded-[32px] overflow-hidden p-[1px] bg-gradient-to-r from-primary/30 to-secondary/30">
+               <div class="bg-slate-900/90 backdrop-blur-xl rounded-[31px] p-8 md:p-12 relative overflow-hidden">
+                  <div class="absolute -right-20 -top-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px]"></div>
+                  
+                  <div class="relative z-10 text-center">
+                    <div class="inline-flex justify-center items-center w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary mb-6 shadow-lg shadow-primary/20">
+                       <span class="material-symbols-outlined text-black text-3xl font-bold">rocket_launch</span>
                     </div>
-                    <div class="flex-1">
-                      <h3 class="text-slate-900 dark:text-white font-bold text-sm mb-1 group-hover:text-primary transition-colors">
-                        {{ t(service.titleKey || '') }}
-                      </h3>
-                      <p class="text-slate-600 dark:text-white/60 text-xs line-clamp-2">
-                        {{ t(service.descriptionKey || '') }}
-                      </p>
+                    <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">
+                      {{ t('events.continueYour') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">{{ t('events.journey') }}</span>
+                    </h2>
+                    <p class="text-white/60 text-lg max-w-xl mx-auto mb-8">{{ t('events.postEventMessage') }}</p>
+                    
+                    <div class="flex flex-wrap gap-4 justify-center">
+                      <button
+                        @click="router.push('/servicos')"
+                        class="px-8 py-4 bg-white text-black rounded-xl font-black uppercase tracking-widest text-sm hover:scale-105 transition-transform shadow-xl"
+                      >
+                        {{ t('events.exploreServices') }}
+                      </button>
+                       <button
+                          @click="router.push('/eventos')"
+                           class="px-8 py-4 border border-white/10 text-white rounded-xl font-black uppercase tracking-widest text-sm hover:bg-white/5 transition-colors"
+                        >
+                           {{ t('events.viewUpcoming') }}
+                        </button>
                     </div>
                   </div>
-                </div>
-              </div>
+               </div>
             </div>
           </div>
+
+          <!-- Right Column: Actions & Details -->
+          <div class="lg:col-span-4 space-y-6">
+            
+            <!-- Action Card -->
+            <div class="sticky top-6">
+              <div v-if="!isPastEvent" class="rounded-[32px] p-6 bg-slate-800/50 backdrop-blur-md border border-white/10 shadow-xl">
+                 <div class="text-center mb-6">
+                    <p class="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">Status da Inscrição</p>
+                    <div v-if="isUserConfirmed" class="flex flex-col items-center gap-2">
+                       <div class="text-green-400 font-black text-xl flex items-center gap-2">
+                          <span class="material-symbols-outlined">check_circle</span>
+                          Confirmado
+                       </div>
+                       <p class="text-white/40 text-xs text-center px-4">Sua presença está garantida. Traremos mais detalhes em breve.</p>
+                    </div>
+                     <div v-else class="flex flex-col items-center gap-2">
+                       <div class="text-white font-bold text-xl">Não inscrito</div>
+                       <p class="text-white/40 text-xs text-center px-4">Confirme sua presença para participar deste evento exclusivo.</p>
+                    </div>
+                 </div>
+
+                 <!-- Main Action Button -->
+                 <button
+                    v-if="!isUserConfirmed"
+                    class="w-full group relative px-6 py-4 rounded-xl font-black text-black overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-primary/20 mb-4"
+                    @click="handleConfirm"
+                  >
+                    <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x"></div>
+                    <span class="relative flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
+                      <span class="material-symbols-outlined">celebration</span>
+                      {{ t('events.confirmPresence') }}
+                    </span>
+                  </button>
+
+                  <button
+                    v-else
+                    class="w-full px-6 py-4 rounded-xl font-bold text-white/70 border border-white/10 hover:bg-white/5 hover:text-white transition-all text-sm uppercase tracking-widest flex items-center justify-center gap-2 mb-4"
+                    @click="handleCancel"
+                  >
+                     <span class="material-symbols-outlined text-sm">cancel</span>
+                     {{ t('events.cancelConfirmation') }}
+                  </button>
+
+                  <!-- Confirmed Users Visualization -->
+                  <div v-if="event.confirmed_users && event.confirmed_users.length > 0" class="flex flex-col items-center gap-3 py-4 border-t border-white/5">
+                     <div class="flex -space-x-3 overflow-hidden p-1">
+                        <template v-for="user in event.confirmed_users.slice(0, 5)" :key="user.user_id">
+                          <img 
+                            v-if="user.avatar_url" 
+                            :src="user.avatar_url" 
+                            :alt="user.nome || 'User'"
+                            class="w-10 h-10 rounded-full border-2 border-slate-800 object-cover ring-2 ring-transparent hover:ring-primary transition-all hover:z-10 cursor-help"
+                            :title="user.nome"
+                          />
+                          <div 
+                            v-else 
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-slate-800 flex items-center justify-center text-xs font-bold text-white uppercase ring-2 ring-transparent hover:ring-primary transition-all hover:z-10 cursor-help"
+                            :title="user.nome"
+                          >
+                            {{ user.nome ? user.nome.charAt(0) : 'U' }}
+                          </div>
+                        </template>
+                        <div v-if="event.confirmed_users.length > 5" class="w-10 h-10 rounded-full bg-slate-600 border-2 border-slate-800 flex items-center justify-center text-xs font-bold text-white z-10">
+                          +{{ event.confirmed_users.length - 5 }}
+                        </div>
+                     </div>
+                     <p class="text-white/60 text-xs font-medium">
+                        <strong class="text-white">{{ event.confirmations_count || 0 }}</strong> {{ t('events.confirmed_count') }}
+                     </p>
+                  </div>
+                  <div v-else class="text-center py-4 border-t border-white/5">
+                    <p class="text-white/40 text-xs italic">{{ t('events.beTheFirstToConfirm') || 'Seja o primeiro a confirmar!' }}</p>
+                  </div>
+              </div>
+
+              <!-- Past Event Recording Card -->
+              <div v-else-if="event.link_gravacao" class="rounded-[32px] p-6 bg-slate-800/50 backdrop-blur-md border border-white/10 shadow-xl">
+                  <h3 class="text-white font-black uppercase tracking-wide text-center mb-4">Perdeu o evento?</h3>
+                  <a
+                    :href="event.link_gravacao"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center justify-center gap-2 w-full px-6 py-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-all border border-white/10"
+                  >
+                    <span class="material-symbols-outlined text-red-500">play_circle</span>
+                    {{ t('events.watchRecording') }}
+                  </a>
+              </div>
+
+              <!-- Organizer Card Optional -->
+              <div class="mt-6 rounded-[32px] p-6 bg-slate-900/30 border border-white/5">
+                 <h4 class="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">Organização</h4>
+                 <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-white/10">
+                       <span class="font-black text-white text-lg">3N</span>
+                    </div>
+                    <div>
+                       <p class="text-white font-bold text-sm">323 Network</p>
+                       <p class="text-white/40 text-xs">Community Team</p>
+                    </div>
+                 </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -233,6 +253,7 @@ import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useEvents } from '@/composables/useEvents'
+import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
@@ -244,37 +265,17 @@ const event = computed(() => currentEvent.value)
 const eventId = computed(() => route.params.id as string)
 const isCorrectEvent = computed(() => event.value?.id === eventId.value)
 
-// Featured services for CTA (post-event)
-const featuredServices = [
-  {
-    id: 1,
-    titleKey: 'services.businessOpening',
-    descriptionKey: 'services.businessOpeningDesc',
-    icon: 'domain',
-  },
-  {
-    id: 2,
-    titleKey: 'services.bankAccount',
-    descriptionKey: 'services.bankAccountDesc',
-    icon: 'account_balance',
-  },
-  {
-    id: 3,
-    titleKey: 'services.visaMentorship',
-    descriptionKey: 'services.visaMentorshipDesc',
-    icon: 'badge',
-  },
-  {
-    id: 4,
-    titleKey: 'services.personalBranding',
-    descriptionKey: 'services.personalBrandingDesc',
-    icon: 'fingerprint',
-  },
-]
-
 const isPastEvent = computed(() => {
   if (!event.value) return false
   return new Date(event.value.data_hora) < new Date()
+})
+
+const authStore = useAuthStore()
+const currentUser = computed(() => authStore.user)
+
+const isUserConfirmed = computed(() => {
+  if (!event.value?.confirmed_users || !currentUser.value) return false
+  return event.value.confirmed_users.some(u => u.user_id === currentUser.value.id)
 })
 
 const formattedDate = computed(() => {
@@ -294,19 +295,6 @@ const formattedTime = computed(() => {
   const hours = date.getHours().toString().padStart(2, '0')
   const minutes = date.getMinutes().toString().padStart(2, '0')
   return `${hours}:${minutes}h`
-})
-
-const formattedFullDate = computed(() => {
-  if (!event.value) return ''
-  const date = new Date(event.value.data_hora)
-  return date.toLocaleString(locale.value, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 })
 
 async function handleConfirm() {
@@ -339,19 +327,14 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.bg-neon-gradient {
-  background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+.animate-gradient-x {
+  background-size: 200% auto;
+  animation: gradient-x 3s linear infinite;
 }
 
-.bg-neon-gradient-hover {
-  background: linear-gradient(135deg, #d914d9 0%, #00cce6 100%);
-}
-
-.neon-text-gradient {
-  background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 </style>
-
