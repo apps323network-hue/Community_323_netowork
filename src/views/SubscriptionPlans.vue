@@ -1,0 +1,262 @@
+<template>
+  <AppLayout hideSidebars fluid>
+    <div class="min-h-[calc(100vh-80px)] bg-background-dark flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-x-hidden">
+      <!-- Decorative Background Elements -->
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+      <!-- Already Subscribed State -->
+      <div v-if="hasActiveSubscription" class="flex flex-col items-center text-center max-w-2xl relative z-10">
+        <div class="relative mb-12">
+          <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary blur-2xl opacity-50 animate-pulse"></div>
+          <div class="relative w-24 h-24 rounded-[32px] bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-2xl transform rotate-12 hover:rotate-0 transition-transform duration-500">
+            <span class="material-icons text-5xl text-black font-black">verified</span>
+          </div>
+        </div>
+
+        <div class="space-y-4 mb-10">
+          <h1 class="text-4xl md:text-5xl font-black text-white leading-tight tracking-tighter uppercase">
+            Você já é <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Publisher!</span>
+          </h1>
+          <p class="text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+            Sua assinatura está ativa. Publique seus serviços e alcance toda a comunidade 323 Network.
+          </p>
+          <div v-if="subscriptionEndDate" class="text-sm text-slate-500">
+            Próxima renovação: {{ formatDate(subscriptionEndDate) }}
+          </div>
+        </div>
+
+        <RouterLink
+          to="/servicos"
+          class="group relative px-8 py-5 rounded-2xl font-black text-black overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/20"
+        >
+          <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x"></div>
+          <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-sm">
+            <span class="material-icons">add_circle</span>
+            Publicar Meu Serviço
+          </span>
+        </RouterLink>
+      </div>
+
+      <!-- Subscription Plans -->
+      <div v-else class="flex flex-col items-center text-center max-w-4xl relative z-10 w-full">
+        <!-- Header -->
+        <div class="space-y-4 mb-12">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm">
+            <span class="material-icons text-secondary text-lg">workspace_premium</span>
+            <span class="text-secondary text-xs font-bold uppercase tracking-widest">Plano Premium</span>
+          </div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tighter">
+            Publique seus <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Serviços</span>
+          </h1>
+          <p class="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
+            Alcance toda a comunidade 323 Network e conecte-se com brasileiros nos EUA que precisam dos seus serviços.
+          </p>
+        </div>
+
+        <!-- Canceled Notice -->
+        <div v-if="route.query.canceled" class="mb-8 px-6 py-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
+          <span class="material-icons text-base align-middle mr-2">info</span>
+          Checkout cancelado. Você pode tentar novamente quando quiser.
+        </div>
+
+        <!-- Pricing Card -->
+        <div class="w-full max-w-md mb-10">
+          <div class="group relative p-1 rounded-[32px] bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 hover:from-primary hover:via-secondary hover:to-primary transition-all duration-500">
+            <div class="bg-slate-900/95 backdrop-blur-xl rounded-[30px] p-8 border border-white/5">
+              <!-- Price -->
+              <div class="text-center mb-8">
+                <div class="flex items-baseline justify-center gap-1 mb-2">
+                  <span class="text-5xl md:text-6xl font-black text-white">{{ formattedPrice }}</span>
+                  <span class="text-slate-400 text-lg">/mês</span>
+                </div>
+                <p class="text-slate-500 text-sm">Cancele quando quiser</p>
+              </div>
+
+              <!-- Benefits -->
+              <ul class="space-y-4 mb-8">
+                <li v-for="benefit in benefits" :key="benefit" class="flex items-start gap-3">
+                  <div class="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center shrink-0 mt-0.5">
+                    <span class="material-icons text-black text-sm">check</span>
+                  </div>
+                  <span class="text-slate-300 text-left">{{ benefit }}</span>
+                </li>
+              </ul>
+
+              <!-- CTA Button -->
+              <button
+                @click="handleSubscribe"
+                :disabled="loading"
+                class="w-full py-5 rounded-2xl font-black text-black overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] shadow-2xl shadow-primary/30 relative group"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x"></div>
+                <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-sm">
+                  <template v-if="loading">
+                    <span class="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
+                    Processando...
+                  </template>
+                  <template v-else>
+                    <span class="material-icons">rocket_launch</span>
+                    Começar Agora
+                  </template>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm">
+          <div class="flex items-center gap-2">
+            <span class="material-icons text-lg">lock</span>
+            <span>Pagamento Seguro</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-icons text-lg">credit_card</span>
+            <span>Stripe Checkout</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-icons text-lg">autorenew</span>
+            <span>Cancele a Qualquer Momento</span>
+          </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mt-16 w-full max-w-2xl">
+          <h3 class="text-xl font-black text-white mb-6 uppercase tracking-wider">Perguntas Frequentes</h3>
+          <div class="space-y-4">
+            <div 
+              v-for="faq in faqs" 
+              :key="faq.q"
+              class="bg-slate-900/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden"
+            >
+              <button 
+                @click="toggleFaq(faq.q)"
+                class="w-full px-6 py-4 flex items-center justify-between text-left"
+              >
+                <span class="font-bold text-white">{{ faq.q }}</span>
+                <span class="material-icons text-slate-400 transition-transform" :class="{ 'rotate-180': openFaq === faq.q }">expand_more</span>
+              </button>
+              <Transition name="faq">
+                <div v-if="openFaq === faq.q" class="px-6 pb-4 text-slate-400 text-sm leading-relaxed">
+                  {{ faq.a }}
+                </div>
+              </Transition>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AppLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
+import { useSubscriptionsStore } from '@/stores/subscriptions'
+import { useAuthStore } from '@/stores/auth'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import { toast } from 'vue-sonner'
+
+const route = useRoute()
+const router = useRouter()
+const subscriptionsStore = useSubscriptionsStore()
+const authStore = useAuthStore()
+
+const loading = computed(() => subscriptionsStore.loading)
+const hasActiveSubscription = computed(() => subscriptionsStore.hasActiveSubscription)
+const formattedPrice = computed(() => subscriptionsStore.formattedPrice)
+const subscriptionEndDate = computed(() => subscriptionsStore.subscriptionEndDate)
+
+const openFaq = ref<string | null>(null)
+
+const benefits = [
+  'Publique serviços ilimitados na plataforma',
+  'Seja encontrado por toda a comunidade 323',
+  'Destaque nos resultados de busca',
+  'Badge de Verificado no seu perfil',
+  'Suporte prioritário via WhatsApp'
+]
+
+const faqs = [
+  {
+    q: 'Posso cancelar a qualquer momento?',
+    a: 'Sim! Você pode cancelar sua assinatura quando quiser. O acesso permanece ativo até o fim do período pago.'
+  },
+  {
+    q: 'Como funciona a publicação de serviços?',
+    a: 'Após assinar, você terá acesso a um botão "Publicar Serviço" na página de serviços. Preencha as informações e seu serviço ficará visível para toda a comunidade.'
+  },
+  {
+    q: 'Quais formas de pagamento são aceitas?',
+    a: 'Aceitamos todos os principais cartões de crédito e débito através do Stripe, a plataforma de pagamentos mais segura do mundo.'
+  },
+  {
+    q: 'Preciso de aprovação para publicar?',
+    a: 'Serviços passam por uma breve análise para garantir a qualidade da plataforma. A aprovação geralmente leva algumas horas.'
+  }
+]
+
+function toggleFaq(q: string) {
+  openFaq.value = openFaq.value === q ? null : q
+}
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  })
+}
+
+async function handleSubscribe() {
+  if (!authStore.user) {
+    toast.error('Faça login para continuar')
+    router.push('/login?redirect=/subscription')
+    return
+  }
+
+  const checkoutUrl = await subscriptionsStore.createCheckout()
+  
+  if (checkoutUrl) {
+    window.location.href = checkoutUrl
+  } else if (subscriptionsStore.error) {
+    toast.error(subscriptionsStore.error)
+  }
+}
+
+onMounted(() => {
+  subscriptionsStore.init()
+})
+</script>
+
+<style scoped>
+.animate-gradient-x {
+  background-size: 200% auto;
+  animation: gradient-x 3s linear infinite;
+}
+
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.faq-enter-active,
+.faq-leave-active {
+  transition: all 0.3s ease;
+}
+
+.faq-enter-from,
+.faq-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+
+.faq-enter-to,
+.faq-leave-from {
+  opacity: 1;
+  max-height: 200px;
+}
+</style>
