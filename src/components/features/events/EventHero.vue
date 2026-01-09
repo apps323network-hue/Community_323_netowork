@@ -28,20 +28,20 @@
         
         <!-- Title -->
         <h1 class="text-slate-900 dark:text-white text-2xl sm:text-3xl md:text-4xl lg:text-7xl font-black leading-tight tracking-[-0.033em]">
-          <template v-if="event.titulo.includes(':')">
-            {{ event.titulo.split(':')[0] }}:
+          <template v-if="(currentLocale === 'pt-BR' ? event.titulo_pt : (event.titulo_en || event.titulo_pt)).includes(':')">
+            {{ (currentLocale === 'pt-BR' ? event.titulo_pt : (event.titulo_en || event.titulo_pt)).split(':')[0] }}:
             <span class="neon-gradient-text">
-              {{ event.titulo.split(':')[1]?.trim() || '' }}
+              {{ (currentLocale === 'pt-BR' ? event.titulo_pt : (event.titulo_en || event.titulo_pt)).split(':')[1]?.trim() || '' }}
             </span>
           </template>
           <template v-else>
-            {{ event.titulo }}
+            {{ currentLocale === 'pt-BR' ? event.titulo_pt : (event.titulo_en || event.titulo_pt) }}
           </template>
         </h1>
         
         <!-- Description -->
         <p class="text-slate-700 dark:text-white/80 text-sm sm:text-base md:text-lg font-normal leading-relaxed max-w-xl">
-          {{ event.descricao || t('events.heroPlaceholder') }}
+          {{ (currentLocale === 'pt-BR' ? event.descricao_pt : (event.descricao_en || event.descricao_pt)) || t('events.heroPlaceholder') }}
         </p>
         
         <!-- Buttons -->
@@ -70,11 +70,11 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useLocale } from '@/composables/useLocale'
 import type { Event } from '@/types/events'
 import CountdownTimer from './CountdownTimer.vue'
 
-const { t } = useI18n()
+const { locale: currentLocale, t } = useLocale()
 
 interface Props {
   event: Event | null

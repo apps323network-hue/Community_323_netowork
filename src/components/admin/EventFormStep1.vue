@@ -1,26 +1,51 @@
 <template>
   <div class="space-y-4">
-    <div>
-      <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Título *</label>
-      <input
-        v-model="formData.titulo"
-        type="text"
-        required
-        class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
-        placeholder="Nome do evento..."
-        @input="$emit('update:formData', { ...formData })"
-      />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Título (PT) *</label>
+        <input
+          v-model="formData.titulo_pt"
+          type="text"
+          required
+          class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
+          placeholder="Nome do evento..."
+          @input="$emit('update:formData', { ...formData })"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Título (EN) *</label>
+        <input
+          v-model="formData.titulo_en"
+          type="text"
+          required
+          class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
+          placeholder="Event name..."
+          @input="$emit('update:formData', { ...formData })"
+        />
+      </div>
     </div>
 
-    <div>
-      <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Descrição</label>
-      <textarea
-        v-model="formData.descricao"
-        rows="4"
-        class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
-        placeholder="Descrição do evento..."
-        @input="$emit('update:formData', { ...formData })"
-      ></textarea>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Descrição (PT)</label>
+        <textarea
+          v-model="formData.descricao_pt"
+          rows="4"
+          class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
+          placeholder="Descrição do evento..."
+          @input="$emit('update:formData', { ...formData })"
+        ></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Descrição (EN)</label>
+        <textarea
+          v-model="formData.descricao_en"
+          rows="4"
+          class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
+          placeholder="Event description..."
+          @input="$emit('update:formData', { ...formData })"
+        ></textarea>
+      </div>
     </div>
 
     <div>
@@ -81,10 +106,13 @@ import { computed, ref, onMounted, watch } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 interface EventFormData {
-  titulo: string
-  descricao: string
+  titulo_pt: string
+  titulo_en: string
+  descricao_pt: string
+  descricao_en: string
   tipo: string
-  local: string
+  local_pt: string
+  local_en: string
   image_url: string
   status: EventStatus
   program_id: string

@@ -7,7 +7,7 @@
       <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
 
       <!-- Loading State -->
-      <div v-if="loading || !isCorrectEvent" class="flex flex-col items-center justify-center min-h-[80vh] gap-8 relative z-10">
+      <div v-if="loading && !event" class="flex flex-col items-center justify-center min-h-[80vh] gap-8 relative z-10">
         <div class="relative w-24 h-24">
           <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
           <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -82,7 +82,7 @@
               <!-- Title & Desc -->
               <div class="relative -mt-20 p-8 sm:p-10 z-20">
                  <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter mb-6 drop-shadow-lg">
-                  {{ event.titulo }}
+                  {{ translatedTitle }}
                 </h1>
                 
                 <div class="flex flex-wrap gap-4 mb-8">
@@ -91,14 +91,14 @@
                       <span class="material-symbols-outlined text-primary">schedule</span>
                       {{ formattedTime }}
                    </div>
-                   <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white/80">
-                      <span class="material-symbols-outlined text-secondary">{{ event.tipo === 'webinar' ? 'videocam' : 'location_on' }}</span>
-                      {{ event.local || (event.tipo === 'webinar' ? 'Online' : 'Local a definir') }}
-                   </div>
+                    <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white/80">
+                       <span class="material-symbols-outlined text-secondary">{{ event.tipo === 'webinar' ? 'videocam' : 'location_on' }}</span>
+                       {{ translatedLocal }}
+                    </div>
                 </div>
 
                 <div class="prose prose-invert max-w-none text-white/70 text-lg leading-relaxed">
-                   <p class="whitespace-pre-line">{{ event.descricao }}</p>
+                   <p class="whitespace-pre-line">{{ translatedDescription }}</p>
                 </div>
               </div>
             </div>
@@ -158,17 +158,43 @@
                  </div>
 
                  <!-- Main Action Button -->
-                 <button
-                    v-if="!isUserConfirmed"
-                    class="w-full group relative px-6 py-4 rounded-xl font-black text-black overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-primary/20 mb-4"
+                  <button
+                    v-if="!isUserConfirmed && !showEnrollmentPrompt"
+                    class="w-full group relative px-6 py-4 rounded-xl font-black text-black overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-primary/20 mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="confirming"
                     @click="handleConfirm"
                   >
                     <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x"></div>
                     <span class="relative flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
-                      <span class="material-symbols-outlined">celebration</span>
-                      {{ t('events.confirmPresence') }}
+                      <template v-if="confirming">
+                        <div class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                        {{ t('common.loading') }}
+                      </template>
+                      <template v-else>
+                        <span class="material-symbols-outlined">celebration</span>
+                        {{ t('events.confirmPresence') }}
+                      </template>
                     </span>
                   </button>
+
+                  <!-- Enrollment Required Prompt (Replaces Confirm Button on Check) -->
+                  <div v-else-if="showEnrollmentPrompt && !isUserConfirmed" class="w-full mb-4 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
+                      <p class="text-primary-foreground/80 text-xs mb-3 font-medium flex items-center justify-center gap-2">
+                         <span class="material-symbols-outlined text-sm">info</span>
+                         {{ t('events.enrollmentRequired') }}
+                      </p>
+                       <button
+                        class="w-full group relative px-6 py-3 rounded-lg font-bold text-white overflow-hidden transition-all hover:scale-[1.02] shadow-lg shadow-primary/10 bg-gradient-to-r from-primary to-secondary"
+                        @click="router.push(`/programs/${requiredProgramId || event.program_id}`)"
+                      >
+                        <span class="relative flex items-center justify-center gap-2 text-sm uppercase tracking-widest">
+                          {{ t('events.goToProgram') }}
+                           <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
 
                   <button
                     v-else
@@ -249,21 +275,42 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useEvents } from '@/composables/useEvents'
 import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import { toast } from 'vue-sonner'
 
 const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
 const { currentEvent, loading, getEventById, confirmEvent, cancelConfirmation } = useEvents()
+const confirming = ref(false)
+const showEnrollmentPrompt = ref(false)
+const requiredProgramId = ref<string | null>(null)
+
+const translatedTitle = computed(() => {
+  if (!event.value) return ''
+  return locale.value === 'en-US' && event.value.titulo_en ? event.value.titulo_en : event.value.titulo_pt
+})
+
+const translatedDescription = computed(() => {
+  if (!event.value) return ''
+  return locale.value === 'en-US' && event.value.descricao_en ? event.value.descricao_en : event.value.descricao_pt
+})
+
+const translatedLocal = computed(() => {
+  if (!event.value) return ''
+  if (event.value.tipo === 'webinar') return t('events.online')
+  const local = locale.value === 'en-US' && event.value.local_en ? event.value.local_en : event.value.local_pt
+  return local || t('events.locationToBeDefined')
+})
 
 const event = computed(() => currentEvent.value)
 const eventId = computed(() => route.params.id as string)
-const isCorrectEvent = computed(() => event.value?.id === eventId.value)
+
 
 const isPastEvent = computed(() => {
   if (!event.value) return false
@@ -298,13 +345,27 @@ const formattedTime = computed(() => {
 })
 
 async function handleConfirm() {
-  if (!event.value) return
+  const currentEvt = event.value
+  if (!currentEvt || confirming.value) return
+  confirming.value = true
   try {
-    await confirmEvent(event.value.id)
+    await confirmEvent(currentEvt.id)
     await getEventById(eventId.value)
-  } catch (error) {
-    console.error('Error confirming event:', error)
-    alert(t('errors.genericError'))
+    toast.success(t('events.presenceConfirmed'))
+  } catch (error: any) {
+    if (error.message?.startsWith('ENROLLMENT_REQUIRED')) {
+       showEnrollmentPrompt.value = true
+       const parts = error.message.split(':')
+       if (parts.length > 1) {
+         requiredProgramId.value = parts[1]
+       }
+    } else if (error.message?.includes('enrolled')) {
+       showEnrollmentPrompt.value = true
+    } else {
+      toast.error(t('errors.genericError'))
+    }
+  } finally {
+    confirming.value = false
   }
 }
 

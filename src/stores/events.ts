@@ -21,6 +21,11 @@ export const useEventStore = defineStore('events', () => {
   async function checkIsAdmin(): Promise<boolean> {
     if (!authStore.user) return false
 
+    // 1. Verificar no metadata do JWT (mais rápido)
+    const role = authStore.user.user_metadata?.role
+    if (role === 'admin') return true
+
+    // 2. Verificar no banco de dados (mais confiável)
     try {
       const { data, error: profileError } = await supabase
         .from('profiles')
@@ -59,19 +64,27 @@ export const useEventStore = defineStore('events', () => {
       let query = supabase
         .from('events')
         .select('*')
-        .order('data_hora', { ascending: true })
 
-      // Filtrar eventos: aprovados para todos OU próprios eventos pending para o criador
-      // Nota: Filtramos no cliente para permitir que criadores vejam seus próprios eventos pending
-      // Não aplicamos filtro de status aqui, vamos filtrar após buscar os dados
+      // Apply Filter by Status/Permissions directly in the query
+      if (!isAdminUser) {
+        if (currentUserId.value) {
+          // Usuário logado: vê aprovados OU pendentes criados por ele mesmo
+          query = query.or(`status.eq.approved,and(status.eq.pending,created_by.eq.${currentUserId.value})`)
+        } else {
+          // Visitante: vê apenas aprovados
+          query = query.eq('status', 'approved')
+        }
+      }
+
+      query = query.order('data_hora', { ascending: true })
 
       // Apply search filter
       if (filtersParam.search) {
         const searchTerm = `%${filtersParam.search}%`
-        query = query.or(`titulo.ilike.${searchTerm},local.ilike.${searchTerm}`)
+        query = query.or(`titulo_pt.ilike.${searchTerm},local_pt.ilike.${searchTerm}`)
       }
 
-      // Apply type filter directly in DB query
+      // Apply type filter
       if (filtersParam.tipo && filtersParam.tipo !== 'all') {
         const typeMap: Record<string, string> = {
           'networking': 'presencial',
@@ -94,19 +107,7 @@ export const useEventStore = defineStore('events', () => {
 
       if (queryError) throw queryError
 
-      // Filtrar eventos no cliente: aprovados OU próprios eventos pending
       let filteredData = data || []
-      if (!isAdminUser) {
-        filteredData = filteredData.filter((event: any) => {
-          // Mostrar eventos aprovados
-          if (event.status === 'approved') return true
-          // Mostrar eventos pending do próprio usuário
-          if (currentUserId.value && event.status === 'pending' && event.created_by === currentUserId.value) {
-            return true
-          }
-          return false
-        })
-      }
 
       if (!filteredData || filteredData.length === 0) {
         hasMore.value = false
@@ -144,11 +145,14 @@ export const useEventStore = defineStore('events', () => {
       // Transform data to match Event interface
       const transformedEvents: Event[] = filteredData.map((event: any) => ({
         id: event.id,
-        titulo: event.titulo,
-        descricao: event.descricao,
+        titulo_pt: event.titulo_pt || '',
+        titulo_en: event.titulo_en || '',
+        descricao_pt: event.descricao_pt,
+        descricao_en: event.descricao_en,
         data_hora: event.data_hora,
         tipo: event.tipo,
-        local: event.local,
+        local_pt: event.local_pt,
+        local_en: event.local_en,
         link_gravacao: event.link_gravacao,
         image_url: event.image_url,
         created_by: event.created_by,
@@ -289,11 +293,14 @@ export const useEventStore = defineStore('events', () => {
 
       const event: Event = {
         id: data.id,
-        titulo: data.titulo,
-        descricao: data.descricao,
+        titulo_pt: data.titulo_pt || '',
+        titulo_en: data.titulo_en || '',
+        descricao_pt: data.descricao_pt,
+        descricao_en: data.descricao_en,
         data_hora: data.data_hora,
         tipo: data.tipo,
-        local: data.local,
+        local_pt: data.local_pt,
+        local_en: data.local_en,
         link_gravacao: data.link_gravacao,
         image_url: data.image_url,
         created_by: data.created_by,
@@ -342,9 +349,11 @@ export const useEventStore = defineStore('events', () => {
       // Filtrar no cliente: aprovados OU próprios eventos pending
       if (data && !isAdminUser) {
         const isApproved = data.status === 'approved'
-        const isOwnPending = currentUserId.value && data.status === 'pending' && data.created_by === currentUserId.value
+        const isCreator = currentUserId.value && data.created_by === currentUserId.value
+        const isOwnPending = data.status === 'pending' && isCreator
+        
         if (!isApproved && !isOwnPending) {
-          // Evento não atende aos critérios, lançar erro
+          console.warn('Access denied to event:', eventId, 'Status:', data.status)
           throw new Error('Event not found or not accessible')
         }
       }
@@ -386,11 +395,14 @@ export const useEventStore = defineStore('events', () => {
 
       const event: Event = {
         id: data.id,
-        titulo: data.titulo,
-        descricao: data.descricao,
+        titulo_pt: data.titulo_pt || '',
+        titulo_en: data.titulo_en || '',
+        descricao_pt: data.descricao_pt,
+        descricao_en: data.descricao_en,
         data_hora: data.data_hora,
         tipo: data.tipo,
-        local: data.local,
+        local_pt: data.local_pt,
+        local_en: data.local_en,
         link_gravacao: data.link_gravacao,
         image_url: data.image_url,
         created_by: data.created_by,
@@ -533,11 +545,11 @@ export const useEventStore = defineStore('events', () => {
         .eq('program_id', fullEvent.program_id)
         .eq('user_id', currentUserId.value)
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
 
-      if (!enrollment) {
-        throw new Error('You must be enrolled in this program to confirm attendance. Please purchase the program first.')
-      }
+        if (!enrollment) {
+          throw new Error(`ENROLLMENT_REQUIRED:${fullEvent.program_id}`)
+        }
     }
 
     // Optimistic update
@@ -579,7 +591,7 @@ export const useEventStore = defineStore('events', () => {
           .select('*')
           .eq('program_id', fullEvent.program_id)
           .eq('user_id', currentUserId.value)
-          .single()
+          .maybeSingle()
 
         if (!existingEnrollment) {
           await supabase.from('program_enrollments').insert({
@@ -617,7 +629,6 @@ export const useEventStore = defineStore('events', () => {
       if (!wasConfirmed) {
         event.confirmations_count = Math.max(0, (event.confirmations_count || 0) - 1)
       }
-      console.error('Error confirming event:', err)
       throw err
     }
   }
@@ -668,26 +679,31 @@ export const useEventStore = defineStore('events', () => {
 
     try {
       // Verificar palavras proibidas em título e descrição
-      const titleCheck = await checkBannedWords(input.titulo)
-      const descCheck = input.descricao ? await checkBannedWords(input.descricao) : { found: false, action: null, words: [] }
+      const titleCheckPt = await checkBannedWords(input.titulo_pt)
+      const titleCheckEn = await checkBannedWords(input.titulo_en)
+      const descCheckPt = input.descricao_pt ? await checkBannedWords(input.descricao_pt) : { found: false, action: null, words: [] }
+      const descCheckEn = input.descricao_en ? await checkBannedWords(input.descricao_en) : { found: false, action: null, words: [] }
 
       // Bloquear qualquer palavra ofensiva encontrada
-      if (titleCheck.found) {
+      if (titleCheckPt.found || titleCheckEn.found) {
         throw new Error('O título do evento contém palavras ofensivas. Por favor, revise o conteúdo.')
       }
 
-      if (descCheck.found) {
+      if (descCheckPt.found || descCheckEn.found) {
         throw new Error('A descrição do evento contém palavras ofensivas. Por favor, revise o conteúdo.')
       }
 
       const { data, error: insertError } = await supabase
         .from('events')
         .insert({
-          titulo: input.titulo,
-          descricao: input.descricao || null,
+          titulo_pt: input.titulo_pt,
+          titulo_en: input.titulo_en,
+          descricao_pt: input.descricao_pt || null,
+          descricao_en: input.descricao_en || null,
           data_hora: input.data_hora,
           tipo: input.tipo,
-          local: input.local || null,
+          local_pt: input.local_pt || null,
+          local_en: input.local_en || null,
           image_url: input.image_url || null,
           status: 'pending', // Sempre criar como pending
           created_by: currentUserId.value,
@@ -701,11 +717,14 @@ export const useEventStore = defineStore('events', () => {
 
       const newEvent: Event = {
         id: data.id,
-        titulo: data.titulo,
-        descricao: data.descricao,
+        titulo_pt: data.titulo_pt || '',
+        titulo_en: data.titulo_en || '',
+        descricao_pt: data.descricao_pt,
+        descricao_en: data.descricao_en,
         data_hora: data.data_hora,
         tipo: data.tipo,
-        local: data.local,
+        local_pt: data.local_pt,
+        local_en: data.local_en,
         link_gravacao: data.link_gravacao,
         image_url: data.image_url,
         created_by: data.created_by,
@@ -738,7 +757,7 @@ export const useEventStore = defineStore('events', () => {
         import('@/lib/emails').then(({ notifyAdminsNewEvent }) => {
           notifyAdminsNewEvent(
             newEvent.id,
-            newEvent.titulo,
+            newEvent.titulo_pt,
             newEvent.data_hora,
             newEvent.tipo,
             creatorName

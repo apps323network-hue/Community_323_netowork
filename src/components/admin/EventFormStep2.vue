@@ -121,15 +121,27 @@
       </div>
     </div>
 
-    <div>
-      <label class="block text-sm font-medium text-white mb-2">Local / Link</label>
-      <input
-        v-model="formData.local"
-        type="text"
-        class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-        :placeholder="formData.tipo === 'webinar' ? 'Link do webinar...' : 'Endereço do evento...'"
-        @input="$emit('update:formData', { ...formData })"
-      />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-white mb-2">Local / Link (PT)</label>
+        <input
+          v-model="formData.local_pt"
+          type="text"
+          class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          :placeholder="formData.tipo === 'webinar' ? 'Link do webinar...' : 'Endereço do evento...'"
+          @input="$emit('update:formData', { ...formData })"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-white mb-2">Local / Link (EN)</label>
+        <input
+          v-model="formData.local_en"
+          type="text"
+          class="w-full rounded-lg border border-white/10 bg-surface-dark p-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+          :placeholder="formData.tipo === 'webinar' ? 'Webinar link...' : 'Event address...'"
+          @input="$emit('update:formData', { ...formData })"
+        />
+      </div>
     </div>
 
     <div>
@@ -193,10 +205,13 @@ import { ref, watch } from 'vue'
 import type { EventStatus } from '@/types/events'
 
 interface EventFormData {
-  titulo: string
-  descricao: string
+  titulo_pt: string
+  titulo_en: string
+  descricao_pt: string
+  descricao_en: string
   tipo: string
-  local: string
+  local_pt: string
+  local_en: string
   image_url: string
   status: EventStatus
   program_id: string

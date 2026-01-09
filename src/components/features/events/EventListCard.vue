@@ -54,12 +54,12 @@
         class="text-slate-900 dark:text-white text-lg sm:text-xl font-bold leading-tight transition-colors"
         :class="titleHoverClass"
       >
-        {{ event.titulo }}
+        {{ currentLocale === 'pt-BR' ? event.titulo_pt : (event.titulo_en || event.titulo_pt) }}
       </h4>
       
       <!-- Description -->
       <p class="text-slate-600 dark:text-white/60 text-xs sm:text-sm line-clamp-2">
-        {{ event.descricao || t('events.heroPlaceholder') }}
+        {{ currentLocale === 'pt-BR' ? event.descricao_pt : (event.descricao_en || event.descricao_pt) || t('events.heroPlaceholder') }}
       </p>
       
       <!-- Location -->
@@ -90,11 +90,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useLocale } from '@/composables/useLocale'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import type { Event } from '@/types/events'
 
-const { t } = useI18n()
+const { locale: currentLocale, t } = useLocale()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 interface Props {
@@ -129,7 +129,7 @@ const formattedTime = computed(() => {
 
 // Category logic (untranslated for styling/logic consistency)
 const category = computed(() => {
-  const title = props.event.titulo.toLowerCase()
+  const title = props.event.titulo_pt.toLowerCase()
   if (title.includes('workshop') || title.includes('branding') || title.includes('aprenda')) {
     return 'workshop'
   }
@@ -234,7 +234,8 @@ const locationText = computed(() => {
   if (props.event.tipo === 'webinar') {
     return 'Online (Zoom)'
   }
-  return props.event.local || t('events.locationToBeDefined')
+  const loc = currentLocale.value === 'pt-BR' ? props.event.local_pt : (props.event.local_en || props.event.local_pt)
+  return loc || t('events.locationToBeDefined')
 })
 
 // Button styling and text
@@ -263,7 +264,7 @@ const buttonText = computed(() => {
   if (props.event.is_confirmed) {
     return t('events.presenceConfirmed')
   }
-  const title = props.event.titulo.toLowerCase()
+  const title = props.event.titulo_pt.toLowerCase()
   if (title.includes('showcase')) {
     return t('events.rsvp')
   }

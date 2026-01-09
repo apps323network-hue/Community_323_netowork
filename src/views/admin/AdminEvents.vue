@@ -4,10 +4,10 @@
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
-          Admin de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Eventos</span>
+          {{ t('admin.events.title') }}
         </h1>
         <p class="text-slate-600 dark:text-white/60 text-lg">
-          Gerencie e aprove eventos da comunidade
+          {{ t('admin.events.subtitle') }}
         </p>
       </div>
 
@@ -21,7 +21,7 @@
           class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
         >
           <span class="material-symbols-outlined">add</span>
-          <span class="hidden sm:inline">Novo Evento</span>
+          <span class="hidden sm:inline">{{ t('admin.events.newEvent') }}</span>
         </button>
       </div>
 
@@ -185,12 +185,12 @@ async function handleToggleDestaque(eventId: string) {
     
     const newDestaqueValue = !event.destaque
     await toggleEventDestaque(eventId, newDestaqueValue)
-    toast.success(newDestaqueValue ? 'Evento definido como destaque!' : 'Evento removido do destaque')
+    toast.success(newDestaqueValue ? t('admin.events.messages.destaqueSuccess') : t('admin.events.messages.destaqueRemoved'))
     await loadAllEvents(activeFilter.value === 'all' ? undefined : activeFilter.value)
     await loadEventStats()
   } catch (error: any) {
     console.error('Error toggling event destaque:', error)
-    toast.error(error.message || 'Erro ao atualizar destaque do evento')
+    toast.error(error.message || t('admin.events.messages.destaqueError'))
   }
 }
 
@@ -211,14 +211,14 @@ async function confirmDelete() {
 
   try {
     await deleteEvent(eventToDelete.value.id)
-    toast.success('Evento apagado com sucesso!')
+    toast.success(t('admin.events.messages.deleteSuccess'))
     showDeleteModal.value = false
     eventToDelete.value = null
     await loadAllEvents(activeFilter.value === 'all' ? undefined : activeFilter.value)
     await loadEventStats()
   } catch (error: any) {
     console.error('Error deleting event:', error)
-    toast.error(error.message || 'Erro ao apagar evento')
+    toast.error(error.message || t('admin.events.messages.deleteError'))
   }
 }
 
@@ -250,7 +250,7 @@ async function uploadImage(file: File): Promise<string | null> {
     return publicUrl
   } catch (err: any) {
     console.error('Error uploading image:', err)
-    toast.error('Erro ao fazer upload da imagem. Tente novamente.')
+    toast.error(t('posts.form.uploadError'))
     return null
   }
 }
@@ -274,7 +274,7 @@ async function handleCreateEventSubmit(data: { formData: any; dateTime: any; ima
     // Construir data_hora a partir dos campos separados
     const dataHora = buildDateTimeString(data.dateTime)
     if (!dataHora) {
-      toast.error('Por favor, preencha todos os campos de data e hora')
+      toast.error(t('admin.events.errors.fillAllDateFields'))
       submitting.value = false
       return
     }
@@ -287,7 +287,7 @@ async function handleCreateEventSubmit(data: { formData: any; dateTime: any; ima
       .single()
 
     if (progError || !program) {
-      throw new Error('Programa não encontrado para validação de datas')
+      throw new Error(t('admin.events.errors.programNotFound'))
     }
 
     const eventDate = new Date(dataHora)
@@ -330,13 +330,13 @@ async function handleCreateEventSubmit(data: { formData: any; dateTime: any; ima
     }
 
     await createEvent(eventData)
-    toast.success('Evento criado com sucesso!')
+    toast.success(t('admin.events.messages.createSuccess'))
     showCreateModal.value = false
     
     await loadAllEvents(activeFilter.value === 'all' ? undefined : activeFilter.value)
     await loadEventStats()
   } catch (error: any) {
-    toast.error(error.message || 'Erro ao criar evento')
+    toast.error(error.message || t('admin.events.messages.createError'))
     console.error('Error creating event:', error)
   } finally {
     submitting.value = false

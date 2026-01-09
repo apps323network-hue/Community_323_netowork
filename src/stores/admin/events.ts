@@ -111,7 +111,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
 
       console.log(`[ADMIN] Eventos encontrados: ${eventsData?.length || 0}`)
       if (eventsData && eventsData.length > 0) {
-        console.log('[ADMIN] Primeiros 3 eventos:', eventsData.slice(0, 3).map((e: any) => ({ id: e.id, titulo: e.titulo, status: e.status })))
+        console.log('[ADMIN] Primeiros 3 eventos:', eventsData.slice(0, 3).map((e: any) => ({ id: e.id, titulo_pt: e.titulo_pt, status: e.status })))
       }
 
       if (!eventsData || eventsData.length === 0) {
@@ -166,8 +166,8 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
         .from('events')
         .update({
           status: 'approved',
-          approved_by: authStore.user.id,
-          approved_at: new Date().toISOString(),
+          reviewed_by: authStore.user.id,
+          reviewed_at: new Date().toISOString(),
           rejection_reason: null,
         })
         .eq('id', eventId)
@@ -190,7 +190,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
         action: 'approve_event',
         targetId: eventId,
         targetType: 'event',
-        details: { titulo: data.titulo }
+        details: { titulo_pt: data.titulo_pt }
       })
 
       return data
@@ -217,8 +217,8 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
         .from('events')
         .update({
           status: 'rejected',
-          approved_by: authStore.user.id,
-          approved_at: new Date().toISOString(),
+          reviewed_by: authStore.user.id,
+          reviewed_at: new Date().toISOString(),
           rejection_reason: reason || undefined,
         })
         .eq('id', eventId)
@@ -341,7 +341,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
   }
 
   // Criar novo evento (admin)
-  async function createEvent(eventData: { titulo: string; descricao?: string; data_hora: string; tipo: string; local?: string; status?: EventStatus; image_url?: string; partner_id?: string; program_id: string }) {
+  async function createEvent(eventData: { titulo_pt: string; titulo_en: string; descricao_pt?: string; descricao_en?: string; data_hora: string; tipo: string; local_pt?: string; local_en?: string; status?: EventStatus; image_url?: string; partner_id?: string; program_id: string }) {
     if (!authStore.user) {
       throw new Error('Usuário não autenticado')
     }
@@ -353,11 +353,14 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
       const { data, error: insertError } = await supabase
         .from('events')
         .insert({
-          titulo: eventData.titulo,
-          descricao: eventData.descricao || null,
+          titulo_pt: eventData.titulo_pt,
+          titulo_en: eventData.titulo_en,
+          descricao_pt: eventData.descricao_pt || null,
+          descricao_en: eventData.descricao_en || null,
           data_hora: eventData.data_hora,
           tipo: eventData.tipo,
-          local: eventData.local || null,
+          local_pt: eventData.local_pt || null,
+          local_en: eventData.local_en || null,
           image_url: eventData.image_url || null,
           status: eventData.status || 'approved', // Admin pode criar já aprovado
           created_by: authStore.user.id,
@@ -379,7 +382,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
         action: 'create_event',
         targetId: data.id,
         targetType: 'event',
-        details: { titulo: data.titulo, tipo: data.tipo, status: data.status }
+        details: { titulo_pt: data.titulo_pt, tipo: data.tipo, status: data.status }
       })
 
       return data

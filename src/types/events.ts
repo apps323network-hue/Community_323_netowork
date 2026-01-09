@@ -2,18 +2,21 @@ export type EventType = 'presencial' | 'webinar'
 export type EventStatus = 'pending' | 'approved' | 'rejected'
 
 export interface Event {
-  id: string
-  titulo: string
-  descricao?: string
-  data_hora: string
-  tipo: EventType
-  local?: string
-  link_gravacao?: string
-  image_url?: string
-  program_id?: string
-  created_by?: string
-  created_at: string
-  updated_at: string
+  id: string;
+  titulo_pt: string;
+  titulo_en: string;
+  descricao_pt?: string;
+  descricao_en?: string;
+  data_hora: string;
+  tipo: EventType;
+  local_pt?: string;
+  local_en?: string;
+  link_gravacao?: string;
+  image_url?: string;
+  program_id?: string;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
   // Approval fields
   status?: EventStatus
   partner_id?: string
@@ -50,14 +53,17 @@ export interface EventFilters {
 export type EventFilterType = 'all' | 'networking' | 'showcase' | 'workshop' | 'social'
 
 export interface EventCreateInput {
-  titulo: string
-  descricao?: string
-  data_hora: string
-  tipo: EventType
-  local?: string
-  image_url?: string
-  partner_id?: string
-  program_id: string
+  titulo_pt: string;
+  titulo_en: string;
+  descricao_pt?: string;
+  descricao_en?: string;
+  data_hora: string;
+  tipo: EventType;
+  local_pt?: string;
+  local_en?: string;
+  image_url?: string;
+  partner_id?: string;
+  program_id: string;
 }
 
 export interface EventApprovalInput {
