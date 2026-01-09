@@ -17,68 +17,91 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-              <span class="material-icons text-green-500 text-2xl">check_circle</span>
+            <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+              <span class="material-icons text-green-500 text-xl">check_circle</span>
             </div>
             <div>
-              <p class="text-sm text-slate-500 dark:text-gray-400">Ativas</p>
-              <p class="text-2xl font-black text-slate-900 dark:text-white">{{ stats.active }}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Ativas</p>
+              <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.active }}</p>
             </div>
           </div>
         </div>
         <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
-              <span class="material-icons text-yellow-500 text-2xl">pending</span>
+            <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+              <span class="material-icons text-yellow-500 text-xl">pending</span>
             </div>
             <div>
-              <p class="text-sm text-slate-500 dark:text-gray-400">Pendentes</p>
-              <p class="text-2xl font-black text-slate-900 dark:text-white">{{ stats.pending }}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Pendentes</p>
+              <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.pending }}</p>
             </div>
           </div>
         </div>
         <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center">
-              <span class="material-icons text-red-500 text-2xl">cancel</span>
+            <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+              <span class="material-icons text-red-500 text-xl">trending_down</span>
             </div>
             <div>
-              <p class="text-sm text-slate-500 dark:text-gray-400">Canceladas</p>
-              <p class="text-2xl font-black text-slate-900 dark:text-white">{{ stats.canceled }}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Churn</p>
+              <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.churnRate }}%</p>
             </div>
           </div>
         </div>
         <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <span class="material-icons text-primary text-2xl">attach_money</span>
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+              <span class="material-icons text-blue-500 text-xl">analytics</span>
             </div>
             <div>
-              <p class="text-sm text-slate-500 dark:text-gray-400">MRR</p>
-              <p class="text-2xl font-black text-slate-900 dark:text-white">{{ formatCurrency(stats.mrr) }}</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">ARPU</p>
+              <p class="text-xl font-black text-slate-900 dark:text-white">{{ formatCurrency(stats.arpu) }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span class="material-icons text-primary text-xl">payments</span>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">MRR</p>
+              <p class="text-xl font-black text-slate-900 dark:text-white">{{ formatCurrency(stats.mrr) }}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Filters -->
-      <div class="flex gap-2 overflow-x-auto pb-2">
-        <button
-          v-for="filter in statusFilters"
-          :key="filter.value"
-          @click="activeFilter = filter.value"
-          :class="[
-            'px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
-            activeFilter === filter.value
-              ? 'bg-primary text-white'
-              : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5'
-          ]"
-        >
-          {{ filter.label }}
-        </button>
+      <!-- Search and Filters -->
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto">
+          <button
+            v-for="filter in statusFilters"
+            :key="filter.value"
+            @click="activeFilter = filter.value"
+            :class="[
+              'px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
+              activeFilter === filter.value
+                ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5'
+            ]"
+          >
+            {{ filter.label }}
+          </button>
+        </div>
+
+        <div class="relative w-full md:w-64">
+          <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+          <input 
+            v-model="searchQuery"
+            type="text"
+            placeholder="Buscar por nome ou e-mail..."
+            class="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 text-sm focus:border-secondary focus:ring-0 transition-all"
+          />
+        </div>
       </div>
 
       <!-- Subscriptions Table -->
@@ -217,6 +240,7 @@ interface Subscription {
 const loading = ref(true)
 const subscriptions = ref<Subscription[]>([])
 const activeFilter = ref('all')
+const searchQuery = ref('')
 const showPriceModal = ref(false)
 const savingPrice = ref(false)
 const priceConfig = ref({
@@ -240,12 +264,31 @@ const stats = computed(() => {
     .filter(s => s.status === 'active')
     .reduce((sum, s) => sum + s.price_cents, 0)
   
-  return { active, pending, canceled, mrr }
+  const churnRate = subscriptions.value.length > 0 
+    ? ((canceled / subscriptions.value.length) * 100).toFixed(1)
+    : 0
+
+  const arpu = active > 0 ? mrr / active : 0
+  
+  return { active, pending, canceled, mrr, churnRate, arpu }
 })
 
 const filteredSubscriptions = computed(() => {
-  if (activeFilter.value === 'all') return subscriptions.value
-  return subscriptions.value.filter(s => s.status === activeFilter.value)
+  let filtered = subscriptions.value
+  
+  if (activeFilter.value !== 'all') {
+    filtered = filtered.filter(s => s.status === activeFilter.value)
+  }
+  
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(s => 
+      s.profile?.nome?.toLowerCase().includes(query) || 
+      s.profile?.email?.toLowerCase().includes(query)
+    )
+  }
+  
+  return filtered
 })
 
 function getStatusLabel(status: string) {
