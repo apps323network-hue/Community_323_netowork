@@ -6,6 +6,10 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Taxas Stripe (Idênticas ao create-service-checkout)
+const CARD_FEE_PERCENTAGE = 0.039 // 3.9%
+const CARD_FEE_FIXED = 30 // $0.30 em centavos
+
 Deno.serve(async (req) => {
     console.log('Subscription Checkout - Request received:', req.method)
 
@@ -61,7 +65,17 @@ Deno.serve(async (req) => {
 
         console.log('Price config:', priceConfig)
 
-        // 5. Detectar ambiente
+        // 5. Calcular valor final com taxas
+        // Seguindo a mesma lógica do create-service-checkout
+        const finalAmount = Math.round(
+            priceConfig.price_cents +
+            (priceConfig.price_cents * CARD_FEE_PERCENTAGE) +
+            CARD_FEE_FIXED
+        )
+
+        console.log(`Final amount with fees: ${finalAmount} (Base: ${priceConfig.price_cents})`)
+
+        // 6. Detectar ambiente
         const referer = req.headers.get('referer')
         const origin = req.headers.get('origin') || ''
         let siteUrl = referer ? new URL(referer).origin : Deno.env.get('SITE_URL') || 'http://localhost:5173'
@@ -165,7 +179,7 @@ Deno.serve(async (req) => {
 
             const price = await stripe.prices.create({
                 product: product.id,
-                unit_amount: priceConfig.price_cents,
+                unit_amount: finalAmount, // Usar valor com taxas
                 currency: priceConfig.currency.toLowerCase(),
                 recurring: {
                     interval: 'month'
@@ -177,14 +191,6 @@ Deno.serve(async (req) => {
 
             stripePriceId = price.id
             console.log(`Created new Stripe price (${isDevelopment ? 'TEST' : 'PROD'}):`, stripePriceId)
-
-            // Só salvamos no banco o ID se for produção, ou se tivéssemos a coluna stripe_test_price_id
-            if (!isDevelopment) {
-                await supabase
-                    .from('subscription_prices')
-                    .update({ stripe_price_id: stripePriceId })
-                    .eq('id', priceConfig.id)
-            }
         }
 
         // 9. Criar registro pendente de subscription
@@ -195,7 +201,7 @@ Deno.serve(async (req) => {
                 plan_type: 'premium',
                 status: 'pending',
                 stripe_customer_id: stripeCustomerId,
-                price_cents: priceConfig.price_cents,
+                price_cents: finalAmount, // Salvamos o valor com taxas
                 currency: priceConfig.currency
             }, {
                 onConflict: 'user_id,plan_type'
@@ -228,10 +234,6 @@ Deno.serve(async (req) => {
                 plan_type: 'premium'
             },
             subscription_data: {
-                product_data: {
-                    name: '323 Network - Premium Subscription', // Assuming a generic name for the product in checkout
-                    description: 'Publish your services on 323 Network',
-                },
                 metadata: {
                     user_id: user.id,
                     subscription_id: subscription.id,
