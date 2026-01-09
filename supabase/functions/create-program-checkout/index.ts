@@ -30,7 +30,8 @@ Deno.serve(async (req) => {
             throw new Error('Invalid JSON body')
         }
 
-        const { program_id, payment_method, exchange_rate } = body
+        const { program_id, payment_method, exchange_rate, discount_amount } = body
+        const discountUSD = discount_amount || 0
 
         if (!program_id || !payment_method) {
             throw new Error('program_id e payment_method são obrigatórios')
@@ -109,18 +110,23 @@ Deno.serve(async (req) => {
                 throw new Error('Taxa de câmbio é obrigatória para PIX')
             }
             currency = 'brl'
+            // Aplicar desconto no valor base USD antes de converter para BRL
+            const priceAfterDiscountUSD = program.price_usd - (discountUSD / 100)
+
             // Fórmula: (Base USD * Taxa * 1.04) / (1 - 0.0179)
             const RATE_MARGIN = 1.04
             const rateWithMargin = exchange_rate * RATE_MARGIN
-            const netAmountBRL = (program.price_usd) * rateWithMargin
+            const netAmountBRL = priceAfterDiscountUSD * rateWithMargin
             const grossAmountBRL = netAmountBRL / (1 - PIX_FEE_PERCENTAGE)
 
             finalAmount = Math.round(grossAmountBRL * 100) // Centavos de BRL
         } else {
             currency = 'usd'
+            const basePriceAfterDiscountUSD = Math.round(program.price_usd * 100) - discountUSD
+
             finalAmount = Math.round(
-                basePriceUSD +
-                (basePriceUSD * CARD_FEE_PERCENTAGE) +
+                basePriceAfterDiscountUSD +
+                (basePriceAfterDiscountUSD * CARD_FEE_PERCENTAGE) +
                 CARD_FEE_FIXED
             )
         }

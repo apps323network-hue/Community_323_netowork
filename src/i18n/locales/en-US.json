@@ -1019,6 +1019,8 @@
     "programs": {
         "title": "Shows",
         "description": "Courses, mentorships and exclusive programs from 323 Network",
+        "enrollmentRequired": "Enrollment required",
+        "viewPrograms": "View Programs",
         "featured": "Featured",
         "getStarted": "Get Started",
         "searchPlaceholder": "Search programs...",
@@ -1190,6 +1192,20 @@
             "uploadSuccessTitle": "Upload Complete!",
             "uploadAnother": "Upload another video",
             "metadataSynced": "Video metadata synced successfully!"
+        }
+    },
+    "coupons": {
+        "title": "Discount Coupons",
+        "createNew": "Create New Coupon",
+        "code": "Discount Coupon",
+        "applied": "Coupon applied successfully!",
+        "errors": {
+            "invalid": "Invalid or expired coupon",
+            "expired": "This coupon has expired",
+            "notYetValid": "This coupon is not yet valid",
+            "maxUsesReached": "This coupon has reached its usage limit",
+            "alreadyUsed": "You have already used this coupon",
+            "notApplicable": "This coupon is not applicable to this program"
         }
     },
     "terms": {

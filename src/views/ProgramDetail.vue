@@ -118,7 +118,7 @@
                             {{ t('programs.paymentModal.processing') }}
                           </template>
                           <template v-else>
-                            {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : 'Garantir Minha Vaga') }}
+                            {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
                             <span class="material-icons text-sm font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
                           </template>
                         </span>
@@ -130,7 +130,7 @@
                           MATRICULADO
                         </div>
                         <RouterLink
-                          :to="`/programas/${program.id}/assistir`"
+                          :to="`/programs/${program.id}/assistir`"
                           class="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-secondary text-black font-black uppercase tracking-widest text-xs hover:scale-[1.02] transition-all shadow-xl shadow-secondary/20"
                         >
                           <span class="material-icons">play_circle</span>
@@ -325,7 +325,7 @@
                           {{ t('programs.paymentModal.processing') }}
                         </template>
                         <template v-else>
-                          {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : 'Garantir Minha Vaga') }}
+                          {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
                           <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </template>
                       </span>
@@ -338,7 +338,7 @@
                       </div>
                       
                       <RouterLink
-                        :to="`/programas/${program.id}/assistir`"
+                        :to="`/programs/${program.id}/assistir`"
                         class="flex items-center justify-center gap-3 w-full py-5 rounded-2xl bg-secondary text-black font-black uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-secondary/20"
                       >
                         <span class="material-icons text-xl">play_circle</span>
@@ -379,10 +379,10 @@
                  <div class="w-12 h-12 rounded-2xl bg-white/10 dark:bg-black/10 flex items-center justify-center shrink-0">
                     <span class="material-icons">help_outline</span>
                  </div>
-                 <div>
-                    <h4 class="font-bold text-sm leading-tight">Dúvidas sobre o curso?</h4>
+                  <div>
+                    <h4 class="font-bold text-sm leading-tight">Dúvidas sobre o conteúdo?</h4>
                     <p class="text-xs opacity-60">Fale com nosso suporte especializado</p>
-                 </div>
+                  </div>
               </div>
             </div>
 
@@ -399,9 +399,9 @@
           Programa Perdido na Galáxia
         </h3>
         <p class="text-slate-500 dark:text-gray-400 mb-10 max-w-md mx-auto text-lg">O programa que você procura não está mais nesta órbita. Verifique o link ou explore nossos novos programas.</p>
-        <RouterLink to="/programas" class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-sm shadow-2xl shadow-primary/30 hover:scale-105 transition-all">
+        <RouterLink to="/programs" class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-sm shadow-2xl shadow-primary/30 hover:scale-105 transition-all">
           <span class="material-icons">explore</span>
-          Explorar Novos Cursos
+          Explorar Novos Conteúdos
         </RouterLink>
       </div>
     </div>
@@ -422,23 +422,73 @@
         <div class="space-y-4">
           <div class="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4">
             <div class="flex justify-between items-center text-sm">
-              <span class="text-slate-500 dark:text-gray-400 font-medium">Investimento Base</span>
-              <span class="text-slate-900 dark:text-white font-bold">${{ program.price_usd }}</span>
+              <span class="text-slate-500 dark:text-gray-400">Investimento Base</span>
+              <span class="text-slate-900 dark:text-white font-bold">{{ formatPrice(program.price_usd * 100, paymentMethod === 'pix' ? 'BRL' : 'USD') }}</span>
             </div>
             
-            <div v-if="paymentMethod" class="flex justify-between items-center text-sm">
-              <span class="text-slate-500 dark:text-gray-400 font-medium">Taxas ({{ paymentMethod === 'card' ? '3.9% + $0.30' : '~1.8%' }})</span>
-              <span class="text-slate-900 dark:text-white font-bold">{{ formatPrice(calculateFee(program.price_usd * 100, paymentMethod), paymentMethod === 'pix' ? 'BRL' : 'USD') }}</span>
+            <!-- Show discount if coupon applied -->
+            <div v-if="appliedCoupon" class="flex justify-between items-center text-sm">
+              <span class="text-green-600 dark:text-green-400 font-bold flex items-center gap-1">
+                <span class="material-icons text-xs">local_offer</span>
+                Desconto ({{ appliedCoupon.code }})
+              </span>
+              <span class="text-green-600 dark:text-green-400 font-bold">-{{ formatPrice(discountAmount, paymentMethod === 'pix' ? 'BRL' : 'USD') }}</span>
+            </div>
+
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-slate-500 dark:text-gray-400">Taxas {{ paymentMethod === 'card' ? '(3.9% + $0.30)' : '(~1.8%)' }}</span>
+              <span class="text-slate-900 dark:text-white font-bold">
+                {{ formatPrice(calculateCurrentFee(), paymentMethod === 'pix' ? 'BRL' : 'USD') }}
+              </span>
             </div>
             
             <div class="border-t border-dashed border-slate-300 dark:border-white/10 pt-4">
               <div class="flex justify-between items-center">
                 <span class="text-slate-900 dark:text-white font-black uppercase text-xs tracking-widest">Total Final</span>
                 <span class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-                  {{ paymentMethod ? formatPrice(calculateTotal(program.price_usd * 100, paymentMethod), paymentMethod === 'pix' ? 'BRL' : 'USD') : '$' + program.price_usd }}
+                  {{ formatFinalPrice() }}
                 </span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Coupon Section -->
+        <div class="space-y-3">
+          <label class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">{{ t('coupons.code') || 'Cupom de Desconto' }}</label>
+          <div class="flex gap-2">
+            <input
+              v-model="couponCode"
+              type="text"
+              placeholder="Digite o código do cupom"
+              :disabled="couponLoading || !!appliedCoupon"
+              class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary dark:focus:ring-secondary outline-none uppercase font-mono transition-all disabled:opacity-50"
+            />
+            <button
+              v-if="!appliedCoupon"
+              @click="handleApplyCoupon()"
+              :disabled="!couponCode.trim() || couponLoading"
+              class="px-6 py-3 rounded-xl bg-secondary text-black font-bold hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100 shadow-lg"
+            >
+              {{ couponLoading ? 'Verificando...' : 'Aplicar' }}
+            </button>
+            <button
+              v-else
+              @click="handleRemoveCoupon"
+              class="px-6 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 font-bold hover:bg-red-500/20 transition-all"
+            >
+              Remover
+            </button>
+          </div>
+          
+          <!-- Coupon feedback messages -->
+          <div v-if="couponError" class="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs">
+            <span class="material-icons text-sm">error</span>
+            <span>{{ t(`coupons.errors.${couponError}`) || 'Cupom inválido' }}</span>
+          </div>
+          <div v-if="appliedCoupon" class="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20  text-green-500 text-xs">
+            <span class="material-icons text-sm">check_circle</span>
+            <span>{{ t('coupons.applied') || 'Cupom aplicado com sucesso!' }}</span>
           </div>
         </div>
 
@@ -500,10 +550,12 @@ import { useProgramsStore } from '@/stores/programs'
 import { useModulesStore } from '@/stores/modules'
 import { useSupabase } from '@/composables/useSupabase'
 import { usePublicAccess } from '@/composables/usePublicAccess'
+import { useCoupons } from '@/composables/useCoupons'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Modal from '@/components/ui/Modal.vue'
 import { toast } from 'vue-sonner'
 import { fetchExchangeRate, calculatePixAmount } from '@/lib/exchange'
+import type { Coupon } from '@/composables/useCoupons'
 
 const route = useRoute()
 const { t, locale: currentLocale } = useLocale()
@@ -518,6 +570,14 @@ const showCheckoutModal = ref(false)
 const submitting = ref(false)
 const paymentMethod = ref<'card' | 'pix' | null>(null)
 const exchangeRate = ref(5.95) // Taxa USD -> BRL
+
+// Coupon state
+const { validateCoupon, calculateDiscount, recordCouponUse } = useCoupons()
+const couponCode = ref('')
+const couponLoading = ref(false)
+const couponError = ref<string | null>(null)
+const appliedCoupon = ref<Coupon | null>(null)
+const discountAmount = ref(0)
 
 const title = computed(() =>
   program.value
@@ -606,6 +666,85 @@ const handleRequestEnroll = () => {
   showCheckoutModal.value = true
 }
 
+// Coupon handlers
+async function handleApplyCoupon(isSilent = false) {
+  if (!program.value || !couponCode.value.trim()) return
+
+  couponLoading.value = true
+  couponError.value = null
+
+  try {
+    const result = await validateCoupon(couponCode.value, program.value.id)
+    
+    if (result.valid && result.coupon) {
+      appliedCoupon.value = result.coupon
+      
+      // Calculate discount based on base price
+      const basePrice = program.value.price_usd * 100
+      discountAmount.value = calculateDiscount(result.coupon, basePrice)
+      
+      // Persist applied coupon
+      const upperCode = couponCode.value.toUpperCase()
+      localStorage.setItem(`applied_coupon_${programId.value}`, upperCode)
+      
+      // Record coupon use immediately ONLY IF not applied silently (restored)
+      if (!isSilent) {
+        await recordCouponUse(
+          result.coupon.id,
+          program.value.id,
+          discountAmount.value // Pass cents directly, let recordCouponUse handle conversion
+        )
+        toast.success(t('coupons.applied') || 'Cupom aplicado!')
+      }
+    } else {
+      couponError.value = result.error || 'invalid'
+      if (!isSilent) {
+        toast.error(t(`coupons.errors.${result.error}`) || 'Cupom inválido')
+      }
+    }
+  } catch (error) {
+    console.error('Error applying coupon:', error)
+    couponError.value = 'invalid'
+    toast.error('Erro ao validar cupom')
+  } finally {
+    couponLoading.value = false
+  }
+}
+
+function handleRemoveCoupon() {
+  appliedCoupon.value = null
+  discountAmount.value = 0
+  couponCode.value = ''
+  couponError.value = null
+  localStorage.removeItem(`applied_coupon_${programId.value}`)
+  toast.info('Cupom removido')
+}
+
+function calculateCurrentFee(): number {
+  if (!program.value || !paymentMethod.value) return 0
+  const basePriceCents = program.value.price_usd * 100
+  const baseAfterDiscount = Math.max(0, basePriceCents - discountAmount.value)
+  return calculateFee(baseAfterDiscount, paymentMethod.value)
+}
+
+function formatFinalPrice(): string {
+  if (!program.value) return '$0'
+  
+  const basePriceCents = program.value.price_usd * 100
+  const baseAfterDiscount = Math.max(0, basePriceCents - discountAmount.value)
+  
+  if (!paymentMethod.value) {
+    return '$' + (baseAfterDiscount / 100).toFixed(2)
+  }
+  
+  // Calculate total with fees based on the discounted base
+  let totalWithFees = calculateTotal(baseAfterDiscount, paymentMethod.value)
+  
+  // For PIX, the calculation inside calculateTotal already handles the logic, 
+  // but let's ensure it returns the right currency formatting
+  return formatPrice(totalWithFees, paymentMethod.value === 'pix' ? 'BRL' : 'USD')
+}
+
 const handleCheckout = async () => {
   if (!program.value || !paymentMethod.value) return
 
@@ -622,7 +761,9 @@ const handleCheckout = async () => {
       body: {
         program_id: program.value.id,
         payment_method: paymentMethod.value,
-        exchange_rate: exchangeRate.value
+        exchange_rate: exchangeRate.value,
+        coupon_id: appliedCoupon.value?.id || null,
+        discount_amount: discountAmount.value || 0
       }
     })
 
@@ -642,10 +783,20 @@ const handleCheckout = async () => {
 }
 
 onMounted(async () => {
-  programsStore.fetchProgramById(programId.value)
+  // Wait for program data to be loaded before trying to apply coupons
+  await programsStore.fetchProgramById(programId.value)
   modulesStore.fetchModulesWithLessons(programId.value)
+  
   const rate = await fetchExchangeRate()
   exchangeRate.value = rate
+
+  // Check for persisted coupon
+  const savedCoupon = localStorage.getItem(`applied_coupon_${programId.value}`)
+  if (savedCoupon && program.value) {
+    couponCode.value = savedCoupon
+    // We apply it without showing a toast if it was already saved
+    await handleApplyCoupon(true)
+  }
 })
 </script>
 

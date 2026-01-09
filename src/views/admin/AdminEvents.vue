@@ -85,9 +85,11 @@ import CreateEventModal from '@/components/admin/CreateEventModal.vue'
 import type { AdminEvent } from '@/types/admin'
 import type { EventStatus } from '@/types/events'
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const { t } = useI18n()
 const {
   allEvents,
   stats,
@@ -275,6 +277,40 @@ async function handleCreateEventSubmit(data: { formData: any; dateTime: any; ima
       toast.error('Por favor, preencha todos os campos de data e hora')
       submitting.value = false
       return
+    }
+
+    // Validação de Janela do Programa
+    const { data: program, error: progError } = await supabase
+      .from('programs')
+      .select('program_start_date, program_end_date, title_pt')
+      .eq('id', data.formData.program_id)
+      .single()
+
+    if (progError || !program) {
+      throw new Error('Programa não encontrado para validação de datas')
+    }
+
+    const eventDate = new Date(dataHora)
+    const now = new Date()
+
+    // 1. Não criar eventos para programa “expirado” (fim do programa já passou)
+    if (program.program_end_date && new Date(program.program_end_date) < now) {
+      throw new Error(t('admin.events.errors.programExpired', { 
+        programTitle: program.title_pt, 
+        endDate: new Date(program.program_end_date).toLocaleDateString() 
+      }))
+    }
+
+    // 2. Evento deve estar dentro da janela do programa
+    if (program.program_start_date && eventDate < new Date(program.program_start_date)) {
+      throw new Error(t('admin.events.errors.eventBeforeStart', {
+        startDate: new Date(program.program_start_date).toLocaleDateString()
+      }))
+    }
+    if (program.program_end_date && eventDate > new Date(program.program_end_date)) {
+      throw new Error(t('admin.events.errors.eventAfterEnd', {
+        endDate: new Date(program.program_end_date).toLocaleDateString()
+      }))
     }
 
     // Upload da imagem se houver

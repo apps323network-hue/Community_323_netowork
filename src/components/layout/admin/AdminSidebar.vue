@@ -88,10 +88,17 @@ const menuItems = computed(() => [
     badgeClass: '',
   },
   {
-    path: '/admin/programas',
+    path: '/admin/programs',
     label: 'Programas',
     icon: 'school',
     badge: undefined, // Poderíamos adicionar badge de pendentes se houvesse revisão
+    badgeClass: '',
+  },
+  {
+    path: '/admin/cupons',
+    label: 'Cupons',
+    icon: 'local_offer',
+    badge: undefined,
     badgeClass: '',
   },
   {

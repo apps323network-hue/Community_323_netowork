@@ -227,14 +227,14 @@ function handlePlay(programId: string) {
   )
   
   if (isEnrolled) {
-    router.push(`/programas/${programId}/assistir`)
+    router.push(`/programs/${programId}/assistir`)
   } else {
-    router.push(`/programas/${programId}`)
+    router.push(`/programs/${programId}`)
   }
 }
 
 function handleDetails(programId: string) {
-  router.push(`/programas/${programId}`)
+  router.push(`/programs/${programId}`)
 }
 
 function clearFilters() {

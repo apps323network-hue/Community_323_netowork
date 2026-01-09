@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { supabase } from '@/lib/supabase'
 import { logAdminAction } from '@/lib/auditLog'
 import { useAdminBaseStore } from './base'
-import type { AdminUser, UserStats, UserStatus, UserRole } from '@/types/admin'
+import type { AdminUser, UserStats, UserStatus, UserRole, MemberFilters, PaginationMeta, SortColumn, SortDirection } from '@/types/admin'
 
 export const useAdminUsersStore = defineStore('admin-users', () => {
   const baseStore = useAdminBaseStore()
@@ -20,7 +20,21 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
     suspended: 0,
     banned: 0,
     newToday: 0,
+    activeThisMonth: 0,
+    engagementRate: 0,
   })
+
+  // Pagination and filtering
+  const paginatedMembers = ref<AdminUser[]>([])
+  const pagination = ref<PaginationMeta>({
+    currentPage: 1,
+    pageSize: 20,
+    totalItems: 0,
+    totalPages: 0,
+  })
+  const filters = ref<MemberFilters>({})
+  const sortBy = ref<SortColumn>('created_at')
+  const sortDirection = ref<SortDirection>('desc')
 
   // Buscar usuários pendentes
   async function fetchPendingUsers() {
@@ -386,12 +400,151 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
     }
   }
 
+  // Fetch members with pagination and filters
+  async function fetchMembersPaginated(page: number = 1, pageSize: number = 20) {
+    loading.value = true
+    error.value = null
+
+    try {
+      // Build query
+      let query = supabase
+        .from('profiles')
+        .select('*', { count: 'exact' })
+        .neq('status', 'rejected')
+
+      // Apply filters
+      if (filters.value.search) {
+        query = query.or(`nome.ilike.%${filters.value.search}%,email.ilike.%${filters.value.search}%`)
+      }
+
+      if (filters.value.roles && filters.value.roles.length > 0) {
+        query = query.in('role', filters.value.roles)
+      }
+
+      if (filters.value.plans && filters.value.plans.length > 0) {
+        query = query.in('plano', filters.value.plans)
+      }
+
+      if (filters.value.statuses && filters.value.statuses.length > 0) {
+        query = query.in('status', filters.value.statuses)
+      }
+
+      if (filters.value.countries && filters.value.countries.length > 0) {
+        query = query.in('pais', filters.value.countries)
+      }
+
+      // Apply sorting
+      query = query.order(sortBy.value, { ascending: sortDirection.value === 'asc' })
+
+      // Apply pagination
+      const from = (page - 1) * pageSize
+      const to = from + pageSize - 1
+      query = query.range(from, to)
+
+      const { data: profiles, error: queryError, count } = await query
+
+      if (queryError) throw queryError
+
+      // Fetch engagement stats for these users
+      const userIds = (profiles || []).map(p => p.id)
+
+      let engagementData: Record<string, { post_count: number; comment_count: number; connections_count: number }> = {}
+
+      if (userIds.length > 0) {
+        // Fetch posts count
+        const { data: postsData } = await supabase
+          .from('posts')
+          .select('user_id')
+          .in('user_id', userIds)
+          .neq('status', 'removed')
+
+        // Fetch comments count  
+        const { data: commentsData } = await supabase
+          .from('post_comments')
+          .select('user_id')
+          .in('user_id', userIds)
+          .neq('status', 'removed')
+
+        // Fetch connections count
+        const { data: connectionsData } = await supabase
+          .from('connections')
+          .select('follower_id, following_id')
+          .or(`follower_id.in.(${userIds.join(',')}),following_id.in.(${userIds.join(',')})`)
+          .eq('status', 'accepted')
+
+        // Aggregate counts
+        userIds.forEach(userId => {
+          engagementData[userId] = {
+            post_count: (postsData || []).filter(p => p.user_id === userId).length,
+            comment_count: (commentsData || []).filter(c => c.user_id === userId).length,
+            connections_count: (connectionsData || []).filter(
+              c => c.follower_id === userId || c.following_id === userId
+            ).length,
+          }
+        })
+      }
+
+      // Merge engagement data with profiles
+      paginatedMembers.value = (profiles || []).map((profile: any) => ({
+        ...profile,
+        status: profile.status || 'pending',
+        strikes: profile.strikes || 0,
+        ...engagementData[profile.id],
+      })) as AdminUser[]
+
+      // Update pagination meta
+      pagination.value = {
+        currentPage: page,
+        pageSize,
+        totalItems: count || 0,
+        totalPages: Math.ceil((count || 0) / pageSize),
+      }
+
+    } catch (err: any) {
+      error.value = err.message
+      console.error('[ADMIN] Error fetching paginated members:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Set filters
+  function setFilters(newFilters: MemberFilters) {
+    filters.value = newFilters
+  }
+
+  // Clear filters
+  function clearFilters() {
+    filters.value = {}
+  }
+
+  // Set sorting
+  function setSorting(column: SortColumn, direction: SortDirection) {
+    sortBy.value = column
+    sortDirection.value = direction
+  }
+
+  // Set page size
+  function setPageSize(size: number) {
+    pagination.value.pageSize = size
+  }
+
   return {
     pendingUsers,
     allUsers,
+    paginatedMembers,
+    pagination,
+    filters,
+    sortBy,
+    sortDirection,
     userStats,
     fetchPendingUsers,
     fetchAllUsers,
+    fetchMembersPaginated,
+    setFilters,
+    clearFilters,
+    setSorting,
+    setPageSize,
     approveUser,
     rejectUser,
     banUser,

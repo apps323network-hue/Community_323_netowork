@@ -30,7 +30,12 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
       // Buscar eventos pendentes
       const { data: eventsData, error: queryError } = await supabase
         .from('events')
-        .select('*')
+        .select(`
+          *,
+          programs (
+            title_pt
+          )
+        `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
 
@@ -63,6 +68,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
           ...event,
           creator_name: creator?.nome || 'Usuário',
           partner_name: event.partner?.nome,
+          program_name: event.programs?.title_pt,
         }
       })
     } catch (err: any) {
@@ -80,11 +86,16 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
 
     try {
       console.log('[ADMIN] Buscando todos os eventos...', { statusFilter })
-      
+
       // Buscar eventos
       let query = supabase
         .from('events')
-        .select('*')
+        .select(`
+          *,
+          programs (
+            title_pt
+          )
+        `)
         .order('created_at', { ascending: false })
 
       if (statusFilter) {
@@ -130,6 +141,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
           ...event,
           creator_name: creator?.nome || 'Usuário',
           partner_name: event.partner?.nome,
+          program_name: event.programs?.title_pt,
         }
       })
     } catch (err: any) {
@@ -329,7 +341,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
   }
 
   // Criar novo evento (admin)
-  async function createEvent(eventData: { titulo: string; descricao?: string; data_hora: string; tipo: string; local?: string; status?: EventStatus; image_url?: string; partner_id?: string }) {
+  async function createEvent(eventData: { titulo: string; descricao?: string; data_hora: string; tipo: string; local?: string; status?: EventStatus; image_url?: string; partner_id?: string; program_id: string }) {
     if (!authStore.user) {
       throw new Error('Usuário não autenticado')
     }
@@ -350,6 +362,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
           status: eventData.status || 'approved', // Admin pode criar já aprovado
           created_by: authStore.user.id,
           partner_id: eventData.partner_id || null,
+          program_id: eventData.program_id,
         })
         .select()
         .single()

@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
-import { useGamificationStore } from './gamification'
 import type { Event, EventFilters, EventCreateInput } from '@/types/events'
 
 export const useEventStore = defineStore('events', () => {
@@ -15,7 +14,7 @@ export const useEventStore = defineStore('events', () => {
   const filters = ref<EventFilters>({ sortBy: 'upcoming' })
 
   const authStore = useAuthStore()
-  const gamificationStore = useGamificationStore()
+
   const currentUserId = computed(() => authStore.user?.id)
 
   // Verificar se usuário é admin
@@ -157,8 +156,8 @@ export const useEventStore = defineStore('events', () => {
         updated_at: event.updated_at,
         status: event.status,
         partner_id: event.partner_id,
-        approved_by: event.approved_by,
-        approved_at: event.approved_at,
+        reviewed_by: event.reviewed_by || event.approved_by,
+        reviewed_at: event.reviewed_at || event.approved_at,
         rejection_reason: event.rejection_reason,
         destaque: event.destaque || false,
         confirmations_count: confirmationsCountMap.get(event.id) || 0,
@@ -238,11 +237,9 @@ export const useEventStore = defineStore('events', () => {
 
       if (queryError) throw queryError
 
-      // Filtrar no cliente: aprovados OU próprios eventos pending (para não-admins)
-      if (data && !isAdminUser && currentUserId.value) {
-        const isApproved = data.status === 'approved'
-        const isOwnPending = data.status === 'pending' && data.created_by === currentUserId.value
-        if (!isApproved && !isOwnPending) {
+      // Filtrar no cliente: apenas aprovados (para não-admins)
+      if (data && !isAdminUser) {
+        if (data.status !== 'approved') {
           data = null // Não atende critérios, buscar próximo evento
         }
       }
@@ -257,11 +254,7 @@ export const useEventStore = defineStore('events', () => {
           .limit(1)
 
         if (!isAdminUser) {
-          if (currentUserId.value) {
-            query = query.or(`status.eq.approved,and(created_by.eq.${currentUserId.value},status.eq.pending)`)
-          } else {
-            query = query.eq('status', 'approved')
-          }
+          query = query.eq('status', 'approved')
         }
 
         const { data: fallbackData, error: fallbackError } = await query.maybeSingle()
@@ -269,9 +262,7 @@ export const useEventStore = defineStore('events', () => {
         if (fallbackError) throw fallbackError
 
         if (fallbackData && !isAdminUser) {
-          const isApproved = fallbackData.status === 'approved'
-          const isOwnPending = currentUserId.value && fallbackData.status === 'pending' && fallbackData.created_by === currentUserId.value
-          if (!isApproved && !isOwnPending) {
+          if (fallbackData.status !== 'approved') {
             featuredEvent.value = null
             return null
           }
@@ -310,8 +301,8 @@ export const useEventStore = defineStore('events', () => {
         updated_at: data.updated_at,
         status: data.status,
         partner_id: data.partner_id,
-        approved_by: data.approved_by,
-        approved_at: data.approved_at,
+        reviewed_by: data.reviewed_by || data.approved_by,
+        reviewed_at: data.reviewed_at || data.approved_at,
         rejection_reason: data.rejection_reason,
         destaque: data.destaque || false,
         confirmations_count: confirmationsCount,
@@ -361,14 +352,36 @@ export const useEventStore = defineStore('events', () => {
       if (queryError) throw queryError
 
       // Fetch confirmations
-      const { data: confirmationsData } = await supabase
+      // Fetch confirmations with profiles
+      const { data: confirmationsData, error: confirmationsError } = await supabase
         .from('event_confirmations')
-        .select('user_id')
+        .select(`
+          user_id,
+          profiles:user_id (
+            avatar_url,
+            nome
+          )
+        `)
         .eq('event_id', eventId)
 
-      const confirmationsCount = confirmationsData?.length || 0
+      if (confirmationsError) console.error('Error fetching confirmations:', confirmationsError)
+
+      const confirmedUsers = (confirmationsData || [])
+        .map((c: any) => {
+          // Handle case where profile might be null or array (though it should be single obj here)
+          const profile = Array.isArray(c.profiles) ? c.profiles[0] : c.profiles
+          return {
+            user_id: c.user_id,
+            avatar_url: profile?.avatar_url,
+            nome: profile?.nome
+          }
+        })
+        // Filter out any where profile join failed if necessary, but keep if user_id exists
+        .filter((u: any) => u.user_id)
+
+      const confirmationsCount = confirmedUsers.length
       const isConfirmed = currentUserId.value
-        ? (confirmationsData?.some((c: any) => c.user_id === currentUserId.value) || false)
+        ? (confirmedUsers.some((u: any) => u.user_id === currentUserId.value))
         : false
 
       const event: Event = {
@@ -385,12 +398,13 @@ export const useEventStore = defineStore('events', () => {
         updated_at: data.updated_at,
         status: data.status,
         partner_id: data.partner_id,
-        approved_by: data.approved_by,
-        approved_at: data.approved_at,
+        reviewed_by: data.reviewed_by || data.approved_by,
+        reviewed_at: data.reviewed_at || data.approved_at,
         rejection_reason: data.rejection_reason,
         destaque: data.destaque || false,
         confirmations_count: confirmationsCount,
         is_confirmed: isConfirmed,
+        confirmed_users: confirmedUsers,
       }
 
       currentEvent.value = event
@@ -404,7 +418,92 @@ export const useEventStore = defineStore('events', () => {
     }
   }
 
-  // Confirm event attendance (optimistic update)
+  // Check if user can create events for a program (must be enrolled)
+  async function canCreateEventForProgram(programId: string): Promise<boolean> {
+    if (!currentUserId.value) return false
+
+    try {
+      const { data, error } = await supabase
+        .from('program_enrollments')
+        .select('id')
+        .eq('program_id', programId)
+        .eq('user_id', currentUserId.value)
+        .eq('status', 'active')
+        .single()
+
+      return !!data && !error
+    } catch {
+      return false
+    }
+  }
+
+  // Approve event (admin only)
+  async function approveEvent(eventId: string): Promise<void> {
+    if (!currentUserId.value) {
+      throw new Error('Not authenticated')
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      const { error: updateError } = await supabase
+        .from('events')
+        .update({
+          status: 'approved',
+          reviewed_by: currentUserId.value,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', eventId)
+
+      if (updateError) throw updateError
+
+      // Update local state
+      const event = events.value.find(e => e.id === eventId)
+      if (event) {
+        event.status = 'approved'
+      }
+    } catch (err: any) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Reject event (admin only)
+  async function rejectEvent(eventId: string, reason: string): Promise<void> {
+    if (!currentUserId.value) {
+      throw new Error('Not authenticated')
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      const { error: updateError } = await supabase
+        .from('events')
+        .update({
+          status: 'rejected',
+          reviewed_by: currentUserId.value,
+          reviewed_at: new Date().toISOString(),
+          rejection_reason: reason
+        })
+        .eq('id', eventId)
+
+      if (updateError) throw updateError
+
+      // Remove from local state
+      events.value = events.value.filter(e => e.id !== eventId)
+    } catch (err: any) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Confirm event attendance with enrollment validation and auto-enroll
   async function confirmEvent(eventId: string): Promise<void> {
     if (!currentUserId.value) {
       throw new Error('User must be authenticated to confirm events')
@@ -415,10 +514,46 @@ export const useEventStore = defineStore('events', () => {
       throw new Error('Event not found')
     }
 
+    // Fetch full event with program details
+    const { data: fullEvent, error: fetchError } = await supabase
+      .from('events')
+      .select('*, programs(*)')
+      .eq('id', eventId)
+      .single()
+
+    if (fetchError || !fullEvent) {
+      throw new Error('Event not found')
+    }
+
+    // For PAID programs, check enrollment first
+    if (fullEvent.programs && fullEvent.programs.price_usd > 0) {
+      const { data: enrollment } = await supabase
+        .from('program_enrollments')
+        .select('*')
+        .eq('program_id', fullEvent.program_id)
+        .eq('user_id', currentUserId.value)
+        .eq('status', 'active')
+        .single()
+
+      if (!enrollment) {
+        throw new Error('You must be enrolled in this program to confirm attendance. Please purchase the program first.')
+      }
+    }
+
     // Optimistic update
     const wasConfirmed = event.is_confirmed
     event.is_confirmed = true
     event.confirmations_count = (event.confirmations_count || 0) + (wasConfirmed ? 0 : 1)
+
+    // Optimistic update for confirmed_users list
+    if (authStore.user && !wasConfirmed) {
+      if (!event.confirmed_users) event.confirmed_users = []
+      event.confirmed_users.push({
+        user_id: currentUserId.value,
+        avatar_url: authStore.user.user_metadata?.avatar_url,
+        nome: authStore.user.user_metadata?.full_name || authStore.user.user_metadata?.name || 'Você'
+      })
+    }
 
     try {
       const { error: insertError } = await supabase
@@ -429,18 +564,53 @@ export const useEventStore = defineStore('events', () => {
         })
 
       if (insertError) {
-        // Check if it's a duplicate key error (already confirmed)
         if (insertError.code === '23505') {
-          // Already confirmed, revert the count increment
           event.confirmations_count = (event.confirmations_count || 0) - 1
-          event.is_confirmed = true // Keep as confirmed
+          event.is_confirmed = true
           return
         }
         throw insertError
       }
 
-      // Award points for confirming attendance (Only once for the first event confirmed)
-      await gamificationStore.awardPoints(20, 'event', eventId, event.titulo, true, false)
+      // For FREE programs, auto-enroll if not already enrolled
+      if (fullEvent.programs && fullEvent.programs.price_usd === 0) {
+        const { data: existingEnrollment } = await supabase
+          .from('program_enrollments')
+          .select('*')
+          .eq('program_id', fullEvent.program_id)
+          .eq('user_id', currentUserId.value)
+          .single()
+
+        if (!existingEnrollment) {
+          await supabase.from('program_enrollments').insert({
+            program_id: fullEvent.program_id,
+            user_id: currentUserId.value,
+            status: 'active',
+            payment_status: 'paid'
+          })
+        }
+      }
+
+      // Award 20 points (only once per event)
+      const { data: existingPoints } = await supabase
+        .from('event_points_awarded')
+        .select('*')
+        .eq('event_id', eventId)
+        .eq('user_id', currentUserId.value)
+        .single()
+
+      if (!existingPoints) {
+        await supabase.from('event_points_awarded').insert({
+          event_id: eventId,
+          user_id: currentUserId.value,
+          points_awarded: 20
+        })
+
+        await supabase.rpc('add_user_points', {
+          p_user_id: currentUserId.value,
+          p_points: 20
+        })
+      }
     } catch (err: any) {
       // Revert optimistic update on error
       event.is_confirmed = wasConfirmed
@@ -522,6 +692,7 @@ export const useEventStore = defineStore('events', () => {
           status: 'pending', // Sempre criar como pending
           created_by: currentUserId.value,
           partner_id: input.partner_id || null,
+          program_id: input.program_id, // Add program_id
         })
         .select('*')
         .single()
@@ -542,8 +713,8 @@ export const useEventStore = defineStore('events', () => {
         updated_at: data.updated_at,
         status: data.status,
         partner_id: data.partner_id,
-        approved_by: data.approved_by,
-        approved_at: data.approved_at,
+        reviewed_by: data.reviewed_by || data.approved_by,
+        reviewed_at: data.reviewed_at || data.approved_at,
         rejection_reason: data.rejection_reason,
         confirmations_count: 0,
         is_confirmed: false,
@@ -560,9 +731,9 @@ export const useEventStore = defineStore('events', () => {
           .select('nome')
           .eq('id', currentUserId.value)
           .single()
-        
+
         const creatorName = creatorProfile?.nome || 'Usuário'
-        
+
         // Chamar notificação de forma assíncrona sem bloquear
         import('@/lib/emails').then(({ notifyAdminsNewEvent }) => {
           notifyAdminsNewEvent(
@@ -627,6 +798,9 @@ export const useEventStore = defineStore('events', () => {
     confirmEvent,
     cancelConfirmation,
     createEvent,
+    canCreateEventForProgram,
+    approveEvent,
+    rejectEvent,
     reset,
   }
 })

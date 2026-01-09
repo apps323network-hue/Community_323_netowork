@@ -48,13 +48,13 @@
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <img
-                    :src="student.profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.profile?.full_name || 'User')}&background=00f0ff&color=000`"
-                    :alt="student.profile?.full_name"
+                    :src="student.profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.profile?.nome || 'User')}&background=00f0ff&color=000`"
+                    :alt="student.profile?.nome"
                     class="w-10 h-10 rounded-full object-cover"
                   />
                   <div>
                     <div class="text-sm font-bold text-slate-900 dark:text-white">
-                      {{ student.profile?.full_name || 'Sem nome' }}
+                      {{ student.profile?.nome || 'Sem nome' }}
                     </div>
                     <div class="text-xs text-slate-500 dark:text-gray-400">
                       @{{ student.profile?.username || 'no-username' }}
@@ -112,7 +112,7 @@ async function fetchStudents() {
         enrolled_at,
         profile:profiles!program_enrollments_user_id_fkey(
           id,
-          full_name,
+          nome,
           username,
           avatar_url
         )

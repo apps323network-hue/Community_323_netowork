@@ -8,11 +8,11 @@
             {{ t('programs.admin.programList') }}
           </h1>
           <p class="text-slate-600 dark:text-gray-400 mt-1">
-            Gerencie todos os cursos, mentorias e workshops da plataforma
+            Gerencie todos os conteúdos, mentorias e workshops da plataforma
           </p>
         </div>
         <RouterLink
-          to="/admin/programas/criar"
+          to="/admin/programs/criar"
           class="flex items-center gap-2 px-6 py-3 bg-primary dark:bg-secondary text-white rounded-xl font-bold shadow-lg hover:shadow-primary/25 dark:hover:shadow-secondary/25 transition-all hover:-translate-y-0.5"
         >
           <span class="material-icons">add</span>
@@ -47,7 +47,7 @@
           class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary dark:focus:ring-secondary outline-none"
         >
           <option value="all">Todas as Categorias</option>
-          <option value="curso">Cursos</option>
+          <option value="curso">Conteúdo</option>
           <option value="mentoria">Mentorias</option>
           <option value="workshop">Workshops</option>
           <option value="evento_premium">Eventos Premium</option>
@@ -134,14 +134,14 @@
                 <td class="p-4 text-right">
                   <div class="flex items-center justify-end gap-2">
                     <RouterLink
-                      :to="`/admin/programas/${program.id}/matriculas`"
+                      :to="`/admin/programs/${program.id}/matriculas`"
                       class="p-2 text-slate-500 hover:text-primary dark:hover:text-secondary bg-slate-100 dark:bg-white/5 rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
                       title="Matrículas"
                     >
                       <span class="material-icons text-sm">people</span>
                     </RouterLink>
                     <RouterLink
-                      :to="`/admin/programas/${program.id}/editar`"
+                      :to="`/admin/programs/${program.id}/editar`"
                       class="p-2 text-slate-500 hover:text-blue-500 bg-slate-100 dark:bg-white/5 rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
                       title="Editar"
                     >

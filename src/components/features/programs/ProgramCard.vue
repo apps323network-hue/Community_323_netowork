@@ -18,6 +18,17 @@
         :class="aspectRatio === 'poster' ? '' : 'opacity-80 group-hover:opacity-40'"
       />
 
+      <!-- Lock Icon (if not enrolled) -->
+      <div v-if="!isEnrolled" 
+           class="absolute top-2 left-2 z-20 flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg border border-white/10 transition-all duration-300"
+           :title="t('programs.enrollmentRequired')"
+      >
+        <span class="material-symbols-outlined text-white text-[16px]">lock</span>
+        <span class="text-[10px] text-white font-bold max-w-0 group-hover:max-w-[100px] overflow-hidden whitespace-nowrap transition-all duration-500 opacity-0 group-hover:opacity-100">
+          {{ t('programs.enrollmentRequired') }}
+        </span>
+      </div>
+
     <!-- Progress Bar (for enrolled programs) -->
     <div v-if="progress > 0" class="absolute bottom-0 left-0 w-full h-1 bg-gray-700 z-10">
       <div class="h-full bg-primary" :style="{ width: `${progress}%` }"></div>
@@ -109,12 +120,14 @@ interface Props {
   aspectRatio?: 'landscape' | 'poster'
   progress?: number
   badge?: string
+  isEnrolled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   aspectRatio: 'landscape',
   progress: 0,
-  badge: ''
+  badge: '',
+  isEnrolled: true
 })
 
 defineEmits<{
