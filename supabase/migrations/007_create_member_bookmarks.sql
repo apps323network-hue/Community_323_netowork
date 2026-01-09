@@ -36,3 +36,4 @@ CREATE POLICY "Users can delete own bookmarks"
   USING (auth.uid() = user_id);
 
 
+
