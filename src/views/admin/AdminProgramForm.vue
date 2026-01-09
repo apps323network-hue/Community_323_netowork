@@ -443,7 +443,6 @@ const tabs = [
   { id: 'basic', label: 'Informações Básicas' },
   { id: 'settings', label: 'Inscrição e Detalhes' },
   { id: 'content', label: 'Conteúdo & Grade' },
-  { id: 'integrations', label: 'Integrações' },
 ]
 
 // Initialize with default values for Create mode
