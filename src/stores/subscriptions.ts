@@ -179,6 +179,35 @@ export const useSubscriptionsStore = defineStore('subscriptions', () => {
     }
   }
 
+  async function generatePortalLink(): Promise<string | null> {
+    // Gera link para o Portal do Cliente Stripe (Customer Portal)
+    try {
+      loading.value = true
+      error.value = null
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Usuário não autenticado')
+
+      const { data, error: invokeError } = await supabase.functions.invoke(
+        'create-portal-link',
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        }
+      )
+
+      if (invokeError) throw invokeError
+      return data?.url || null
+    } catch (err: any) {
+      console.error('Error generating portal link:', err)
+      error.value = err.message || 'Erro ao gerar link do portal'
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function init() {
     await Promise.all([
       fetchSubscription(),
@@ -202,6 +231,7 @@ export const useSubscriptionsStore = defineStore('subscriptions', () => {
     fetchPrice,
     createCheckout,
     verifySubscriptionStatus,
+    generatePortalLink,
     init
   }
 })

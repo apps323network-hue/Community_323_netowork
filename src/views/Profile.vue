@@ -140,9 +140,11 @@
             :isPublic="editableProfile.is_public"
             :showWhatsapp="editableProfile.show_whatsapp"
             :showEmail="editableProfile.show_email"
+            :isPremium="editableProfile.plano === 'Premium'"
             @toggle-public="editableProfile.is_public = !editableProfile.is_public"
             @toggle-whatsapp="editableProfile.show_whatsapp = !editableProfile.show_whatsapp"
             @toggle-email="editableProfile.show_email = !editableProfile.show_email"
+            @manage-subscription="handleManageSubscription"
           />
 
           <!-- Mobile Sticky Footer -->
@@ -262,12 +264,14 @@ import ProfileInterests from '@/components/features/profile/ProfileInterests.vue
 import ProfileGoals from '@/components/features/profile/ProfileGoals.vue'
 import ProfileSettings from '@/components/features/profile/ProfileSettings.vue'
 import { useGamificationStore } from '@/stores/gamification'
+import { useSubscriptionsStore } from '@/stores/subscriptions'
 import { useConnections } from '@/composables/useConnections'
 import { supabase } from '@/lib/supabase'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
 const gamificationStore = useGamificationStore()
+const subscriptionsStore = useSubscriptionsStore()
 const { t } = useI18n()
 
 const saving = ref(false)
@@ -406,10 +410,29 @@ async function handleSave() {
     saving.value = false
   }
 }
-
 function handleEditAvatar() {
   tempAvatarUrl.value = editableProfile.avatar_url || ''
   showAvatarModal.value = true
+}
+
+async function handleManageSubscription() {
+  try {
+    // Debug: Verifica se a função existe no store
+    if (typeof subscriptionsStore.generatePortalLink !== 'function') {
+      console.error('generatePortalLink não encontrado no store:', subscriptionsStore)
+      throw new Error('Função de gerenciamento não carregada. Por favor, recarregue a página.')
+    }
+
+    const url = await subscriptionsStore.generatePortalLink()
+    if (url) {
+      window.location.href = url
+    } else if (subscriptionsStore.error) {
+      showStatus(subscriptionsStore.error, 'error')
+    }
+  } catch (error: any) {
+    console.error('Error handling subscription management:', error)
+    showStatus(error.message || 'Erro ao abrir portal de configuração', 'error')
+  }
 }
 
 function triggerFileInput() {

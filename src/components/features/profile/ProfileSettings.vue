@@ -82,6 +82,26 @@
           ></span>
         </button>
       </div>
+
+      <!-- Subscription Management (Only for Premium) -->
+      <div v-if="isPremium" class="mt-8 pt-6 border-t border-input-border">
+        <div class="bg-gradient-to-br from-secondary/10 to-primary/10 rounded-xl p-4 border border-secondary/20">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="material-symbols-outlined text-secondary">workspace_premium</span>
+            <p class="text-white font-bold text-sm">Assinatura Premium Ativa</p>
+          </div>
+          <p class="text-text-muted text-xs mb-4">
+            Gerencie sua assinatura, métodos de pagamento e visualize seu histórico de faturas diretamente no portal do Stripe.
+          </p>
+          <button
+            @click="$emit('manage-subscription')"
+            class="w-full py-2.5 rounded-lg bg-secondary/20 border border-secondary text-secondary font-bold text-xs hover:bg-secondary hover:text-white transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)] flex items-center justify-center gap-2"
+          >
+            <span class="material-symbols-outlined text-sm">payments</span>
+            Gerenciar Assinatura e Faturamento
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -95,11 +115,13 @@ defineProps<{
   isPublic?: boolean
   showWhatsapp?: boolean
   showEmail?: boolean
+  isPremium?: boolean
 }>()
 
 defineEmits<{
   (e: 'toggle-public'): void
   (e: 'toggle-whatsapp'): void
   (e: 'toggle-email'): void
+  (e: 'manage-subscription'): void
 }>()
 </script>
