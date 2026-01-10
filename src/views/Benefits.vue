@@ -189,7 +189,6 @@ import { useI18n } from 'vue-i18n'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BenefitCard from '@/components/features/benefits/BenefitCard.vue'
-import BenefitCardFeatured from '@/components/features/benefits/BenefitCardFeatured.vue'
 import InteractiveGridPattern from '@/components/ui/InteractiveGridPattern.vue'
 import { useBenefits } from '@/composables/useBenefits'
 import { toast } from 'vue-sonner'
@@ -224,9 +223,7 @@ const filteredBenefits = computed(() => {
   return benefits.value.filter(b => b.tipo === activeFilter.value)
 })
 
-const featuredBenefits = computed(() => {
-  return filteredBenefits.value.filter(b => b.destaque_mes)
-})
+
 
 const otherBenefits = computed(() => {
   return filteredBenefits.value.filter(b => !b.destaque_mes)

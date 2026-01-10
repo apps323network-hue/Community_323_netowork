@@ -136,7 +136,7 @@ const calendarOptions = computed(() => {
   const calendarEvents: EventInput[] = [
     ...filteredEvents.map((event) => ({
       id: event.id,
-      title: event.titulo,
+      title: event.titulo_pt,
       start: event.data_hora,
       end: new Date(new Date(event.data_hora).getTime() + 2 * 60 * 60 * 1000).toISOString(), // +2 horas
       color: event.tipo === 'presencial' ? '#f425f4' : '#00f0ff',
@@ -144,8 +144,8 @@ const calendarOptions = computed(() => {
       textColor: '#ffffff',
       extendedProps: {
         tipo: event.tipo,
-        local: event.local,
-        descricao: event.descricao,
+        local: event.local_pt,
+        descricao: event.descricao_pt,
         isRecurring: false,
       },
     })),

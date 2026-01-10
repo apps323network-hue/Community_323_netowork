@@ -44,7 +44,7 @@ export function useAdmin() {
     return await adminStore.handleEventApproval(action)
   }
 
-  async function createEvent(eventData: { titulo: string; descricao?: string; data_hora: string; tipo: string; local?: string; status?: EventStatus; image_url?: string; partner_id?: string; program_id: string }) {
+  async function createEvent(eventData: { titulo_pt: string; titulo_en: string; descricao_pt?: string; descricao_en?: string; data_hora: string; tipo: string; local_pt?: string; local_en?: string; status?: EventStatus; image_url?: string; partner_id?: string; program_id: string }) {
     if (!adminStore.createEvent) {
       console.error('[useAdmin] createEvent não está disponível no store')
       throw new Error('Função createEvent não está disponível. Por favor, recarregue a página.')

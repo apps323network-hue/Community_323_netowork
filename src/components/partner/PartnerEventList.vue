@@ -48,12 +48,12 @@
         <!-- Content -->
         <div class="p-4">
           <div class="flex items-start justify-between mb-2">
-            <h3 class="text-white font-bold text-lg flex-1 line-clamp-2">{{ event.titulo }}</h3>
+            <h3 class="text-white font-bold text-lg flex-1 line-clamp-2">{{ event.titulo_pt }}</h3>
             <StatusBadge :status="event.status || 'pending'" />
           </div>
 
-          <p v-if="event.descricao" class="text-white/60 text-sm mb-3 line-clamp-2">
-            {{ event.descricao }}
+          <p v-if="event.descricao_pt" class="text-white/60 text-sm mb-3 line-clamp-2">
+            {{ event.descricao_pt }}
           </p>
 
           <div class="flex items-center gap-2 text-white/70 text-sm mb-4">

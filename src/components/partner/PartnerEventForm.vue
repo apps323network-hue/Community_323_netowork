@@ -32,7 +32,7 @@
           Título do Evento <span class="text-red-400">*</span>
         </label>
         <input
-          v-model="form.titulo"
+          v-model="form.titulo_pt"
           type="text"
           required
           class="w-full px-4 py-3 border border-white/10 rounded-lg bg-surface-dark text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
@@ -44,7 +44,7 @@
       <div>
         <label class="block text-white/80 text-sm font-semibold mb-2">Descrição</label>
         <textarea
-          v-model="form.descricao"
+          v-model="form.descricao_pt"
           rows="4"
           class="w-full px-4 py-3 border border-white/10 rounded-lg bg-surface-dark text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           placeholder="Descreva o evento..."
@@ -97,7 +97,7 @@
       <div v-if="form.tipo === 'presencial'">
         <label class="block text-white/80 text-sm font-semibold mb-2">Local</label>
         <input
-          v-model="form.local"
+          v-model="form.local_pt"
           type="text"
           class="w-full px-4 py-3 border border-white/10 rounded-lg bg-surface-dark text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           placeholder="Ex: Miami, FL"
@@ -162,11 +162,14 @@ const { createEvent, updateEvent } = usePartner()
 const isEditing = computed(() => !!props.event)
 
 const form = ref<EventCreateInput>({
-  titulo: '',
-  descricao: '',
+  titulo_pt: '',
+  titulo_en: '',
+  descricao_pt: '',
+  descricao_en: '',
   data_hora: '',
   tipo: 'presencial',
-  local: '',
+  local_pt: '',
+  local_en: '',
   image_url: '',
   program_id: '',
 })
@@ -188,7 +191,7 @@ const success = ref<string | null>(null)
 const processing = ref(false)
 
 const canSubmit = computed(() => {
-  return form.value.titulo.trim().length > 0 && 
+  return form.value.titulo_pt.trim().length > 0 && 
          form.value.data_hora.length > 0 && 
          form.value.program_id.length > 0
 })
@@ -196,11 +199,14 @@ const canSubmit = computed(() => {
 watch(() => props.event, (newEvent) => {
   if (newEvent) {
     form.value = {
-      titulo: newEvent.titulo,
-      descricao: newEvent.descricao || '',
+      titulo_pt: newEvent.titulo_pt,
+      titulo_en: newEvent.titulo_en,
+      descricao_pt: newEvent.descricao_pt || '',
+      descricao_en: newEvent.descricao_en || '',
       data_hora: new Date(newEvent.data_hora).toISOString().slice(0, 16),
       tipo: newEvent.tipo,
-      local: newEvent.local || '',
+      local_pt: newEvent.local_pt || '',
+      local_en: newEvent.local_en || '',
       image_url: newEvent.image_url || '',
       program_id: newEvent.program_id || '',
     }
@@ -253,11 +259,14 @@ async function fetchProgramsForSelection() {
 
 function resetForm() {
   form.value = {
-    titulo: '',
-    descricao: '',
+    titulo_pt: '',
+    titulo_en: '',
+    descricao_pt: '',
+    descricao_en: '',
     data_hora: '',
     tipo: 'presencial',
-    local: '',
+    local_pt: '',
+    local_en: '',
     image_url: '',
     program_id: '',
   }
@@ -342,6 +351,10 @@ async function handleSubmit() {
 
     const eventData: EventCreateInput = {
       ...form.value,
+      // Mirror PT to EN if EN is empty
+      titulo_en: form.value.titulo_en || form.value.titulo_pt,
+      descricao_en: form.value.descricao_en || form.value.descricao_pt,
+      local_en: form.value.local_en || form.value.local_pt,
       image_url: imageUrl || undefined,
     }
 

@@ -133,8 +133,8 @@ const displayedPastEvents = computed(() => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(e => 
-      e.titulo.toLowerCase().includes(query) ||
-      (e.local && e.local.toLowerCase().includes(query))
+      e.titulo_pt.toLowerCase().includes(query) ||
+      (e.local_pt && e.local_pt.toLowerCase().includes(query))
     )
   }
 

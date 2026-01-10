@@ -101,12 +101,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useSubscriptionsStore } from '@/stores/subscriptions'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const route = useRoute()
-const router = useRouter()
+
 const subscriptionsStore = useSubscriptionsStore()
 
 const loading = ref(true)
