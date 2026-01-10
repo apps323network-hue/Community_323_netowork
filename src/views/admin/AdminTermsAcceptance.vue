@@ -259,9 +259,12 @@ const store = useAdminTermsAcceptanceStore()
 // Usar storeToRefs para manter reatividade
 const { acceptances, stats, loading } = storeToRefs(store)
 const downloadingPDF = ref<string | null>(null)
-const hasLoaded = ref(false)
 
-const filters = ref({
+const filters = ref<{
+  term_type: 'terms_of_service' | 'privacy_policy' | ''
+  start_date: string
+  end_date: string
+}>({
   term_type: '',
   start_date: '',
   end_date: '',
@@ -283,6 +286,10 @@ async function applyFilters() {
     term_type: filters.value.term_type || undefined,
     start_date: filters.value.start_date || undefined,
     end_date: filters.value.end_date || undefined,
+  } as {
+    term_type?: 'terms_of_service' | 'privacy_policy'
+    start_date?: string
+    end_date?: string
   })
 }
 
@@ -307,6 +314,10 @@ async function handleRefresh() {
         term_type: filters.value.term_type || undefined,
         start_date: filters.value.start_date || undefined,
         end_date: filters.value.end_date || undefined,
+      } as {
+        term_type?: 'terms_of_service' | 'privacy_policy'
+        start_date?: string
+        end_date?: string
       }),
     ])
     // Removido toast de sucesso conforme solicitado

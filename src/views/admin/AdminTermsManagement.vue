@@ -105,7 +105,7 @@
         v-model="showCreateModal"
         :title="editingTerm ? t('adminTermsManagement.editTerm') : t('adminTermsManagement.createTerm')"
         :closable="true"
-        size="large"
+        size="xl"
       >
         <div class="space-y-6">
           <div>
@@ -181,7 +181,7 @@
         v-model="showPreviewModal"
         :title="previewTermData?.title || ''"
         :closable="true"
-        size="large"
+        size="xl"
       >
         <div
           v-if="previewTermData"

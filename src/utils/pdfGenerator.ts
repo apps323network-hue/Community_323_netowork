@@ -1,5 +1,4 @@
 import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 import type { ApplicationTerm, TermAcceptance } from '@/composables/useTermsAcceptance'
 
 export interface TermAcceptanceData {
@@ -102,9 +101,8 @@ export async function generateTermAcceptancePDF(
   })
 
   // Cores do tema
-  const primaryColor = [6, 182, 212] // cyan-500
-  const secondaryColor = [217, 70, 239] // fuchsia-500
-  const darkColor = [15, 23, 42] // slate-900
+  const primaryColor: [number, number, number] = [6, 182, 212] // cyan-500
+  const darkColor: [number, number, number] = [15, 23, 42] // slate-900
 
   // Header com branding
   doc.setFillColor(...primaryColor)
