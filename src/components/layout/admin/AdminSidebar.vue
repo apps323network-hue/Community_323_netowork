@@ -129,6 +129,20 @@ const menuItems = computed(() => [
     badge: undefined,
     badgeClass: '',
   },
+  {
+    path: '/admin/termos-aceites',
+    label: 'Aceites de Termos',
+    icon: 'description',
+    badge: undefined,
+    badgeClass: '',
+  },
+  {
+    path: '/admin/termos-gerenciar',
+    label: 'Gerenciar Termos',
+    icon: 'gavel',
+    badge: undefined,
+    badgeClass: '',
+  },
 ])
 
 function isActive(path: string) {

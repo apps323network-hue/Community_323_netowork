@@ -32,6 +32,19 @@ npm run lint
 
 ## 🔧 Configuração
 
+### Supabase CLI
+
+Para trabalhar com migrations e Edge Functions, você precisa do Supabase CLI instalado. Veja o guia completo:
+
+📖 **[GUIA_INSTALACAO_SUPABASE_CLI.md](./GUIA_INSTALACAO_SUPABASE_CLI.md)**
+
+**Instalação rápida:**
+```bash
+npm install
+npx supabase login
+npx supabase link --project-ref pgdvbanwumqjmqeybqnw
+```
+
 ### Variáveis de Ambiente
 
 Crie um arquivo `.env.local` na raiz do projeto:

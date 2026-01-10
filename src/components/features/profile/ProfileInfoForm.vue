@@ -43,21 +43,21 @@
           class="form-select w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] disabled:opacity-60 disabled:cursor-default disabled:border-transparent appearance-none cursor-pointer"
         >
           <option value="" disabled selected>{{ t('profile.selectNationality') }}</option>
-          <option v-for="nat in NATIONALITIES" :key="nat" :value="nat">{{ nat }}</option>
+          <option v-for="nat in nationalities" :key="nat" :value="nat">{{ nat }}</option>
         </select>
       </label>
 
       <!-- Country -->
       <label class="block space-y-2 group">
-        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.country') || 'País' }}</span>
+        <span class="text-sm font-medium text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.country') }}</span>
         <select
           :value="country"
           @change="handleCountryChange"
           :disabled="readonly"
           class="form-select w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] disabled:opacity-60 disabled:cursor-default disabled:border-transparent appearance-none cursor-pointer"
         >
-          <option value="" disabled selected>Selecione o país</option>
-          <option v-for="c in COUNTRIES" :key="c.code" :value="country === 'USA' && c.code === 'US' ? 'USA' : c.code">{{ c.name }}</option>
+          <option value="" disabled selected>{{ t('profile.selectCountry') }}</option>
+          <option v-for="c in countries" :key="c.code" :value="country === 'USA' && c.code === 'US' ? 'USA' : c.code">{{ c.name }}</option>
         </select>
       </label>
 
@@ -68,10 +68,10 @@
           v-if="availableStates.length > 0"
           :value="state"
           @change="handleStateChange"
-          :disabled="readonly"
-          class="form-select w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] disabled:opacity-60 disabled:cursor-default disabled:border-transparent appearance-none cursor-pointer"
+          :disabled="readonly || !hasCountrySelected"
+          class="form-select w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] disabled:opacity-60 disabled:cursor-not-allowed disabled:border-transparent appearance-none cursor-pointer"
         >
-          <option value="" disabled selected>Selecione o estado</option>
+          <option value="" disabled selected>{{ hasCountrySelected ? t('profile.selectState') : t('profile.selectCountryFirst') }}</option>
           <option v-for="s in availableStates" :key="s.code" :value="s.code">{{ s.name }}</option>
         </select>
         <input
@@ -79,8 +79,9 @@
           :value="state"
           @input="$emit('update:state', ($event.target as HTMLInputElement).value)"
           type="text"
-          :disabled="readonly"
-          class="form-input w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary placeholder-text-muted/50 h-12 transition-all"
+          :disabled="readonly || !hasCountrySelected"
+          :placeholder="hasCountrySelected ? t('profile.typeState') : t('profile.selectCountryFirst')"
+          class="form-input w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary placeholder-text-muted/50 h-12 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
         />
       </label>
 
@@ -92,10 +93,10 @@
             v-if="cities.length > 0"
             :value="city"
             @change="$emit('update:city', ($event.target as HTMLSelectElement).value)"
-            :disabled="readonly || loadingCities"
-            class="form-select w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] disabled:opacity-60 disabled:cursor-default disabled:border-transparent appearance-none cursor-pointer"
+            :disabled="readonly || loadingCities || !hasStateSelected"
+            class="form-select w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] disabled:opacity-60 disabled:cursor-not-allowed disabled:border-transparent appearance-none cursor-pointer"
           >
-            <option value="" disabled selected>Selecione a cidade</option>
+            <option value="" disabled selected>{{ hasStateSelected ? t('profile.selectCity') : (hasCountrySelected ? t('profile.selectStateFirst') : t('profile.selectCountryFirst')) }}</option>
             <option v-for="c in cities" :key="c" :value="c">{{ c }}</option>
           </select>
           <input
@@ -103,9 +104,9 @@
             :value="city"
             @input="$emit('update:city', ($event.target as HTMLInputElement).value)"
             type="text"
-            :disabled="readonly || loadingCities"
-            :placeholder="loadingCities ? 'Carregando cidades...' : ''"
-            class="form-input w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary placeholder-text-muted/50 h-12 transition-all"
+            :disabled="readonly || loadingCities || !hasStateSelected"
+            :placeholder="loadingCities ? t('profile.loadingCities') : (hasStateSelected ? t('profile.typeCity') : (hasCountrySelected ? t('profile.selectStateFirst') : t('profile.selectCountryFirst')))"
+            class="form-input w-full px-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary placeholder-text-muted/50 h-12 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           />
           <div v-if="loadingCities" class="absolute right-4 top-1/2 -translate-y-1/2">
             <div class="animate-spin rounded-full h-4 w-4 border-2 border-secondary border-t-transparent"></div>
@@ -123,7 +124,7 @@
             @input="$emit('update:email', ($event.target as HTMLInputElement).value)"
             type="email"
             :disabled="readonly"
-            placeholder="seu@email.com"
+            :placeholder="t('profile.emailPlaceholder')"
             class="form-input w-full pl-11 pr-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm"
           />
         </div>
@@ -139,7 +140,7 @@
             @input="$emit('update:whatsapp', ($event.target as HTMLInputElement).value)"
             type="text"
             :disabled="readonly"
-            placeholder="+55 (00) 00000-0000"
+            :placeholder="t('profile.whatsappPlaceholder')"
             class="form-input w-full pl-11 pr-4 rounded-xl bg-input-bg border-input-border text-white focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm"
           />
         </div>
@@ -164,9 +165,9 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NATIONALITIES, COUNTRIES, BRAZIL_STATES, USA_STATES, fetchCities } from '@/utils/location'
+import { getNationalities, getCountries, fetchCities, getStatesForCountryTranslated } from '@/utils/location'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const props = defineProps<{
   name: string
@@ -196,10 +197,22 @@ const emit = defineEmits<{
 const cities = ref<string[]>([])
 const loadingCities = ref(false)
 
+const nationalities = computed(() => getNationalities(locale.value as string))
+const countries = computed(() => getCountries(locale.value as string))
+
 const availableStates = computed(() => {
-  if (props.country === 'BR') return BRAZIL_STATES
-  if (props.country === 'US' || props.country === 'USA') return USA_STATES
-  return []
+  if (!props.country || props.country === '') {
+    return []
+  }
+  return getStatesForCountryTranslated(props.country, locale.value as string)
+})
+
+const hasCountrySelected = computed(() => {
+  return props.country && props.country !== ''
+})
+
+const hasStateSelected = computed(() => {
+  return hasCountrySelected.value && props.state && props.state !== ''
 })
 
 async function loadCities() {
@@ -235,7 +248,16 @@ function handleStateChange(event: Event) {
 
 // Watch for state changes to trigger city loading
 watch(() => props.state, (newState) => {
-  if (newState && availableStates.value.length > 0) {
+  if (newState && props.country) {
+    loadCities()
+  } else {
+    cities.value = []
+  }
+})
+
+// Watch for country changes
+watch(() => props.country, (newCountry) => {
+  if (newCountry && props.state) {
     loadCities()
   } else {
     cities.value = []
@@ -244,7 +266,7 @@ watch(() => props.state, (newState) => {
 
 // Initial load
 onMounted(() => {
-  if (props.state && availableStates.value.length > 0) {
+  if (props.state && props.country) {
     loadCities()
   }
 })

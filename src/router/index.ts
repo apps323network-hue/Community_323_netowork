@@ -61,6 +61,18 @@ const routes: RouteRecordRaw[] = [
     // Não usar requiresGuest pois o Supabase cria uma sessão temporária durante recovery
   },
   {
+    path: '/termos',
+    name: 'Terms',
+    component: () => import('@/views/Terms.vue'),
+    meta: { publicAccess: true },
+  },
+  {
+    path: '/politica-privacidade',
+    name: 'PrivacyPolicy',
+    component: () => import('@/views/PrivacyPolicy.vue'),
+    meta: { publicAccess: true },
+  },
+  {
     path: '/auth/callback',
     name: 'AuthCallback',
     component: () => import('@/views/AuthCallback.vue'),
@@ -113,6 +125,12 @@ const routes: RouteRecordRaw[] = [
     name: 'EventCalendar',
     component: () => import('@/views/EventCalendar.vue'),
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/eventos/anteriores',
+    name: 'PastEvents',
+    component: () => import('@/views/PastEvents.vue'),
+    meta: { publicAccess: true },
   },
   {
     path: '/servicos',
@@ -313,6 +331,18 @@ const routes: RouteRecordRaw[] = [
     path: '/admin/users/:userId/history',
     name: 'UserHistory',
     component: () => import('@/views/admin/UserHistoryView.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/termos-aceites',
+    name: 'AdminTermsAcceptance',
+    component: () => import('@/views/admin/AdminTermsAcceptance.vue'),
+    meta: { requiresAuth: true, requiresRole: 'admin' },
+  },
+  {
+    path: '/admin/termos-gerenciar',
+    name: 'AdminTermsManagement',
+    component: () => import('@/views/admin/AdminTermsManagement.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
   {

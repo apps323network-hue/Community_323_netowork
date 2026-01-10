@@ -78,7 +78,7 @@
               <p class="font-semibold">{{ t('auth.error') }}</p>
               <p class="text-sm mt-1">{{ errorMessage }}</p>
               <p class="text-xs mt-2 text-red-600 dark:text-red-400/80">
-                Você será redirecionado para o login em alguns segundos.
+                Por favor, tente novamente com uma senha diferente.
               </p>
             </div>
           </div>
@@ -86,7 +86,7 @@
 
         <!-- Form -->
         <form
-          v-if="!passwordUpdated && !errorMessage"
+          v-if="!passwordUpdated"
           class="mt-8 space-y-6"
           @submit.prevent="handleUpdatePassword"
         >
@@ -254,24 +254,23 @@ async function handleUpdatePassword() {
     
     if (result.success) {
       passwordUpdated.value = true
+      // Fazer logout da sessão de recuperação antes de redirecionar
+      await authStore.signOut()
       // Redirecionar após 3 segundos
       setTimeout(() => {
         window.location.href = '/login'
       }, 3000)
     } else {
-      // Tratar erro e redirecionar após 5 segundos
+      // Tratar erro - NÃO redirecionar automaticamente, deixar usuário tentar novamente
       errorMessage.value = getErrorMessage(result.error)
-      setTimeout(() => {
-        window.location.href = '/login'
-      }, 5000)
+      // Fazer logout da sessão de recuperação para evitar login automático
+      await authStore.signOut()
     }
   } catch (error: any) {
     console.error('Error updating password:', error)
     errorMessage.value = getErrorMessage(error)
-    // Redirecionar após 5 segundos mesmo com erro
-    setTimeout(() => {
-      window.location.href = '/login'
-    }, 5000)
+    // Fazer logout da sessão de recuperação para evitar login automático
+    await authStore.signOut()
   }
 }
 </script>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 defineProps<{
   linkedin?: string
@@ -25,7 +28,7 @@ function formatSocialLink(url: string): string {
   <div class="bg-surface-dark/80 backdrop-blur rounded-2xl p-6 border border-input-border hover:border-primary/30 transition-colors">
     <h3 class="text-white font-bold mb-4 flex items-center gap-2 text-lg">
       <span class="material-symbols-outlined text-primary drop-shadow-[0_0_5px_rgba(255,0,153,0.8)]">link</span>
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Redes Sociais</span>
+      <span class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">{{ t('profile.socialMedia') }}</span>
     </h3>
     <div class="space-y-4">
       <!-- LinkedIn -->
@@ -46,7 +49,7 @@ function formatSocialLink(url: string): string {
             @input="$emit('update:linkedin', ($event.target as HTMLInputElement).value)"
             @blur="isEditingLinkedin = false"
             @keyup.enter="isEditingLinkedin = false"
-            placeholder="Link do LinkedIn"
+            :placeholder="t('profile.linkedinPlaceholder')"
             class="w-full bg-input-bg border-input-border focus:border-secondary focus:ring-0 text-white placeholder-text-muted text-sm px-4 py-3 rounded-xl transition-all"
           />
         </div>
@@ -70,7 +73,7 @@ function formatSocialLink(url: string): string {
             @input="$emit('update:instagram', ($event.target as HTMLInputElement).value)"
             @blur="isEditingInstagram = false"
             @keyup.enter="isEditingInstagram = false"
-            placeholder="Link do Instagram"
+            :placeholder="t('profile.instagramPlaceholder')"
             class="w-full bg-input-bg border-input-border focus:border-primary focus:ring-0 text-white placeholder-text-muted text-sm px-4 py-3 rounded-xl transition-all"
           />
         </div>
@@ -78,7 +81,7 @@ function formatSocialLink(url: string): string {
 
       <!-- Empty State -->
       <div v-if="!linkedin && !instagram && readonly" class="text-sm text-text-muted italic py-2">
-        Nenhuma rede social adicionada.
+        {{ t('profile.noSocialMedia') }}
       </div>
     </div>
   </div>

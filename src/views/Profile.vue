@@ -97,11 +97,11 @@
           <div class="bg-surface-dark border border-input-border rounded-2xl p-6">
             <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
               <span class="material-symbols-outlined text-secondary">stars</span>
-              Conquistas e Desafios
+              {{ t('profile.achievementsTitle') }}
             </h3>
             
             <div v-if="gamificationStore.userChallenges.length === 0" class="text-center py-6 border border-dashed border-input-border rounded-xl">
-              <p class="text-text-muted text-sm">Nenhum desafio completado ainda. Comece a interagir para ganhar pontos!</p>
+              <p class="text-text-muted text-sm">{{ t('profile.noChallengesCompleted') }}</p>
             </div>
             
             <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

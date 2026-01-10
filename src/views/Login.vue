@@ -1,11 +1,8 @@
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-background-dark">
-    <!-- Header -->
-    <AppHeader :show-navigation="false" :show-logo="false" />
-    
     <!-- Login Content -->
   <div
-      class="flex min-h-[calc(100vh-80px)] relative text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-primary selection:text-white"
+      class="flex min-h-screen relative text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-primary selection:text-white"
   >
     <!-- Left Side - Image/Logo -->
     <div
@@ -53,7 +50,7 @@
 
     <!-- Right Side - Form -->
     <div
-      class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 bg-white dark:bg-background-dark relative overflow-hidden"
+      class="w-full lg:w-1/2 flex flex-col justify-start items-center p-6 sm:p-8 bg-white dark:bg-background-dark relative overflow-y-auto"
     >
       <div
         class="lg:hidden absolute top-[-20%] left-[-20%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px]"
@@ -61,7 +58,15 @@
       <div
         class="lg:hidden absolute bottom-[-20%] right-[-20%] w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px]"
       ></div>
-      <div class="w-full max-w-md space-y-8 relative z-10">
+      
+      <!-- Theme and Language Controls -->
+      <div class="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-3 z-20">
+        <AnimatedThemeToggler />
+        <LanguageSwitcher />
+      </div>
+      
+      <div class="w-full max-w-md space-y-8 relative z-10 pt-24 sm:pt-32">
+        
         <!-- Logo Mobile -->
         <div class="lg:hidden flex flex-col items-center mb-6">
           <img
@@ -122,12 +127,15 @@
           </p>
         </div>
 
-        <!-- Login Form -->
-        <form
-          v-if="activeTab === 'login'"
-          class="mt-8 space-y-6 block animate-fade-in-up"
-          @submit.prevent="handleLogin"
-        >
+        <!-- Forms Container - Fixed Position -->
+        <div class="relative mt-6" style="min-height: 500px;">
+          <!-- Login Form -->
+          <form
+            v-show="activeTab === 'login'"
+            class="space-y-6 absolute inset-0 w-full transition-opacity duration-300"
+            :class="activeTab === 'login' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'"
+            @submit.prevent="handleLogin"
+          >
           <div class="space-y-5">
             <div>
               <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2" for="email"
@@ -207,14 +215,15 @@
               {{ t('auth.login') }}
             </Button>
           </div>
-        </form>
+          </form>
 
-        <!-- Register Form -->
-        <form
-          v-else
-          class="mt-8 space-y-5 block animate-fade-in-up"
-          @submit.prevent="handleRegister"
-        >
+          <!-- Register Form -->
+          <form
+            v-show="activeTab === 'register'"
+            class="space-y-5 absolute inset-0 w-full transition-opacity duration-300"
+            :class="activeTab === 'register' ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'"
+            @submit.prevent="handleRegister"
+          >
           <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -279,19 +288,60 @@
               />
             </div>
           </div>
+          
+          <!-- Checkboxes de Aceite de Termos e Política -->
+          <div class="space-y-3">
+            <div class="flex items-start gap-3">
+              <input
+                id="accept-terms"
+                v-model="registerForm.acceptTerms"
+                type="checkbox"
+                class="mt-1 h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary focus:ring-offset-0 dark:bg-slate-800"
+                required
+              />
+              <label for="accept-terms" class="text-sm text-slate-700 dark:text-slate-300">
+                {{ t('auth.acceptTerms') }}
+                <RouterLink
+                  :to="{ name: 'Terms' }"
+                  target="_blank"
+                  class="text-primary hover:text-cyan-300 underline font-medium"
+                  @click.stop
+                >
+                  {{ t('auth.terms') }}
+                </RouterLink>
+                <span v-if="!registerForm.acceptTerms" class="text-red-500 ml-1">*</span>
+              </label>
+            </div>
+            <div class="flex items-start gap-3">
+              <input
+                id="accept-privacy"
+                v-model="registerForm.acceptPrivacy"
+                type="checkbox"
+                class="mt-1 h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary focus:ring-offset-0 dark:bg-slate-800"
+                required
+              />
+              <label for="accept-privacy" class="text-sm text-slate-700 dark:text-slate-300">
+                {{ t('auth.acceptPrivacy') }}
+                <RouterLink
+                  :to="{ name: 'PrivacyPolicy' }"
+                  target="_blank"
+                  class="text-primary hover:text-cyan-300 underline font-medium"
+                  @click.stop
+                >
+                  {{ t('auth.privacyPolicy') }}
+                </RouterLink>
+                <span v-if="!registerForm.acceptPrivacy" class="text-red-500 ml-1">*</span>
+              </label>
+            </div>
+          </div>
+
           <div>
             <Button variant="secondary" size="lg" full-width :loading="loading" type="submit">
               {{ t('auth.createAccount') }}
             </Button>
           </div>
-          <div class="text-xs text-center text-slate-500 dark:text-slate-500 mt-4">
-            {{ t('auth.termsAgreement') }}
-            <a class="underline hover:text-primary transition-colors" href="#">{{ t('auth.terms') }}</a> {{ t('auth.and') }}
-            <a class="underline hover:text-primary transition-colors" href="#"
-              >{{ t('auth.privacyPolicy') }}</a
-            >.
-          </div>
-        </form>
+          </form>
+        </div>
 
         <!-- Modal de Erro de Login -->
         <Modal v-model="showLoginErrorModal" :title="loginErrorModal.title" :closable="true">
@@ -426,9 +476,11 @@ import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'
 import Button from '@/components/ui/Button.vue'
 import Modal from '@/components/ui/Modal.vue'
-import AppHeader from '@/components/layout/AppHeader.vue'
+import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue'
 import { toast } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
+import { useTermsAcceptance } from '@/composables/useTermsAcceptance'
 
 const { t } = useI18n()
 
@@ -477,12 +529,24 @@ const loginForm = ref({
   password: '',
 })
 
-const registerForm = ref({
+interface RegisterForm {
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  password: string
+  acceptTerms: boolean
+  acceptPrivacy: boolean
+}
+
+const registerForm = ref<RegisterForm>({
   firstName: '',
   lastName: '',
   email: prefillEmail || '',
   phone: prefillPhone || '',
   password: '',
+  acceptTerms: false,
+  acceptPrivacy: false,
 })
 
 // Pré-preencher nome se veio do American Dream
@@ -686,8 +750,34 @@ onUnmounted(() => {
 })
 
 async function handleRegister() {
+  // Validar checkboxes obrigatórios
+  if (!registerForm.value.acceptTerms) {
+    toast.error(t('auth.mustAcceptTerms'))
+    return
+  }
+
+  if (!registerForm.value.acceptPrivacy) {
+    toast.error(t('auth.mustAcceptPrivacy'))
+    return
+  }
+
   loading.value = true
   try {
+    const { getLatestActiveTerm, recordTermAcceptance } = useTermsAcceptance()
+
+    // Buscar termos ativos
+    const termsOfService = await getLatestActiveTerm('terms_of_service')
+    const privacyPolicy = await getLatestActiveTerm('privacy_policy')
+
+    if (!termsOfService) {
+      throw new Error(t('auth.termsNotFound'))
+    }
+
+    if (!privacyPolicy) {
+      throw new Error(t('auth.privacyNotFound'))
+    }
+
+    // Criar conta primeiro
     const result = await authStore.signUp(
       registerForm.value.email,
       registerForm.value.password,
@@ -696,9 +786,9 @@ async function handleRegister() {
         lastName: registerForm.value.lastName,
         nome: `${registerForm.value.firstName} ${registerForm.value.lastName}`,
         phone: registerForm.value.phone || null,
-        source: source || '323-network', // ✅ Passar source
-        returnTo: returnTo || null, // ✅ Passar returnTo
-        phoneCountryCode: prefillCountryCode || 'BR' // ✅ Passar phoneCountryCode
+        source: source || '323-network',
+        returnTo: returnTo || null,
+        phoneCountryCode: prefillCountryCode || 'BR'
       }
     )
 
@@ -706,13 +796,32 @@ async function handleRegister() {
       throw new Error(result.error || 'Erro ao criar conta')
     }
 
-    // Se veio do American Dream, não mostrar modal (já redirecionou)
+    // Se veio do American Dream e já redirecionou, registrar aceites antes de sair
     if (result.redirected) {
-      // Redirecionamento já foi feito, não fazer nada
+      // Aguardar um pouco para garantir que o usuário foi criado
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Registrar aceites (pode falhar silenciosamente se o usuário não estiver disponível ainda)
+      try {
+        const userId = authStore.user?.id
+        if (userId) {
+          await recordTermAcceptance(termsOfService.id, 'terms_of_service', userId)
+          await recordTermAcceptance(privacyPolicy.id, 'privacy_policy', userId)
+        }
+      } catch (err) {
+        console.warn('Erro ao registrar aceites após redirecionamento:', err)
+      }
       return
     }
 
-    // Só mostrar modal se não veio do American Dream (já redirecionou)
+    // Registrar aceites após criar conta
+    const userId = authStore.user?.id
+    if (userId) {
+      await recordTermAcceptance(termsOfService.id, 'terms_of_service', userId)
+      await recordTermAcceptance(privacyPolicy.id, 'privacy_policy', userId)
+    }
+
+    // Só mostrar modal se não veio do American Dream
     if (source !== 'american-dream') {
       // Mostrar modal de verificação de email
       showEmailVerificationModal.value = true
@@ -724,6 +833,8 @@ async function handleRegister() {
         email: '',
         phone: '',
         password: '',
+        acceptTerms: false,
+        acceptPrivacy: false,
       }
     }
   } catch (error: any) {

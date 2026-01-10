@@ -26,15 +26,26 @@
             </span>
             {{ t('events.title') }}
           </h3>
-          <router-link
-            to="/eventos/calendario"
-            class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-slate-700 dark:text-white hover:text-primary transition-colors whitespace-nowrap"
-          >
-            {{ t('events.viewFullCalendar') }}
-            <span class="material-symbols-outlined text-primary text-base sm:text-lg group-hover:translate-x-1 transition-transform">
-              arrow_forward
-            </span>
-          </router-link>
+          <div class="flex items-center gap-3 sm:gap-4">
+            <router-link
+              to="/eventos/anteriores"
+              class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-slate-700 dark:text-white hover:text-primary transition-colors whitespace-nowrap"
+            >
+              {{ t('events.viewPastEvents') }}
+              <span class="material-symbols-outlined text-primary text-base sm:text-lg group-hover:translate-x-1 transition-transform">
+                history
+              </span>
+            </router-link>
+            <router-link
+              to="/eventos/calendario"
+              class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-slate-700 dark:text-white hover:text-primary transition-colors whitespace-nowrap"
+            >
+              {{ t('events.viewFullCalendar') }}
+              <span class="material-symbols-outlined text-primary text-base sm:text-lg group-hover:translate-x-1 transition-transform">
+                arrow_forward
+              </span>
+            </router-link>
+          </div>
         </div>
 
         <!-- Loading State -->

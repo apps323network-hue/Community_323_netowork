@@ -2,7 +2,25 @@
   <AppLayout>
     <div class="w-full flex flex-col gap-8">
       <!-- Header -->
-      <div class="flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center pt-8">
+      <div class="flex flex-col gap-6 pt-8">
+        <!-- Top Row: Back Button and Filters -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <!-- Back to Events Button -->
+          <router-link
+            to="/eventos"
+            class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-white hover:text-primary transition-colors whitespace-nowrap"
+          >
+            <span class="material-symbols-outlined text-primary text-base sm:text-lg group-hover:-translate-x-1 transition-transform">
+              arrow_back
+            </span>
+            {{ t('events.backToEvents') }}
+          </router-link>
+          
+          <!-- Filters -->
+          <EventFilters :active-filter="activeFilter" @filter-change="handleFilterChange" />
+        </div>
+        
+        <!-- Title Section -->
         <div>
           <h1 class="text-white text-3xl lg:text-4xl font-black mb-2">
             {{ t('calendar.title') }} <span class="neon-text-gradient">{{ t('calendar.titleHighlight') }}</span>
@@ -11,9 +29,6 @@
             {{ t('calendar.subtitle') }}
           </p>
         </div>
-        
-        <!-- Filters -->
-        <EventFilters :active-filter="activeFilter" @filter-change="handleFilterChange" />
       </div>
 
       <!-- Calendar -->
