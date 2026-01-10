@@ -1,0 +1,208 @@
+/* Venture Prep Shared Styles - Matching Original LP */
+
+/* Gradient Text Utilities */
+.gradient-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    hsl(var(--gradient-start)) 0%,
+    hsl(var(--gradient-mid)) 50%,
+    hsl(var(--gradient-end)) 100%
+  );
+}
+
+.gradient-text-session1 {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(330 100% 65%) 0%, hsl(25 100% 60%) 100%);
+}
+
+.gradient-text-session2 {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(25 100% 60%) 0%, hsl(45 100% 55%) 100%);
+}
+
+.gradient-text-session3 {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, hsl(180 70% 50%) 0%, hsl(200 100% 60%) 100%);
+}
+
+/* Glow Effects */
+.glow-primary {
+  box-shadow: var(--glow-primary);
+}
+
+.glow-secondary {
+  box-shadow: var(--glow-secondary);
+}
+
+.glow-accent {
+  box-shadow: var(--glow-accent);
+}
+
+/* Glass Card */
+.glass-card {
+  background: hsl(var(--card) / 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+.glass-card-hover {
+  background: hsl(var(--card) / 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsl(var(--border) / 0.5);
+  transition: all 0.3s ease;
+}
+
+.glass-card-hover:hover {
+  background: hsl(var(--card) / 0.7);
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* Number Badges */
+.number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.number-badge-session1 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, hsl(330 100% 65%) 0%, hsl(25 100% 60%) 100%);
+  color: hsl(var(--background));
+}
+
+.number-badge-session2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, hsl(25 100% 60%) 0%, hsl(45 100% 55%) 100%);
+  color: hsl(var(--background));
+}
+
+.number-badge-session3 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, hsl(180 70% 50%) 0%, hsl(200 100% 60%) 100%);
+  color: hsl(var(--background));
+}
+
+/* Section Badge */
+.section-badge {
+  display: inline-block;
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+
+/* Text Colors */
+.text-session1 {
+  color: hsl(var(--session-1));
+}
+
+.text-session2 {
+  color: hsl(var(--session-2));
+}
+
+.text-session3 {
+  color: hsl(var(--session-3));
+}
+
+/* Border Colors */
+.border-session1 {
+  border-color: hsl(var(--session-1));
+}
+
+.border-session2 {
+  border-color: hsl(var(--session-2));
+}
+
+.border-session3 {
+  border-color: hsl(var(--session-3));
+}
+
+/* Background Gradients */
+.from-session1\/10 {
+  --tw-gradient-from: hsl(var(--session-1) / 0.1);
+}
+
+.from-session2\/10 {
+  --tw-gradient-from: hsl(var(--session-2) / 0.1);
+}
+
+.from-session3\/10 {
+  --tw-gradient-from: hsl(var(--session-3) / 0.1);
+}
+
+.from-session2\/20 {
+  --tw-gradient-from: hsl(var(--session-2) / 0.2);
+}
+
+/* Border Opacity */
+.border-session2\/30 {
+  border-color: hsl(var(--session-2) / 0.3);
+}
+
+.border-session3\/20 {
+  border-color: hsl(var(--session-3) / 0.2);
+}
+
+/* Muted Background */
+.bg-muted\/20 {
+  background: hsl(var(--muted) / 0.2);
+}
+
+.bg-muted\/30 {
+  background: hsl(var(--muted) / 0.3);
+}
+
+/* Timeline */
+.timeline-dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+}
+
+.timeline-line {
+  width: 0.125rem;
+  height: 100%;
+  background: linear-gradient(180deg, hsl(var(--border)) 0%, transparent 100%);
+}
+

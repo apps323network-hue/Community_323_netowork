@@ -73,6 +73,12 @@ const routes: RouteRecordRaw[] = [
     // Rota pública - não requer autenticação
   },
   {
+    path: '/venture-prep',
+    name: 'VenturePrep',
+    component: () => import('@/views/VenturePrep.vue'),
+    // Rota pública - não requer autenticação
+  },
+  {
     path: '/banned',
     name: 'Banned',
     component: () => import('@/views/Banned.vue'),

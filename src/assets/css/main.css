@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import './venture-prep.css';
 
 @tailwind base;
 @tailwind components;
@@ -94,4 +96,57 @@
 
 .animate-bounce-gentle {
   animation: bounce-gentle 1s ease-in-out infinite;
+}
+
+/* Venture Prep Landing Page Styles */
+.font-display {
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Custom CSS Variables for Venture Prep - Matching Original LP */
+:root {
+  --background: 222 47% 6%;
+  --foreground: 210 40% 98%;
+
+  --card: 222 47% 8%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222 47% 8%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 330 100% 65%;
+  --primary-foreground: 222 47% 6%;
+
+  --secondary: 180 70% 50%;
+  --secondary-foreground: 222 47% 6%;
+
+  --muted: 222 30% 15%;
+  --muted-foreground: 215 20% 65%;
+
+  --accent: 25 100% 60%;
+  --accent-foreground: 222 47% 6%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 222 30% 18%;
+  --input: 222 30% 18%;
+  --ring: 330 100% 65%;
+
+  --radius: 0.75rem;
+
+  /* Custom gradient colors */
+  --gradient-start: 330 100% 65%;
+  --gradient-mid: 25 100% 60%;
+  --gradient-end: 180 70% 50%;
+
+  /* Session colors */
+  --session-1: 330 100% 65%;  /* Pink/Magenta */
+  --session-2: 25 100% 60%;   /* Orange */
+  --session-3: 180 70% 50%;   /* Cyan */
+
+  /* Glow effects */
+  --glow-primary: 0 0 60px hsl(330 100% 65% / 0.3);
+  --glow-secondary: 0 0 60px hsl(180 70% 50% / 0.3);
+  --glow-accent: 0 0 60px hsl(25 100% 60% / 0.3);
 }

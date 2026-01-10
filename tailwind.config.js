@@ -30,6 +30,10 @@ export default {
         'text-muted': '#a68aa6',
         // Slate colors for light mode
         'slate-850': '#1e293b',
+        // Venture Prep Session Colors
+        session1: 'hsl(var(--session-1))',
+        session2: 'hsl(var(--session-2))',
+        session3: 'hsl(var(--session-3))',
       },
       fontFamily: {
         display: ['Plus Jakarta Sans', 'sans-serif'],
@@ -57,6 +61,8 @@ export default {
       animation: {
         "shimmer-slide": "shimmer-slide var(--speed) ease-in-out infinite alternate",
         "spin-around": "spin-around calc(var(--speed) * 2) infinite linear",
+        "fade-in": "fade-in 0.6s ease-out forwards",
+        "float": "float 6s ease-in-out infinite",
       },
       keyframes: {
         "shimmer-slide": {
@@ -74,6 +80,14 @@ export default {
           "100%": {
             transform: "translateZ(0) rotate(360deg)",
           },
+        },
+        "fade-in": {
+          "from": { opacity: "0", transform: "translateY(20px)" },
+          "to": { opacity: "1", transform: "translateY(0)" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
         },
       },
     },
