@@ -11,7 +11,7 @@ const CARD_FEE_PERCENTAGE = 0.039 // 3.9%
 const CARD_FEE_FIXED = 30 // $0.30 em centavos
 const PIX_FEE_PERCENTAGE = 0.0179 // ~1.8%
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
     console.log('Program Checkout Request received:', req.method)
 
     if (req.method === 'OPTIONS') {
@@ -57,8 +57,6 @@ Deno.serve(async (req) => {
         // 4. Detectar ambiente
         const referer = req.headers.get('referer')
         let siteUrl = referer ? new URL(referer).origin : Deno.env.get('SITE_URL') || 'http://localhost:5173'
-        const isProduction = siteUrl.includes('community-323-netowork.vercel.app') ||
-            siteUrl.includes('323network')
 
         // 5. Setup Stripe
         const origin = req.headers.get('origin') || ''
@@ -153,6 +151,24 @@ Deno.serve(async (req) => {
             .single()
 
         if (enrollmentError) throw new Error('Erro ao processar matrícula: ' + enrollmentError.message)
+
+        // 8.5. Gravar aceitação de termos se fornecido
+        if (body.accepted_terms) {
+            const ip = req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || 'unknown'
+            const userAgent = req.headers.get('user-agent') || 'unknown'
+
+            await supabase
+                .from('item_terms_acceptance')
+                .insert({
+                    user_id: user.id,
+                    item_type: 'program',
+                    item_id: program.id,
+                    terms_snapshot_pt: program.terms_content_pt,
+                    terms_snapshot_en: program.terms_content_en,
+                    ip_address: ip,
+                    user_agent: userAgent
+                })
+        }
 
         // 9. Criar Sessão Stripe
         const sessionConfig: Stripe.Checkout.SessionCreateParams = {

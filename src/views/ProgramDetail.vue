@@ -520,6 +520,25 @@
           </div>
         </div>
 
+        <!-- Termos e Condições (Se houver) -->
+        <div v-if="program.terms_content_pt || program.terms_content_en" class="space-y-3">
+          <div class="flex items-start gap-3 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 group cursor-pointer" @click="acceptedTerms = !acceptedTerms">
+            <div class="flex items-center justify-center pt-0.5">
+              <input
+                v-model="acceptedTerms"
+                type="checkbox"
+                class="w-5 h-5 rounded border-2 border-slate-300 dark:border-white/20 text-primary focus:ring-primary bg-white dark:bg-surface-dark transition-all cursor-pointer"
+                @click.stop
+              />
+            </div>
+            <div class="flex-1">
+              <p class="text-xs font-bold text-slate-700 dark:text-gray-300 leading-normal">
+                Eu li e concordo com os <button type="button" @click.stop="showTermsModal = true" class="text-primary hover:underline decoration-2 underline-offset-2">Termos e Condições</button> específicos deste programa.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Método de Pagamento -->
         <div v-if="!(program?.localhost_only && isLocalhost())" class="space-y-4">
           <label class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">Método de Pagamento</label>
@@ -551,7 +570,7 @@
         <div class="space-y-4 pt-4">
           <button
             @click="handleCheckout"
-            :disabled="submitting || (!paymentMethod && !(program?.localhost_only && isLocalhost()))"
+            :disabled="!!(submitting || (!paymentMethod && !(program?.localhost_only && isLocalhost())) || (!!(program?.terms_content_pt || program?.terms_content_en) && !acceptedTerms))"
             class="w-full rounded-2xl bg-gradient-to-r from-primary to-secondary py-5 text-sm font-black text-black shadow-2xl shadow-primary/30 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-widest"
           >
             <template v-if="submitting">
@@ -563,6 +582,30 @@
             <template v-else>
               Finalizar Inscrição
             </template>
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    <!-- Modal de Termos -->
+    <Modal
+      v-if="program"
+      v-model="showTermsModal"
+      title="Termos e Condições"
+      size="lg"
+    >
+      <div class="p-2 space-y-4">
+        <div class="prose dark:prose-invert max-w-none">
+          <div class="text-sm text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed h-[60vh] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+            {{ currentLocale === 'pt-BR' ? (program.terms_content_pt || program.terms_content_en) : (program.terms_content_en || program.terms_content_pt) }}
+          </div>
+        </div>
+        <div class="flex justify-end pt-4 border-t border-slate-100 dark:border-white/5">
+          <button
+            @click="showTermsModal = false"
+            class="px-6 py-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white font-bold hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
+          >
+            Fechar
           </button>
         </div>
       </div>
@@ -600,6 +643,8 @@ const showCheckoutModal = ref(false)
 const submitting = ref(false)
 const paymentMethod = ref<'card' | 'pix' | null>(null)
 const exchangeRate = ref(5.95) // Taxa USD -> BRL
+const acceptedTerms = ref(false)
+const showTermsModal = ref(false)
 
 // Coupon state
 const { validateCoupon, calculateDiscount, recordCouponUse } = useCoupons()
@@ -813,7 +858,8 @@ const handleCheckout = async () => {
         // Criar matrícula localhost
         const { error: enrollError } = await programsStore.enrollInProgram({
           program_id: program.value.id,
-          payment_method: 'localhost'
+          payment_method: 'localhost',
+          accepted_terms: true
         })
 
         if (enrollError) throw enrollError
@@ -825,7 +871,7 @@ const handleCheckout = async () => {
         await programsStore.fetchProgramById(program.value.id)
         
         // Redirecionar para o player
-        router.push(`/programas/${program.value.id}/player`)
+        router.push(`/programs/${program.value.id}/assistir`)
         return
       } catch (err: any) {
         console.error('Localhost enrollment error:', err)
@@ -846,7 +892,8 @@ const handleCheckout = async () => {
         payment_method: paymentMethod.value,
         exchange_rate: exchangeRate.value,
         coupon_id: appliedCoupon.value?.id || null,
-        discount_amount: discountAmount.value || 0
+        discount_amount: discountAmount.value || 0,
+        accepted_terms: acceptedTerms.value
       }
     })
 
