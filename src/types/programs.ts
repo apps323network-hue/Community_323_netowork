@@ -63,6 +63,7 @@ export interface Program {
     // Status and visibility
     status: ProgramStatus
     featured: boolean
+    localhost_only?: boolean
 
     // Metadata
     created_at: string
@@ -174,6 +175,7 @@ export interface CreateProgramData {
     curriculum_en?: CurriculumModule[]
     status?: ProgramStatus
     featured?: boolean
+    localhost_only?: boolean
     created_by?: string
     professor_ids?: string[]
 }

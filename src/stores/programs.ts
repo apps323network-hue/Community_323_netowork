@@ -188,18 +188,22 @@ export const useProgramsStore = defineStore('programs', {
                 }
 
                 // Create enrollment
+                // Se payment_method for 'localhost', considerar como pago
+                const isLocalhostEnrollment = data.payment_method === 'localhost'
+                const paymentStatus = isLocalhostEnrollment ? 'paid' : (data.payment_id ? 'paid' : 'pending')
+                
                 const { data: enrollment, error } = await supabase
                     .from('program_enrollments')
                     .insert({
                         program_id: data.program_id,
                         user_id: user.id,
-                        payment_id: data.payment_id,
+                        payment_id: data.payment_id || (isLocalhostEnrollment ? 'localhost-debug' : null),
                         payment_amount: data.payment_amount,
                         payment_currency: data.payment_currency,
                         payment_method: data.payment_method,
-                        payment_status: data.payment_id ? 'paid' : 'pending',
+                        payment_status: paymentStatus,
                         status: 'active',
-                        paid_at: data.payment_id ? new Date().toISOString() : undefined,
+                        paid_at: isLocalhostEnrollment || data.payment_id ? new Date().toISOString() : undefined,
                     })
                     .select()
                     .single()

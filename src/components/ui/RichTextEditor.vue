@@ -1,5 +1,9 @@
 <template>
-  <div class="rich-text-editor-container" :class="{ 'is-focused': isFocused }">
+  <div 
+    class="rich-text-editor-container" 
+    :class="{ 'is-focused': isFocused }"
+    :style="{ height: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : (props.maxHeight === '100%' ? '100%' : 'auto'), maxHeight: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : (props.maxHeight && props.maxHeight !== '100%' ? props.maxHeight : 'none') }"
+  >
     <editor-content :editor="editor" class="editor-content-area" />
     
     <div v-if="editor" class="editor-toolbar flex items-center gap-1 p-2 border-t border-slate-200 dark:border-gray-800 bg-slate-50/50 dark:bg-surface-lighter/50 rounded-b-2xl">
@@ -80,6 +84,7 @@ const EmoteExtension = Extension.create({
 const props = defineProps<{
   modelValue: string
   placeholder?: string
+  maxHeight?: string | number
 }>()
 
 const emit = defineEmits(['update:modelValue', 'focus', 'blur'])
@@ -143,6 +148,7 @@ defineExpose({
 <style scoped>
 .rich-text-editor-container {
   @apply w-full bg-slate-50 dark:bg-surface-lighter border border-slate-200 dark:border-gray-700/50 rounded-2xl transition-all overflow-hidden flex flex-col;
+  min-height: 120px;
 }
 
 .rich-text-editor-container.is-focused {
@@ -150,7 +156,9 @@ defineExpose({
 }
 
 .editor-content-area {
-  @apply flex-grow overflow-y-auto max-h-[400px];
+  @apply flex-grow;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .toolbar-btn {

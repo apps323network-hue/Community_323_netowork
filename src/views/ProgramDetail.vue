@@ -105,21 +105,35 @@
 
                     <!-- CTA Button -->
                     <div class="space-y-4">
+                      <!-- Aviso Localhost -->
+                      <div v-if="program.localhost_only && isLocalhost()" class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-center">
+                        <p class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center justify-center gap-2">
+                          <span class="material-icons text-sm">bug_report</span>
+                          Modo Debug - Acesso Local
+                        </p>
+                      </div>
+                      
                       <button
                         v-if="!isEnrolled"
                         @click="handleRequestEnroll"
                         :disabled="isSoldOut || submitting"
                         class="w-full group relative py-4 px-6 rounded-2xl font-black text-black overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-2xl shadow-primary/30"
+                        :class="program.localhost_only && isLocalhost() ? 'bg-amber-500 hover:bg-amber-600' : ''"
                       >
-                        <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x transition-all"></div>
+                        <div v-if="!(program.localhost_only && isLocalhost())" class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x transition-all"></div>
                         <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-xs text-black">
                           <template v-if="submitting">
                             <span class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
                             {{ t('programs.paymentModal.processing') }}
                           </template>
                           <template v-else>
-                            {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
-                            <span class="material-icons text-sm font-bold group-hover:translate-x-1 transition-transform">play_arrow</span>
+                            <template v-if="program.localhost_only && isLocalhost()">
+                              🔧 Acessar (Debug)
+                            </template>
+                            <template v-else>
+                              {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
+                              <span class="material-icons text-sm font-bold group-hover:translate-x-1 transition-transform">play_arrow</span>
+                            </template>
                           </template>
                         </span>
                       </button>
@@ -309,14 +323,23 @@
 
                   <!-- CTA Button -->
                   <div class="space-y-4">
+                    <!-- Aviso Localhost -->
+                    <div v-if="program.localhost_only && isLocalhost()" class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-center">
+                      <p class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center justify-center gap-2">
+                        <span class="material-icons text-sm">bug_report</span>
+                        Modo Debug - Acesso Local
+                      </p>
+                    </div>
+                    
                     <button
                       v-if="!isEnrolled"
                       @click="handleRequestEnroll"
                       :disabled="isSoldOut || submitting"
                       class="w-full group relative py-5 px-6 rounded-2xl font-black text-black overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed shadow-2xl shadow-primary/30"
+                      :class="program.localhost_only && isLocalhost() ? 'bg-amber-500 hover:bg-amber-600' : ''"
                     >
                       <!-- Gradient Background -->
-                      <div class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x transition-all"></div>
+                      <div v-if="!(program.localhost_only && isLocalhost())" class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient-x transition-all"></div>
                       
                       <!-- Text content -->
                       <span class="relative flex items-center justify-center gap-3 uppercase tracking-widest text-sm">
@@ -325,8 +348,13 @@
                           {{ t('programs.paymentModal.processing') }}
                         </template>
                         <template v-else>
-                          {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
-                          <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">play_arrow</span>
+                          <template v-if="program.localhost_only && isLocalhost()">
+                            🔧 Acessar (Debug)
+                          </template>
+                          <template v-else>
+                            {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
+                            <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">play_arrow</span>
+                          </template>
                         </template>
                       </span>
                     </button>
@@ -410,7 +438,7 @@
     <Modal
       v-if="program"
       v-model="showCheckoutModal"
-      :title="'Matrícula: ' + title"
+      :title="program.localhost_only && isLocalhost() ? 'Acesso Local (Debug)' : ('Matrícula: ' + title)"
     >
       <div class="flex flex-col gap-6 p-1">
         <!-- Descrição -->
@@ -454,7 +482,7 @@
         </div>
 
         <!-- Coupon Section -->
-        <div class="space-y-3">
+        <div v-if="!(program?.localhost_only && isLocalhost())" class="space-y-3">
           <label class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">{{ t('coupons.code') || 'Cupom de Desconto' }}</label>
           <div class="flex gap-2">
             <input
@@ -493,7 +521,7 @@
         </div>
 
         <!-- Método de Pagamento -->
-        <div class="space-y-4">
+        <div v-if="!(program?.localhost_only && isLocalhost())" class="space-y-4">
           <label class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-gray-400">Método de Pagamento</label>
           <div class="grid grid-cols-2 gap-4">
             <button
@@ -523,7 +551,7 @@
         <div class="space-y-4 pt-4">
           <button
             @click="handleCheckout"
-            :disabled="submitting || !paymentMethod"
+            :disabled="submitting || (!paymentMethod && !(program?.localhost_only && isLocalhost()))"
             class="w-full rounded-2xl bg-gradient-to-r from-primary to-secondary py-5 text-sm font-black text-black shadow-2xl shadow-primary/30 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-widest"
           >
             <template v-if="submitting">
@@ -544,7 +572,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useLocale } from '@/composables/useLocale'
 import { useProgramsStore } from '@/stores/programs'
 import { useModulesStore } from '@/stores/modules'
@@ -555,9 +583,11 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import Modal from '@/components/ui/Modal.vue'
 import { toast } from 'vue-sonner'
 import { fetchExchangeRate, calculatePixAmount } from '@/lib/exchange'
+import { isLocalhost } from '@/utils/localhost'
 import type { Coupon } from '@/composables/useCoupons'
 
 const route = useRoute()
+const router = useRouter()
 const { t, locale: currentLocale } = useLocale()
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
@@ -746,7 +776,7 @@ function formatFinalPrice(): string {
 }
 
 const handleCheckout = async () => {
-  if (!program.value || !paymentMethod.value) return
+  if (!program.value) return
 
   try {
     submitting.value = true
@@ -754,6 +784,59 @@ const handleCheckout = async () => {
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) {
       toast.error('Você precisa estar logado para se matricular')
+      return
+    }
+
+    // Verificar se é programa localhost_only e se está em localhost
+    if (program.value.localhost_only && isLocalhost()) {
+      // Criar matrícula diretamente sem pagamento
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) throw new Error('Usuário não autenticado')
+
+        // Verificar se já está matriculado
+        const { data: existing } = await supabase
+          .from('program_enrollments')
+          .select('id')
+          .eq('program_id', program.value.id)
+          .eq('user_id', user.id)
+          .single()
+
+        if (existing) {
+          toast.info('Você já está matriculado neste programa')
+          // Recarregar dados do programa para atualizar o estado
+          await programsStore.fetchProgramById(program.value.id)
+          showCheckoutModal.value = false
+          return
+        }
+
+        // Criar matrícula localhost
+        const { error: enrollError } = await programsStore.enrollInProgram({
+          program_id: program.value.id,
+          payment_method: 'localhost'
+        })
+
+        if (enrollError) throw enrollError
+
+        toast.success('Matrícula realizada com sucesso! (Modo Localhost)')
+        showCheckoutModal.value = false
+        
+        // Recarregar dados do programa
+        await programsStore.fetchProgramById(program.value.id)
+        
+        // Redirecionar para o player
+        router.push(`/programas/${program.value.id}/player`)
+        return
+      } catch (err: any) {
+        console.error('Localhost enrollment error:', err)
+        toast.error(err.message || 'Erro ao realizar matrícula local')
+        return
+      }
+    }
+
+    // Fluxo normal de pagamento (apenas se não for localhost)
+    if (!(program.value.localhost_only && isLocalhost()) && !paymentMethod.value) {
+      toast.error('Selecione um método de pagamento')
       return
     }
 

@@ -90,17 +90,17 @@
             v-for="conn in connections" 
             :key="conn.id"
             class="bg-surface-dark p-4 rounded-xl border border-white/5 flex items-center justify-between hover:border-secondary/30 transition-all cursor-pointer"
-            @click="router.push(`/membros/${getOtherMember(conn).id}`)"
+            @click="handleMemberClick(conn)"
           >
             <div class="flex items-center gap-3">
               <Avatar 
-                :src="getOtherMember(conn).avatar_url" 
-                :name="getOtherMember(conn).nome" 
+                :src="getOtherMember(conn)?.avatar_url" 
+                :name="getOtherMember(conn)?.nome || ''" 
                 size="md"
               />
               <div class="min-w-0">
-                <h3 class="font-bold text-white truncate">{{ getOtherMember(conn).nome }}</h3>
-                <p class="text-gray-500 text-xs truncate">{{ getOtherMember(conn).area_atuacao || t('connections.member') }}</p>
+                <h3 class="font-bold text-white truncate">{{ getOtherMember(conn)?.nome || 'Membro' }}</h3>
+                <p class="text-gray-500 text-xs truncate">{{ getOtherMember(conn)?.area_atuacao || t('connections.member') }}</p>
               </div>
             </div>
             <span class="material-icons-outlined text-gray-700 group-hover:text-secondary transition-colors">chevron_right</span>
@@ -151,22 +151,62 @@ async function loadData() {
       id,
       requester_id,
       responder_id,
-      requester:requester_id (id, nome, avatar_url, area_atuacao),
-      responder:responder_id (id, nome, avatar_url, area_atuacao)
+      requester:profiles!requester_id (id, nome, avatar_url, area_atuacao),
+      responder:profiles!responder_id (id, nome, avatar_url, area_atuacao)
     `)
     .or(`requester_id.eq.${authStore.user.id},responder_id.eq.${authStore.user.id}`)
     .eq('status', 'accepted')
   
-  if (!error) {
+  if (error) {
+    console.error('Error loading connections:', error)
+    // Fallback: carregar sem join
+    const { data: connectionsData } = await supabase
+      .from('connections')
+      .select('id, requester_id, responder_id')
+      .or(`requester_id.eq.${authStore.user.id},responder_id.eq.${authStore.user.id}`)
+      .eq('status', 'accepted')
+    
+    if (connectionsData && connectionsData.length > 0) {
+      const userIds = new Set<string>()
+      connectionsData.forEach(conn => {
+        if (conn.requester_id) userIds.add(conn.requester_id)
+        if (conn.responder_id) userIds.add(conn.responder_id)
+      })
+      
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, nome, avatar_url, area_atuacao')
+        .in('id', Array.from(userIds))
+      
+      if (profiles) {
+        const profilesMap = new Map(profiles.map((p: any) => [p.id, p]))
+        connections.value = connectionsData.map(conn => ({
+          ...conn,
+          requester: profilesMap.get(conn.requester_id),
+          responder: profilesMap.get(conn.responder_id)
+        }))
+      }
+    }
+  } else if (data) {
     connections.value = data
   }
 }
 
 function getOtherMember(conn: any) {
   if (conn.requester_id === authStore.user?.id) {
-    return conn.responder
+    return conn.responder || null
   }
-  return conn.requester
+  return conn.requester || null
+}
+
+function handleMemberClick(conn: any) {
+  const member = getOtherMember(conn)
+  if (member?.id) {
+    router.push(`/comunidade/${member.id}`)
+  } else {
+    console.error('Member data not available:', conn)
+    toast.error('Erro ao carregar perfil do membro')
+  }
 }
 
 async function handleStatusUpdate(connectionId: string, status: 'accepted' | 'rejected') {

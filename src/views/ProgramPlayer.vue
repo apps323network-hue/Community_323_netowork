@@ -38,14 +38,14 @@
         <!-- Player -->
         <div class="relative bg-black aspect-video w-full shadow-2xl overflow-hidden group/player">
           <YouTubePlayer
-            v-if="currentLesson && isAuthenticated"
+            v-if="currentLesson && (isAuthenticated || (program?.localhost_only && isLocalhost()))"
             :videoId="currentLesson.youtube_video_id"
             :title="getLessonTitle(currentLesson)"
             @ended="handleVideoEnded"
           />
           
           <!-- Guest Blocker Over Video -->
-          <div v-if="!isAuthenticated" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md z-20">
+          <div v-if="!isAuthenticated && !(program?.localhost_only && isLocalhost())" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md z-20">
             <div class="max-w-md w-full mx-4">
               <GuestBlocker
                 :show="true"
@@ -260,6 +260,7 @@ import YouTubePlayer from '@/components/features/programs/YouTubePlayer.vue'
 import ModulesList from '@/components/features/programs/ModulesList.vue'
 import GuestBlocker from '@/components/common/GuestBlocker.vue'
 import { usePublicAccess } from '@/composables/usePublicAccess'
+import { isLocalhost, canAccessLocalhost } from '@/utils/localhost'
 
 const route = useRoute()
 const router = useRouter()
@@ -383,14 +384,40 @@ async function fetchProgramAndLessons() {
     if (programError) throw programError
     program.value = programData
 
+    // Verificar se é programa localhost_only e se pode acessar
+    const canAccessAsLocalhost = program.value.localhost_only && canAccessLocalhost(program.value)
+    
     // Se estiver logado, verificar matrícula
     if (user) {
-      const { data: _enrollment } = await supabase
+      const { data: enrollment } = await supabase
         .from('program_enrollments')
         .select('*')
         .eq('program_id', programId)
         .eq('user_id', user.id)
         .single()
+      
+      // Se não tiver matrícula mas for localhost_only e estiver em localhost, criar matrícula automaticamente
+      if (!enrollment && canAccessAsLocalhost) {
+        try {
+          const { error: enrollError } = await supabase
+            .from('program_enrollments')
+            .insert({
+              program_id: programId,
+              user_id: user.id,
+              payment_method: 'localhost',
+              payment_id: 'localhost-debug',
+              payment_status: 'paid',
+              status: 'active',
+              paid_at: new Date().toISOString()
+            })
+          
+          if (enrollError && !enrollError.message.includes('duplicate')) {
+            console.error('Error creating localhost enrollment:', enrollError)
+          }
+        } catch (err) {
+          console.error('Error auto-enrolling for localhost:', err)
+        }
+      }
       
       // Se não for aluno e nem professor/admin, ele pode ver o preview se for publicAccess
       // (Já lidamos com as limitações no template)
