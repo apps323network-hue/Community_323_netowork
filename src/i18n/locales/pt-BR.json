@@ -1390,7 +1390,7 @@
         "pdfError": "Erro ao gerar PDF"
     },
     "adminTermsManagement": {
-        "title": "Gerenciamento de Termos",
+        "pageTitle": "Gerenciamento de Termos",
         "description": "Crie e gerencie termos de uso e política de privacidade",
         "createTerm": "Criar Termo",
         "editTerm": "Editar Termo",
@@ -1409,5 +1409,165 @@
         "termCreated": "Termo criado com sucesso",
         "termUpdated": "Termo atualizado com sucesso",
         "fillAllFields": "Preencha todos os campos"
+    },
+    "professor": {
+        "dashboard": {
+            "title": "Área do Professor",
+            "welcome": "Seja bem-vindo,",
+            "professor": "Professor",
+            "subtitle": "Aqui você gerencia seus programas, acompanha o progresso dos alunos e organiza todo o material didático.",
+            "stats": {
+                "programs": "Programas",
+                "students": "Alunos",
+                "lessons": "Aulas"
+            },
+            "myPrograms": "Meus Programas",
+            "noPrograms": "Nenhum programa atribuído",
+            "noProgramsDesc": "Você ainda não possui programas sob sua gestão. Entre em contato com a administração para ser habilitado.",
+            "status": {
+                "published": "Publicado",
+                "draft": "Rascunho"
+            },
+            "programStats": {
+                "modules": "Módulos",
+                "lessons": "Aulas",
+                "students": "Alunos"
+            },
+            "actions": {
+                "manage": "Gerenciar Conteúdo",
+                "unpublish": "Remover Publicação",
+                "publish": "Publicar Treinamento",
+                "viewAsStudent": "Visualizar como Aluno"
+            },
+            "modal": {
+                "unpublishTitle": "Remover Publicação?",
+                "publishTitle": "Publicar Treinamento?",
+                "unpublishDesc": "O conteúdo deixará de ser visível para novos alunos na plataforma.",
+                "publishDesc": "O treinamento ficará visível e disponível para todos os alunos da comunidade.",
+                "confirmUnpublish": "Confirmar Retirada",
+                "confirmPublish": "Sim, Publicar Agora",
+                "processing": "Processando..."
+            }
+        },
+        "manage": {
+            "back": "Voltar",
+            "panel": "Painel de Gestão",
+            "viewAsStudent": "Ver Aluno",
+            "tabs": {
+                "curriculum": "Grade Curricular",
+                "materials": "Meus Materiais",
+                "students": "Gestão de Alunos",
+                "short": {
+                    "curriculum": "Grade",
+                    "materials": "Materiais",
+                    "students": "Alunos"
+                }
+            },
+            "accessDenied": "Acesso Negado",
+            "accessDeniedDesc": "Você não tem as permissões necessárias para gerenciar este programa.",
+            "messages": {
+                "saveError": "Erro ao salvar. Verifique os dados e tente novamente.",
+                "deleteConfirm": "Deseja realmente excluir este {label}? Esta ação não pode ser desfeita.",
+                "module": "módulo",
+                "lesson": "aula"
+            },
+            "curriculumSidebar": {
+                "title": "Currículo",
+                "subtitle": "Organize o conteúdo do curso",
+                "newModule": "Novo Módulo",
+                "newLesson": "Nova Aula",
+                "editModule": "Editar Módulo",
+                "empty": "Nenhum módulo criado ainda.",
+                "createFirst": "+ Criar Primeiro Módulo",
+                "noLessons": "Nenhuma aula",
+                "preview": "Preview"
+            },
+            "contentEditor": {
+                "selectItem": "Selecione um item",
+                "selectItemDesc": "Escolha um módulo ou aula na barra lateral para editar seu conteúdo, ou crie um novo.",
+                "new": "Novo",
+                "editing": "Editando",
+                "module": "Módulo",
+                "lesson": "Aula",
+                "moduleSettings": "Configurações do Módulo",
+                "lessonDetails": "Detalhes da Aula",
+                "cancel": "Cancelar",
+                "save": "Salvar",
+                "saving": "Salvando...",
+                "titlePt": "Título (Português) *",
+                "titleEn": "Título (Inglês) *",
+                "titlePlaceholder": "Ex: Introdução ao curso",
+                "titleEnPlaceholder": "Ex: Introduction to the course",
+                "descriptionPt": "Descrição (Português)",
+                "descriptionEn": "Descrição (Inglês)",
+                "videoContent": "Conteúdo de Vídeo",
+                "pasteLink": "Colar Link",
+                "upload": "Fazer Upload",
+                "youtubePlaceholder": "Cole a URL ou ID do YouTube",
+                "autoFill": "Auto-Preencher",
+                "fetching": "Buscando...",
+                "dragDropTitle": "Arraste e solte o vídeo aqui",
+                "dragDropSubtitle": "Ou clique para selecionar um arquivo",
+                "uploadSuccess": "Upload Concluído!",
+                "uploadAnother": "Enviar outro vídeo",
+                "previewVideo": "Preview do Vídeo",
+                "duration": "Duração",
+                "allowPreview": "Permitir Preview Grátis",
+                "allowPreviewDesc": "Qualquer usuário poderá assistir esta aula",
+                "materials": "Materiais de Apoio",
+                "materialsDesc": "Arquivos complementares para esta aula",
+                "addMaterial": "Adicionar Material",
+                "noMaterials": "Nenhum material adicionado ainda",
+                "dangerZone": "Zona de Perigo",
+                "dangerZoneDesc": "A remoção deste item é permanente e apagará todos os conteúdos vinculados.",
+                "deleteItem": "Excluir {item}",
+                "videoTitlePlaceholder": "Título do vídeo",
+                "titlePdf": "Arquivo PDF *",
+                "maxFileSize": "Máximo 10MB por arquivo",
+                "materialTitle": "Título (Português) *",
+                "materialTitleEn": "Título (Inglês) *",
+                "uploadMaterial": "Upload Material",
+                "deleteConfirm": "Confirmar Exclusão",
+                "deleteWarning": "Esta ação não pode ser desfeita",
+                "deletePermanent": "O material será permanentemente removido.",
+                "deleteQuestion": "Deseja realmente excluir \"{title}\"?",
+                "deleteMaterial": "Excluir Material"
+            },
+            "materialsTab": {
+                "title": "Materiais de Apoio",
+                "subtitle": "Gerencie arquivos PDF e documentos complementares",
+                "newMaterial": "Novo Material",
+                "createModulesFirst": "Crie módulos primeiro",
+                "createModulesDesc": "Você precisa organizar sua grade curricular antes de fazer o upload de materiais.",
+                "noMaterials": "Nenhum material ainda",
+                "noMaterialsDesc": "Comece enviando PDFs, slides ou apostilas para enriquecer suas aulas.",
+                "uploadFirst": "Upload do Primeiro Material",
+                "moduleMaterials": "Materiais do Módulo",
+                "lessonMaterials": "Materiais da Aula",
+                "generalMaterials": "Materiais Gerais",
+                "materialsCount": "{count} materiais",
+                "dropMaterialsLink": "Solte materiais aqui para vincular à aula",
+                "linkToModule": "Vincular ao Módulo *",
+                "selectModule": "Selecione um módulo",
+                "linkToLesson": "Vincular à Aula (Opcional)",
+                "moduleMaterialPlaceholder": "Material do módulo (não vinculado a aula específica)",
+                "deletePermanentDesc": "O material será permanentemente removido do sistema.",
+                "deleting": "Excluindo..."
+            },
+            "studentsTab": {
+                "title": "Alunos Matriculados",
+                "total": "Total: {count} alunos",
+                "emptyTitle": "Nenhum aluno matriculado",
+                "emptyDesc": "Quando alunos se matricularem no programa, eles aparecerão aqui.",
+                "table": {
+                    "student": "Aluno",
+                    "email": "Email",
+                    "enrollmentDate": "Data de Matrícula",
+                    "status": "Status",
+                    "active": "Ativo",
+                    "noName": "Sem nome"
+                }
+            }
+        }
     }
 }

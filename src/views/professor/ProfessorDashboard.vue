@@ -13,14 +13,14 @@
               <div class="bg-secondary/10 p-2 rounded-lg">
                 <span class="material-symbols-outlined text-xl sm:text-2xl">school</span>
               </div>
-              <span class="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em]">Área do Professor</span>
+              <span class="text-[10px] sm:text-sm font-black uppercase tracking-[0.2em]">{{ t('professor.dashboard.title') }}</span>
             </div>
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 leading-[1.1]">
-              Seja bem-vindo,<br/>
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-secondary/60">Professor</span>
+              {{ t('professor.dashboard.welcome') }}<br/>
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-secondary/60">{{ t('professor.dashboard.professor') }}</span>
             </h1>
             <p class="text-slate-400 max-w-xl text-sm sm:text-lg font-medium leading-relaxed mx-auto lg:mx-0">
-              Aqui você gerencia seus programas, acompanha o progresso dos alunos e organiza todo o material didático.
+              {{ t('professor.dashboard.subtitle') }}
             </p>
           </div>
  
@@ -28,15 +28,15 @@
           <div class="grid grid-cols-3 sm:flex gap-3 sm:gap-6">
             <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 min-w-0 sm:min-w-[120px] text-center">
               <p class="text-xl sm:text-3xl font-black text-white mb-1">{{ myPrograms.length }}</p>
-              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Programas</p>
+              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">{{ t('professor.dashboard.stats.programs') }}</p>
             </div>
             <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 min-w-0 sm:min-w-[120px] text-center">
               <p class="text-xl sm:text-3xl font-black text-white mb-1">{{ totalStudents }}</p>
-              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Alunos</p>
+              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">{{ t('professor.dashboard.stats.students') }}</p>
             </div>
             <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 sm:p-6 min-w-0 sm:min-w-[120px] text-center">
               <p class="text-xl sm:text-3xl font-black text-white mb-1">{{ totalLessons }}</p>
-              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Aulas</p>
+              <p class="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">{{ t('professor.dashboard.stats.lessons') }}</p>
             </div>
           </div>
         </div>
@@ -47,7 +47,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <h2 class="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
             <span class="w-2 h-8 bg-secondary rounded-full"></span>
-            Meus Programas
+            {{ t('professor.dashboard.myPrograms') }}
           </h2>
         </div>
 
@@ -61,9 +61,9 @@
           <div class="bg-secondary/10 p-10 rounded-full w-fit mx-auto mb-8 border border-secondary/20">
             <span class="material-symbols-outlined text-7xl text-secondary">import_contacts</span>
           </div>
-          <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">Nenhum programa atribuído</h3>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">{{ t('professor.dashboard.noPrograms') }}</h3>
           <p class="text-slate-600 dark:text-gray-400 text-lg max-w-md mx-auto">
-            Você ainda não possui programas sob sua gestão. Entre em contato com a administração para ser habilitado.
+            {{ t('professor.dashboard.noProgramsDesc') }}
           </p>
         </div>
 
@@ -87,7 +87,7 @@
                   class="px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-tighter"
                   :class="program.status === 'published' ? 'bg-secondary text-black' : 'bg-slate-500 text-white'"
                 >
-                  {{ program.status === 'published' ? 'Publicado' : 'Rascunho' }}
+                  {{ program.status === 'published' ? t('professor.dashboard.status.published') : t('professor.dashboard.status.draft') }}
                 </span>
               </div>
               
@@ -106,15 +106,15 @@
               <div class="grid grid-cols-3 gap-4 py-4 border-t border-slate-100 dark:border-white/5 mb-6">
                 <div class="text-center">
                   <p class="text-lg font-black text-slate-900 dark:text-white">{{ program.modulesCount || 0 }}</p>
-                  <p class="text-[10px] font-bold text-slate-500 uppercase">Módulos</p>
+                  <p class="text-[10px] font-bold text-slate-500 uppercase">{{ t('professor.dashboard.programStats.modules') }}</p>
                 </div>
                 <div class="text-center">
                   <p class="text-lg font-black text-slate-900 dark:text-white">{{ program.lessonsCount || 0 }}</p>
-                  <p class="text-[10px] font-bold text-slate-500 uppercase">Aulas</p>
+                  <p class="text-[10px] font-bold text-slate-500 uppercase">{{ t('professor.dashboard.programStats.lessons') }}</p>
                 </div>
                 <div class="text-center">
                   <p class="text-lg font-black text-slate-900 dark:text-white">{{ program.studentsCount || 0 }}</p>
-                  <p class="text-[10px] font-bold text-slate-500 uppercase">Alunos</p>
+                  <p class="text-[10px] font-bold text-slate-500 uppercase">{{ t('professor.dashboard.programStats.students') }}</p>
                 </div>
               </div>
 
@@ -125,28 +125,15 @@
                   class="w-full py-4 bg-secondary text-black font-black rounded-2xl hover:bg-secondary/90 transition-all flex items-center justify-center gap-2 shadow-lg shadow-secondary/20"
                 >
                   <span class="material-symbols-outlined text-xl">edit_document</span>
-                  Gerenciar Conteúdo
+                  {{ t('professor.dashboard.actions.manage') }}
                 </button>
-                <button
-                  @click.stop="openStatusModal(program)"
-                  :class="[
-                    'w-full py-4 font-black rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg',
-                    program.status === 'published' 
-                      ? 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-white/10' 
-                      : 'bg-primary text-white hover:opacity-90 shadow-primary/20'
-                  ]"
-                >
-                  <span class="material-symbols-outlined text-xl">
-                    {{ program.status === 'published' ? 'visibility_off' : 'rocket_launch' }}
-                  </span>
-                  {{ program.status === 'published' ? 'Remover Publicação' : 'Publicar Treinamento' }}
-                </button>
+
 
                 <button
                   @click="$router.push(`/programs/${program?.id}`)"
                   class="w-full py-3 text-slate-400 dark:text-gray-500 font-bold rounded-2xl hover:text-slate-600 dark:hover:text-white transition-all text-[10px] uppercase tracking-widest"
                 >
-                  Visualizar como Aluno
+                  {{ t('professor.dashboard.actions.viewAsStudent') }}
                 </button>
               </div>
             </div>
@@ -157,61 +144,7 @@
 
 
     <!-- Status Change Confirmation Modal -->
-    <div
-      v-if="statusModal.show"
-      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4"
-      @click.self="statusModal.show = false"
-    >
-      <div class="bg-white dark:bg-surface-dark w-full max-w-md rounded-[32px] shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden animate-fade-in">
-        <div class="p-8 text-center space-y-6">
-          <div 
-            :class="[
-              'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-2',
-              statusModal.program?.status === 'published' ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'
-            ]"
-          >
-            <span class="material-symbols-outlined text-4xl">
-              {{ statusModal.program?.status === 'published' ? 'visibility_off' : 'rocket_launch' }}
-            </span>
-          </div>
-          
-          <div class="space-y-2">
-            <h3 class="text-2xl font-black text-slate-900 dark:text-white">
-              {{ statusModal.program?.status === 'published' ? 'Remover Publicação?' : 'Publicar Treinamento?' }}
-            </h3>
-            <p class="text-slate-600 dark:text-gray-400 font-medium">
-              {{ 
-                statusModal.program?.status === 'published' 
-                  ? 'O conteúdo deixará de ser visível para novos alunos na plataforma.' 
-                  : 'O treinamento ficará visível e disponível para todos os alunos da comunidade.' 
-              }}
-            </p>
-          </div>
 
-          <div class="flex flex-col gap-3 pt-2">
-            <button
-              @click="confirmStatusChange"
-              :disabled="statusModal.loading"
-              :class="[
-                'w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-2',
-                statusModal.program?.status === 'published' 
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black' 
-                  : 'bg-primary text-white shadow-xl shadow-primary/20'
-              ]"
-            >
-              <span v-if="statusModal.loading" class="animate-spin material-symbols-outlined text-sm">sync</span>
-              {{ statusModal.loading ? 'Processando...' : (statusModal.program?.status === 'published' ? 'Confirmar Retirada' : 'Sim, Publicar Agora') }}
-            </button>
-            <button
-              @click="statusModal.show = false"
-              class="w-full py-4 text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-white/5 rounded-2xl transition-all text-xs uppercase tracking-widest"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </AppLayout>
 </template>
 
@@ -221,17 +154,13 @@ import { useLocale } from '@/composables/useLocale'
 import { supabase } from '@/lib/supabase'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
-const { locale: currentLocale } = useLocale()
+const { locale: currentLocale, t } = useLocale()
 
 const myPrograms = ref<any[]>([])
 const loading = ref(true)
 
 // Status modal state
-const statusModal = ref({
-  show: false,
-  loading: false,
-  program: null as any
-})
+
 
 
 const totalStudents = computed(() => {
@@ -315,37 +244,7 @@ async function fetchProfessorPrograms() {
   }
 }
 
-function openStatusModal(program: any) {
-  statusModal.value.program = program
-  statusModal.value.show = true
-}
 
-async function confirmStatusChange() {
-  if (!statusModal.value.program) return
-  
-  const program = statusModal.value.program
-  const newStatus = program.status === 'published' ? 'draft' : 'published'
-  
-  statusModal.value.loading = true
-
-  try {
-    const { error } = await supabase
-      .from('programs')
-      .update({ status: newStatus, updated_at: new Date().toISOString() })
-      .eq('id', program.id)
-
-    if (error) throw error
-    
-    // Update local state
-    program.status = newStatus
-    statusModal.value.show = false
-  } catch (error) {
-    console.error('Error toggling program status:', error)
-    alert('Erro ao alterar status do programa.')
-  } finally {
-    statusModal.value.loading = false
-  }
-}
 
 onMounted(() => {
   fetchProfessorPrograms()

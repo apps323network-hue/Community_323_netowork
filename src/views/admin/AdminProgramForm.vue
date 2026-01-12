@@ -131,10 +131,11 @@
                           />
                         </div>
                         <label :for="`prof-${prof.id}`" class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
-                        <div class="min-w-0">
-                            <span class="block text-sm font-bold text-slate-700 dark:text-white truncate">{{ prof.nome }}</span>
+                            <div class="flex items-center gap-2">
+                              <span class="block text-sm font-bold text-slate-700 dark:text-white truncate">{{ prof.nome }}</span>
+                              <span v-if="prof.role === 'admin'" class="text-[8px] px-1.5 py-0.5 rounded-md bg-purple-500/10 text-purple-500 font-bold uppercase border border-purple-500/20">Admin</span>
+                            </div>
                             <span class="block text-[10px] text-slate-500 font-medium truncate">{{ prof.email }}</span>
-                          </div>
                         </label>
                       </div>
                     </div>
@@ -490,8 +491,8 @@ onMounted(async () => {
   try {
     const { data: profs, error } = await supabase
       .from('profiles')
-      .select('id, nome, email, bio')
-      .eq('role', 'professor')
+      .select('id, nome, email, bio, role')
+      .in('role', ['professor', 'admin'])
       .order('nome')
 
     if (error) throw error

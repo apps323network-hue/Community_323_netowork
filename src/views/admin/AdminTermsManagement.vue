@@ -7,7 +7,7 @@
           <div>
             <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
               <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">
-                {{ t('adminTermsManagement.title') }}
+                {{ t('adminTermsManagement.pageTitle') }}
               </span>
             </h1>
             <p class="text-slate-600 dark:text-white/60 text-lg">

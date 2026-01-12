@@ -5,9 +5,9 @@
         <div class="bg-secondary/10 p-6 rounded-full w-fit mx-auto mb-6">
           <span class="material-symbols-outlined text-5xl text-secondary">edit_note</span>
         </div>
-        <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">Selecione um item</h3>
+        <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">{{ t('professor.manage.contentEditor.selectItem') }}</h3>
         <p class="text-slate-500 dark:text-gray-400 text-sm font-medium">
-          Escolha um módulo ou aula na barra lateral para editar seu conteúdo, ou crie um novo.
+          {{ t('professor.manage.contentEditor.selectItemDesc') }}
         </p>
       </div>
     </div>
@@ -25,14 +25,14 @@
         <div class="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest overflow-hidden">
           <span class="truncate">{{ programName }}</span>
           <span class="material-symbols-outlined text-sm flex-shrink-0">chevron_right</span>
-          <span class="text-secondary flex-shrink-0">{{ isCreating ? 'Novo' : 'Editando' }} {{ mode === 'module' ? 'Módulo' : 'Aula' }}</span>
+          <span class="text-secondary flex-shrink-0">{{ isCreating ? t('professor.manage.contentEditor.new') : t('professor.manage.contentEditor.editing') }} {{ mode === 'module' ? t('professor.manage.contentEditor.module') : t('professor.manage.contentEditor.lesson') }}</span>
         </div>
       </div>
 
       <!-- Editor Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-10 gap-6">
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
-          {{ mode === 'module' ? 'Configurações do Módulo' : 'Detalhes da Aula' }}
+          {{ mode === 'module' ? t('professor.manage.contentEditor.moduleSettings') : t('professor.manage.contentEditor.lessonDetails') }}
         </h2>
         <div class="flex gap-3 sm:gap-4">
           <button 
@@ -40,7 +40,7 @@
             @click.prevent="$emit('cancel')" 
             class="flex-1 sm:flex-none px-4 sm:px-6 py-3 sm:py-2 rounded-xl font-bold text-slate-600 dark:text-gray-400 bg-white dark:bg-white/5 sm:bg-transparent border border-slate-200 dark:border-white/10 sm:border-0 hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-sm sm:text-base"
           >
-            Cancelar
+            {{ t('professor.manage.contentEditor.cancel') }}
           </button>
           <button 
             type="button"
@@ -48,7 +48,7 @@
             :disabled="loading"
             class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 sm:py-2 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 shadow-lg shadow-secondary/20 transition-all disabled:opacity-50 text-sm sm:text-base"
           >
-            {{ loading ? 'Salvando...' : 'Salvar' }}
+            {{ loading ? t('professor.manage.contentEditor.saving') : t('professor.manage.contentEditor.save') }}
           </button>
         </div>
       </div>
@@ -59,28 +59,28 @@
           <!-- Shared Fields for both Module and Lesson -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Título (Português) *</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.titlePt') }}</label>
               <input 
                 v-model="formData.title_pt" 
                 type="text" 
                 class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium"
-                placeholder="Ex: Introdução ao curso"
+                :placeholder="t('professor.manage.contentEditor.titlePlaceholder')"
               />
             </div>
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Título (Inglês) *</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.titleEn') }}</label>
               <input 
                 v-model="formData.title_en" 
                 type="text" 
                 class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium"
-                placeholder="Ex: Introduction to the course"
+                :placeholder="t('professor.manage.contentEditor.titleEnPlaceholder')"
               />
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Descrição (Português)</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.descriptionPt') }}</label>
               <textarea 
                 v-model="formData.description_pt" 
                 rows="3"
@@ -88,7 +88,7 @@
               ></textarea>
             </div>
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Descrição (Inglês)</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.descriptionEn') }}</label>
               <textarea 
                 v-model="formData.description_en" 
                 rows="3"
@@ -101,7 +101,7 @@
           <div v-if="mode === 'lesson'" class="pt-8 border-t border-slate-100 dark:border-white/5 space-y-8">
             <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span class="material-symbols-outlined text-secondary">video_library</span>
-              Conteúdo de Vídeo
+              {{ t('professor.manage.contentEditor.videoContent') }}
             </h3>
 
             <!-- YouTube Video Section -->
@@ -116,7 +116,7 @@
                     videoSource === 'link' ? 'bg-white dark:bg-surface-dark text-secondary shadow-md' : 'text-slate-500'
                   ]"
                 >
-                  Colar Link
+                  {{ t('professor.manage.contentEditor.pasteLink') }}
                 </button>
                 <button 
                   type="button"
@@ -126,7 +126,7 @@
                     videoSource === 'upload' ? 'bg-white dark:bg-surface-dark text-secondary shadow-md' : 'text-slate-500'
                   ]"
                 >
-                  Fazer Upload
+                  {{ t('professor.manage.contentEditor.upload') }}
                 </button>
               </div>
 
@@ -139,7 +139,7 @@
                       type="text" 
                       @input="handleVideoIdInput"
                       class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl pl-12 pr-4 py-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-bold"
-                      placeholder="Cole a URL ou ID do YouTube"
+                      :placeholder="t('professor.manage.contentEditor.youtubePlaceholder')"
                     />
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">smart_display</span>
                   </div>
@@ -150,7 +150,7 @@
                     class="px-6 bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl font-black hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2 disabled:opacity-50"
                   >
                     <span class="material-symbols-outlined text-sm" :class="{ 'animate-spin': fetchingMetadata }">{{ fetchingMetadata ? 'sync' : 'auto_fix' }}</span>
-                    {{ fetchingMetadata ? 'Buscando...' : 'Auto-Preencher' }}
+                    {{ fetchingMetadata ? t('professor.manage.contentEditor.fetching') : t('professor.manage.contentEditor.autoFill') }}
                   </button>
                 </div>
               </div>
@@ -240,8 +240,8 @@
                   </div>
                 </div>
                 <div class="flex-1 space-y-2">
-                  <p class="text-[10px] font-black uppercase text-secondary tracking-widest">Preview do Vídeo</p>
-                  <p class="font-black text-lg line-clamp-1">{{ formData.title_pt || 'Título do vídeo' }}</p>
+                  <p class="text-[10px] font-black uppercase text-secondary tracking-widest">{{ t('professor.manage.contentEditor.previewVideo') }}</p>
+                  <p class="font-black text-lg line-clamp-1">{{ formData.title_pt || t('professor.manage.contentEditor.videoTitlePlaceholder') }}</p>
                   <div class="flex items-center gap-4 text-xs font-bold text-slate-400">
                     <span class="flex items-center gap-1">
                       <span class="material-symbols-outlined text-sm">schedule</span>
@@ -262,8 +262,8 @@
                     <span class="material-symbols-outlined text-secondary">visibility</span>
                   </div>
                   <div>
-                    <h4 class="text-sm font-black text-slate-900 dark:text-white">Permitir Preview Grátis</h4>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase">Qualquer usuário poderá assistir esta aula</p>
+                    <h4 class="text-sm font-black text-slate-900 dark:text-white">{{ t('professor.manage.contentEditor.allowPreview') }}</h4>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">{{ t('professor.manage.contentEditor.allowPreviewDesc') }}</p>
                   </div>
                </div>
                <input 
@@ -279,9 +279,9 @@
                 <div>
                   <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary">description</span>
-                    Materiais de Apoio
+                    {{ t('professor.manage.contentEditor.materials') }}
                   </h3>
-                  <p class="text-xs text-slate-500 mt-1">Arquivos complementares para esta aula</p>
+                  <p class="text-xs text-slate-500 mt-1">{{ t('professor.manage.contentEditor.materialsDesc') }}</p>
                 </div>
                 <button
                   type="button"
@@ -289,7 +289,7 @@
                   class="px-4 py-2 bg-primary text-white dark:bg-secondary dark:text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm flex items-center gap-2"
                 >
                   <span class="material-symbols-outlined text-sm">add</span>
-                  Adicionar Material
+                  {{ t('professor.manage.contentEditor.addMaterial') }}
                 </button>
               </div>
 
@@ -314,45 +314,21 @@
                       @click="downloadMaterial(material)"
                       type="button"
                       class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
-                      title="Baixar"
+                      :title="t('common.download')"
                     >
                       <span class="material-symbols-outlined text-sm">download</span>
-                    </button>
-                    <button
-                      @click="deleteMaterial(material)"
-                      type="button"
-                      class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                      title="Excluir"
-                    >
-                      <span class="material-symbols-outlined text-sm">delete</span>
                     </button>
                   </div>
                 </div>
               </div>
               <div v-else class="text-center py-8 bg-slate-50 dark:bg-black/20 rounded-xl border border-dashed border-slate-200 dark:border-white/10">
                 <span class="material-symbols-outlined text-slate-300 dark:text-gray-700 text-4xl mb-2">folder_open</span>
-                <p class="text-sm text-slate-500 font-medium">Nenhum material adicionado ainda</p>
+                <p class="text-sm text-slate-500 font-medium">{{ t('professor.manage.contentEditor.noMaterials') }}</p>
               </div>
             </div>
           </div>
 
-          <!-- Danger Zone (Delete) -->
-          <div v-if="!isCreating" class="pt-8 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-            <div class="max-w-xs">
-              <h4 class="text-sm font-black text-red-500 uppercase">Zona de Perigo</h4>
-              <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">
-                A remoção deste item é permanente e apagará todos os conteúdos vinculados.
-              </p>
-            </div>
-            <button 
-              type="button"
-              @click.prevent="$emit('delete', selectedItem)" 
-              class="px-6 py-2 border-2 border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-xl font-black transition-all text-sm flex items-center gap-2"
-            >
-              <span class="material-symbols-outlined text-sm">delete_sweep</span>
-              Excluir {{ mode === 'module' ? 'Módulo' : 'Aula' }}
-            </button>
-          </div>
+
 
         </div>
       </div>
@@ -367,7 +343,7 @@
   >
     <div class="bg-white dark:bg-surface-dark rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-white/10">
       <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-        <h3 class="text-xl font-black text-slate-900 dark:text-white">Adicionar Material</h3>
+        <h3 class="text-xl font-black text-slate-900 dark:text-white">{{ t('professor.manage.contentEditor.addMaterial') }}</h3>
         <button
           @click="showMaterialUpload = false"
           class="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
@@ -378,7 +354,7 @@
 
       <form @submit.prevent="handleMaterialUpload" class="p-6 space-y-4">
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Arquivo PDF *</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">{{ t('professor.manage.contentEditor.titlePdf') }}</label>
           <input
             type="file"
             accept=".pdf"
@@ -386,28 +362,28 @@
             required
             class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
           />
-          <p class="text-xs text-slate-500 dark:text-gray-400 mt-2">Máximo 10MB por arquivo</p>
+          <p class="text-xs text-slate-500 dark:text-gray-400 mt-2">{{ t('professor.manage.contentEditor.maxFileSize') }}</p>
         </div>
 
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Título (Português) *</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">{{ t('professor.manage.contentEditor.materialTitle') }}</label>
           <input
             v-model="materialFormData.title_pt"
             type="text"
             required
             class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all"
-            placeholder="Ex: Slides da Aula 1"
+            :placeholder="t('professor.manage.contentEditor.titlePlaceholder')"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Título (Inglês) *</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">{{ t('professor.manage.contentEditor.materialTitleEn') }}</label>
           <input
             v-model="materialFormData.title_en"
             type="text"
             required
             class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all"
-            placeholder="Ex: Lesson 1 Slides"
+            :placeholder="t('professor.manage.contentEditor.titleEnPlaceholder')"
           />
         </div>
 
@@ -417,64 +393,21 @@
             @click="showMaterialUpload = false"
             class="px-6 py-3 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
           >
-            Cancelar
+            {{ t('professor.manage.contentEditor.cancel') }}
           </button>
           <button
             type="submit"
             :disabled="uploadingMaterial || !materialFile"
             class="px-6 py-3 bg-primary text-white dark:bg-secondary dark:text-black font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ uploadingMaterial ? 'Enviando...' : 'Upload Material' }}
+            {{ uploadingMaterial ? t('professor.manage.contentEditor.saving') : t('professor.manage.contentEditor.uploadMaterial') }}
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Delete Material Confirmation Modal -->
-  <div
-    v-if="showDeleteMaterialModal"
-    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-    @click.self="showDeleteMaterialModal = false; materialToDelete = null"
-  >
-    <div class="bg-white dark:bg-surface-dark rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 dark:border-white/10">
-      <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10">
-        <h3 class="text-xl font-black text-slate-900 dark:text-white">Confirmar Exclusão</h3>
-      </div>
 
-      <div class="p-6">
-        <div class="bg-red-500/10 p-4 rounded-xl mb-4 flex items-start gap-3">
-          <span class="material-symbols-outlined text-red-500 text-2xl">warning</span>
-          <div>
-            <p class="text-sm font-bold text-slate-900 dark:text-white mb-1">Esta ação não pode ser desfeita</p>
-            <p class="text-xs text-slate-600 dark:text-gray-400">
-              O material será permanentemente removido.
-            </p>
-          </div>
-        </div>
-        
-        <p class="text-sm text-slate-700 dark:text-gray-300">
-          Deseja realmente excluir <span class="font-bold">"{{ materialToDelete ? getMaterialTitle(materialToDelete) : '' }}"</span>?
-        </p>
-      </div>
-
-      <div class="px-6 py-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-end gap-3">
-        <button
-          @click="showDeleteMaterialModal = false; materialToDelete = null"
-          class="px-6 py-2.5 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
-        >
-          Cancelar
-        </button>
-        <button
-          @click="handleDeleteMaterialConfirm"
-          class="px-6 py-2.5 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-all flex items-center gap-2"
-        >
-          <span class="material-symbols-outlined text-sm">delete</span>
-          Excluir Material
-        </button>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -518,8 +451,6 @@ const uploadState = ref<{
 const showMaterialUpload = ref(false)
 const uploadingMaterial = ref(false)
 const materialFile = ref<File | null>(null)
-const showDeleteMaterialModal = ref(false)
-const materialToDelete = ref<any>(null)
 const materialFormData = ref({
   title_pt: '',
   title_en: ''
@@ -757,22 +688,7 @@ async function downloadMaterial(material: any) {
   }
 }
 
-function deleteMaterial(material: any) {
-  materialToDelete.value = material
-  showDeleteMaterialModal.value = true
-}
 
-async function handleDeleteMaterialConfirm() {
-  if (!materialToDelete.value) return
-  
-  try {
-    await modulesStore.deleteMaterial(materialToDelete.value.id, materialToDelete.value.file_path)
-    showDeleteMaterialModal.value = false
-    materialToDelete.value = null
-  } catch (error) {
-    console.error('Error deleting material:', error)
-  }
-}
 
 function handleMaterialFileSelect(event: Event) {
   const target = event.target as HTMLInputElement

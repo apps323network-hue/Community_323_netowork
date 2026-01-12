@@ -7,7 +7,7 @@
           <button
             @click="$router.push('/professor')"
             class="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-xl transition-all group shrink-0"
-            title="Voltar"
+            :title="t('professor.manage.back')"
           >
             <span class="material-symbols-outlined text-slate-600 dark:text-gray-400 group-hover:text-secondary group-hover:-translate-x-1 transition-all">arrow_back</span>
           </button>
@@ -21,7 +21,7 @@
               <h1 class="text-sm font-black text-slate-900 dark:text-white leading-tight truncate">
                 {{ getProgramTitle(program) }}
               </h1>
-              <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em]">Painel de Gestão</p>
+              <p class="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em]">{{ t('professor.manage.panel') }}</p>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@
             ]"
           >
             <span class="material-symbols-outlined text-lg">{{ tab.icon }}</span>
-            {{ tab.label }}
+            {{ t(tab.labelKey) }}
             <div v-if="activeTab === tab.id" class="absolute bottom-0 left-0 w-full h-1.5 bg-secondary rounded-t-full shadow-[0_0_10px_rgba(255,214,0,0.5)]"></div>
           </button>
         </nav>
@@ -50,10 +50,10 @@
           <button
             @click="$router.push(`/programs/${program?.id}`)"
             class="w-10 h-10 sm:w-auto sm:px-4 sm:py-2 bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl sm:rounded-xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
-            title="Visualizar como Aluno"
+            :title="t('professor.dashboard.actions.viewAsStudent')"
           >
             <span class="material-symbols-outlined text-xl sm:text-sm">visibility</span>
-            <span class="hidden sm:inline text-xs font-black uppercase">Ver Aluno</span>
+            <span class="hidden sm:inline text-xs font-black uppercase">{{ t('professor.manage.viewAsStudent') }}</span>
           </button>
         </div>
       </div>
@@ -73,7 +73,7 @@
             ]"
           >
             <span class="material-symbols-outlined text-xl">{{ tab.icon }}</span>
-            <span class="text-[7px] font-black uppercase tracking-widest">{{ getShortLabel(tab.id) }}</span>
+            <span class="text-[7px] font-black uppercase tracking-widest">{{ t('professor.manage.tabs.short.' + tab.id) }}</span>
           </button>
         </nav>
       </div>
@@ -120,7 +120,6 @@
                 :loading="modulesStore.loading"
                 @save="handleSave"
                 @cancel="handleCancel"
-                @delete="handleDelete"
                />
             </main>
           </div>
@@ -138,9 +137,9 @@
                 <div class="bg-red-500/10 p-6 rounded-full w-fit mx-auto mb-6">
                     <span class="material-symbols-outlined text-4xl text-red-500">lock_open</span>
                 </div>
-                <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">Acesso Negado</h3>
+                <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">{{ t('professor.manage.accessDenied') }}</h3>
                 <p class="text-slate-500 dark:text-gray-400 text-sm font-medium">
-                    Você não tem as permissões necessárias para gerenciar este programa. 
+                    {{ t('professor.manage.accessDeniedDesc') }}
                 </p>
             </div>
         </div>
@@ -162,7 +161,7 @@ import MaterialsTab from '@/components/professor/MaterialsTab.vue'
 import StudentsTab from '@/components/professor/StudentsTab.vue'
 
 const route = useRoute()
-const { locale: currentLocale } = useLocale()
+const { locale: currentLocale, t } = useLocale()
 const modulesStore = useModulesStore()
 
 const program = ref<any>(null)
@@ -176,24 +175,15 @@ const isCreating = ref(false)
 const targetModuleForLesson = ref<any>(null)
 
 const tabs = [
-  { id: 'curriculum', label: 'Grade Curricular', icon: 'account_tree' },
-  { id: 'materials', label: 'Meus Materiais', icon: 'description' },
-  { id: 'students', label: 'Gestão de Alunos', icon: 'group' }
+  { id: 'curriculum', labelKey: 'professor.manage.tabs.curriculum', icon: 'account_tree' },
+  { id: 'materials', labelKey: 'professor.manage.tabs.materials', icon: 'description' },
+  { id: 'students', labelKey: 'professor.manage.tabs.students', icon: 'group' }
 ]
 
 const modules = computed(() => modulesStore.getModulesByProgram(program.value?.id || ''))
 
 const getProgramTitle = (p: any) => {
   return currentLocale.value === 'pt-BR' ? p.title_pt : p.title_en
-}
-
-const getShortLabel = (id: string) => {
-  const labels: Record<string, string> = {
-    curriculum: 'Grade',
-    materials: 'Materiais',
-    students: 'Alunos'
-  }
-  return labels[id] || id
 }
 
 // Sidebar handlers
@@ -259,25 +249,7 @@ async function handleSave(formData: any) {
     isCreating.value = false
   } catch (error) {
     console.error('Error saving item:', error)
-    alert('Erro ao salvar. Verifique os dados e tente novamente.')
-  }
-}
-
-async function handleDelete(item: any) {
-  const label = editorMode.value === 'module' ? 'módulo' : 'aula'
-  if (!confirm(`Deseja realmente excluir este ${label}? Esta ação não pode ser desfeita.`)) return
-
-  try {
-    if (editorMode.value === 'module') {
-      await modulesStore.deleteModule(item.id)
-    } else {
-      await modulesStore.deleteLesson(item.id)
-    }
-    
-    await modulesStore.fetchModulesWithLessons(program.value.id)
-    selectedItem.value = null
-  } catch (error) {
-    console.error('Error deleting item:', error)
+    alert(t('professor.manage.messages.saveError'))
   }
 }
 
