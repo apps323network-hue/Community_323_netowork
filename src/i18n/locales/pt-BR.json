@@ -1270,8 +1270,9 @@
                 "description": "Torne-se um membro Premium para desbloquear recursos exclusivos, ganhar autoridade e conectar-se com brasileiros em todo o mundo.",
                 "monthly": "/mês",
                 "cancelAnytime": "Cancele quando quiser",
-                "feesIncluded": "Taxas do Stripe inclusas",
-                "priceWithFees": "Preço final: {total} (Base: {base} + Taxas: {fees})"
+                "totalValue": "Valor total: {total}",
+                "feesNote": "Inclui {fees} de taxas Stripe",
+                "priceWithFees": "Preço base: {base} + Taxas: {fees}"
             }
         },
         "actions": {

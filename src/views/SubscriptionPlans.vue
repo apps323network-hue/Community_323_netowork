@@ -68,13 +68,13 @@
               <!-- Price -->
               <div class="text-center mb-8">
                 <div class="flex items-baseline justify-center gap-1 mb-1">
-                  <span class="text-5xl md:text-6xl font-black text-white">{{ displayTotalWithFees }}</span>
+                  <span class="text-5xl md:text-6xl font-black text-white">{{ displayBasePrice }}</span>
                   <span class="text-slate-400 text-lg">{{ t('subscriptions.plans.premium.monthly') }}</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
-                  <p class="text-primary text-[10px] font-bold uppercase tracking-widest">{{ t('subscriptions.plans.premium.feesIncluded') }}</p>
-                  <p class="text-slate-500 text-[9px] opacity-70">
-                    {{ t('subscriptions.plans.premium.priceWithFees', { total: displayTotalWithFees, base: displayBasePrice, fees: displayStripeFee }) }}
+                  <p class="text-primary text-sm font-bold uppercase tracking-widest">{{ t('subscriptions.plans.premium.totalValue', { total: displayTotalWithFees }) }}</p>
+                  <p class="text-slate-500 text-xs opacity-70">
+                    {{ t('subscriptions.plans.premium.feesNote', { fees: displayStripeFee }) }}
                   </p>
                 </div>
                 <p class="text-slate-500 text-sm mt-4">{{ t('subscriptions.plans.premium.cancelAnytime') }}</p>

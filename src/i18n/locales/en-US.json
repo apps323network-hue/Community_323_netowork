@@ -1344,8 +1344,9 @@
                 "description": "Become a Premium member to unlock exclusive features, gain authority, and connect with Brazilians worldwide.",
                 "monthly": "/month",
                 "cancelAnytime": "Cancel anytime",
-                "feesIncluded": "Stripe fees included",
-                "priceWithFees": "Final price: {total} (Base: {base} + Fees: {fees})"
+                "totalValue": "Total value: {total}",
+                "feesNote": "Includes {fees} in Stripe fees",
+                "priceWithFees": "Base price: {base} + Fees: {fees}"
             }
         },
         "actions": {
