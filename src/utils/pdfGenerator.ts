@@ -69,8 +69,6 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = html
   
-  const elements: StructuredElement[] = []
-  
   function processNode(node: Node): StructuredElement | null {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent?.trim()
@@ -386,7 +384,7 @@ export async function generateTermAcceptancePDF(
   doc.setFontSize(9)
 
   // Filtrar elementos vazios antes de renderizar
-  const validElements = structuredElements.filter((element, index) => {
+  const validElements = structuredElements.filter((element) => {
     // Filtrar elementos com conteúdo vazio ou apenas espaços
     if (element.type !== 'list') {
       if (!element.content || element.content.trim().length === 0) {
