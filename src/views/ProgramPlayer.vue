@@ -222,7 +222,7 @@
                 <a
                   v-for="material in lessonMaterials"
                   :key="material.id"
-                  :href="material.file_url"
+                  href="#"
                   target="_blank"
                   class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-surface-dark/50 border border-slate-200 dark:border-white/5 rounded-2xl hover:border-primary dark:hover:border-secondary transition-all group"
                   @click.prevent="isAuthenticated ? downloadMaterial(material) : showAuthModal('signup')"
