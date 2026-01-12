@@ -14,30 +14,233 @@ export interface TermAcceptanceData {
 }
 
 /**
- * Converte HTML para texto simples preservando estrutura (quebras de linha, parágrafos)
+ * Interface para elementos estruturados do HTML
  */
-function htmlToText(html: string): string {
+interface StructuredElement {
+  type: 'paragraph' | 'heading' | 'list' | 'listItem' | 'blockquote' | 'text'
+  level?: number // Para headings (1-6) e list items
+  content: string
+  isOrdered?: boolean // Para listas ordenadas
+  children?: StructuredElement[]
+}
+
+/**
+ * Extrai texto de um elemento HTML preservando estrutura básica
+ */
+function extractTextContent(node: Node): string {
+  if (node.nodeType === Node.TEXT_NODE) {
+    const text = node.textContent || ''
+    // Normalizar espaços em branco (múltiplos espaços/quebras viram um espaço)
+    return text.replace(/\s+/g, ' ').trim()
+  }
+  
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    const el = node as HTMLElement
+    const tagName = el.tagName.toLowerCase()
+    
+    // Para <br>, retornar quebra de linha (mas vamos tratar isso no parsing)
+    if (tagName === 'br') {
+      return ' '
+    }
+    
+    // Processar filhos recursivamente
+    const parts: string[] = []
+    Array.from(node.childNodes).forEach(child => {
+      const childText = extractTextContent(child)
+      if (childText && childText.trim().length > 0) {
+        parts.push(childText.trim())
+      }
+    })
+    
+    // Juntar partes com espaço único
+    const text = parts.join(' ').trim()
+    
+    // Normalizar espaços finais
+    return text.replace(/\s+/g, ' ')
+  }
+  
+  return ''
+}
+
+/**
+ * Converte HTML para estrutura preservando formatação
+ */
+function parseHTMLToStructured(html: string): StructuredElement[] {
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = html
   
-  // Preservar quebras de linha de elementos block
-  const blockElements = ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'br']
-  blockElements.forEach(tag => {
-    const elements = tempDiv.querySelectorAll(tag)
-    elements.forEach(el => {
-      if (tag === 'br') {
-        el.replaceWith('\n')
-      } else {
-        el.insertAdjacentText('beforeend', '\n')
+  const elements: StructuredElement[] = []
+  
+  function processNode(node: Node): StructuredElement | null {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent?.trim()
+      if (!text) return null
+      return {
+        type: 'text',
+        content: text,
+      }
+    }
+    
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node as HTMLElement
+      const tagName = el.tagName.toLowerCase()
+      
+      // Processar headings
+      if (tagName.match(/^h[1-6]$/)) {
+        const level = parseInt(tagName.charAt(1))
+        const content = extractTextContent(el).trim()
+        if (content) {
+          return {
+            type: 'heading',
+            level,
+            content,
+          }
+        }
+      }
+      
+      // Processar parágrafos
+      if (tagName === 'p') {
+        // IGNORAR parágrafos que estão dentro de <li> - eles já são processados como parte do item da lista
+        const parentTag = el.parentElement?.tagName.toLowerCase()
+        if (parentTag === 'li') {
+          return null // Não processar <p> dentro de <li>
+        }
+        
+        const content = extractTextContent(el).trim()
+        // Filtrar parágrafos vazios (apenas espaços ou quebras de linha)
+        if (content && content.replace(/\s+/g, '').length > 0) {
+          return {
+            type: 'paragraph',
+            content,
+          }
+        }
+      }
+      
+      // Processar listas
+      if (tagName === 'ul' || tagName === 'ol') {
+        const listItems: StructuredElement[] = []
+        Array.from(el.children).forEach((child, index) => {
+          if (child.tagName.toLowerCase() === 'li') {
+            // Extrair TODO o conteúdo do <li>, incluindo texto dentro de <p>
+            // Isso evita que <p> dentro de <li> sejam processados como parágrafos separados
+            const itemContent = extractTextContent(child).trim()
+            // Filtrar itens vazios ou apenas espaços
+            if (itemContent && itemContent.replace(/\s+/g, '').length > 0) {
+              listItems.push({
+                type: 'listItem',
+                level: index + 1,
+                content: itemContent,
+                isOrdered: tagName === 'ol',
+              })
+            }
+          }
+        })
+        
+        // Só retornar lista se tiver pelo menos um item válido
+        if (listItems.length > 0) {
+          return {
+            type: 'list',
+            isOrdered: tagName === 'ol',
+            content: '',
+            children: listItems,
+          }
+        }
+      }
+      
+      // Processar blockquotes
+      if (tagName === 'blockquote') {
+        const content = extractTextContent(el).trim()
+        if (content) {
+          return {
+            type: 'blockquote',
+            content,
+          }
+        }
+      }
+      
+      // Para outros elementos (div, span, strong, em, etc.), processar filhos recursivamente
+      // Mas não criar um elemento próprio, apenas processar os filhos
+      // IMPORTANTE: Não processar <li> aqui - eles são processados apenas dentro de <ul>/<ol>
+      if (tagName === 'li') {
+        // <li> são processados apenas quando encontrados dentro de <ul>/<ol>
+        // Não processar como elemento separado aqui
+        return null
+      }
+      
+      const children: StructuredElement[] = []
+      Array.from(node.childNodes).forEach(child => {
+        const processed = processNode(child)
+        if (processed) {
+          // Filtrar elementos vazios
+          if (processed.content && processed.content.trim().length > 0) {
+            children.push(processed)
+          } else if (processed.type === 'list' && processed.children && processed.children.length > 0) {
+            // Incluir listas mesmo se não tiverem content próprio
+            children.push(processed)
+          }
+        }
+      })
+      
+      // Se temos filhos válidos, retornar o primeiro elemento block ou combinar textos
+      if (children.length > 0) {
+        // Se todos são texto, combinar em um parágrafo
+        if (children.every(c => c.type === 'text')) {
+          const combinedText = children.map(c => c.content).join(' ').trim()
+          if (combinedText && combinedText.replace(/\s+/g, '').length > 0) {
+            return {
+              type: 'paragraph',
+              content: combinedText,
+            }
+          }
+        } else {
+          // Se há elementos block, retornar null para que sejam processados no nível superior
+          // Isso permite que divs contenham múltiplos parágrafos
+          return null
+        }
+      }
+    }
+    
+    return null
+  }
+  
+  // Processar todos os nós filhos do div
+  function processAllNodes(nodes: NodeList): StructuredElement[] {
+    const result: StructuredElement[] = []
+    
+    Array.from(nodes).forEach(node => {
+      // Ignorar nós de texto soltos (fora de elementos)
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent?.trim()
+        if (text && text.replace(/\s+/g, '').length > 0) {
+          // Se há texto solto, criar um parágrafo
+          result.push({
+            type: 'paragraph',
+            content: text,
+          })
+        }
+        return
+      }
+      
+      const processed = processNode(node)
+      if (processed) {
+        // Validar antes de adicionar
+        if (processed.type === 'list' && processed.children && processed.children.length > 0) {
+          result.push(processed)
+        } else if (processed.content && processed.content.trim().replace(/\s+/g, '').length > 0) {
+          result.push(processed)
+        }
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        // Se retornou null, processar filhos recursivamente
+        const el = node as HTMLElement
+        const childElements = processAllNodes(el.childNodes)
+        result.push(...childElements)
       }
     })
-  })
+    
+    return result
+  }
   
-  // Remover múltiplas quebras de linha consecutivas (máximo 2)
-  let text = tempDiv.textContent || tempDiv.innerText || ''
-  text = text.replace(/\n{3,}/g, '\n\n')
-  
-  return text.trim()
+  return processAllNodes(tempDiv.childNodes)
 }
 
 /**
@@ -51,25 +254,39 @@ function wrapText(
   maxWidth: number,
   lineHeight: number
 ): number {
-  const words = text.split(' ')
+  // Filtrar texto vazio
+  if (!text || text.trim().length === 0) {
+    return y
+  }
+
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0)
+  if (words.length === 0) {
+    return y
+  }
+
   let line = ''
   let currentY = y
 
   for (let i = 0; i < words.length; i++) {
-    const testLine = line + words[i] + ' '
+    const testLine = line + (line ? ' ' : '') + words[i]
     const testWidth = doc.getTextWidth(testLine)
 
-    if (testWidth > maxWidth && i > 0) {
+    if (testWidth > maxWidth && line.length > 0) {
       doc.text(line, x, currentY)
-      line = words[i] + ' '
+      line = words[i]
       currentY += lineHeight
     } else {
       line = testLine
     }
   }
 
-  doc.text(line, x, currentY)
-  return currentY + lineHeight
+  // Renderizar última linha se houver conteúdo
+  if (line.trim().length > 0) {
+    doc.text(line, x, currentY)
+    currentY += lineHeight
+  }
+
+  return currentY
 }
 
 /**
@@ -163,48 +380,136 @@ export async function generateTermAcceptancePDF(
   doc.text('Term Content', margin, currentY)
   currentY += 8
 
-  // Renderizar HTML do termo - usar abordagem mais simples e segura
-  // Para documentos longos, converter HTML para texto formatado preservando estrutura
-  const termText = htmlToText(data.term_content)
+  // Renderizar HTML do termo preservando formatação
+  const structuredElements = parseHTMLToStructured(data.term_content)
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
 
-  // Processar o texto preservando parágrafos e estrutura básica
-  const paragraphs = termText.split(/\n\s*\n/).filter(p => p.trim())
-  
-  for (const paragraph of paragraphs) {
+  // Filtrar elementos vazios antes de renderizar
+  const validElements = structuredElements.filter((element, index) => {
+    // Filtrar elementos com conteúdo vazio ou apenas espaços
+    if (element.type !== 'list') {
+      if (!element.content || element.content.trim().length === 0) {
+        return false
+      }
+      // Verificar se o conteúdo tem pelo menos um caractere não-whitespace
+      if (element.content.replace(/\s+/g, '').length === 0) {
+        return false
+      }
+    }
+    
+    // Filtrar listas sem itens válidos
+    if (element.type === 'list') {
+      if (!element.children || element.children.length === 0) {
+        return false
+      }
+      // Verificar se há pelo menos um item com conteúdo válido
+      const hasValidItems = element.children.some(item => 
+        item.content && item.content.trim().replace(/\s+/g, '').length > 0
+      )
+      if (!hasValidItems) {
+        return false
+      }
+    }
+    
+    return true
+  })
+
+  function renderStructuredElement(element: StructuredElement, index: number): void {
     if (currentY > pageHeight - 30) {
       doc.addPage()
       currentY = margin
     }
 
-    // Verificar se é um título (linhas curtas, geralmente em maiúsculas ou com formatação especial)
-    const isTitle = paragraph.length < 100 && (
-      paragraph.toUpperCase() === paragraph ||
-      paragraph.match(/^\d+[\)\.]/) ||
-      paragraph.match(/^[A-Z][a-z]+:/)
-    )
+    const isFirstElement = index === 0
 
-    if (isTitle) {
-      doc.setFont('helvetica', 'bold')
-      doc.setFontSize(10)
-      currentY = wrapText(doc, paragraph.trim(), margin, currentY, contentWidth, 6)
-      doc.setFont('helvetica', 'normal')
-      doc.setFontSize(9)
-      currentY += 3
-    } else {
-      // Parágrafo normal
-      const lines = paragraph.split('\n').filter(l => l.trim())
-      for (const line of lines) {
-        if (currentY > pageHeight - 30) {
-          doc.addPage()
-          currentY = margin
+    switch (element.type) {
+      case 'heading': {
+        // Títulos com tamanho baseado no nível
+        const fontSize = 14 - (element.level || 1)
+        doc.setFont('helvetica', 'bold')
+        doc.setFontSize(fontSize)
+        // Adicionar espaço antes apenas se não for o primeiro elemento
+        if (!isFirstElement) {
+          currentY += 3
         }
-        currentY = wrapText(doc, line.trim(), margin, currentY, contentWidth, 5)
+        currentY = wrapText(doc, element.content.trim(), margin, currentY, contentWidth, fontSize * 0.35)
+        doc.setFont('helvetica', 'normal')
+        doc.setFontSize(9)
+        currentY += 1.5 // Espaço reduzido após o título
+        break
       }
-      currentY += 4 // Espaço entre parágrafos
+
+      case 'paragraph': {
+        // Parágrafos normais - apenas adicionar espaço se não for o primeiro elemento
+        if (!isFirstElement) {
+          currentY += 1.5
+        }
+        currentY = wrapText(doc, element.content.trim(), margin, currentY, contentWidth, 4.5)
+        break
+      }
+
+      case 'list': {
+        // Listas (ordenadas ou não)
+        if (!isFirstElement) {
+          currentY += 2
+        }
+        if (element.children && element.children.length > 0) {
+          // Filtrar itens vazios antes de renderizar
+          const validItems = element.children.filter(item => 
+            item.content && item.content.trim().length > 0
+          )
+          
+          validItems.forEach((item, itemIndex) => {
+            if (currentY > pageHeight - 30) {
+              doc.addPage()
+              currentY = margin
+            }
+            
+            const prefix = element.isOrdered 
+              ? `${itemIndex + 1}. ` 
+              : '• '
+            
+            // Renderizar item da lista com indentação
+            const indent = 5
+            const itemText = prefix + item.content.trim()
+            currentY = wrapText(doc, itemText, margin + indent, currentY, contentWidth - indent, 4.5)
+            // Espaço mínimo entre itens (apenas se não for o último)
+            if (itemIndex < validItems.length - 1) {
+              currentY += 0.5
+            }
+          })
+        }
+        break
+      }
+
+      case 'blockquote': {
+        // Blockquotes com indentação e estilo diferenciado
+        if (!isFirstElement) {
+          currentY += 1.5
+        }
+        doc.setFont('helvetica', 'italic')
+        const quoteIndent = 8
+        currentY = wrapText(doc, element.content.trim(), margin + quoteIndent, currentY, contentWidth - quoteIndent, 4.5)
+        doc.setFont('helvetica', 'normal')
+        break
+      }
+
+      case 'text': {
+        // Texto simples (usado como fallback)
+        if (!isFirstElement) {
+          currentY += 1
+        }
+        currentY = wrapText(doc, element.content.trim(), margin, currentY, contentWidth, 4.5)
+        break
+      }
     }
   }
+
+  // Renderizar todos os elementos válidos
+  validElements.forEach((element, index) => {
+    renderStructuredElement(element, index)
+  })
 
   // Nova página para metadados
   doc.addPage()

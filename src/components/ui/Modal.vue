@@ -33,11 +33,12 @@
               'border border-slate-200 dark:border-white/10',
               'shadow-2xl',
               'max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden',
+              'h-[90vh] sm:h-[85vh]',
               sizeClasses
             ]"
           >
             <!-- Header -->
-            <div v-if="$slots.header || title" class="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200 dark:border-white/10">
+            <div v-if="$slots.header || title" class="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200 dark:border-white/10 flex-shrink-0">
               <h3 v-if="title" class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white pr-2">
                 {{ title }}
               </h3>
@@ -52,12 +53,12 @@
             </div>
 
             <!-- Body -->
-            <div class="p-4 sm:p-6 max-h-[calc(100vh-200px)] sm:max-h-[calc(100vh-250px)] overflow-y-auto overflow-x-hidden">
+            <div class="p-4 sm:p-6 flex-1 overflow-y-auto overflow-x-hidden min-h-0">
               <slot />
             </div>
 
             <!-- Footer -->
-            <div v-if="$slots.footer" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-slate-200 dark:border-white/10">
+            <div v-if="$slots.footer" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-slate-200 dark:border-white/10 flex-shrink-0">
               <slot name="footer" />
             </div>
           </div>

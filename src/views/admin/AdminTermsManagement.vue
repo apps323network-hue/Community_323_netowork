@@ -107,7 +107,7 @@
         :closable="true"
         size="xl"
       >
-        <div class="space-y-6">
+        <div class="space-y-6 flex flex-col h-full min-h-0">
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
               {{ t('adminTermsManagement.termType') }}
@@ -134,14 +134,17 @@
             />
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+          <div class="flex-1 min-h-0 flex flex-col">
+            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2 flex-shrink-0">
               {{ t('adminTermsManagement.content') }}
             </label>
-            <RichTextEditor
-              v-model="termForm.content"
-              :placeholder="t('adminTermsManagement.contentPlaceholder')"
-            />
+            <div class="flex-1 min-h-0">
+              <RichTextEditor
+                v-model="termForm.content"
+                :placeholder="t('adminTermsManagement.contentPlaceholder')"
+                max-height="100%"
+              />
+            </div>
           </div>
 
           <div v-if="editingTerm">

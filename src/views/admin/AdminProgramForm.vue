@@ -226,6 +226,16 @@
                     <input v-model="form.featured" type="checkbox" id="featured" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" />
                     <label for="featured" class="text-slate-700 dark:text-gray-300 font-medium">Programa em Destaque (⭐)</label>
                   </div>
+                  
+                  <div class="flex items-center gap-2 mt-4">
+                    <input v-model="form.localhost_only" type="checkbox" id="localhost_only" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" />
+                    <label for="localhost_only" class="text-slate-700 dark:text-gray-300 font-medium">
+                      Apenas Localhost (🔧 Debug)
+                    </label>
+                  </div>
+                  <p v-if="form.localhost_only" class="text-xs text-amber-600 dark:text-amber-400 mt-1 ml-7">
+                    ⚠️ Este programa permitirá acesso local sem pagamento para debug
+                  </p>
                    
                   <div class="border-t border-slate-200 dark:border-white/10 my-4 pt-6">
                     <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">Metas e Pré-requisitos</h4>
@@ -460,6 +470,7 @@ const form = ref<CreateProgramData>({
   max_students: undefined,
   status: 'draft',
   featured: false,
+  localhost_only: false,
   classroom_enabled: false,
   duration_hours: undefined,
   classroom_course_id: '',
