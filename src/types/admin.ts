@@ -107,6 +107,8 @@ export interface PostStats {
   removedToday: number
 }
 
+export type ServiceStatus = 'pending' | 'approved' | 'rejected'
+
 export interface AdminService {
   id: string;
   nome_pt: string;
@@ -119,6 +121,12 @@ export interface AdminService {
   beneficio_membro_en?: string;
   destaque: boolean;
   ativo: boolean;
+  status: ServiceStatus;
+  rejection_reason?: string;
+  created_by?: string;
+  is_user_service?: boolean;
+  approved_by?: string;
+  approved_at?: string;
   preco?: number;
   moeda?: 'USD' | 'BRL';
   created_at: string;
@@ -136,6 +144,7 @@ export interface ServiceStats {
   active: number
   inactive: number
   featured: number
+  pending: number
 }
 
 export interface BannedWord {

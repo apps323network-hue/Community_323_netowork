@@ -109,8 +109,20 @@
                   Destaque
                 </span>
                 <span
-                  v-if="!service.ativo"
+                  v-if="service.status === 'pending'"
+                  class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400"
+                >
+                  Pendente
+                </span>
+                <span
+                  v-if="service.status === 'rejected'"
                   class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-400"
+                >
+                  Recusado
+                </span>
+                <span
+                  v-if="!service.ativo && service.status === 'approved'"
+                  class="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-500/20 text-slate-400"
                 >
                   Inativo
                 </span>
@@ -136,18 +148,34 @@
           </div>
 
           <div class="flex gap-2 mt-4">
-            <button
-              @click="editService(service)"
-              class="flex-1 px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white text-sm font-medium transition-all"
-            >
-              Editar
-            </button>
-            <button
-              @click="deleteService(service.id)"
-              class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium transition-all"
-            >
-              <span class="material-symbols-outlined text-lg">delete</span>
-            </button>
+            <template v-if="service.status === 'pending'">
+              <button
+                @click="handleApprove(service.id)"
+                class="flex-1 px-4 py-2 bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 rounded-lg text-green-400 text-sm font-bold transition-all"
+              >
+                Aprovar
+              </button>
+              <button
+                @click="handleReject(service.id)"
+                class="flex-1 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 text-sm font-bold transition-all"
+              >
+                Recusar
+              </button>
+            </template>
+            <template v-else>
+              <button
+                @click="editService(service)"
+                class="flex-1 px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-900 dark:text-white text-sm font-medium transition-all"
+              >
+                Editar
+              </button>
+              <button
+                @click="deleteService(service.id)"
+                class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-400 text-sm font-medium transition-all"
+              >
+                <span class="material-symbols-outlined text-lg">delete</span>
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -274,6 +302,28 @@
             </div>
           </div>
 
+          <div>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Status do Serviço</label>
+            <select
+              v-model="formData.status"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            >
+              <option value="pending">Pendente (Em análise)</option>
+              <option value="approved">Aprovado (Ativo)</option>
+              <option value="rejected">Recusado</option>
+            </select>
+          </div>
+
+          <div v-if="formData.status === 'rejected'" class="mt-2">
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Motivo da Recusa</label>
+            <textarea
+              v-model="formData.rejection_reason"
+              rows="2"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              placeholder="Descreva o motivo da recusa para o usuário..."
+            ></textarea>
+          </div>
+
           <div class="flex gap-4">
             <label class="flex items-center gap-2 cursor-pointer">
               <input
@@ -312,6 +362,34 @@
           </div>
         </form>
       </Modal>
+      
+      <!-- Modal de Recusa -->
+      <Modal
+        v-model="showRejectModal"
+        title="Motivo da Recusa"
+      >
+        <div class="space-y-4">
+          <p class="text-slate-600 dark:text-white/60 text-sm">
+            Informe ao usuário o motivo pelo qual este serviço está sendo recusado.
+          </p>
+          <textarea
+            v-model="rejectionReason"
+            rows="4"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            placeholder="Ex: Descrição incompleta, imagem inadequada, etc..."
+          ></textarea>
+          
+          <div class="flex pt-2">
+            <button
+              @click="confirmReject"
+              :disabled="submitting || !rejectionReason.trim()"
+              class="w-full px-4 py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-all disabled:opacity-50"
+            >
+              {{ submitting ? 'Recusando...' : 'Confirmar Recusa' }}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   </AdminLayout>
 </template>
@@ -328,11 +406,15 @@ import { toast } from 'vue-sonner'
 const router = useRouter()
 const adminStore = useAdminStore()
 
-const activeFilter = ref<'all' | 'active' | 'inactive' | 'featured'>('all')
+const activeFilter = ref<'all' | 'active' | 'inactive' | 'featured' | 'pending'>('all')
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const submitting = ref(false)
 const editingService = ref<AdminService | null>(null)
+
+const showRejectModal = ref(false)
+const rejectionReason = ref('')
+const serviceToReject = ref<string | null>(null)
 
 const showModal = computed({
   get: () => showCreateModal.value || showEditModal.value,
@@ -346,6 +428,7 @@ const showModal = computed({
 
 const filters = [
   { id: 'all' as const, label: 'Todos' },
+  { id: 'pending' as const, label: 'Pendentes' },
   { id: 'active' as const, label: 'Ativos' },
   { id: 'inactive' as const, label: 'Inativos' },
   { id: 'featured' as const, label: 'Em Destaque' },
@@ -368,6 +451,9 @@ const displayedServices = computed(() => {
   if (activeFilter.value === 'featured') {
     return allServices.value.filter(s => s.destaque)
   }
+  if (activeFilter.value === 'pending') {
+    return allServices.value.filter(s => s.status === 'pending')
+  }
   return allServices.value
 })
 
@@ -382,6 +468,8 @@ const formData = ref<Partial<AdminService>>({
   beneficio_membro_en: '',
   destaque: false,
   ativo: true,
+  status: 'approved',
+  rejection_reason: '',
   preco: undefined,
   moeda: 'USD',
 })
@@ -407,7 +495,9 @@ function editService(service: AdminService) {
     beneficio_membro_en: service.beneficio_membro_en || '',
     destaque: service.destaque,
     ativo: service.ativo,
-    preco: service.preco,
+    status: service.status,
+    rejection_reason: service.rejection_reason || '',
+    preco: service.preco ? service.preco / 100 : undefined,
     moeda: service.moeda || 'USD',
   }
   showEditModal.value = true
@@ -417,11 +507,16 @@ async function handleSubmit() {
   try {
     submitting.value = true
 
+    const dataToSave = {
+      ...formData.value,
+      preco: formData.value.preco ? Math.round(formData.value.preco * 100) : undefined
+    }
+
     if (editingService.value) {
-      await adminStore.updateService(editingService.value.id, formData.value)
+      await adminStore.updateService(editingService.value.id, dataToSave)
       toast.success('Serviço atualizado com sucesso!')
     } else {
-      await adminStore.createService(formData.value)
+      await adminStore.createService(dataToSave)
       toast.success('Serviço criado com sucesso!')
     }
 
@@ -429,6 +524,38 @@ async function handleSubmit() {
   } catch (error: any) {
     toast.error(error.message || 'Erro ao salvar serviço')
     console.error('Error saving service:', error)
+  } finally {
+    submitting.value = false
+  }
+}
+
+async function handleApprove(serviceId: string) {
+  try {
+    await adminStore.approveService(serviceId)
+    toast.success('Serviço aprovado com sucesso!')
+  } catch (error: any) {
+    toast.error('Erro ao aprovar serviço')
+  }
+}
+
+async function handleReject(serviceId: string) {
+  serviceToReject.value = serviceId
+  rejectionReason.value = ''
+  showRejectModal.value = true
+}
+
+async function confirmReject() {
+  if (!serviceToReject.value || !rejectionReason.value.trim()) return
+  
+  try {
+    submitting.value = true
+    await adminStore.rejectService(serviceToReject.value, rejectionReason.value)
+    toast.success('Serviço recusado')
+    showRejectModal.value = false
+    serviceToReject.value = null
+    rejectionReason.value = ''
+  } catch (error: any) {
+    toast.error('Erro ao recusar serviço')
   } finally {
     submitting.value = false
   }
@@ -463,6 +590,8 @@ function closeModal() {
     beneficio_membro_en: '',
     destaque: false,
     ativo: true,
+    status: 'approved',
+    rejection_reason: '',
     preco: undefined,
     moeda: 'USD',
   }
@@ -507,6 +636,7 @@ onMounted(async () => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

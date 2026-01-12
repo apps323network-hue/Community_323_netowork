@@ -33,7 +33,6 @@
               'border border-slate-200 dark:border-white/10',
               'shadow-2xl',
               'max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden',
-              'h-[90vh] sm:h-[85vh]',
               sizeClasses
             ]"
           >

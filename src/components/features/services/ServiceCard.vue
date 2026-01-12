@@ -2,12 +2,22 @@
   <div class="group relative flex flex-col justify-between gap-2.5 sm:gap-3 md:gap-4 rounded-xl border border-slate-200/60 dark:border-white/5 bg-white dark:bg-surface-card backdrop-blur-sm p-3 sm:p-4 md:p-6 transition-all duration-300 hover:-translate-y-1 hover:border-secondary/50 shadow-premium dark:shadow-none hover:shadow-premium-hover">
     <!-- Featured Badge -->
     <div
-      v-if="service.destaque"
-      class="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 z-10 opacity-100 group-hover:opacity-0 transition-opacity"
+      v-if="service.destaque || service.status"
+      class="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 z-10 flex flex-col items-end gap-2"
     >
-      <span class="bg-primary/20 text-primary dark:text-pink-400 text-[8px] sm:text-[9px] md:text-[10px] font-bold px-1 sm:px-1.5 md:px-2 py-0.5 rounded uppercase tracking-wide border border-primary/20 shadow-sm">
+      <span v-if="service.destaque" class="bg-primary/20 text-primary dark:text-pink-400 text-[8px] sm:text-[9px] md:text-[10px] font-bold px-1 sm:px-1.5 md:px-2 py-0.5 rounded uppercase tracking-wide border border-primary/20 shadow-sm">
         {{ t('services.featured') }}
       </span>
+      
+      <!-- Status Badges (Visible only for owners/admins or when filtering 'mine') -->
+      <template v-if="service.status && service.status !== 'approved'">
+        <span v-if="service.status === 'pending'" class="bg-blue-500/20 text-blue-400 text-[8px] sm:text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border border-blue-500/20">
+          Pendente
+        </span>
+        <span v-if="service.status === 'rejected'" class="bg-red-500/20 text-red-400 text-[8px] sm:text-[9px] md:text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border border-red-500/20">
+          Recusado
+        </span>
+      </template>
     </div>
 
     <!-- Arrow on hover -->
@@ -30,6 +40,12 @@
       <p class="text-slate-600 dark:text-gray-400 text-[11px] sm:text-xs md:text-sm font-normal leading-relaxed mb-2.5 sm:mb-3 md:mb-4 line-clamp-4">
         {{ currentLocale === 'pt-BR' ? service.descricao_pt : (service.descricao_en || service.descricao_pt) }}
       </p>
+
+      <!-- Rejection Reason -->
+      <div v-if="service.status === 'rejected' && service.rejection_reason" class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+        <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Motivo da Recusa:</p>
+        <p class="text-xs text-red-200/80 italic leading-relaxed">{{ service.rejection_reason }}</p>
+      </div>
 
       <!-- Price Section -->
       <div v-if="service.preco" class="mb-4">
@@ -58,24 +74,43 @@
     </div>
 
     <!-- Button -->
-    <button
-      class="mt-2 w-full rounded-lg py-2.5 text-center text-sm font-bold transition-all duration-300"
-      :class="service.preco 
-        ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-md hover:shadow-[0_0_20px_rgba(244,37,244,0.4)] hover:scale-[1.02] active:scale-95' 
-        : 'border border-secondary/50 bg-transparent text-secondary-dark dark:text-secondary hover:bg-secondary hover:text-white dark:hover:text-black hover:shadow-[0_0_15px_rgba(0,243,255,0.4)]'"
-      @click="handleAction"
-    >
-      {{ getButtonText() }}
-    </button>
+    <!-- Buttons -->
+    <div class="flex gap-2 mt-2">
+      <button
+        v-if="isOwner"
+        @click="$emit('edit-service', service)"
+        class="flex-1 rounded-lg py-2.5 text-center text-sm font-bold border border-white/10 bg-white/5 text-white hover:bg-white/10 transition-all active:scale-95"
+      >
+        Editar
+      </button>
+      
+      <button
+        v-if="service.status === 'approved'"
+        class="flex-[2] rounded-lg py-2.5 text-center text-sm font-bold transition-all duration-300"
+        :class="service.preco 
+          ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-md hover:shadow-[0_0_20px_rgba(244,37,244,0.4)] hover:scale-[1.02] active:scale-95' 
+          : 'border border-secondary/50 bg-transparent text-secondary-dark dark:text-secondary hover:bg-secondary hover:text-white dark:hover:text-black hover:shadow-[0_0_15px_rgba(0,243,255,0.4)]'"
+        @click="handleAction"
+      >
+        {{ getButtonText() }}
+      </button>
+      
+      <div v-else-if="isOwner" class="flex-1 flex items-center justify-center text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-500/5 rounded-lg border border-slate-500/10">
+        Em Análise
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useLocale } from '@/composables/useLocale'
 import { usePublicAccess } from '@/composables/usePublicAccess'
+import { useAuthStore } from '@/stores/auth'
 
 const { locale: currentLocale, t } = useLocale()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
+const authStore = useAuthStore()
 
 interface Service {
   id: string
@@ -90,6 +125,10 @@ interface Service {
   parceiro_id?: string
   preco?: number
   moeda?: string
+  status?: 'pending' | 'approved' | 'rejected'
+  rejection_reason?: string
+  created_by?: string
+  is_user_service?: boolean
 }
 
 const props = defineProps<{
@@ -98,7 +137,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'request-service': [service: Service]
+  'edit-service': [service: Service]
 }>()
+
+const isOwner = computed(() => {
+  return authStore.user?.id === props.service.created_by
+})
 
 function getButtonText(): string {
   return props.service.preco 

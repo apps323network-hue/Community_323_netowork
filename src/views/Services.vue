@@ -80,6 +80,7 @@
             :key="service.id"
             :service="service"
             @request-service="handleRequestService"
+            @edit-service="handleEditService"
           />
         </div>
       </div>
@@ -363,7 +364,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSupabase } from '@/composables/useSupabase'
@@ -396,6 +397,7 @@ const selectedService = ref<any>(null)
 const requestMessage = ref('')
 const submitting = ref(false)
 const creatingService = ref(false)
+const editingServiceId = ref<string | null>(null)
 const paymentMethod = ref<'card' | 'pix' | null>(null)
 const exchangeRate = ref(5.90)
 
@@ -407,13 +409,21 @@ const newService = ref({
   beneficio_membro: ''
 })
 
-const filters = computed(() => [
-  { id: 'all', label: t('navigation.allCategories') },
-  { id: 'legal', label: t('services.filterLegal') },
-  { id: 'marketing', label: t('services.filterMarketing') },
-  { id: 'finance', label: t('services.filterFinance') },
-  { id: 'mentoring', label: t('services.filterMentoring') },
-])
+const filters = computed(() => {
+  const baseFilters = [
+    { id: 'all', label: t('navigation.allCategories') },
+    { id: 'legal', label: t('services.filterLegal') },
+    { id: 'marketing', label: t('services.filterMarketing') },
+    { id: 'finance', label: t('services.filterFinance') },
+    { id: 'mentoring', label: t('services.filterMentoring') },
+  ]
+  
+  if (subscriptionsStore.hasActiveSubscription) {
+    baseFilters.push({ id: 'mine', label: 'Meus Serviços' })
+  }
+  
+  return baseFilters
+})
 
 const testimonials = computed(() => [
   {
@@ -484,20 +494,34 @@ function calculateTotal(basePriceCents: number, method: 'card' | 'pix'): number 
 async function fetchServices() {
   try {
     loading.value = true
-    const { data, error } = await supabase
+    
+    let query = supabase
       .from('services')
       .select('*')
-      .eq('ativo', true)
-      .order('destaque', { ascending: false })
     
-    if (error) throw error
+    if (activeFilter.value === 'all') {
+      query = query.eq('ativo', true).eq('status', 'approved')
+    } else if (activeFilter.value === 'mine') {
+      if (!authStore.user) return
+      query = query.eq('created_by', authStore.user.id)
+    } else {
+      query = query.eq('categoria', activeFilter.value).eq('ativo', true).eq('status', 'approved')
+    }
+
+    const { data, error: fetchError } = await query.order('destaque', { ascending: false })
+
+    if (fetchError) throw fetchError
     services.value = data || []
   } catch (error) {
-    console.error('Erro ao buscar serviços:', error)
+    console.error('Error fetching services:', error)
   } finally {
     loading.value = false
   }
 }
+
+watch(activeFilter, () => {
+  fetchServices()
+})
 
 const filteredServices = computed(() => {
   if (activeFilter.value === 'all') return services.value
@@ -628,14 +652,13 @@ async function handlePublishService() {
 
   // Check subscription status
   await subscriptionsStore.fetchSubscription()
-  
   if (!subscriptionsStore.hasActiveSubscription) {
-    toast.info('Você precisa de uma assinatura para publicar serviços')
-    router.push('/subscription')
+    toast.error('Apenas membros Premium podem publicar serviços')
+    router.push('/precos')
     return
   }
 
-  // Open create service modal
+  editingServiceId.value = null
   newService.value = {
     nome: '',
     descricao: '',
@@ -646,28 +669,66 @@ async function handlePublishService() {
   showCreateServiceModal.value = true
 }
 
+async function handleEditService(service: any) {
+  editingServiceId.value = service.id
+  newService.value = {
+    nome: service.nome_pt,
+    descricao: service.descricao_pt,
+    categoria: service.categoria,
+    preco: service.preco ? service.preco / 100 : null,
+    beneficio_membro: service.beneficio_membro_pt
+  }
+  showCreateServiceModal.value = true
+}
+
 async function submitNewService() {
   if (!authStore.user) return
   
   try {
     creatingService.value = true
 
-    const { error } = await supabase
-      .from('services')
-      .insert({
-        nome: newService.value.nome,
-        descricao: newService.value.descricao,
-        categoria: newService.value.categoria,
-        preco: newService.value.preco || null,
-        beneficio_membro: newService.value.beneficio_membro || null,
-        moeda: 'USD',
-        ativo: false, // Needs approval
-        destaque: false,
-        created_by: authStore.user.id,
-        is_user_service: true
-      })
+    if (editingServiceId.value) {
+      const { error } = await supabase
+        .from('services')
+        .update({
+          nome_pt: newService.value.nome,
+          nome_en: newService.value.nome,
+          descricao_pt: newService.value.descricao,
+          descricao_en: newService.value.descricao,
+          categoria: newService.value.categoria,
+          preco: newService.value.preco ? Math.round(newService.value.preco * 100) : null,
+          beneficio_membro_pt: newService.value.beneficio_membro || null,
+          beneficio_membro_en: newService.value.beneficio_membro || null,
+          status: 'pending', // Volta para análise após editar
+          rejection_reason: null // Limpa o motivo da recusa anterior
+        })
+        .eq('id', editingServiceId.value)
 
-    if (error) throw error
+      if (error) throw error
+      toast.success('Serviço atualizado e enviado para nova análise!')
+    } else {
+      const { error } = await supabase
+        .from('services')
+        .insert({
+          nome_pt: newService.value.nome,
+          nome_en: newService.value.nome,
+          descricao_pt: newService.value.descricao,
+          descricao_en: newService.value.descricao,
+          categoria: newService.value.categoria,
+          preco: newService.value.preco ? Math.round(newService.value.preco * 100) : null,
+          beneficio_membro_pt: newService.value.beneficio_membro || null,
+          beneficio_membro_en: newService.value.beneficio_membro || null,
+          moeda: 'USD',
+          ativo: false,
+          status: 'pending',
+          destaque: false,
+          created_by: authStore.user.id,
+          is_user_service: true
+        })
+
+      if (error) throw error
+      toast.success('Serviço enviado para aprovação!')
+    }
 
     toast.success('Serviço enviado para aprovação!')
     showCreateServiceModal.value = false
