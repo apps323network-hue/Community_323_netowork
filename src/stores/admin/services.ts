@@ -17,6 +17,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
     active: 0,
     inactive: 0,
     featured: 0,
+    pending: 0,
   })
 
   // Buscar todos os serviços
@@ -90,6 +91,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
         beneficio_membro_en: serviceData.beneficio_membro_en && serviceData.beneficio_membro_en.trim() ? serviceData.beneficio_membro_en : null,
         destaque: serviceData.destaque || false,
         ativo: serviceData.ativo !== undefined ? serviceData.ativo : true,
+        status: serviceData.status || 'approved',
         preco: serviceData.preco && serviceData.preco > 0 ? serviceData.preco : null,
         moeda: serviceData.moeda && (serviceData.moeda === 'USD' || serviceData.moeda === 'BRL') ? serviceData.moeda : 'USD',
       }
@@ -114,7 +116,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
         action: 'create_service',
         targetId: data.id,
         targetType: 'service',
-        details: { nome: data.nome, categoria: data.categoria }
+        details: { nome: data.nome_pt, categoria: data.categoria }
       })
 
       return data
@@ -164,6 +166,8 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
       }
       if (updates.destaque !== undefined) cleanData.destaque = updates.destaque
       if (updates.ativo !== undefined) cleanData.ativo = updates.ativo
+      if (updates.status !== undefined) cleanData.status = updates.status
+      if (updates.rejection_reason !== undefined) cleanData.rejection_reason = updates.rejection_reason
       if (updates.preco !== undefined) {
         cleanData.preco = updates.preco && updates.preco > 0 ? updates.preco : null
       }
@@ -199,6 +203,113 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
     } catch (err: any) {
       error.value = err.message
       console.error('Error updating service:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Aprovar serviço
+  async function approveService(serviceId: string) {
+    if (!authStore.user) throw new Error('Usuário não autenticado')
+    
+    loading.value = true
+    try {
+      const { data, error: updateError } = await supabase
+        .from('services')
+        .update({
+          status: 'approved',
+          ativo: true,
+          approved_by: authStore.user.id,
+          approved_at: new Date().toISOString(),
+          rejection_reason: null
+        })
+        .eq('id', serviceId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      // Enviar notificação para o dono do serviço
+      if (data.created_by) {
+        try {
+          await supabase.from('notifications').insert({
+            user_id: data.created_by,
+            type: 'service_update',
+            title: 'Service Approved',
+            content: `Your service "${data.nome_en || data.nome_pt}" has been approved and is now visible to the community.`,
+            metadata: { service_id: serviceId, status: 'approved' }
+          })
+        } catch (notifErr) {
+          console.error('Erro ao enviar notificação de aprovação:', notifErr)
+        }
+      }
+
+      await fetchAllServices()
+      await fetchServiceStats()
+
+      logAdminAction(authStore.user.id, {
+        action: 'approve_service',
+        targetId: serviceId,
+        targetType: 'service'
+      })
+
+      return data
+    } catch (err: any) {
+      error.value = err.message
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Rejeitar serviço
+  async function rejectService(serviceId: string, reason: string) {
+    if (!authStore.user) throw new Error('Usuário não autenticado')
+    
+    loading.value = true
+    try {
+      const { data, error: updateError } = await supabase
+        .from('services')
+        .update({
+          status: 'rejected',
+          rejection_reason: reason,
+          ativo: false
+        })
+        .eq('id', serviceId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      // Enviar notificação para o dono do serviço
+      if (data.created_by) {
+        try {
+          await supabase.from('notifications').insert({
+            user_id: data.created_by,
+            type: 'service_update',
+            title: 'Service Needs Adjustment',
+            content: `Your service "${data.nome_en || data.nome_pt}" was reviewed and requires adjustments. Reason: ${reason}`,
+            metadata: { service_id: serviceId, status: 'rejected', reason }
+          })
+        } catch (notifErr) {
+          console.error('Erro ao enviar notificação de recusa:', notifErr)
+        }
+      }
+
+      await fetchAllServices()
+      await fetchServiceStats()
+
+      logAdminAction(authStore.user.id, {
+        action: 'reject_service',
+        targetId: serviceId,
+        targetType: 'service',
+        details: { reason }
+      })
+
+      return data
+    } catch (err: any) {
+      error.value = err.message
       throw err
     } finally {
       loading.value = false
@@ -246,7 +357,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
     try {
       const { data, error: queryError } = await supabase
         .from('services')
-        .select('ativo, destaque')
+        .select('ativo, destaque, status')
 
       if (queryError) throw queryError
 
@@ -254,12 +365,14 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
       const active = data?.filter(s => s.ativo).length || 0
       const inactive = data?.filter(s => !s.ativo).length || 0
       const featured = data?.filter(s => s.destaque).length || 0
+      const pending = data?.filter(s => s.status === 'pending').length || 0
 
       serviceStats.value = {
         total,
         active,
         inactive,
         featured,
+        pending,
       }
     } catch (err: any) {
       console.error('Error fetching service stats:', err)
@@ -272,6 +385,8 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
     fetchAllServices,
     createService,
     updateService,
+    approveService,
+    rejectService,
     deleteService,
     fetchServiceStats,
   }

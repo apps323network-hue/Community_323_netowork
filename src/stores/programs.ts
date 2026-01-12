@@ -14,6 +14,7 @@ interface ProgramsState {
     programs: Program[]
     currentProgram: Program | null
     myEnrollments: ProgramEnrollment[]
+    completedLessons: string[] // IDs of completed lessons for current program
     loading: boolean
     error: string | null
 }
@@ -23,6 +24,7 @@ export const useProgramsStore = defineStore('programs', {
         programs: [],
         currentProgram: null,
         myEnrollments: [],
+        completedLessons: [],
         loading: false,
         error: null,
     }),
@@ -247,7 +249,29 @@ export const useProgramsStore = defineStore('programs', {
 
                 if (error) throw error
 
-                if (error) throw error
+                // Record terms acceptance if provided
+                if (data.accepted_terms) {
+                    // Fetch program terms to snapshot
+                    const { data: program } = await supabase
+                        .from('programs')
+                        .select('terms_content_pt, terms_content_en')
+                        .eq('id', data.program_id)
+                        .single()
+                    
+                    if (program && (program.terms_content_pt || program.terms_content_en)) {
+                       await supabase
+                        .from('item_terms_acceptance')
+                        .insert({
+                            user_id: user.id,
+                            item_type: 'program',
+                            item_id: data.program_id,
+                            terms_snapshot_pt: program.terms_content_pt,
+                            terms_snapshot_en: program.terms_content_en,
+                            ip_address: 'client-side', 
+                            user_agent: navigator.userAgent
+                        })
+                    }
+                }
 
                 // Update current students count
                 await supabase.rpc('increment_program_students', { program_id: data.program_id })
@@ -335,6 +359,61 @@ export const useProgramsStore = defineStore('programs', {
                 throw err
             } finally {
                 this.loading = false
+            }
+        },
+
+        // Fetch completed lessons for a program
+        async fetchUserProgress(programId: string) {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return
+
+                const { data, error } = await supabase
+                    .from('lesson_progress')
+                    .select('lesson_id')
+                    .eq('user_id', user.id)
+                    .eq('program_id', programId)
+
+                if (error) throw error
+
+                this.completedLessons = data.map(item => item.lesson_id)
+            } catch (err) {
+                console.error('Error fetching user progress:', err)
+            }
+        },
+
+        // Mark a lesson as complete
+        async markLessonComplete(programId: string, lessonId: string) {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return
+
+                // Check if already completed to avoid unnecessary calls
+                if (this.completedLessons.includes(lessonId)) return
+
+                const { error } = await supabase
+                    .from('lesson_progress')
+                    .upsert({
+                        user_id: user.id,
+                        program_id: programId,
+                        lesson_id: lessonId,
+                        completed_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'user_id,lesson_id'
+                    })
+
+                if (error) throw error
+
+                // Optimistic update
+                if (!this.completedLessons.includes(lessonId)) {
+                    this.completedLessons.push(lessonId)
+                }
+
+                // Refresh enrollment to get updated percentage (optional, since trigger handles it)
+                // But we want the UI to reflect the percentage change eventually
+                await this.fetchMyEnrollments()
+            } catch (err) {
+                console.error('Error marking lesson complete:', err)
             }
         },
 

@@ -46,6 +46,7 @@
           <div class="lg:col-span-4 xl:col-span-3 space-y-6">
             <ProfileCard
               :name="member.nome"
+              :email="(member.show_email || isAdmin) ? member.email : ''"
               :profession="member.area_atuacao || ''"
               :avatarUrl="member.avatar_url"
               :verified="member.badge === 'Verified' || member.plano === 'Premium'"
@@ -104,17 +105,21 @@
             />
 
             <!-- Quick Contacts (Email/WhatsApp) -->
-            <div v-if="(member.show_whatsapp && member.whatsapp) || (member.show_email && member.email)" class="bg-surface-dark border border-white/5 rounded-2xl p-5 space-y-4">
+            <div v-if="(member.show_whatsapp && member.whatsapp) || ((member.show_email || isAdmin) && member.email)" class="bg-surface-dark border border-white/5 rounded-2xl p-5 space-y-4">
               <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest">Contatos Diretos</h4>
               
               <a v-if="member.show_whatsapp && member.whatsapp" :href="whatsappLink" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-green-500/10 border border-transparent hover:border-green-500/30 transition-all group">
                 <span class="material-symbols-outlined text-green-400">chat</span>
                 <span class="text-sm text-gray-300 group-hover:text-white truncate">WhatsApp</span>
               </a>
+              
+              <div v-if="isAdmin && member.email && !member.show_email" class="px-3 py-1 bg-secondary/10 border border-secondary/20 rounded-lg mb-2">
+                <span class="text-[10px] text-secondary font-bold uppercase tracking-wider">Visível apenas para Admin</span>
+              </div>
 
-              <a v-if="member.show_email && member.email" :href="`mailto:${member.email}`" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-secondary/10 border border-transparent hover:border-secondary/30 transition-all group">
+              <a v-if="(member.show_email || isAdmin) && member.email" :href="`mailto:${member.email}`" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-secondary/10 border border-transparent hover:border-secondary/30 transition-all group">
                 <span class="material-symbols-outlined text-secondary">mail</span>
-                <span class="text-sm text-gray-300 group-hover:text-white truncate">Enviar E-mail</span>
+                <span class="text-sm text-gray-300 group-hover:text-white truncate">{{ member.email }}</span>
               </a>
             </div>
           </div>
@@ -129,7 +134,7 @@
               :city="member.cidade || ''"
               :state="member.estado || ''"
               :nationality="member.nacionalidade || ''"
-              :email="member.show_email ? member.email : ''"
+              :email="(member.show_email || isAdmin) ? member.email : ''"
               :whatsapp="member.show_whatsapp ? member.whatsapp : ''"
               :bio="member.bio || member.objetivo || ''"
               :readonly="true"
@@ -284,6 +289,7 @@ import { usePosts } from '@/composables/usePosts'
 import { useBookmarks } from '@/composables/useBookmarks'
 import { useConnections } from '@/composables/useConnections'
 import { useAuthStore } from '@/stores/auth'
+import { useUserStore } from '@/stores/user'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'vue-sonner'
 import { sendConnectionRequestEmail } from '@/lib/emails'
@@ -297,6 +303,9 @@ const { posts: memberPosts, loading: postsLoading, hasMore: postsHasMore, loadPo
 const { isBookmarked: checkBookmarked, toggleBookmark, fetchBookmarks, loading: bookmarkLoading } = useBookmarks()
 const { sendConnectionRequest, getConnectionStatus, fetchConnectionsCount } = useConnections()
 const authStore = useAuthStore()
+const userStore = useUserStore()
+
+const isAdmin = computed(() => userStore.profile?.role === 'admin')
 
 const member = ref<Member | null>(null)
 const memberConnections = ref(0)

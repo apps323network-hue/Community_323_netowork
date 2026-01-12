@@ -60,7 +60,9 @@
         "minutesAgo": "min ago",
         "hoursAgo": "h ago",
         "daysAgo": "d ago",
-        "secondsShort": "Sec"
+        "secondsShort": "Sec",
+        "next": "Next",
+        "previous": "Previous"
     },
     "navigation": {
         "home": "Feed",
@@ -101,6 +103,7 @@
         "dontHaveAccount": "Don't have an account?",
         "alreadyHaveAccount": "Already have an account?",
         "welcomeBack": "Welcome Back",
+        "orContinueWith": "Or continue with",
         "joinUs": "Join Us",
         "loginSubtitle": "Access your account to connect.",
         "registerSubtitle": "Create your account and start expanding your network.",
@@ -1133,6 +1136,26 @@
         "submitReview": "Submit Review",
         "reviewSuccess": "Review submitted successfully!",
         "reviewError": "Error submitting review.",
+        "previousLesson": "Previous Lesson",
+        "nextLesson": "Next Lesson",
+        "noDescription": "No description available for this lesson.",
+        "exclusiveContent": "Exclusive Content",
+        "exclusiveContentDesc": "This content is exclusive to enrolled students. If you are already a student, please log in to access.",
+        "textBasedLesson": "This lesson is text-based",
+        "textBasedLessonDesc": "Check the description and materials below to complete this lesson.",
+        "unlockLesson": "Unlock Lesson",
+        "noMaterials": "No Materials",
+        "noMaterialsDesc": "This lesson has no supporting materials.",
+        "programNotFound": "Program not found",
+        "programNotFoundDesc": "You do not have access to this program or it does not exist.",
+        "backAction": "Back to Programs",
+        "courseContent": "Course Content",
+        "moduleLabel": "Module",
+        "lessonLabel": "Lesson",
+        "completed": "completed",
+        "modules": "modules",
+        "lessons": "lessons",
+        "previewLabel": "Preview",
         "noProgramsFound": "No programs found",
         "noProgramsFoundDesc": "There are no programs available at the moment.",
         "noEnrollmentsFound": "You are not enrolled in any programs yet",
@@ -1458,7 +1481,7 @@
         "pdfError": "Error generating PDF"
     },
     "adminTermsManagement": {
-        "title": "Terms Management",
+        "pageTitle": "Terms Management",
         "description": "Create and manage terms of service and privacy policy",
         "createTerm": "Create Term",
         "editTerm": "Edit Term",
@@ -1493,8 +1516,9 @@
                 "description": "Become a Premium member to unlock exclusive features, gain authority, and connect with Brazilians worldwide.",
                 "monthly": "/month",
                 "cancelAnytime": "Cancel anytime",
-                "feesIncluded": "Stripe fees included",
-                "priceWithFees": "Final price: {total} (Base: {base} + Fees: {fees})"
+                "totalValue": "Total value: {total}",
+                "feesNote": "Includes {fees} in Stripe fees",
+                "priceWithFees": "Base price: {base} + Fees: {fees}"
             }
         },
         "actions": {
@@ -1553,6 +1577,167 @@
                 "programExpired": "Cannot create events for program \"{programTitle}\" because it is already expired (ended on {endDate}).",
                 "eventBeforeStart": "Event date is before program start ({startDate}).",
                 "eventAfterEnd": "Event date is after program end ({endDate})."
+            }
+        }
+    },
+    "professor": {
+        "dashboard": {
+            "title": "Professor Area",
+            "welcome": "Welcome,",
+            "professor": "Professor",
+            "subtitle": "Here you manage your programs, track student progress, and organize all teaching material.",
+            "stats": {
+                "programs": "Programs",
+                "students": "Students",
+                "lessons": "Lessons"
+            },
+            "myPrograms": "My Programs",
+            "noPrograms": "No programs assigned",
+            "noProgramsDesc": "You don't have any programs under your management yet. Please contact the administration to be enabled.",
+            "status": {
+                "published": "Published",
+                "draft": "Draft"
+            },
+            "programStats": {
+                "modules": "Modules",
+                "lessons": "Lessons",
+                "students": "Students"
+            },
+            "actions": {
+                "manage": "Manage Content",
+                "unpublish": "Unpublish",
+                "publish": "Publish Program",
+                "viewAsStudent": "View as Student"
+            },
+            "modal": {
+                "unpublishTitle": "Unpublish?",
+                "publishTitle": "Publish Training?",
+                "unpublishDesc": "The content will no longer be visible to new students on the platform.",
+                "publishDesc": "The training will be visible and available to all community students.",
+                "confirmUnpublish": "Confirm Removal",
+                "confirmPublish": "Yes, Publish Now",
+                "processing": "Processing..."
+            }
+        },
+        "manage": {
+            "back": "Back",
+            "panel": "Management Panel",
+            "viewAsStudent": "View Student",
+            "tabs": {
+                "curriculum": "Curriculum",
+                "materials": "My Materials",
+                "students": "Student Management",
+                "short": {
+                    "curriculum": "Grade",
+                    "materials": "Materials",
+                    "students": "Students"
+                }
+            },
+            "accessDenied": "Access Denied",
+            "accessDeniedDesc": "You do not have the necessary permissions to manage this program.",
+            "messages": {
+                "saveError": "Error saving. Please check the data and try again.",
+                "deleteConfirm": "Are you sure you want to delete this {label}? This action cannot be undone.",
+                "module": "module",
+                "lesson": "lesson"
+            },
+            "curriculumSidebar": {
+                "title": "Curriculum",
+                "subtitle": "Organize the course content",
+                "newModule": "New Module",
+                "newLesson": "New Lesson",
+                "editModule": "Edit Module",
+                "empty": "No modules created yet.",
+                "createFirst": "+ Create First Module",
+                "noLessons": "No lessons",
+                "preview": "Preview"
+            },
+            "contentEditor": {
+                "selectItem": "Select an item",
+                "selectItemDesc": "Choose a module or lesson in the sidebar to edit its content, or create a new one.",
+                "new": "New",
+                "editing": "Editing",
+                "module": "Module",
+                "lesson": "Lesson",
+                "moduleSettings": "Module Settings",
+                "lessonDetails": "Lesson Details",
+                "cancel": "Cancel",
+                "save": "Save",
+                "saving": "Saving...",
+                "titlePt": "Title (Portuguese) *",
+                "titleEn": "Title (English) *",
+                "titlePlaceholder": "Ex: Introduction to the course",
+                "titleEnPlaceholder": "Ex: Introduction to the course",
+                "descriptionPt": "Description (Portuguese)",
+                "descriptionEn": "Description (English)",
+                "videoContent": "Video Content",
+                "pasteLink": "Paste Link",
+                "upload": "Upload",
+                "youtubePlaceholder": "Paste YouTube URL or ID",
+                "autoFill": "Auto-Fill",
+                "fetching": "Fetching...",
+                "dragDropTitle": "Drag and drop the video here",
+                "dragDropSubtitle": "Or click to select a file",
+                "uploadSuccess": "Upload Completed!",
+                "uploadAnother": "Upload another video",
+                "previewVideo": "Video Preview",
+                "duration": "Duration",
+                "allowPreview": "Allow Free Preview",
+                "allowPreviewDesc": "Any user will be able to watch this lesson",
+                "materials": "Supporting Materials",
+                "materialsDesc": "Complementary files for this lesson",
+                "addMaterial": "Add Material",
+                "noMaterials": "No materials added yet",
+                "dangerZone": "Danger Zone",
+                "dangerZoneDesc": "Removing this item is permanent and will delete all linked content.",
+                "deleteItem": "Delete {item}",
+                "videoTitlePlaceholder": "Video Title",
+                "titlePdf": "PDF File *",
+                "maxFileSize": "Maximum 10MB per file",
+                "materialTitle": "Title (Portuguese) *",
+                "materialTitleEn": "Title (English) *",
+                "uploadMaterial": "Upload Material",
+                "deleteConfirm": "Confirm Delete",
+                "deleteWarning": "This action cannot be undone",
+                "deletePermanent": "The material will be permanently removed.",
+                "deleteQuestion": "Are you sure you want to delete \"{title}\"?",
+                "deleteMaterial": "Delete Material"
+            },
+            "materialsTab": {
+                "title": "Supporting Materials",
+                "subtitle": "Manage PDF files and complementary documents",
+                "newMaterial": "New Material",
+                "createModulesFirst": "Create modules first",
+                "createModulesDesc": "You need to organize your curriculum before uploading materials.",
+                "noMaterials": "No materials yet",
+                "noMaterialsDesc": "Start by uploading PDFs, slides or handouts to enrich your lessons.",
+                "uploadFirst": "Upload First Material",
+                "moduleMaterials": "Module Materials",
+                "lessonMaterials": "Lesson Materials",
+                "generalMaterials": "General Materials",
+                "materialsCount": "{count} materials",
+                "dropMaterialsLink": "Drop materials here to link to the lesson",
+                "linkToModule": "Link to Module *",
+                "selectModule": "Select a module",
+                "linkToLesson": "Link to Lesson (Optional)",
+                "moduleMaterialPlaceholder": "Module material (not linked to a specific lesson)",
+                "deletePermanentDesc": "The material will be permanently removed from the system.",
+                "deleting": "Deleting..."
+            },
+            "studentsTab": {
+                "title": "Enrolled Students",
+                "total": "Total: {count} students",
+                "emptyTitle": "No students enrolled",
+                "emptyDesc": "When students enroll in the program, they will appear here.",
+                "table": {
+                    "student": "Student",
+                    "email": "Email",
+                    "enrollmentDate": "Enrollment Date",
+                    "status": "Status",
+                    "active": "Active",
+                    "progress": "Progress",
+                    "noName": "No name"
+                }
             }
         }
     }

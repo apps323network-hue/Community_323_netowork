@@ -19,17 +19,9 @@
         @click="$emit('download', material)"
         type="button"
         class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
-        title="Baixar"
+        :title="t('common.download')"
       >
         <span class="material-symbols-outlined text-sm">download</span>
-      </button>
-      <button
-        @click="$emit('delete', material)"
-        type="button"
-        class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-        title="Excluir"
-      >
-        <span class="material-symbols-outlined text-sm">delete</span>
       </button>
     </div>
   </div>
@@ -46,7 +38,7 @@ const props = defineProps<{
 
 defineEmits(['download', 'delete'])
 
-const { locale: currentLocale } = useLocale()
+const { t, locale: currentLocale } = useLocale()
 
 const title = computed(() => {
   return currentLocale.value === 'pt-BR' ? props.material.title_pt : props.material.title_en

@@ -3,30 +3,30 @@
     <!-- Sidebar Header -->
     <div class="p-6 border-b border-slate-200 dark:border-white/5">
       <div class="flex items-center justify-between mb-2">
-        <h3 class="text-sm font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Currículo</h3>
+        <h3 class="text-sm font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">{{ t('professor.curriculumSidebar.title') }}</h3>
         <button 
           type="button"
           @click.prevent="$emit('add-module')" 
           class="p-1 hover:bg-secondary/10 rounded-md group transition-all"
-          title="Novo Módulo"
+          :title="t('professor.curriculumSidebar.newModule')"
         >
           <span class="material-symbols-outlined text-secondary group-hover:scale-110 transition-transform">add_box</span>
         </button>
       </div>
-      <p class="text-xs text-slate-500 dark:text-gray-400 font-medium">Organize o conteúdo do curso</p>
+      <p class="text-xs text-slate-500 dark:text-gray-400 font-medium">{{ t('professor.curriculumSidebar.subtitle') }}</p>
     </div>
 
     <!-- Modules & Lessons List -->
     <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
       <div v-if="modules.length === 0" class="py-12 text-center px-4">
         <span class="material-symbols-outlined text-slate-300 dark:text-gray-700 text-5xl mb-4">account_tree</span>
-        <p class="text-sm font-bold text-slate-500 dark:text-gray-400">Nenhum módulo criado ainda.</p>
+        <p class="text-sm font-bold text-slate-500 dark:text-gray-400">{{ t('professor.curriculumSidebar.empty') }}</p>
         <button 
           type="button"
           @click.prevent="$emit('add-module')" 
           class="mt-4 text-xs font-black text-secondary hover:underline"
         >
-          + Criar Primeiro Módulo
+          {{ t('professor.curriculumSidebar.createFirst') }}
         </button>
       </div>
 
@@ -66,7 +66,7 @@
                   type="button"
                   @click.stop.prevent="$emit('add-lesson', module)" 
                   class="hidden group-hover:flex p-1 hover:bg-secondary/20 rounded text-secondary"
-                  title="Nova Aula"
+                  :title="t('professor.curriculumSidebar.newLesson')"
                 >
                   <span class="material-symbols-outlined text-sm">add</span>
                 </button>
@@ -74,7 +74,7 @@
                   type="button"
                   @click.stop.prevent="$emit('select-module', module)" 
                   class="p-1 hover:bg-slate-200 dark:hover:bg-white/10 rounded text-slate-400"
-                  title="Editar Módulo"
+                  :title="t('professor.curriculumSidebar.editModule')"
                 >
                   <span class="material-symbols-outlined text-sm">settings</span>
                 </button>
@@ -116,14 +116,14 @@
                       <span class="material-symbols-outlined text-sm opacity-60">play_circle</span>
                       <span class="truncate">{{ getTitle(lesson) }}</span>
                     </div>
-                    <span v-if="lesson.is_preview" class="text-[8px] font-black uppercase text-secondary px-1 border border-secondary/30 rounded">Preview</span>
+                    <span v-if="lesson.is_preview" class="text-[8px] font-black uppercase text-secondary px-1 border border-secondary/30 rounded">{{ t('professor.curriculumSidebar.preview') }}</span>
                   </div>
                 </template>
               </draggable>
               
               <!-- Empty module spacer -->
               <div v-if="!module.lessons || module.lessons.length === 0" class="py-2 pl-6">
-                 <p class="text-[10px] text-slate-400 italic">Nenhuma aula</p>
+                 <p class="text-[10px] text-slate-400 italic">{{ t('professor.curriculumSidebar.noLessons') }}</p>
               </div>
             </div>
             </Transition>
@@ -147,7 +147,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['select-module', 'select-lesson', 'add-module', 'add-lesson'])
 
-const { locale: currentLocale } = useLocale()
+const { locale: currentLocale, t } = useLocale()
 const modulesStore = useModulesStore()
 
 // Local copy for draggable

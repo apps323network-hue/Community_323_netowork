@@ -64,6 +64,8 @@ export interface Program {
     status: ProgramStatus
     featured: boolean
     localhost_only?: boolean
+    terms_content_pt?: string
+    terms_content_en?: string
 
     // Metadata
     created_at: string
@@ -178,6 +180,8 @@ export interface CreateProgramData {
     localhost_only?: boolean
     created_by?: string
     professor_ids?: string[]
+    terms_content_pt?: string
+    terms_content_en?: string
 }
 
 export interface UpdateProgramData extends Partial<CreateProgramData> {
@@ -190,6 +194,7 @@ export interface EnrollInProgramData {
     payment_amount?: number
     payment_currency?: string
     payment_method?: string
+    accepted_terms?: boolean
 }
 
 export interface SubmitReviewData {

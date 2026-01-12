@@ -2,9 +2,9 @@
   <div class="p-6">
     <!-- Header -->
     <div class="mb-6">
-      <h2 class="text-xl font-black text-white mb-2">Conteúdo do Curso</h2>
-      <p class="text-text-muted text-sm">
-        {{ modules.length }} módulos • {{ totalLessons }} aulas
+      <h2 class="text-xl font-black text-slate-900 dark:text-white mb-2">{{ t('programs.courseContent') }}</h2>
+      <p class="text-slate-500 dark:text-text-muted text-sm">
+        {{ modules.length }} {{ t('programs.modules') }} • {{ totalLessons }} {{ t('programs.lessons') }}
       </p>
     </div>
 
@@ -13,28 +13,28 @@
       <div
         v-for="(module, moduleIndex) in modules"
         :key="module.id"
-        class="bg-black/40 rounded-xl border border-white/10 overflow-hidden transition-all hover:border-secondary/50"
+        class="bg-white/50 dark:bg-black/40 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden transition-all hover:border-secondary/50"
       >
         <!-- Module Header -->
         <button
           @click="toggleModule(module.id)"
-          class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+          class="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
         >
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
               <span class="text-xs font-black text-secondary uppercase tracking-widest">
-                Módulo {{ moduleIndex + 1 }}
+                {{ t('programs.moduleLabel') }} {{ moduleIndex + 1 }}
               </span>
-              <span class="text-xs text-text-muted">
-                {{ module.lessons?.length || 0 }} aulas
+              <span class="text-xs text-slate-500 dark:text-text-muted">
+                {{ module.lessons?.length || 0 }} {{ t('programs.lessons') }}
               </span>
             </div>
-            <h3 class="text-white font-bold text-sm line-clamp-2">
+            <h3 class="text-slate-900 dark:text-white font-bold text-sm line-clamp-2">
               {{ getModuleTitle(module) }}
             </h3>
           </div>
           <span
-            class="material-symbols-outlined text-white transition-transform ml-2 flex-shrink-0"
+            class="material-symbols-outlined text-slate-400 dark:text-white transition-transform ml-2 flex-shrink-0"
             :class="{ 'rotate-180': expandedModules.includes(module.id) }"
           >
             expand_more
@@ -54,7 +54,7 @@
               'px-4 py-3 flex items-center gap-3 cursor-pointer transition-all border-l-2',
               currentLessonId === lesson.id
                 ? 'bg-secondary/10 border-secondary'
-                : 'border-transparent hover:bg-white/5 hover:border-white/20'
+                : 'border-transparent hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 dark:hover:border-white/20'
             ]"
           >
             <!-- Play Icon or Check -->
@@ -63,11 +63,11 @@
                 'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
                 currentLessonId === lesson.id
                   ? 'bg-secondary text-black'
-                  : 'bg-white/10 text-white'
+                  : (completedLessons.includes(lesson.id) ? 'bg-secondary/20 text-secondary' : 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-white')
               ]"
             >
-              <span v-if="lesson.youtube_video_id" class="material-symbols-outlined text-lg">
-                {{ currentLessonId === lesson.id ? 'play_arrow' : 'play_circle' }}
+              <span class="material-symbols-outlined text-lg">
+                {{ completedLessons.includes(lesson.id) ? 'check_circle' : (currentLessonId === lesson.id ? 'play_arrow' : 'play_circle') }}
               </span>
               <span v-else class="material-symbols-outlined text-lg">
                 {{ currentLessonId === lesson.id ? 'description' : 'article' }}
@@ -77,17 +77,17 @@
             <!-- Lesson Info -->
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-bold text-text-muted">
-                  Aula {{ lessonIndex + 1 }}
+                <span class="text-xs font-bold text-slate-500 dark:text-text-muted">
+                  {{ t('programs.lessonLabel') }} {{ lessonIndex + 1 }}
                 </span>
                 <span v-if="lesson.is_preview" class="text-[10px] font-bold bg-secondary/20 text-secondary px-1.5 py-0.5 rounded uppercase">
-                  Preview
+                  {{ t('programs.previewLabel') }}
                 </span>
               </div>
               <h4
                 :class="[
                   'text-sm font-bold line-clamp-2',
-                  currentLessonId === lesson.id ? 'text-secondary' : 'text-white'
+                  currentLessonId === lesson.id ? 'text-secondary' : 'text-slate-900 dark:text-white'
                 ]"
               >
                 {{ getLessonTitle(lesson) }}
@@ -99,16 +99,12 @@
             </div>
 
             <!-- Thumbnail -->
-            <div v-if="lesson.youtube_video_id" class="w-16 h-12 rounded flex-shrink-0 overflow-hidden">
-              <img
-                :src="lesson.youtube_thumbnail_url || `https://img.youtube.com/vi/${lesson.youtube_video_id}/default.jpg`"
-                :alt="getLessonTitle(lesson)"
-                class="w-full h-full object-cover opacity-80"
-              />
-            </div>
-            <div v-else class="w-16 h-12 rounded flex-shrink-0 bg-slate-700/50 flex items-center justify-center">
-              <span class="material-symbols-outlined text-slate-400 text-xl">description</span>
-            </div>
+            <img
+              v-if="lesson.youtube_video_id"
+              :src="lesson.youtube_thumbnail_url || `https://img.youtube.com/vi/${lesson.youtube_video_id}/default.jpg`"
+              :alt="getLessonTitle(lesson)"
+              class="w-16 h-12 object-cover rounded flex-shrink-0 opacity-80"
+            />
           </div>
         </div>
       </div>
@@ -121,16 +117,18 @@ import { ref, computed, onMounted } from 'vue'
 import { useLocale } from '@/composables/useLocale'
 import type { ProgramModule, ProgramLesson } from '@/types/modules'
 
+const { locale: currentLocale, t } = useLocale()
 const props = defineProps<{
   modules: ProgramModule[]
   currentLessonId?: string
+  completedLessons?: string[]
 }>()
+
+const completedLessons = computed(() => props.completedLessons || [])
 
 const emit = defineEmits<{
   selectLesson: [lessonId: string]
 }>()
-
-const { locale: currentLocale } = useLocale()
 const expandedModules = ref<string[]>([])
 
 const totalLessons = computed(() => {

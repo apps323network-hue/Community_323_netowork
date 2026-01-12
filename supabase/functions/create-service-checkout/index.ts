@@ -11,7 +11,7 @@ const CARD_FEE_PERCENTAGE = 0.039 // 3.9%
 const CARD_FEE_FIXED = 30 // $0.30 em centavos
 const PIX_FEE_PERCENTAGE = 0.0179 // ~1.8%
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
     console.log('Request received:', req.method)
 
     if (req.method === 'OPTIONS') {
@@ -160,6 +160,24 @@ Deno.serve(async (req) => {
             .single()
 
         if (paymentError) throw new Error('Erro ao criar pagamento: ' + paymentError.message)
+
+        // 8.5. Gravar aceitação de termos se fornecido
+        if (body.accepted_terms) {
+            const ip = req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || 'unknown'
+            const userAgent = req.headers.get('user-agent') || 'unknown'
+
+            await supabase
+                .from('item_terms_acceptance')
+                .insert({
+                    user_id: user.id,
+                    item_type: 'service',
+                    item_id: service.id,
+                    terms_snapshot_pt: service.terms_content_pt,
+                    terms_snapshot_en: service.terms_content_en,
+                    ip_address: ip,
+                    user_agent: userAgent
+                })
+        }
 
         // Atualizar service_request
         await supabase

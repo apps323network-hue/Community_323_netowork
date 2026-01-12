@@ -1,21 +1,66 @@
 <template>
-  <div class="bg-background-dark min-h-screen flex flex-col text-white">
+  <div class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col text-slate-900 dark:text-white transition-colors duration-300">
     <!-- Header -->
-    <header class="sticky top-0 z-50 w-full bg-gradient-to-b from-background-dark to-background-dark/90 backdrop-blur-md border-b border-[#361a36]/50">
+    <header class="sticky top-0 z-50 w-full bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-slate-200 dark:border-[#361a36]/50">
       <div class="px-4 md:px-10 py-3 mx-auto max-w-[1800px]">
-        <div class="flex items-center justify-between">
-          <button
-            @click="$router.push('/programs')"
-            class="flex items-center gap-2 text-text-muted hover:text-white transition-colors"
-          >
-            <span class="material-symbols-outlined">arrow_back</span>
-            <span class="hidden sm:inline">Voltar aos Programas</span>
-          </button>
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-4 flex-1">
+            <button
+              @click="$router.push('/programs')"
+              class="flex items-center gap-2 text-slate-500 dark:text-text-muted hover:text-primary dark:hover:text-white transition-colors"
+            >
+              <span class="material-symbols-outlined">arrow_back</span>
+              <span class="hidden sm:inline">{{ t('programs.backAction') }}</span>
+            </button>
 
-          <div v-if="program" class="flex items-center gap-3">
-            <div class="text-center">
-              <h2 class="text-white text-sm font-bold">{{ getProgramTitle(program) }}</h2>
-              <p class="text-text-muted text-xs">{{ program.category }}</p>
+            <div v-if="program" class="hidden sm:flex items-center gap-3 border-l border-slate-200 dark:border-white/10 pl-4">
+              <div class="text-left">
+                <h1 class="font-black text-slate-900 dark:text-white text-sm md:text-base line-clamp-1">
+                  {{ getProgramTitle(program) }}
+                </h1>
+                <p class="text-text-muted text-[10px] font-bold uppercase tracking-widest">{{ program.category }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 md:gap-4 shrink-0">
+            <!-- Theme Toggler -->
+            <AnimatedThemeToggler />
+
+            <!-- Language Switcher -->
+            <div class="relative" ref="languageMenuContainer">
+              <button @click.stop="toggleLanguageMenu" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all">
+                <span class="text-base">{{ currentLocaleData.flag }}</span>
+                <span class="text-xs font-bold uppercase hidden sm:block">{{ currentLocaleData.code.split('-')[0] }}</span>
+                <span class="material-symbols-outlined text-sm leading-none transition-transform" :class="{ 'rotate-180': showLanguageMenu }">expand_more</span>
+              </button>
+              
+              <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="transform scale-95 opacity-0"
+                enter-to-class="transform scale-100 opacity-100"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="transform scale-100 opacity-100"
+                leave-to-class="transform scale-95 opacity-0"
+              >
+                <div v-if="showLanguageMenu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-[60] overflow-hidden">
+                  <div class="p-1">
+                    <button
+                      v-for="lo in availableLocales"
+                      :key="lo.code"
+                      @click="handleLocaleChange(lo.code)"
+                      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all"
+                      :class="currentLocale === lo.code 
+                        ? 'bg-primary/10 dark:bg-secondary/10 text-primary dark:text-secondary font-bold' 
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'"
+                    >
+                      <span class="text-lg">{{ lo.flag }}</span>
+                      <span>{{ lo.name }}</span>
+                      <span v-if="currentLocale === lo.code" class="material-icons text-sm ml-auto">check</span>
+                    </button>
+                  </div>
+                </div>
+              </Transition>
             </div>
           </div>
         </div>
@@ -27,15 +72,15 @@
       <div class="animate-spin rounded-full h-12 w-12 border-4 border-secondary border-t-transparent"></div>
     </div>
 
-    <!-- Main Content -->
-    <main v-else-if="program && currentLesson" class="flex-1 flex flex-col lg:flex-row relative">
+    <!-- Main Content Area -->
+    <main v-else-if="program && currentLesson" class="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
       <!-- Ambient Background Effects -->
       <div class="fixed top-20 left-10 w-96 h-96 bg-secondary/10 rounded-full filter blur-[150px] opacity-10 pointer-events-none"></div>
       <div class="fixed bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full filter blur-[150px] opacity-10 pointer-events-none"></div>
 
-      <!-- Video Player Area -->
-      <div class="flex-1 flex flex-col min-w-0">
-        <!-- Player -->
+      <!-- Left Side: Player, Header and Tabs -->
+      <div class="flex-1 flex flex-col min-w-0 overflow-y-auto scrollbar-custom relative z-10">
+        <!-- Player Container (Only visible if there is a video ID) -->
         <div v-if="currentLesson?.youtube_video_id" class="relative bg-black aspect-video w-full shadow-2xl overflow-hidden group/player">
           <YouTubePlayer
             v-if="isAuthenticated || (program?.localhost_only && isLocalhost())"
@@ -43,18 +88,8 @@
             :title="getLessonTitle(currentLesson)"
             @ended="handleVideoEnded"
           />
-          
-          <!-- Guest Blocker Over Video -->
           <div v-if="!isAuthenticated && !(program?.localhost_only && isLocalhost())" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md z-20">
-            <div class="max-w-md w-full mx-4">
-              <GuestBlocker
-                :show="true"
-                variant="inline"
-                title="Assista a esta Aula"
-                message="Cadastre-se para acessar todas as aulas e materiais complementares deste programa."
-                cta="Começar Agora"
-              />
-            </div>
+            <GuestBlocker :show="true" variant="inline" :title="t('programs.exclusiveContent')" :message="t('programs.exclusiveContentDesc')" :cta="t('programs.unlockLesson')" />
           </div>
         </div>
         
@@ -71,110 +106,125 @@
           </div>
         </div>
 
-        <!-- Lesson Header & Quick Navigation (Visible on all tabs) -->
-        <div class="p-4 md:p-8 bg-surface-dark/50 backdrop-blur-sm border-b border-white/5">
-          <div class="max-w-[1200px] mx-auto">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="px-2 py-0.5 rounded bg-secondary/20 text-[10px] font-black text-secondary uppercase tracking-widest">
-                    Aula {{ currentLessonIndex + 1 }} / {{ totalLessons }}
-                  </span>
-                  <span class="text-xs font-bold text-text-muted">
-                    {{ program.category }}
-                  </span>
-                </div>
-                <h1 class="text-2xl md:text-3xl font-black text-white leading-tight">
-                  {{ getLessonTitle(currentLesson) }}
-                </h1>
-              </div>
+        <!-- Lesson Header & Quick Navigation -->
+        <div class="p-6 md:p-8 bg-slate-50/50 dark:bg-surface-dark/50 border-b border-slate-200 dark:border-white/5 relative overflow-hidden">
+          <!-- Progress Bar background -->
+          <div class="absolute top-0 left-0 w-full h-1 bg-slate-200 dark:bg-white/5">
+            <div 
+              class="h-full bg-primary dark:bg-secondary transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(var(--color-primary),0.5)]"
+              :style="{ width: `${enrollmentProgress}%` }"
+            ></div>
+          </div>
 
-              <!-- Navigation Controls -->
-              <div class="flex gap-2">
-                <button
-                  v-if="previousLesson"
-                  @click="goToLesson(previousLesson)"
-                  class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all text-sm"
-                  title="Aula Anterior"
-                >
-                  <span class="material-symbols-outlined text-sm">arrow_back</span>
-                  <span class="hidden sm:inline">Anterior</span>
-                </button>
-                <button
-                  v-if="nextLesson"
-                  @click="goToLesson(nextLesson)"
-                  class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-secondary text-black font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-secondary/20 text-sm"
-                >
-                  Próxima
-                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </button>
+          <div class="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-3">
+                <span class="text-xs font-black text-primary dark:text-secondary uppercase tracking-widest px-2.5 py-1 bg-primary/10 dark:bg-secondary/10 rounded-full">
+                  {{ t('programs.lessonLabel') }} {{ currentLessonIndex + 1 }} / {{ totalLessons }}
+                </span>
+                <span class="text-xs font-bold text-slate-500 dark:text-text-muted">
+                  {{ enrollmentProgress }}% {{ t('programs.completed') }}
+                </span>
+                <span v-if="currentLesson?.duration_seconds" class="flex items-center gap-1 text-xs text-slate-500 dark:text-text-muted">
+                  <span class="material-symbols-outlined text-xs">schedule</span>
+                  {{ formatDuration(currentLesson.duration_seconds) }}
+                </span>
               </div>
+              <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight">
+                {{ getLessonTitle(currentLesson) }}
+              </h1>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex gap-2">
+              <button
+                v-if="previousLesson"
+                @click="goToLesson(previousLesson)"
+                class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-sm"
+                :title="t('programs.previousLesson')"
+              >
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                <span class="hidden sm:inline">{{ t('common.previous') }}</span>
+              </button>
+              <button
+                v-if="nextLesson"
+                @click="goToLesson(nextLesson)"
+                class="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-primary dark:bg-secondary text-white dark:text-black font-black rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20 dark:shadow-secondary/20 text-sm"
+              >
+                {{ t('common.next') }}
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Responsive Tabs -->
-        <div class="sticky top-[56px] lg:top-0 z-40 bg-background-dark/80 backdrop-blur-xl border-b border-white/5">
-          <div class="max-w-[1200px] mx-auto flex">
-            <!-- Mobile Lessons Tab -->
+        <div class="sticky top-0 z-40 bg-white/95 dark:bg-background-dark/95 backdrop-blur-xl border-b border-slate-200 dark:border-white/5">
+          <div class="max-w-5xl mx-auto flex px-6">
             <button 
               @click="activeTab = 'lessons'"
               class="lg:hidden flex-1 py-4 text-xs font-black uppercase tracking-widest transition-all relative"
-              :class="activeTab === 'lessons' ? 'text-secondary' : 'text-text-muted'"
+              :class="activeTab === 'lessons' ? 'text-primary dark:text-secondary' : 'text-slate-500 dark:text-text-muted'"
             >
               {{ t('programs.lessonList') }}
-              <div v-if="activeTab === 'lessons'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary shadow-[0_0_10px_rgba(0,240,255,1)]"></div>
+              <div v-if="activeTab === 'lessons'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary dark:bg-secondary"></div>
             </button>
-
-            <!-- Description Tab -->
             <button 
               @click="activeTab = 'about'"
               class="flex-1 lg:flex-none lg:px-12 py-4 text-xs font-black uppercase tracking-widest transition-all relative"
-              :class="activeTab === 'about' ? 'text-secondary' : 'text-text-muted'"
+              :class="activeTab === 'about' ? 'text-primary dark:text-secondary' : 'text-slate-500 dark:text-text-muted'"
             >
               {{ t('programs.lessonDescription') }}
-              <div v-if="activeTab === 'about'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary shadow-[0_0_10px_rgba(0,240,255,1)]"></div>
+              <div v-if="activeTab === 'about'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary dark:bg-secondary"></div>
             </button>
-
-            <!-- Materials Tab -->
             <button 
               @click="activeTab = 'materials'"
               class="flex-1 lg:flex-none lg:px-12 py-4 text-xs font-black uppercase tracking-widest transition-all relative"
-              :class="activeTab === 'materials' ? 'text-secondary' : 'text-text-muted'"
+              :class="activeTab === 'materials' ? 'text-primary dark:text-secondary' : 'text-slate-500 dark:text-text-muted'"
             >
               <span class="flex items-center justify-center gap-2">
                 {{ t('programs.lessonMaterials') }}
-                <span v-if="lessonMaterials.length" class="bg-secondary/20 text-secondary size-5 rounded-full flex items-center justify-center text-[10px]">
+                <span v-if="lessonMaterials.length" class="bg-primary/10 dark:bg-secondary/20 text-primary dark:text-secondary size-5 rounded-full flex items-center justify-center text-[10px] font-bold">
                   {{ lessonMaterials.length }}
                 </span>
               </span>
-              <div v-if="activeTab === 'materials'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary shadow-[0_0_10px_rgba(0,240,255,1)]"></div>
+              <div v-if="activeTab === 'materials'" class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary dark:bg-secondary"></div>
             </button>
           </div>
         </div>
 
         <!-- Tab Content Area -->
         <div class="p-6 md:p-8 flex-1">
-          <div class="max-w-[1200px] mx-auto">
-            
+          <div class="max-w-5xl mx-auto">
             <!-- Tab: Lessons (Mobile Only) -->
             <div v-if="activeTab === 'lessons'" class="lg:hidden animate-fade-in">
               <ModulesList
                 :modules="modules"
-                :currentLessonId="currentLesson?.id"
+                :currentLessonId="currentLessonId"
                 @select-lesson="goToLessonById"
               />
             </div>
 
             <!-- Tab: Description -->
-            <div v-if="activeTab === 'about'" class="animate-fade-in">
-              <div class="prose prose-invert max-w-none">
-                <p v-if="getLessonDescription(currentLesson)" class="text-white/80 text-lg leading-relaxed whitespace-pre-line font-medium italic">
+            <div v-if="activeTab === 'about'" class="animate-fade-in relative">
+              <div v-if="isAuthenticated || (program?.localhost_only && isLocalhost()) || currentLesson?.youtube_video_id" class="prose prose-slate dark:prose-invert max-w-none">
+                <p v-if="getLessonDescription(currentLesson)" class="text-slate-600 dark:text-text-muted text-lg leading-relaxed whitespace-pre-wrap font-medium">
                   {{ getLessonDescription(currentLesson) }}
                 </p>
-                <div v-else class="flex flex-col items-center justify-center py-20 opacity-30">
+                <div v-else class="flex flex-col items-center justify-center py-20 opacity-30 text-slate-400 dark:text-text-muted">
                   <span class="material-symbols-outlined text-6xl mb-4">description</span>
-                  <p class="uppercase tracking-widest text-xs font-black">Nenhuma descrição disponível</p>
+                  <p class="uppercase tracking-widest text-xs font-black">{{ t('programs.noDescription') }}</p>
+                </div>
+              </div>
+              
+              <div v-else class="relative py-10">
+                <div class="prose prose-slate dark:prose-invert max-w-none blur-sm select-none opacity-50 mb-8 pointer-events-none">
+                   <p class="text-slate-600 dark:text-text-muted text-lg leading-relaxed font-medium">
+                      {{ t('programs.exclusiveContentDesc') }} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                   </p>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center z-10">
+                  <GuestBlocker :show="true" variant="inline" :title="t('programs.exclusiveContent')" :message="t('programs.exclusiveContentDesc')" :cta="t('programs.unlockLesson')" />
                 </div>
               </div>
             </div>
@@ -182,60 +232,51 @@
             <!-- Tab: Materials -->
             <div v-if="activeTab === 'materials'" class="animate-fade-in">
               <div v-if="lessonMaterials.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div
+                <a
                   v-for="material in lessonMaterials"
                   :key="material.id"
-                  class="group relative bg-surface-dark/50 hover:bg-surface-dark border border-white/5 hover:border-secondary/30 rounded-2xl p-5 transition-all duration-300 cursor-pointer overflow-hidden"
-                  @click="isAuthenticated ? downloadMaterial(material) : showAuthModal('signup')"
+                  href="#"
+                  target="_blank"
+                  class="flex items-center gap-4 p-4 bg-slate-50 dark:bg-surface-dark/50 border border-slate-200 dark:border-white/5 rounded-2xl hover:border-primary dark:hover:border-secondary transition-all group"
+                  @click.prevent="isAuthenticated ? downloadMaterial(material) : showAuthModal('signup')"
                 >
-                  <div class="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  
-                  <div class="relative flex items-center gap-5">
-                    <div class="size-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary border border-secondary/10 group-hover:scale-110 transition-transform duration-500">
-                      <span class="material-symbols-outlined text-[32px]">
-                        {{ material.file_path?.endsWith('.pdf') ? 'picture_as_pdf' : 'description' }}
-                      </span>
-                    </div>
-                    
-                    <div class="flex-1 min-w-0">
-                      <h3 class="text-white font-black text-lg truncate group-hover:text-secondary transition-colors mb-1">
-                        {{ getMaterialTitle(material) }}
-                      </h3>
-                      <div class="flex items-center gap-3">
-                        <span class="text-[10px] font-bold text-text-muted uppercase tracking-widest border border-white/10 px-2 py-0.5 rounded">
-                          {{ material.file_path?.split('.').pop()?.toUpperCase() || 'FILE' }}
-                        </span>
-                        <span class="text-xs text-text-muted font-medium">
-                          {{ formatFileSize(material.file_size_bytes) }}
-                        </span>
-                      </div>
-                    </div>
-
-                    <button class="size-10 rounded-full bg-white/5 flex items-center justify-center text-text-muted group-hover:bg-secondary group-hover:text-black transition-all">
-                      <span class="material-symbols-outlined text-lg">download</span>
-                    </button>
+                  <div class="size-14 rounded-2xl bg-primary/10 dark:bg-secondary/10 flex items-center justify-center text-primary dark:text-secondary group-hover:scale-110 transition-transform duration-500">
+                    <span class="material-symbols-outlined text-[32px]">
+                      {{ material.file_path?.endsWith('.pdf') ? 'picture_as_pdf' : 'description' }}
+                    </span>
                   </div>
-                </div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-black text-slate-900 dark:text-white text-lg truncate group-hover:text-primary dark:group-hover:text-secondary transition-colors mb-1">
+                      {{ getMaterialTitle(material) }}
+                    </h4>
+                    <p class="text-xs text-slate-500 dark:text-text-muted uppercase font-bold tracking-tight">
+                      {{ material.file_path?.split('.').pop()?.toUpperCase() || 'FILE' }} • {{ formatFileSize(material.file_size_bytes) }}
+                    </p>
+                  </div>
+                  <button class="size-10 rounded-full bg-slate-200 dark:bg-white/5 flex items-center justify-center text-slate-500 dark:text-text-muted group-hover:bg-primary dark:group-hover:bg-secondary group-hover:text-white dark:group-hover:text-black transition-all">
+                    <span class="material-symbols-outlined text-lg">download</span>
+                  </button>
+                </a>
               </div>
               
-              <div v-else class="flex flex-col items-center justify-center py-20 opacity-30">
-                <div class="size-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+              <div v-else class="flex flex-col items-center justify-center py-20 opacity-30 text-slate-400 dark:text-text-muted">
+                <div class="size-24 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mb-6">
                   <span class="material-symbols-outlined text-5xl">folder_off</span>
                 </div>
-                <h3 class="text-xl font-black text-white uppercase tracking-tighter mb-2">Nenhum Material</h3>
-                <p class="text-sm font-medium">Esta aula não possui arquivos complementares.</p>
+                <h3 class="text-xl font-black uppercase tracking-tighter mb-2">{{ t('programs.noMaterials') }}</h3>
+                <p class="text-sm font-medium">{{ t('programs.noMaterialsDesc') }}</p>
               </div>
             </div>
-
           </div>
         </div>
       </div>
 
-      <!-- Sidebar - Modules & Lessons (Desktop Only) -->
-      <aside class="hidden lg:block lg:w-96 xl:w-[28rem] bg-surface-dark border-l border-white/5 overflow-y-auto lg:sticky lg:top-[56px] lg:h-[calc(100vh-56px)] scrollbar-custom">
+      <!-- Sidebar: Modules & Lessons (Desktop Only) -->
+      <aside class="hidden lg:block lg:w-96 xl:w-[28rem] bg-white dark:bg-surface-dark border-l border-slate-200 dark:border-white/5 overflow-y-auto scrollbar-custom relative z-20">
         <ModulesList
           :modules="modules"
-          :currentLessonId="currentLesson?.id"
+          :currentLessonId="currentLessonId"
+          :completedLessons="completedLessons"
           @select-lesson="goToLessonById"
         />
       </aside>
@@ -243,19 +284,19 @@
 
     <!-- Error State -->
     <div v-else class="flex items-center justify-center flex-1">
-      <div class="text-center max-w-md">
-        <div class="bg-secondary/10 p-8 rounded-full w-fit mx-auto mb-6">
-          <span class="material-symbols-outlined text-6xl text-secondary">error</span>
+      <div class="text-center max-w-md p-8">
+        <div class="bg-primary/10 dark:bg-secondary/10 p-8 rounded-full w-fit mx-auto mb-6">
+          <span class="material-symbols-outlined text-6xl text-primary dark:text-secondary">error</span>
         </div>
-        <h2 class="text-2xl font-black text-white mb-4">Programa não encontrado</h2>
-        <p class="text-text-muted mb-6">
-          Você não tem acesso a este programa ou ele não existe.
+        <h2 class="text-2xl font-black text-slate-900 dark:text-white mb-4">{{ t('programs.programNotFound') }}</h2>
+        <p class="text-slate-500 dark:text-text-muted mb-6">
+          {{ t('programs.programNotFoundDesc') }}
         </p>
         <button
           @click="$router.push('/programs')"
-          class="px-8 py-3 bg-secondary text-black font-bold rounded-xl hover:bg-secondary/90 transition-all"
+          class="px-8 py-3 bg-primary dark:bg-secondary text-white dark:text-black font-black rounded-xl hover:scale-[1.02] transition-all"
         >
-          Voltar aos Programas
+          {{ t('programs.backAction') }}
         </button>
       </div>
     </div>
@@ -263,22 +304,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLocale } from '@/composables/useLocale'
 import { useModulesStore } from '@/stores/modules'
+import { useProgramsStore } from '@/stores/programs'
 import { supabase } from '@/lib/supabase'
 import type { ProgramLesson, ProgramMaterial } from '@/types/modules'
 import YouTubePlayer from '@/components/features/programs/YouTubePlayer.vue'
 import ModulesList from '@/components/features/programs/ModulesList.vue'
 import GuestBlocker from '@/components/common/GuestBlocker.vue'
+import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import { isLocalhost, canAccessLocalhost } from '@/utils/localhost'
 
 const route = useRoute()
 const router = useRouter()
-const { locale: currentLocale, t } = useLocale()
+const { locale: currentLocale, t, availableLocales, setLocale } = useLocale()
 const modulesStore = useModulesStore()
+const programsStore = useProgramsStore()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 const program = ref<any>(null)
@@ -286,11 +330,43 @@ const loading = ref(true)
 const currentLessonId = ref<string>('')
 const activeTab = ref<'lessons' | 'about' | 'materials'>('about')
 
+const showLanguageMenu = ref(false)
+const languageMenuContainer = ref<HTMLElement | null>(null)
+
+function toggleLanguageMenu() {
+  showLanguageMenu.value = !showLanguageMenu.value
+}
+
+function handleLocaleChange(newLocale: string) {
+  setLocale(newLocale)
+  showLanguageMenu.value = false
+}
+
+const currentLocaleData = computed(() => {
+  return availableLocales.find(l => l.code === currentLocale.value) || availableLocales[0]
+})
+
+const completedLessons = computed(() => programsStore.completedLessons)
+
+const enrollmentProgress = computed(() => {
+  const enrollment = programsStore.myEnrollments.find(e => e.program_id === route.params.id)
+  return enrollment?.progress_percentage || 0
+})
+
+function handleClickOutside(event: MouseEvent) {
+  if (languageMenuContainer.value && !languageMenuContainer.value.contains(event.target as Node)) {
+    showLanguageMenu.value = false
+  }
+}
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 const modules = computed(() => modulesStore.getModulesByProgram(route.params.id as string))
 
 const allLessons = computed(() => {
   return modules.value.flatMap(m => m.lessons || []).sort((a, b) => {
-    // Sort by module order then lesson order
     const moduleA = modules.value.find(m => m.id === a.module_id)
     const moduleB = modules.value.find(m => m.id === b.module_id)
     if (moduleA?.order_index !== moduleB?.order_index) {
@@ -347,11 +423,25 @@ function formatFileSize(bytes: number | null) {
   return `${mb.toFixed(2)} MB`
 }
 
+function formatDuration(seconds: number) {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  if (mins >= 60) {
+    const hours = Math.floor(mins / 60)
+    const remainingMins = mins % 60
+    return `${hours}h ${remainingMins}min`
+  }
+  return `${mins}:${secs.toString().padStart(2, '0')}`
+}
+
 function goToLesson(lesson: ProgramLesson) {
+  // Mark current lesson as complete before moving to next
+  if (currentLesson.value && isAuthenticated.value) {
+    programsStore.markLessonComplete(route.params.id as string, currentLesson.value.id)
+  }
+
   currentLessonId.value = lesson.id
-  // Update URL and allow browser back button
   router.push({ query: { ...route.query, aula: lesson.id } })
-  // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -361,11 +451,15 @@ function goToLessonById(lessonId: string) {
 }
 
 function handleVideoEnded() {
-  // Auto-advance to next lesson
+  // Mark current lesson as complete when video ends
+  if (currentLesson.value && isAuthenticated.value) {
+    programsStore.markLessonComplete(route.params.id as string, currentLesson.value.id)
+  }
+
   if (nextLesson.value) {
     setTimeout(() => {
       goToLesson(nextLesson.value!)
-    }, 2000) // 2 second delay
+    }, 2000)
   }
 }
 
@@ -382,65 +476,36 @@ async function downloadMaterial(material: ProgramMaterial) {
 
 async function fetchProgramAndLessons() {
   loading.value = true
-
   try {
     const programId = route.params.id as string
     const { data: { user } } = await supabase.auth.getUser()
-    
-    // Fetch program info (public)
-    const { data: programData, error: programError } = await supabase
-      .from('programs')
-      .select('*')
-      .eq('id', programId)
-      .single()
-
+    const { data: programData, error: programError } = await supabase.from('programs').select('*').eq('id', programId).single()
     if (programError) throw programError
     program.value = programData
-
-    // Verificar se é programa localhost_only e se pode acessar
     const canAccessAsLocalhost = program.value.localhost_only && canAccessLocalhost(program.value)
-    
-    // Se estiver logado, verificar matrícula
     if (user) {
-      const { data: enrollment } = await supabase
-        .from('program_enrollments')
-        .select('*')
-        .eq('program_id', programId)
-        .eq('user_id', user.id)
-        .single()
-      
-      // Se não tiver matrícula mas for localhost_only e estiver em localhost, criar matrícula automaticamente
+      const { data: enrollment } = await supabase.from('program_enrollments').select('*').eq('program_id', programId).eq('user_id', user.id).single()
       if (!enrollment && canAccessAsLocalhost) {
         try {
-          const { error: enrollError } = await supabase
-            .from('program_enrollments')
-            .insert({
-              program_id: programId,
-              user_id: user.id,
-              payment_method: 'localhost',
-              payment_id: 'localhost-debug',
-              payment_status: 'paid',
-              status: 'active',
-              paid_at: new Date().toISOString()
-            })
-          
-          if (enrollError && !enrollError.message.includes('duplicate')) {
-            console.error('Error creating localhost enrollment:', enrollError)
-          }
+          await supabase.from('program_enrollments').insert({
+            program_id: programId,
+            user_id: user.id,
+            payment_method: 'localhost',
+            payment_id: 'localhost-debug',
+            payment_status: 'paid',
+            status: 'active',
+            paid_at: new Date().toISOString()
+          })
         } catch (err) {
           console.error('Error auto-enrolling for localhost:', err)
         }
       }
-      
-      // Se não for aluno e nem professor/admin, ele pode ver o preview se for publicAccess
-      // (Já lidamos com as limitações no template)
     }
-
-    // Fetch modules and lessons
     await modulesStore.fetchModulesWithLessons(programId)
     await modulesStore.fetchMaterials(programId)
+    await programsStore.fetchUserProgress(programId)
+    await programsStore.fetchMyEnrollments()
 
-    // Set current lesson from query or first lesson
     const lessonFromQuery = route.query.aula as string
     if (lessonFromQuery && allLessons.value.find(l => l.id === lessonFromQuery)) {
       currentLessonId.value = lessonFromQuery
@@ -457,44 +522,48 @@ async function fetchProgramAndLessons() {
 
 onMounted(() => {
   fetchProgramAndLessons()
+  setTimeout(() => {
+    document.addEventListener('click', handleClickOutside)
+  }, 0)
 })
 
-// Watch for query changes (browser back/forward)
 watch(() => route.query.aula, (newLessonId) => {
   if (newLessonId && typeof newLessonId === 'string') {
     currentLessonId.value = newLessonId
   } else if (allLessons.value.length > 0) {
-    // Fallback to first lesson if query is cleared
     currentLessonId.value = allLessons.value[0].id
   }
 })
 </script>
 
 <style scoped>
-/* Custom scrollbar for sidebar */
-aside::-webkit-scrollbar {
-  width: 8px;
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
 }
-
-aside::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-aside::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.3);
-  border-radius: 4px;
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 3px;
 }
-
-aside::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 240, 255, 0.5);
+.dark .scrollbar-custom::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
 }
-
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+:deep(.prose) {
+  max-width: none;
+}
+:deep(.prose p) {
+  margin-bottom: 1.5em;
 }
 </style>

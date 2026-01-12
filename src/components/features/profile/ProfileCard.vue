@@ -26,6 +26,7 @@
 
     <!-- Name & Title -->
     <h2 class="text-2xl font-bold text-white">{{ name }}</h2>
+    <p v-if="email" class="text-text-muted text-xs font-medium truncate max-w-full px-4 mb-1">{{ email }}</p>
     <p class="neon-text-gradient font-semibold text-sm mt-1 uppercase tracking-wider">{{ profession }}</p>
 
     <!-- Verified Badge -->
@@ -86,8 +87,16 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+const props = withDefaults(defineProps<Props>(), {
+  country: 'USA',
+  connections: 0,
+  points: 0,
+  posts: 0
+})
+
 interface Props {
   name: string
+  email?: string
   profession: string
   avatarUrl?: string
   verified?: boolean
@@ -100,13 +109,6 @@ interface Props {
   posts?: number
   readonly?: boolean
 }
-
-const props = withDefaults(defineProps<Props>(), {
-  country: 'USA',
-  connections: 0,
-  points: 0,
-  posts: 0
-})
 
 defineEmits<{
   (e: 'edit-avatar'): void

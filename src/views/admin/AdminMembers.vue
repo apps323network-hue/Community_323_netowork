@@ -153,6 +153,7 @@
               @unsuspend="handleUnsuspend"
               @ban="handleBan"
               @unban="handleUnban"
+              @update-role="handleUpdateRole"
             />
           </div>
 
@@ -167,6 +168,7 @@
               @unsuspend="handleUnsuspend"
               @ban="handleBan"
               @unban="handleUnban"
+              @update-role="handleUpdateRole"
             />
           </div>
         </div>
@@ -297,7 +299,7 @@ import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import MemberCard from '@/components/admin/MemberCard.vue'
 import MemberFilters from '@/components/admin/MemberFilters.vue'
 import Modal from '@/components/ui/Modal.vue'
-import type { AdminUser, MemberFilters as MemberFiltersType } from '@/types/admin'
+import type { AdminUser, UserRole, MemberFilters as MemberFiltersType } from '@/types/admin'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
@@ -414,6 +416,21 @@ async function handleUnban(userId: string) {
   } catch (error: any) {
     toast.error(error.message || 'Error unbanning user')
     console.error('Error unbanning user:', error)
+  }
+}
+
+async function handleUpdateRole(userId: string, role: UserRole) {
+  try {
+    await usersStore.updateUserRole(userId, role)
+    toast.success('Cargo atualizado com sucesso')
+    // Atualizar dados do usuário na lista local sem recarregar tudo
+    const user = usersStore.paginatedMembers.find(u => u.id === userId)
+    if (user) {
+      user.role = role
+    }
+  } catch (error: any) {
+    toast.error(error.message || 'Erro ao atualizar cargo')
+    console.error('Error updating user role:', error)
   }
 }
 

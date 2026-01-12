@@ -26,40 +26,42 @@ const { t } = useI18n()
 
 onMounted(async () => {
   try {
-    // Pegar token da query string
+    // 1. Verificar se há um token na query string (SSO American Dream)
     const token = route.query.token as string
     const redirectTo = (route.query.redirect as string) || '/'
 
-    if (!token) {
-      // Se não tem token, redirecionar para login
-      router.push({ name: 'Login', query: { redirect: redirectTo } })
-      return
+    if (token) {
+      console.log('[CALLBACK] Token de query encontrado, configurando sessão...')
+      const { error } = await supabase.auth.setSession({
+        access_token: token,
+        refresh_token: '',
+      })
+
+      if (error) throw error
+    } else {
+      // 2. Se não houver token na query, verificar se o Supabase já processou o OAuth (hash fragment)
+      console.log('[CALLBACK] Nenhum token na query, verificando sessão do Supabase...')
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError) throw sessionError
+      
+      if (!session) {
+        console.warn('[CALLBACK] Nenhuma sessão encontrada.')
+        router.push({ name: 'Login', query: { redirect: redirectTo } })
+        return
+      }
+      
+      console.log('[CALLBACK] Sessão OAuth detectada com sucesso.')
     }
 
-    // Validar token e criar sessão
-    const { error } = await supabase.auth.setSession({
-      access_token: token,
-      refresh_token: '', // Será gerado automaticamente
-    })
-
-    if (error) {
-      console.error('Erro ao validar token:', error)
-      // Token inválido - redirecionar para login
-      router.push({ name: 'Login', query: { redirect: redirectTo } })
-      return
-    }
-
-    // Token válido! Sessão criada automaticamente
-    // Redirecionar para página desejada
+    // 3. Redirecionar para a página desejada
     if (redirectTo.startsWith('http')) {
-      // URL externa - redirecionar diretamente
       window.location.href = redirectTo
     } else {
-      // Rota interna - usar router
       router.push(redirectTo)
     }
   } catch (error) {
-    console.error('Erro no callback de autenticação:', error)
+    console.error('[CALLBACK] Erro no callback de autenticação:', error)
     router.push({ name: 'Login' })
   }
 })

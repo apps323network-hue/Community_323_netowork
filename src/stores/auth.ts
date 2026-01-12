@@ -475,6 +475,28 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword,
     updatePassword,
     fetchUser,
+    signInWithGoogle,
   }
 })
+
+async function signInWithGoogle(redirectTo?: string) {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectTo || `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+    
+    if (error) throw error
+    return { success: true, data }
+  } catch (err: any) {
+    console.error('[AUTH] Google Sign-In error:', err)
+    return { success: false, error: err.message }
+  }
+}
 

@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="flex items-center justify-between mb-4 sm:mb-6">
-      <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">Alunos Matriculados</h2>
+      <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{{ t('professor.manage.studentsTab.title') }}</h2>
       <div class="text-xs sm:text-sm font-bold text-slate-600 dark:text-gray-400">
-        Total: {{ students.length }} alunos
+        {{ t('professor.manage.studentsTab.total', { count: students.length }) }}
       </div>
     </div>
 
@@ -17,9 +17,9 @@
       <div class="bg-secondary/10 p-8 rounded-full w-fit mx-auto mb-6">
         <span class="material-symbols-outlined text-6xl text-secondary">group</span>
       </div>
-      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Nenhum aluno matriculado</h3>
+      <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">{{ t('professor.manage.studentsTab.emptyTitle') }}</h3>
       <p class="text-slate-600 dark:text-gray-400">
-        Quando alunos se matricularem no programa, eles aparecerão aqui.
+        {{ t('professor.manage.studentsTab.emptyDesc') }}
       </p>
     </div>
 
@@ -30,16 +30,19 @@
           <thead class="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
             <tr>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-600 dark:text-gray-400 uppercase tracking-wider">
-                Aluno
+                {{ t('professor.manage.studentsTab.table.student') }}
               </th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-600 dark:text-gray-400 uppercase tracking-wider">
-                Email
+                {{ t('professor.manage.studentsTab.table.email') }}
               </th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-600 dark:text-gray-400 uppercase tracking-wider">
-                Data de Matrícula
+                {{ t('professor.manage.studentsTab.table.enrollmentDate') }}
               </th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-600 dark:text-gray-400 uppercase tracking-wider">
-                Status
+                {{ t('professor.manage.studentsTab.table.status') }}
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-black text-slate-600 dark:text-gray-400 uppercase tracking-wider">
+                {{ t('professor.manage.studentsTab.table.progress') }}
               </th>
             </tr>
           </thead>
@@ -54,24 +57,33 @@
                   />
                   <div>
                     <div class="text-sm font-bold text-slate-900 dark:text-white">
-                      {{ student.profile?.nome || 'Sem nome' }}
+                      {{ student.profile?.nome || t('professor.manage.studentsTab.table.noName') }}
                     </div>
-                    <div class="text-xs text-slate-500 dark:text-gray-400">
-                      @{{ student.profile?.username || 'no-username' }}
-                    </div>
+
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 text-sm text-slate-600 dark:text-gray-400">
-                {{ student.email || 'N/A' }}
+                {{ student.profile?.email || 'N/A' }}
               </td>
               <td class="px-6 py-4 text-sm text-slate-600 dark:text-gray-400">
                 {{ formatDate(student.enrolled_at) }}
               </td>
               <td class="px-6 py-4">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400">
-                  Ativo
+                  {{ t('professor.manage.studentsTab.table.active') }}
                 </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden min-w-[100px]">
+                    <div 
+                      class="h-full bg-secondary transition-all duration-500"
+                      :style="{ width: `${student.progress_percentage || 0}%` }"
+                    ></div>
+                  </div>
+                  <span class="text-xs font-black text-slate-900 dark:text-white">{{ student.progress_percentage || 0 }}%</span>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -83,18 +95,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useLocale } from '@/composables/useLocale'
 import { supabase } from '@/lib/supabase'
 
 const props = defineProps<{
   programId: string
 }>()
 
+const { t, locale: currentLocale } = useLocale()
+
 const students = ref<any[]>([])
 const loading = ref(true)
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
-  return date.toLocaleDateString('pt-BR', {
+  return date.toLocaleDateString(currentLocale.value, {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'
@@ -110,10 +125,12 @@ async function fetchStudents() {
       .select(`
         user_id,
         enrolled_at,
+        progress_percentage,
         profile:profiles!program_enrollments_user_id_fkey(
           id,
           nome,
-          username,
+          nome,
+          email,
           avatar_url
         )
       `)

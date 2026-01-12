@@ -80,6 +80,7 @@
             :key="service.id"
             :service="service"
             @request-service="handleRequestService"
+            @edit-service="handleEditService"
           />
         </div>
       </div>
@@ -197,7 +198,6 @@
             </button>
           </div>
         </div>
-
         <!-- Mensagem (para serviços gratuitos) -->
         <div v-if="!selectedService.preco" class="flex flex-col gap-1.5">
           <label class="text-xs sm:text-sm font-bold text-slate-700 dark:text-gray-300">{{ t('services.additionalMessage') }}</label>
@@ -209,10 +209,29 @@
           ></textarea>
         </div>
 
+        <!-- Termos e Condições (Se houver) -->
+        <div v-if="selectedService.terms_content_pt || selectedService.terms_content_en" class="space-y-3">
+          <div class="flex items-start gap-3 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 group cursor-pointer" @click="acceptedTerms = !acceptedTerms">
+            <div class="flex items-center justify-center pt-0.5">
+              <input
+                v-model="acceptedTerms"
+                type="checkbox"
+                class="w-5 h-5 rounded border-2 border-slate-300 dark:border-white/20 text-primary focus:ring-primary bg-white dark:bg-surface-dark transition-all cursor-pointer"
+                @click.stop
+              />
+            </div>
+            <div class="flex-1">
+              <p class="text-xs font-bold text-slate-700 dark:text-gray-300 leading-normal">
+                Eu li e concordo com os <button type="button" @click.stop="showTermsModal = true" class="text-primary hover:underline decoration-2 underline-offset-2">Termos e Condições</button> específicos deste serviço.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Botão de Ação -->
         <button
           @click="selectedService.preco ? handleCheckout() : submitRequest()"
-          :disabled="submitting || (selectedService.preco && !paymentMethod)"
+          :disabled="submitting || (selectedService.preco && !paymentMethod) || ((selectedService.terms_content_pt || selectedService.terms_content_en) && !acceptedTerms)"
           class="w-full rounded-lg bg-gradient-to-r from-primary to-secondary py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-black shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all disabled:opacity-50"
         >
           <template v-if="submitting">
@@ -337,6 +356,26 @@
           />
         </div>
 
+        <div>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-1.5">Termos e Condições (PT)</label>
+          <textarea
+            v-model="newService.terms_content_pt"
+            rows="4"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            placeholder="Defina as condições para este serviço em português..."
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-1.5">Terms and Conditions (EN)</label>
+          <textarea
+            v-model="newService.terms_content_en"
+            rows="4"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            placeholder="Define the conditions for this service in English..."
+          ></textarea>
+        </div>
+
         <div class="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm">
           <span class="material-symbols-outlined text-base align-middle mr-1">info</span>
           Seu serviço será enviado para aprovação e ficará visível após nossa análise.
@@ -359,11 +398,35 @@
         </button>
       </div>
     </Modal>
+
+    <!-- Modal de Termos -->
+    <Modal
+      v-if="selectedService"
+      v-model="showTermsModal"
+      title="Termos e Condições"
+      size="lg"
+    >
+      <div class="p-2 space-y-4">
+        <div class="prose dark:prose-invert max-w-none">
+          <div class="text-sm text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed h-[60vh] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+            {{ currentLocale === 'pt-BR' ? (selectedService.terms_content_pt || selectedService.terms_content_en) : (selectedService.terms_content_en || selectedService.terms_content_pt) }}
+          </div>
+        </div>
+        <div class="flex justify-end pt-4 border-t border-slate-100 dark:border-white/5">
+          <button
+            @click="showTermsModal = false"
+            class="px-6 py-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white font-bold hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </Modal>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSupabase } from '@/composables/useSupabase'
@@ -396,24 +459,38 @@ const selectedService = ref<any>(null)
 const requestMessage = ref('')
 const submitting = ref(false)
 const creatingService = ref(false)
+const editingServiceId = ref<string | null>(null)
 const paymentMethod = ref<'card' | 'pix' | null>(null)
 const exchangeRate = ref(5.90)
+const acceptedTerms = ref(false)
+const showTermsModal = ref(false)
+const { locale: currentLocale } = useI18n()
 
 const newService = ref({
   nome: '',
   descricao: '',
   categoria: '',
   preco: null as number | null,
-  beneficio_membro: ''
+  beneficio_membro: '',
+  terms_content_pt: '',
+  terms_content_en: ''
 })
 
-const filters = computed(() => [
-  { id: 'all', label: t('navigation.allCategories') },
-  { id: 'legal', label: t('services.filterLegal') },
-  { id: 'marketing', label: t('services.filterMarketing') },
-  { id: 'finance', label: t('services.filterFinance') },
-  { id: 'mentoring', label: t('services.filterMentoring') },
-])
+const filters = computed(() => {
+  const baseFilters = [
+    { id: 'all', label: t('navigation.allCategories') },
+    { id: 'legal', label: t('services.filterLegal') },
+    { id: 'marketing', label: t('services.filterMarketing') },
+    { id: 'finance', label: t('services.filterFinance') },
+    { id: 'mentoring', label: t('services.filterMentoring') },
+  ]
+  
+  if (subscriptionsStore.hasActiveSubscription) {
+    baseFilters.push({ id: 'mine', label: 'Meus Serviços' })
+  }
+  
+  return baseFilters
+})
 
 const testimonials = computed(() => [
   {
@@ -484,20 +561,34 @@ function calculateTotal(basePriceCents: number, method: 'card' | 'pix'): number 
 async function fetchServices() {
   try {
     loading.value = true
-    const { data, error } = await supabase
+    
+    let query = supabase
       .from('services')
       .select('*')
-      .eq('ativo', true)
-      .order('destaque', { ascending: false })
     
-    if (error) throw error
+    if (activeFilter.value === 'all') {
+      query = query.eq('ativo', true).eq('status', 'approved')
+    } else if (activeFilter.value === 'mine') {
+      if (!authStore.user) return
+      query = query.eq('created_by', authStore.user.id)
+    } else {
+      query = query.eq('categoria', activeFilter.value).eq('ativo', true).eq('status', 'approved')
+    }
+
+    const { data, error: fetchError } = await query.order('destaque', { ascending: false })
+
+    if (fetchError) throw fetchError
     services.value = data || []
   } catch (error) {
-    console.error('Erro ao buscar serviços:', error)
+    console.error('Error fetching services:', error)
   } finally {
     loading.value = false
   }
 }
+
+watch(activeFilter, () => {
+  fetchServices()
+})
 
 const filteredServices = computed(() => {
   if (activeFilter.value === 'all') return services.value
@@ -528,6 +619,7 @@ async function handleRequestService(service: any) {
   selectedService.value = service
   paymentMethod.value = null
   requestMessage.value = ''
+  acceptedTerms.value = false
   showRequestModal.value = true
 }
 
@@ -549,7 +641,8 @@ async function handleCheckout() {
         service_id: selectedService.value.id,
         payment_method: paymentMethod.value,
         exchange_rate: exchangeRate.value,
-        mensagem: requestMessage.value
+        mensagem: requestMessage.value,
+        accepted_terms: acceptedTerms.value
       }
     })
 
@@ -588,6 +681,21 @@ async function submitRequest() {
         mensagem: requestMessage.value,
         status: 'pendente'
       })
+
+    // Gravar aceitação de termos se houver e o usuário aceitou
+    if (acceptedTerms.value && (selectedService.value.terms_content_pt || selectedService.value.terms_content_en)) {
+      await supabase
+        .from('item_terms_acceptance')
+        .insert({
+          user_id: user.id,
+          item_type: 'service',
+          item_id: selectedService.value.id,
+          terms_snapshot_pt: selectedService.value.terms_content_pt,
+          terms_snapshot_en: selectedService.value.terms_content_en,
+          ip_address: 'client-side', // Fallback
+          user_agent: navigator.userAgent
+        })
+    }
 
     if (error) throw error
 
@@ -628,20 +736,35 @@ async function handlePublishService() {
 
   // Check subscription status
   await subscriptionsStore.fetchSubscription()
-  
   if (!subscriptionsStore.hasActiveSubscription) {
-    toast.info('Você precisa de uma assinatura para publicar serviços')
-    router.push('/subscription')
+    toast.error('Apenas membros Premium podem publicar serviços')
+    router.push('/precos')
     return
   }
 
-  // Open create service modal
+  editingServiceId.value = null
   newService.value = {
     nome: '',
     descricao: '',
     categoria: '',
     preco: null,
-    beneficio_membro: ''
+    beneficio_membro: '',
+    terms_content_pt: '',
+    terms_content_en: ''
+  }
+  showCreateServiceModal.value = true
+}
+
+async function handleEditService(service: any) {
+  editingServiceId.value = service.id
+  newService.value = {
+    nome: service.nome_pt,
+    descricao: service.descricao_pt,
+    categoria: service.categoria,
+    preco: service.preco ? service.preco / 100 : null,
+    beneficio_membro: service.beneficio_membro_pt,
+    terms_content_pt: service.terms_content_pt || '',
+    terms_content_en: service.terms_content_en || ''
   }
   showCreateServiceModal.value = true
 }
@@ -652,22 +775,52 @@ async function submitNewService() {
   try {
     creatingService.value = true
 
-    const { error } = await supabase
-      .from('services')
-      .insert({
-        nome: newService.value.nome,
-        descricao: newService.value.descricao,
-        categoria: newService.value.categoria,
-        preco: newService.value.preco || null,
-        beneficio_membro: newService.value.beneficio_membro || null,
-        moeda: 'USD',
-        ativo: false, // Needs approval
-        destaque: false,
-        created_by: authStore.user.id,
-        is_user_service: true
-      })
+    if (editingServiceId.value) {
+      const { error } = await supabase
+        .from('services')
+        .update({
+          nome_pt: newService.value.nome,
+          nome_en: newService.value.nome,
+          descricao_pt: newService.value.descricao,
+          descricao_en: newService.value.descricao,
+          categoria: newService.value.categoria,
+          preco: newService.value.preco ? Math.round(newService.value.preco * 100) : null,
+          beneficio_membro_pt: newService.value.beneficio_membro || null,
+          beneficio_membro_en: newService.value.beneficio_membro || null,
+          terms_content_pt: newService.value.terms_content_pt || null,
+          terms_content_en: newService.value.terms_content_en || null,
+          status: 'pending', // Volta para análise após editar
+          rejection_reason: null // Limpa o motivo da recusa anterior
+        })
+        .eq('id', editingServiceId.value)
 
-    if (error) throw error
+      if (error) throw error
+      toast.success('Serviço atualizado e enviado para nova análise!')
+    } else {
+      const { error } = await supabase
+        .from('services')
+        .insert({
+          nome_pt: newService.value.nome,
+          nome_en: newService.value.nome,
+          descricao_pt: newService.value.descricao,
+          descricao_en: newService.value.descricao,
+          categoria: newService.value.categoria,
+          preco: newService.value.preco ? Math.round(newService.value.preco * 100) : null,
+          beneficio_membro_pt: newService.value.beneficio_membro || null,
+          beneficio_membro_en: newService.value.beneficio_membro || null,
+          terms_content_pt: newService.value.terms_content_pt || null,
+          terms_content_en: newService.value.terms_content_en || null,
+          moeda: 'USD',
+          ativo: false,
+          status: 'pending',
+          destaque: false,
+          created_by: authStore.user.id,
+          is_user_service: true
+        })
+
+      if (error) throw error
+      toast.success('Serviço enviado para aprovação!')
+    }
 
     toast.success('Serviço enviado para aprovação!')
     showCreateServiceModal.value = false
@@ -678,7 +831,9 @@ async function submitNewService() {
       descricao: '',
       categoria: '',
       preco: null,
-      beneficio_membro: ''
+      beneficio_membro: '',
+      terms_content_pt: '',
+      terms_content_en: ''
     }
   } catch (error: any) {
     console.error('Erro ao criar serviço:', error)

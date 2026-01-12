@@ -175,10 +175,10 @@ const statusOptions = [
 ]
 
 const roleButtonText = computed(() => {
-  if (!props.modelValue.roles || props.modelValue.roles.length === 0) return 'Role'
+  if (!props.modelValue.roles || props.modelValue.roles.length === 0) return 'User'
   if (props.modelValue.roles.length === 1) {
     const role = roleOptions.find(r => r.value === props.modelValue.roles![0])
-    return role?.label || 'Role'
+    return role?.label || 'User'
   }
   return `${props.modelValue.roles.length} roles`
 })

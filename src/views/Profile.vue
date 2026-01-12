@@ -57,6 +57,7 @@
         <div class="lg:col-span-4 xl:col-span-3 space-y-6">
           <ProfileCard
             :name="editableProfile.nome || ''"
+            :email="editableProfile.email"
             :profession="editableProfile.area_atuacao || ''"
             :avatarUrl="editableProfile.avatar_url"
             :verified="editableProfile.badge === 'Verified' || editableProfile.plano === 'Premium'"

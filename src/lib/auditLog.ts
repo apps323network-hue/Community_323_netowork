@@ -44,6 +44,8 @@ export type AdminAction =
     // Service actions
     | 'create_service'
     | 'update_service'
+    | 'approve_service'
+    | 'reject_service'
     | 'delete_service'
     // Banned word actions
     | 'create_banned_word'
@@ -243,6 +245,8 @@ export const actionLabels: Record<AdminAction, string> = {
     // Service
     create_service: 'Serviço Criado',
     update_service: 'Serviço Atualizado',
+    approve_service: 'Serviço Aprovado',
+    reject_service: 'Serviço Rejeitado',
     delete_service: 'Serviço Deletado',
     // Banned word
     create_banned_word: 'Palavra Proibida Criada',

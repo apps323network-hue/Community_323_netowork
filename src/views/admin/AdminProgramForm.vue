@@ -131,10 +131,11 @@
                           />
                         </div>
                         <label :for="`prof-${prof.id}`" class="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
-                        <div class="min-w-0">
-                            <span class="block text-sm font-bold text-slate-700 dark:text-white truncate">{{ prof.nome }}</span>
+                            <div class="flex items-center gap-2">
+                              <span class="block text-sm font-bold text-slate-700 dark:text-white truncate">{{ prof.nome }}</span>
+                              <span v-if="prof.role === 'admin'" class="text-[8px] px-1.5 py-0.5 rounded-md bg-purple-500/10 text-purple-500 font-bold uppercase border border-purple-500/20">Admin</span>
+                            </div>
                             <span class="block text-[10px] text-slate-500 font-medium truncate">{{ prof.email }}</span>
-                          </div>
                         </label>
                       </div>
                     </div>
@@ -390,6 +391,52 @@
             </div>
           </div>
 
+          <!-- TAB 5: Terms & Conditions -->
+          <div v-show="currentTab === 'terms'" class="space-y-8">
+            <div class="p-6 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500">
+                  <span class="material-icons">gavel</span>
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-900 dark:text-white">Termos e Condições Específicos</h3>
+                  <p class="text-sm text-slate-500">Defina os termos que o usuário deve aceitar antes de se matricular neste programa.</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Termos em Português -->
+                <div class="space-y-4">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="material-icons text-primary/60 text-sm">translate</span>
+                    <h4 class="font-bold text-slate-700 dark:text-gray-300 uppercase text-xs">Termos em Português</h4>
+                  </div>
+                  <textarea 
+                    v-model="form.terms_content_pt" 
+                    rows="15" 
+                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white text-sm leading-relaxed" 
+                    placeholder="Escreva os termos em português aqui... (Suporta texto simples)"
+                  ></textarea>
+                  <p class="text-[10px] text-slate-500 italic">Estes termos serão exibidos em um modal antes do pagamento/matrícula.</p>
+                </div>
+
+                <!-- Termos em Inglês -->
+                <div class="space-y-4">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="material-icons text-primary/60 text-sm">language</span>
+                    <h4 class="font-bold text-slate-700 dark:text-gray-300 uppercase text-xs">Terms in English</h4>
+                  </div>
+                  <textarea 
+                    v-model="form.terms_content_en" 
+                    rows="15" 
+                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white text-sm leading-relaxed" 
+                    placeholder="Write the terms in English here..."
+                  ></textarea>
+                  <p class="text-[10px] text-slate-500 italic">These terms will be displayed in a modal before payment/enrollment.</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
         </form>
       </div>
@@ -479,10 +526,11 @@ const form = ref<CreateProgramData>({
   instructor_name: '',
   created_by: '',
   professor_ids: [],
-  prerequisites_pt: '',
   prerequisites_en: '',
   enrollment_start_date: '',
-  enrollment_end_date: ''
+  enrollment_end_date: '',
+  terms_content_pt: '',
+  terms_content_en: ''
 })
 
 onMounted(async () => {
@@ -490,8 +538,8 @@ onMounted(async () => {
   try {
     const { data: profs, error } = await supabase
       .from('profiles')
-      .select('id, nome, email, bio')
-      .eq('role', 'professor')
+      .select('id, nome, email, bio, role')
+      .in('role', ['professor', 'admin'])
       .order('nome')
 
     if (error) throw error

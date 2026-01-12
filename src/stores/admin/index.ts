@@ -94,6 +94,8 @@ export const useAdminStore = defineStore('admin', () => {
     fetchAllServices: servicesStore.fetchAllServices,
     createService: servicesStore.createService,
     updateService: servicesStore.updateService,
+    approveService: servicesStore.approveService,
+    rejectService: servicesStore.rejectService,
     deleteService: servicesStore.deleteService,
     fetchServiceStats: servicesStore.fetchServiceStats,
 
