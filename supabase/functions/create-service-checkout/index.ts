@@ -65,11 +65,11 @@ Deno.serve(async (req) => {
 
         // 5. Setup Stripe
         const origin = req.headers.get('origin') || ''
-        const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1')
+        const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1') || siteUrl.includes('localhost')
 
         // Selecionar a chave do Stripe baseada no ambiente
         const stripeKey = isDevelopment
-            ? Deno.env.get('STRIPE_TEST_SECRET_KEY')
+            ? Deno.env.get('STRIPE_SECRET_KEY_TEST')
             : Deno.env.get('STRIPE_SECRET_KEY')
 
         if (!stripeKey) {
@@ -176,7 +176,7 @@ Deno.serve(async (req) => {
                     currency: currency,
                     product_data: {
                         name: service.nome,
-                        description: service.descricao || undefined,
+                        description: service.descricao || `Professional Service: ${service.nome}`,
                     },
                     unit_amount: finalAmount,
                 },

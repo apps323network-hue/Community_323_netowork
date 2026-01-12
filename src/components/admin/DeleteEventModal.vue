@@ -18,7 +18,7 @@
           </p>
           <div v-if="event" class="mt-4 p-3 bg-slate-100 dark:bg-surface-lighter rounded-lg border border-slate-200 dark:border-white/10">
             <p class="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">Evento a ser deletado:</p>
-            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ event.titulo }}</p>
+            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ event.titulo_pt }}</p>
           </div>
         </div>
       </div>

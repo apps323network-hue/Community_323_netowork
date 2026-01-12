@@ -80,11 +80,14 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
     try {
       // Clean up empty strings and convert to null
       const cleanData: any = {
-        nome: serviceData.nome,
-        descricao: serviceData.descricao && serviceData.descricao.trim() ? serviceData.descricao : null,
+        nome_pt: serviceData.nome_pt,
+        nome_en: serviceData.nome_en,
+        descricao_pt: serviceData.descricao_pt && serviceData.descricao_pt.trim() ? serviceData.descricao_pt : null,
+        descricao_en: serviceData.descricao_en && serviceData.descricao_en.trim() ? serviceData.descricao_en : null,
         parceiro_id: serviceData.parceiro_id && serviceData.parceiro_id.trim() ? serviceData.parceiro_id : null,
         categoria: serviceData.categoria && serviceData.categoria.trim() ? serviceData.categoria : null,
-        beneficio_membro: serviceData.beneficio_membro && serviceData.beneficio_membro.trim() ? serviceData.beneficio_membro : null,
+        beneficio_membro_pt: serviceData.beneficio_membro_pt && serviceData.beneficio_membro_pt.trim() ? serviceData.beneficio_membro_pt : null,
+        beneficio_membro_en: serviceData.beneficio_membro_en && serviceData.beneficio_membro_en.trim() ? serviceData.beneficio_membro_en : null,
         destaque: serviceData.destaque || false,
         ativo: serviceData.ativo !== undefined ? serviceData.ativo : true,
         preco: serviceData.preco && serviceData.preco > 0 ? serviceData.preco : null,
@@ -139,9 +142,13 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
         updated_at: new Date().toISOString(),
       }
 
-      if (updates.nome !== undefined) cleanData.nome = updates.nome
-      if (updates.descricao !== undefined) {
-        cleanData.descricao = updates.descricao && updates.descricao.trim() ? updates.descricao : null
+      if (updates.nome_pt !== undefined) cleanData.nome_pt = updates.nome_pt
+      if (updates.nome_en !== undefined) cleanData.nome_en = updates.nome_en
+      if (updates.descricao_pt !== undefined) {
+        cleanData.descricao_pt = updates.descricao_pt && updates.descricao_pt.trim() ? updates.descricao_pt : null
+      }
+      if (updates.descricao_en !== undefined) {
+        cleanData.descricao_en = updates.descricao_en && updates.descricao_en.trim() ? updates.descricao_en : null
       }
       if (updates.parceiro_id !== undefined) {
         cleanData.parceiro_id = updates.parceiro_id && updates.parceiro_id.trim() ? updates.parceiro_id : null
@@ -149,8 +156,11 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
       if (updates.categoria !== undefined) {
         cleanData.categoria = updates.categoria && updates.categoria.trim() ? updates.categoria : null
       }
-      if (updates.beneficio_membro !== undefined) {
-        cleanData.beneficio_membro = updates.beneficio_membro && updates.beneficio_membro.trim() ? updates.beneficio_membro : null
+      if (updates.beneficio_membro_pt !== undefined) {
+        cleanData.beneficio_membro_pt = updates.beneficio_membro_pt && updates.beneficio_membro_pt.trim() ? updates.beneficio_membro_pt : null
+      }
+      if (updates.beneficio_membro_en !== undefined) {
+        cleanData.beneficio_membro_en = updates.beneficio_membro_en && updates.beneficio_membro_en.trim() ? updates.beneficio_membro_en : null
       }
       if (updates.destaque !== undefined) cleanData.destaque = updates.destaque
       if (updates.ativo !== undefined) cleanData.ativo = updates.ativo

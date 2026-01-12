@@ -62,11 +62,11 @@ Deno.serve(async (req) => {
 
         // 5. Setup Stripe
         const origin = req.headers.get('origin') || ''
-        const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1')
+        const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1') || siteUrl.includes('localhost')
 
         // Selecionar a chave do Stripe baseada no ambiente
         const stripeKey = isDevelopment
-            ? Deno.env.get('STRIPE_TEST_SECRET_KEY')
+            ? Deno.env.get('STRIPE_SECRET_KEY_TEST')
             : Deno.env.get('STRIPE_SECRET_KEY')
 
         if (!stripeKey) {
@@ -161,8 +161,8 @@ Deno.serve(async (req) => {
                 price_data: {
                     currency: currency,
                     product_data: {
-                        name: program.title_pt,
-                        description: program.short_description_pt || undefined,
+                        name: program.title_en || program.title_pt,
+                        description: program.short_description_en || program.short_description_pt || undefined,
                         images: program.thumbnail_url ? [program.thumbnail_url] : undefined,
                     },
                     unit_amount: finalAmount,
@@ -171,7 +171,7 @@ Deno.serve(async (req) => {
             }],
             mode: 'payment',
             success_url: `${siteUrl}/pagamento/sucesso?type=program&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${siteUrl}/programas/${program.id}`,
+            cancel_url: `${siteUrl}/programs/${program.id}`,
             metadata: {
                 type: 'program_payment',
                 program_id: program.id,

@@ -123,7 +123,7 @@
             : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
         >
           <span 
-            class="material-symbols-outlined text-[20px] mr-3 transition-colors"
+            class="material-icons-outlined mr-3 transition-colors"
             :class="$route.path === '/my-programs' ? 'text-secondary' : 'text-gray-500 group-hover:text-secondary'"
           >school</span>
           {{ t('programs.myPrograms') }}

@@ -89,23 +89,6 @@
       </div>
 
       <template v-else>
-        <!-- Parceiros em Destaque (3 cards grandes com imagem) -->
-        <section v-if="featuredBenefits.length > 0">
-          <div class="flex items-center gap-3 mb-6">
-            <span class="material-symbols-outlined text-secondary drop-shadow-[0_0_8px_rgba(0,243,255,0.8)]">star</span>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ t('benefits.featuredPartners') }}</h3>
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <BenefitCardFeatured
-              v-for="benefit in featuredBenefits.slice(0, 3)"
-              :key="benefit.id"
-              :benefit="benefit"
-              :is-claimed="isBenefitClaimed(benefit.id)"
-              @claim="handleClaimBenefit(benefit.id)"
-            />
-          </div>
-        </section>
 
         <!-- Todos os Benefícios (grid 4 colunas, sem imagem) -->
         <section>
@@ -139,16 +122,16 @@
                   <span class="material-symbols-outlined text-5xl text-secondary">lock_open</span>
                 </div>
                 <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">
-                  Veja Todos os {{ benefits.length }} Benefícios
+                  {{ t('benefits.guestBlockerTitle', { count: benefits.length }) }}
                 </h3>
                 <p class="text-slate-600 dark:text-gray-300 mb-6">
-                  Cadastre-se gratuitamente para acessar descontos exclusivos e parcerias premium
+                  {{ t('benefits.guestBlockerDesc') }}
                 </p>
                 <button 
                   @click="showAuthModal('signup')"
                   class="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white font-black rounded-lg hover:shadow-lg hover:scale-105 transition-all"
                 >
-                  Criar Conta Grátis
+                  {{ t('benefits.guestBlockerButton') }}
                 </button>
               </div>
             </div>
@@ -206,7 +189,6 @@ import { useI18n } from 'vue-i18n'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BenefitCard from '@/components/features/benefits/BenefitCard.vue'
-import BenefitCardFeatured from '@/components/features/benefits/BenefitCardFeatured.vue'
 import InteractiveGridPattern from '@/components/ui/InteractiveGridPattern.vue'
 import { useBenefits } from '@/composables/useBenefits'
 import { toast } from 'vue-sonner'
@@ -241,9 +223,7 @@ const filteredBenefits = computed(() => {
   return benefits.value.filter(b => b.tipo === activeFilter.value)
 })
 
-const featuredBenefits = computed(() => {
-  return filteredBenefits.value.filter(b => b.destaque_mes)
-})
+
 
 const otherBenefits = computed(() => {
   return filteredBenefits.value.filter(b => !b.destaque_mes)

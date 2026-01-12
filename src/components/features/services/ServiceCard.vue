@@ -23,12 +23,12 @@
 
       <!-- Title -->
       <h3 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl font-bold leading-tight mb-1 sm:mb-1.5 md:mb-2">
-        {{ service.nome }}
+        {{ currentLocale === 'pt-BR' ? service.nome_pt : (service.nome_en || service.nome_pt) }}
       </h3>
 
       <!-- Description -->
-      <p class="text-slate-600 dark:text-gray-400 text-[11px] sm:text-xs md:text-sm font-normal leading-relaxed mb-2.5 sm:mb-3 md:mb-4 line-clamp-2">
-        {{ service.descricao }}
+      <p class="text-slate-600 dark:text-gray-400 text-[11px] sm:text-xs md:text-sm font-normal leading-relaxed mb-2.5 sm:mb-3 md:mb-4 line-clamp-4">
+        {{ currentLocale === 'pt-BR' ? service.descricao_pt : (service.descricao_en || service.descricao_pt) }}
       </p>
 
       <!-- Price Section -->
@@ -46,13 +46,13 @@
       </div>
 
       <!-- Benefit Section -->
-      <div v-if="service.beneficio_membro" class="flex flex-col gap-1 sm:gap-1.5 p-2 sm:p-2.5 md:p-3 rounded-lg bg-secondary/5 border border-secondary/20 group-hover:bg-secondary/10 transition-colors">
+      <div v-if="currentLocale === 'pt-BR' ? service.beneficio_membro_pt : (service.beneficio_membro_en || service.beneficio_membro_pt)" class="flex flex-col gap-1 sm:gap-1.5 p-2 sm:p-2.5 md:p-3 rounded-lg bg-secondary/5 border border-secondary/20 group-hover:bg-secondary/10 transition-colors">
         <div class="flex items-center gap-1 sm:gap-1.5 text-secondary">
           <span class="material-symbols-outlined text-sm sm:text-base md:text-[18px]">workspace_premium</span>
           <span class="text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.memberBenefit') }}</span>
         </div>
         <p class="text-slate-600 dark:text-gray-300 text-[10px] sm:text-[11px] md:text-xs font-medium leading-relaxed">
-          {{ service.beneficio_membro }}
+          {{ currentLocale === 'pt-BR' ? service.beneficio_membro_pt : (service.beneficio_membro_en || service.beneficio_membro_pt) }}
         </p>
       </div>
     </div>
@@ -71,18 +71,21 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { useLocale } from '@/composables/useLocale'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 
-const { t } = useI18n()
+const { locale: currentLocale, t } = useLocale()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 interface Service {
   id: string
-  nome: string
-  descricao?: string
+  nome_pt: string
+  nome_en: string
+  descricao_pt?: string
+  descricao_en?: string
   categoria?: string
-  beneficio_membro?: string
+  beneficio_membro_pt?: string
+  beneficio_membro_en?: string
   destaque: boolean
   parceiro_id?: string
   preco?: number
@@ -105,11 +108,25 @@ function getButtonText(): string {
 
 function getIcon(category: string | undefined): string {
   if (!category) return 'hub'
-  switch (category) {
-    case 'legal': return 'domain'
-    case 'finance': return 'account_balance'
-    case 'mentoring': return 'badge'
+  const cat = category.toLowerCase()
+  switch (cat) {
+    case 'legal':
+    case 'jurídico': return 'gavel'
+    case 'finance':
+    case 'finanças': return 'account_balance'
+    case 'mentoring':
+    case 'mentoria': return 'school'
     case 'marketing': return 'campaign'
+    case 'tech':
+    case 'tecnologia': return 'terminal'
+    case 'serviços':
+    case 'services': return 'category'
+    case 'tradução':
+    case 'translation': return 'translate'
+    case 'imigração':
+    case 'immigration': return 'public'
+    case 'visto':
+    case 'visa': return 'assignment_ind'
     default: return 'hub'
   }
 }

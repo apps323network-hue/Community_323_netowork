@@ -42,7 +42,7 @@
           class="font-black text-white mb-3"
           :class="variant === 'full' ? 'text-3xl' : 'text-2xl'"
         >
-          {{ title }}
+          {{ displayTitle }}
         </h2>
 
         <!-- Message -->
@@ -50,13 +50,13 @@
           class="text-gray-300 mb-8 leading-relaxed"
           :class="variant === 'full' ? 'text-lg' : 'text-base'"
         >
-          {{ message }}
+          {{ displayMessage }}
         </p>
 
         <!-- Benefits (optional) -->
         <div v-if="showBenefits" class="mb-8 text-left space-y-3">
           <div 
-            v-for="benefit in benefits" 
+            v-for="benefit in displayBenefits" 
             :key="benefit"
             class="flex items-start gap-3 text-gray-200"
           >
@@ -71,7 +71,7 @@
             @click="handleSignup"
             class="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-secondary to-primary text-white font-black text-lg hover:shadow-lg hover:scale-105 transition-all"
           >
-            {{ cta }}
+            {{ displayCta }}
           </button>
           <button
             @click="handleLogin"
@@ -83,7 +83,7 @@
 
         <!-- Terms -->
         <p class="text-xs text-gray-500 mt-6">
-          Ao se cadastrar, você concorda com nossos Termos de Uso e Política de Privacidade
+          {{ t('common.guestBlocker.terms') }}
         </p>
       </div>
     </div>
@@ -91,6 +91,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import { useI18n } from 'vue-i18n'
 
@@ -109,18 +110,18 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'full',
-  title: 'Cadastre-se para Continuar',
-  message: 'Junte-se a milhares de brasileiros conectados nos EUA',
-  cta: 'Criar Conta Grátis',
+  title: '',
+  message: '',
+  cta: '',
   dismissible: false,
   showBenefits: false,
-  benefits: () => [
-    'Acesso completo a todos os recursos',
-    'Conecte-se com brasileiros na sua região',
-    'Participe de eventos exclusivos',
-    'Receba benefícios e descontos'
-  ]
+  benefits: () => []
 })
+
+const displayTitle = computed(() => props.title || t('common.guestBlocker.title'))
+const displayMessage = computed(() => props.message || t('common.guestBlocker.message'))
+const displayCta = computed(() => props.cta || t('common.guestBlocker.cta'))
+const displayBenefits = computed(() => props.benefits.length > 0 ? props.benefits : t('common.guestBlocker.benefits'))
 
 const emit = defineEmits<{
   dismiss: []

@@ -15,8 +15,8 @@
     </div>
     
     <div class="flex-grow">
-      <h5 class="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">{{ benefit.nome }}</h5>
-      <p class="text-sm text-slate-600 dark:text-gray-400 leading-snug">{{ benefit.descricao }}</p>
+      <h5 class="text-lg font-bold text-slate-900 dark:text-white mb-1 group-hover:text-primary transition-colors">{{ currentLocale === 'pt-BR' ? benefit.nome_pt : (benefit.nome_en || benefit.nome_pt) }}</h5>
+      <p class="text-sm text-slate-600 dark:text-gray-400 leading-snug">{{ currentLocale === 'pt-BR' ? benefit.descricao_pt : (benefit.descricao_en || benefit.descricao_pt) }}</p>
     </div>
     
     <!-- Estado -->
@@ -33,10 +33,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useLocale } from '@/composables/useLocale'
 import type { Benefit } from '@/types/benefits'
 
-const { t } = useI18n()
+const { locale: currentLocale, t } = useLocale()
 
 interface Props {
   benefit: Benefit

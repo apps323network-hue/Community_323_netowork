@@ -108,7 +108,8 @@ const isHeroHeroPage = computed(() => {
          route.path.startsWith('/eventos/') ||
          route.path === '/programs' ||
          route.path.startsWith('/programs/') ||
-         route.path === '/pagamento/sucesso'
+         route.path === '/pagamento/sucesso' ||
+         route.path === '/subscription'
 })
 
 function handleEditProfile() {

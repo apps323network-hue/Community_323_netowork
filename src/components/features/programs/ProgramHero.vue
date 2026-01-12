@@ -57,7 +57,7 @@
             @click="handleAction"
           >
             <span class="material-symbols-outlined text-3xl fill-current">
-              {{ isEnrolled ? 'play_arrow' : 'shopping_cart' }}
+              play_arrow
             </span>
             {{ isEnrolled ? t('programs.actions.accessNow') : (isAuthenticated ? t('programs.actions.secureMySpot') : t('auth.login')) }}
           </button>

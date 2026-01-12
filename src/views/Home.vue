@@ -6,8 +6,8 @@
       
       <!-- Guest Banner -->
       <div v-else class="bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/20 dark:border-white/5 rounded-2xl p-8 text-center shadow-premium dark:shadow-none">
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Junte-se à Comunidade</h3>
-        <p class="text-slate-600 dark:text-gray-300 mb-6 font-medium">Conecte-se com brasileiros nos EUA e compartilhe suas experiências</p>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">{{ t('home.guestBannerTitle') }}</h3>
+        <p class="text-slate-600 dark:text-gray-300 mb-6 font-medium">{{ t('home.guestBannerDescription') }}</p>
         <button 
           @click="showAuthModal('signup')"
           class="px-8 py-3 bg-gradient-to-r from-secondary to-primary text-white font-black rounded-xl hover:shadow-lg transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2 mx-auto"
@@ -68,9 +68,9 @@
           <GuestBlocker
             :show="true"
             variant="inline"
-            title="Quer ver mais?"
-            message="Cadastre-se gratuitamente para acessar todo o conteúdo da comunidade e interagir com outros brasileiros."
-            cta="Criar Conta Grátis"
+            :title="t('home.moreContentTitle')"
+            :message="t('home.moreContentMessage')"
+            :cta="t('common.guestBlocker.cta')"
           />
         </div>
 

@@ -34,6 +34,13 @@
             <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-gradient-to-r from-primary to-secondary text-black text-xs sm:text-sm md:text-base font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)] hover:shadow-[0_0_40px_rgba(0,243,255,0.5)] hover:scale-105 w-full sm:w-auto" @click="exploreServices">
               {{ t('services.exploreServices') }}
             </button>
+            <button 
+              @click="handlePublishService"
+              class="flex items-center justify-center gap-2 rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 border border-primary/30 text-primary text-xs sm:text-sm md:text-base font-bold backdrop-blur-sm transition-all w-full sm:w-auto"
+            >
+              <span class="material-symbols-outlined text-sm sm:text-base">add_circle</span>
+              Publicar Serviço
+            </button>
             <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white text-xs sm:text-sm md:text-base font-medium backdrop-blur-sm transition-colors w-full sm:w-auto" @click="howItWorks">
               {{ t('services.howItWorks') }}
             </button>
@@ -266,13 +273,103 @@
         </div>
       </div>
     </Modal>
+
+    <!-- Modal Criar Serviço -->
+    <Modal
+      v-model="showCreateServiceModal"
+      title="Publicar Novo Serviço"
+    >
+      <div class="flex flex-col gap-4">
+        <div>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-1.5">Nome do Serviço *</label>
+          <input
+            v-model="newService.nome"
+            type="text"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            placeholder="Ex: Consultoria Jurídica para Imigração"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-1.5">Descrição *</label>
+          <textarea
+            v-model="newService.descricao"
+            rows="4"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            placeholder="Descreva detalhadamente o serviço que você oferece..."
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-1.5">Categoria *</label>
+            <select
+              v-model="newService.categoria"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-sm text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            >
+              <option value="">Selecione...</option>
+              <option value="legal">Legal/Jurídico</option>
+              <option value="marketing">Marketing</option>
+              <option value="finance">Finanças</option>
+              <option value="mentoring">Mentoria</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-1.5">Preço (USD) - Opcional</label>
+            <input
+              v-model.number="newService.preco"
+              type="number"
+              step="100"
+              min="0"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              placeholder="Em centavos (ex: 5000 = $50)"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-1.5">Benefício para Membros</label>
+          <input
+            v-model="newService.beneficio_membro"
+            type="text"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            placeholder="Ex: 10% de desconto para membros premium"
+          />
+        </div>
+
+        <div class="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm">
+          <span class="material-symbols-outlined text-base align-middle mr-1">info</span>
+          Seu serviço será enviado para aprovação e ficará visível após nossa análise.
+        </div>
+
+        <button
+          @click="submitNewService"
+          :disabled="creatingService || !newService.nome || !newService.descricao || !newService.categoria"
+          class="w-full rounded-lg bg-gradient-to-r from-primary to-secondary py-3 text-sm font-bold text-black shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all disabled:opacity-50"
+        >
+          <template v-if="creatingService">
+            <span class="flex items-center justify-center gap-2">
+              <span class="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+              Enviando...
+            </span>
+          </template>
+          <template v-else>
+            Enviar para Aprovação
+          </template>
+        </button>
+      </div>
+    </Modal>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSupabase } from '@/composables/useSupabase'
+import { useSubscriptionsStore } from '@/stores/subscriptions'
+import { useAuthStore } from '@/stores/auth'
+import { useSSO } from '@/composables/useSSO'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ServiceCard from '@/components/features/services/ServiceCard.vue'
 import TestimonialCard from '@/components/features/services/TestimonialCard.vue'
@@ -281,19 +378,34 @@ import FlickeringGrid from '@/components/ui/FlickeringGrid.vue'
 import { toast } from 'vue-sonner'
 import { fetchExchangeRate, calculatePixAmount } from '@/lib/exchange'
 
+const router = useRouter()
+
 const { supabase } = useSupabase()
 const { t } = useI18n()
+const subscriptionsStore = useSubscriptionsStore()
+const authStore = useAuthStore()
+
 const loading = ref(true)
 const services = ref<any[]>([])
 const activeFilter = ref('all')
 
 const showRequestModal = ref(false)
 const showHowItWorksModal = ref(false)
+const showCreateServiceModal = ref(false)
 const selectedService = ref<any>(null)
 const requestMessage = ref('')
 const submitting = ref(false)
+const creatingService = ref(false)
 const paymentMethod = ref<'card' | 'pix' | null>(null)
-const exchangeRate = ref(5.90) // Taxa de câmbio USD → BRL
+const exchangeRate = ref(5.90)
+
+const newService = ref({
+  nome: '',
+  descricao: '',
+  categoria: '',
+  preco: null as number | null,
+  beneficio_membro: ''
+})
 
 const filters = computed(() => [
   { id: 'all', label: t('navigation.allCategories') },
@@ -392,7 +504,27 @@ const filteredServices = computed(() => {
   return services.value.filter(s => s.categoria === activeFilter.value)
 })
 
-function handleRequestService(service: any) {
+async function handleRequestService(service: any) {
+  // Se for serviço externo com SSO habilitado, redirecionar com token
+  if (service.is_external && service.sso_enabled) {
+    try {
+      const { generateSSOUrl } = useSSO()
+      const ssoUrl = await generateSSOUrl(service)
+      window.open(ssoUrl, '_blank')
+      return
+    } catch (error: any) {
+      console.error('Erro ao gerar URL SSO:', error)
+      toast.error(error.message || 'Erro ao redirecionar para o serviço')
+    }
+  }
+
+  // Se for um serviço externo sem preço, abrir o link externo diretamente
+  if (service.is_external && !service.preco && service.external_url) {
+    window.open(service.external_url, '_blank')
+    return
+  }
+
+  // Comportamento padrão: abrir modal de solicitação
   selectedService.value = service
   paymentMethod.value = null
   requestMessage.value = ''
@@ -484,6 +616,76 @@ function exploreServices() {
 
 function howItWorks() {
   showHowItWorksModal.value = true
+}
+
+async function handlePublishService() {
+  // Check if user is logged in
+  if (!authStore.user) {
+    toast.error('Faça login para publicar um serviço')
+    router.push('/login?redirect=/servicos')
+    return
+  }
+
+  // Check subscription status
+  await subscriptionsStore.fetchSubscription()
+  
+  if (!subscriptionsStore.hasActiveSubscription) {
+    toast.info('Você precisa de uma assinatura para publicar serviços')
+    router.push('/subscription')
+    return
+  }
+
+  // Open create service modal
+  newService.value = {
+    nome: '',
+    descricao: '',
+    categoria: '',
+    preco: null,
+    beneficio_membro: ''
+  }
+  showCreateServiceModal.value = true
+}
+
+async function submitNewService() {
+  if (!authStore.user) return
+  
+  try {
+    creatingService.value = true
+
+    const { error } = await supabase
+      .from('services')
+      .insert({
+        nome: newService.value.nome,
+        descricao: newService.value.descricao,
+        categoria: newService.value.categoria,
+        preco: newService.value.preco || null,
+        beneficio_membro: newService.value.beneficio_membro || null,
+        moeda: 'USD',
+        ativo: false, // Needs approval
+        destaque: false,
+        created_by: authStore.user.id,
+        is_user_service: true
+      })
+
+    if (error) throw error
+
+    toast.success('Serviço enviado para aprovação!')
+    showCreateServiceModal.value = false
+    
+    // Reset form
+    newService.value = {
+      nome: '',
+      descricao: '',
+      categoria: '',
+      preco: null,
+      beneficio_membro: ''
+    }
+  } catch (error: any) {
+    console.error('Erro ao criar serviço:', error)
+    toast.error(error.message || 'Erro ao criar serviço')
+  } finally {
+    creatingService.value = false
+  }
 }
 
 function contactSupport() {

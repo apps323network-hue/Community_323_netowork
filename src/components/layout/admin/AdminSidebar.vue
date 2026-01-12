@@ -102,6 +102,13 @@ const menuItems = computed(() => [
     badgeClass: '',
   },
   {
+    path: '/admin/subscriptions',
+    label: 'Assinaturas',
+    icon: 'card_membership',
+    badge: undefined,
+    badgeClass: '',
+  },
+  {
     path: '/admin/palavras-proibidas',
     label: 'Palavras Proibidas',
     icon: 'block',

@@ -172,10 +172,12 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import Button from '@/components/ui/Button.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const password = ref('')
 const confirmPassword = ref('')
@@ -184,26 +186,38 @@ const errorMessage = ref<string | null>(null)
 
 // Verificar se há token válido na URL ao montar o componente
 onMounted(async () => {
-  // Verificar se há erros na URL (token expirado, etc)
+  // 1. Verificar Search Params (Query String) através do vue-router
+  const query = route.query
+  const queryError = query.error as string
+  const queryErrorDesc = query.error_description as string
+
+  // 2. Verificar Hash Params manualmente
   const hashParams = new URLSearchParams(window.location.hash.substring(1))
-  const error = hashParams.get('error')
-  const errorDescription = hashParams.get('error_description')
+  const hashError = hashParams.get('error')
+  const hashErrorDesc = hashParams.get('error_description')
+
+  const error = queryError || hashError
+  const errorDescription = queryErrorDesc || hashErrorDesc
   
   if (error) {
+    console.error('Auth error detected:', { error, errorDescription })
     let message = 'Link inválido ou expirado.'
+    
     if (errorDescription) {
-      if (errorDescription.includes('expired')) {
-        message = 'O link de recuperação expirou. Por favor, solicite um novo link.'
-      } else if (errorDescription.includes('invalid')) {
+      const desc = errorDescription.toLowerCase()
+      if (desc.includes('expired')) {
+        message = 'O link de recuperação expirou ou já foi utilizado. Por favor, solicite um novo link.'
+      } else if (desc.includes('invalid')) {
         message = 'O link de recuperação é inválido. Por favor, solicite um novo link.'
       }
     }
+    
     errorMessage.value = message
     
-    // Redirecionar após 5 segundos
+    // Redirecionar após 7 segundos para dar tempo de ler
     setTimeout(() => {
-      window.location.href = '/login'
-    }, 5000)
+      router.push('/login')
+    }, 7000)
     return
   }
   
@@ -211,12 +225,14 @@ onMounted(async () => {
   const accessToken = hashParams.get('access_token')
   const type = hashParams.get('type')
   
-  if (!accessToken || type !== 'recovery') {
-    errorMessage.value = 'Link de recuperação inválido. Por favor, solicite um novo link.'
+  if (!accessToken && !error) {
+    errorMessage.value = 'Link de recuperação inválido ou não detectado. Por favor, tente novamente através do link original.'
     // Redirecionar após 5 segundos
     setTimeout(() => {
-      window.location.href = '/login'
+      router.push('/login')
     }, 5000)
+  } else if (accessToken && type !== 'recovery') {
+    errorMessage.value = 'Tipo de autenticação inválido para esta página.'
   }
 })
 
@@ -258,7 +274,7 @@ async function handleUpdatePassword() {
       await authStore.signOut()
       // Redirecionar após 3 segundos
       setTimeout(() => {
-        window.location.href = '/login'
+        router.push('/login')
       }, 3000)
     } else {
       // Tratar erro - NÃO redirecionar automaticamente, deixar usuário tentar novamente

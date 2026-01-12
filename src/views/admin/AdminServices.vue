@@ -101,7 +101,7 @@
           <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-2">
-                <h3 class="text-slate-900 dark:text-white font-bold text-lg">{{ service.nome }}</h3>
+                <h3 class="text-slate-900 dark:text-white font-bold text-lg">{{ service.nome_pt }}</h3>
                 <span
                   v-if="service.destaque"
                   class="px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-500/20 text-yellow-400"
@@ -118,8 +118,8 @@
               <p v-if="service.categoria" class="text-slate-600 dark:text-white/60 text-sm mb-2">
                 {{ service.categoria }}
               </p>
-              <p v-if="service.descricao" class="text-slate-500 dark:text-white/40 text-sm line-clamp-2">
-                {{ service.descricao }}
+              <p v-if="service.descricao_pt" class="text-slate-500 dark:text-white/40 text-sm line-clamp-2">
+                {{ service.descricao_pt }}
               </p>
             </div>
           </div>
@@ -130,9 +130,9 @@
             </div>
           </div>
 
-          <div v-if="service.beneficio_membro" class="mb-4 p-3 rounded-lg bg-secondary/10 border border-secondary/20">
+          <div v-if="service.beneficio_membro_pt" class="mb-4 p-3 rounded-lg bg-secondary/10 border border-secondary/20">
             <p class="text-xs font-bold text-secondary uppercase mb-1">Benefício Membro:</p>
-            <p class="text-sm text-slate-700 dark:text-gray-300">{{ service.beneficio_membro }}</p>
+            <p class="text-sm text-slate-700 dark:text-gray-300">{{ service.beneficio_membro_pt }}</p>
           </div>
 
           <div class="flex gap-2 mt-4">
@@ -159,25 +159,48 @@
         size="lg"
       >
         <form @submit.prevent="handleSubmit" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Nome *</label>
-            <input
-              v-model="formData.nome"
-              type="text"
-              required
-              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-              placeholder="Nome do serviço"
-            />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Nome (PT) *</label>
+              <input
+                v-model="formData.nome_pt"
+                type="text"
+                required
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="Nome em português"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Nome (EN) *</label>
+              <input
+                v-model="formData.nome_en"
+                type="text"
+                required
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="Name in English"
+              />
+            </div>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Descrição</label>
-            <textarea
-              v-model="formData.descricao"
-              rows="4"
-              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-              placeholder="Descrição do serviço"
-            ></textarea>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Descrição (PT)</label>
+              <textarea
+                v-model="formData.descricao_pt"
+                rows="4"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="Descrição em português"
+              ></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Descrição (EN)</label>
+              <textarea
+                v-model="formData.descricao_en"
+                rows="4"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="Description in English"
+              ></textarea>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
@@ -206,14 +229,25 @@
             </div>
           </div>
 
-          <div>
-            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Benefício para Membros</label>
-            <input
-              v-model="formData.beneficio_membro"
-              type="text"
-              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-              placeholder="Ex: 20% de desconto exclusivo"
-            />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Benefício Membro (PT)</label>
+              <input
+                v-model="formData.beneficio_membro_pt"
+                type="text"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="Ex: 20% de desconto exclusivo"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Benefício Membro (EN)</label>
+              <input
+                v-model="formData.beneficio_membro_en"
+                type="text"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="Ex: 20% exclusive discount"
+              />
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
@@ -338,11 +372,14 @@ const displayedServices = computed(() => {
 })
 
 const formData = ref<Partial<AdminService>>({
-  nome: '',
-  descricao: '',
+  nome_pt: '',
+  nome_en: '',
+  descricao_pt: '',
+  descricao_en: '',
   parceiro_id: '',
   categoria: '',
-  beneficio_membro: '',
+  beneficio_membro_pt: '',
+  beneficio_membro_en: '',
   destaque: false,
   ativo: true,
   preco: undefined,
@@ -360,11 +397,14 @@ function formatPrice(cents: number, currency: string = 'USD'): string {
 function editService(service: AdminService) {
   editingService.value = service
   formData.value = {
-    nome: service.nome,
-    descricao: service.descricao || '',
+    nome_pt: service.nome_pt,
+    nome_en: service.nome_en,
+    descricao_pt: service.descricao_pt || '',
+    descricao_en: service.descricao_en || '',
     parceiro_id: service.parceiro_id || '',
     categoria: service.categoria || '',
-    beneficio_membro: service.beneficio_membro || '',
+    beneficio_membro_pt: service.beneficio_membro_pt || '',
+    beneficio_membro_en: service.beneficio_membro_en || '',
     destaque: service.destaque,
     ativo: service.ativo,
     preco: service.preco,
@@ -413,11 +453,14 @@ function closeModal() {
   showEditModal.value = false
   editingService.value = null
   formData.value = {
-    nome: '',
-    descricao: '',
+    nome_pt: '',
+    nome_en: '',
+    descricao_pt: '',
+    descricao_en: '',
     parceiro_id: '',
     categoria: '',
-    beneficio_membro: '',
+    beneficio_membro_pt: '',
+    beneficio_membro_en: '',
     destaque: false,
     ativo: true,
     preco: undefined,

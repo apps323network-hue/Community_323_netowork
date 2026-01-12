@@ -2,9 +2,16 @@
   <Modal v-model="isOpen" title="Aprovar/Rejeitar Evento" size="lg">
     <div class="space-y-6">
       <!-- Event Info -->
-      <div class="bg-surface-card rounded-lg p-4 border border-white/5">
-        <h3 class="text-white font-bold text-lg mb-2">{{ event?.titulo }}</h3>
-        <p v-if="event?.descricao" class="text-white/60 text-sm mb-3">{{ event.descricao }}</p>
+      <div class="bg-surface-card rounded-lg p-4 border border-white/5 space-y-3">
+        <div>
+          <h3 class="text-white font-bold text-lg">{{ event?.titulo_pt }}</h3>
+          <p v-if="event?.titulo_en" class="text-white/40 text-sm italic">{{ event.titulo_en }}</p>
+        </div>
+        
+        <div v-if="event?.descricao_pt || event?.descricao_en" class="space-y-2">
+          <p v-if="event?.descricao_pt" class="text-white/60 text-sm">{{ event.descricao_pt }}</p>
+          <p v-if="event?.descricao_en" class="text-white/40 text-xs italic">EN: {{ event.descricao_en }}</p>
+        </div>
         <div class="flex items-center gap-4 text-white/70 text-sm">
           <div class="flex items-center gap-1">
             <span class="material-symbols-outlined text-base">calendar_today</span>

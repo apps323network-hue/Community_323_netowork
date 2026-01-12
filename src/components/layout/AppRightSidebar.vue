@@ -19,7 +19,7 @@
             <span class="text-slate-900 dark:text-white text-lg">{{ event.day }}</span>
           </div>
           <div>
-            <h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-secondary-dark dark:group-hover:text-secondary transition-colors">{{ event.titulo }}</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white group-hover:text-secondary-dark dark:group-hover:text-secondary transition-colors">{{ currentLocale === 'pt-BR' ? event.titulo_pt : (event.titulo_en || event.titulo_pt) }}</h4>
             <p class="text-xs text-slate-500 dark:text-gray-500 mt-0.5 flex items-center">
               <span v-if="event.tipo === 'webinar'" class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
               {{ event.local }}
@@ -122,7 +122,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { RouterLink, useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import Avatar from '@/components/ui/Avatar.vue'
@@ -131,10 +130,12 @@ import { useConnections } from '@/composables/useConnections'
 import { useAuthStore } from '@/stores/auth'
 import { toast } from 'vue-sonner'
 import { sendConnectionRequestEmail } from '@/lib/emails'
+import { useLocale } from '@/composables/useLocale'
 
 interface Event {
   id: string
-  titulo: string
+  titulo_pt: string
+  titulo_en?: string
   data_hora: string
   tipo: 'presencial' | 'webinar'
   local: string
@@ -151,7 +152,7 @@ interface Member {
 }
 
 const router = useRouter()
-const { t } = useI18n()
+const { t, locale: currentLocale } = useLocale()
 const upcomingEvents = ref<Event[]>([])
 const featuredMembers = ref<Member[]>([])
 
@@ -169,6 +170,7 @@ async function loadUpcomingEvents() {
     const { data, error } = await supabase
       .from('events')
       .select('*')
+      .eq('status', 'approved')
       .gte('data_hora', new Date().toISOString())
       .order('data_hora', { ascending: true })
       .limit(2)
@@ -178,7 +180,7 @@ async function loadUpcomingEvents() {
     upcomingEvents.value = (data || []).map(event => ({
       ...event,
       ...formatEventDate(event.data_hora),
-      local: event.tipo === 'webinar' ? `Online • ${new Date(event.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' })} EST` : event.local || 'Local a definir'
+      local: event.tipo === 'webinar' ? `Online • ${new Date(event.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York' })} EST` : (currentLocale.value === 'pt-BR' ? event.local_pt : (event.local_en || event.local_pt)) || 'Local a definir'
     }))
   } catch (error) {
     console.error('Error loading upcoming events:', error)
@@ -186,7 +188,8 @@ async function loadUpcomingEvents() {
     upcomingEvents.value = [
       {
         id: '1',
-        titulo: 'Workshop de Vendas',
+        titulo_pt: 'Workshop de Vendas',
+        titulo_en: 'Sales Workshop',
         data_hora: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         tipo: 'webinar',
         local: 'Online • 19:00 EST',
@@ -195,7 +198,8 @@ async function loadUpcomingEvents() {
       },
       {
         id: '2',
-        titulo: 'Feira de Arte BR',
+        titulo_pt: 'Feira de Arte BR',
+        titulo_en: 'Art Fair BR',
         data_hora: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         tipo: 'presencial',
         local: 'Nova York, NY',

@@ -29,11 +29,14 @@ Deno.serve(async (req) => {
         if (authError || !user) throw new Error('Unauthorized')
 
         // 3. Setup Stripe (Environment Detection)
+        const referer = req.headers.get('referer')
+        let siteUrl = referer ? new URL(referer).origin : Deno.env.get('SITE_URL') || 'http://localhost:5173'
+        
         const origin = req.headers.get('origin') || ''
-        const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1')
+        const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1') || siteUrl.includes('localhost')
 
         const stripeKey = isDevelopment
-            ? Deno.env.get('STRIPE_TEST_SECRET_KEY')
+            ? Deno.env.get('STRIPE_SECRET_KEY_TEST')
             : Deno.env.get('STRIPE_SECRET_KEY')
 
         if (!stripeKey) throw new Error(`Stripe Secret Key não configurada para o ambiente: ${isDevelopment ? 'TEST' : 'PROD'}`)
@@ -95,6 +98,40 @@ Deno.serve(async (req) => {
                             })
                         }
                     }
+                }
+            } else if (type === 'subscription_payment') {
+                // Update Subscription
+                const userId = session.metadata?.user_id
+                const subscriptionDbId = session.metadata?.subscription_id
+                const stripeSubscriptionId = session.subscription as string
+
+                if (userId && stripeSubscriptionId) {
+                    // Buscar detalhes da assinatura no Stripe para pegar as datas
+                    const subscriptionData = await stripe.subscriptions.retrieve(stripeSubscriptionId)
+                    
+                    const updateData = {
+                        status: 'active',
+                        stripe_subscription_id: stripeSubscriptionId,
+                        stripe_customer_id: session.customer as string,
+                        current_period_start: new Date(subscriptionData.current_period_start * 1000).toISOString(),
+                        current_period_end: new Date(subscriptionData.current_period_end * 1000).toISOString(),
+                        cancel_at_period_end: subscriptionData.cancel_at_period_end,
+                        updated_at: new Date().toISOString()
+                    }
+
+                    if (subscriptionDbId) {
+                        await supabase.from('subscriptions').update(updateData).eq('id', subscriptionDbId)
+                    } else {
+                        await supabase.from('subscriptions').update(updateData).eq('user_id', userId).eq('plan_type', 'premium')
+                    }
+
+                    // Update User Profile Plan
+                    await supabase
+                        .from('profiles')
+                        .update({ plano: 'Premium' })
+                        .eq('id', userId)
+
+                    console.log(`Subscription self-healed and profile updated to Premium for user ${userId}`)
                 }
             } else {
                 // Default: Service Payment

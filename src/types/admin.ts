@@ -108,24 +108,27 @@ export interface PostStats {
 }
 
 export interface AdminService {
-  id: string
-  nome: string
-  descricao?: string
-  parceiro_id?: string
-  categoria?: string
-  beneficio_membro?: string
-  destaque: boolean
-  ativo: boolean
-  preco?: number
-  moeda?: 'USD' | 'BRL'
-  created_at: string
-  updated_at?: string
-  partner_name?: string
+  id: string;
+  nome_pt: string;
+  nome_en: string;
+  descricao_pt?: string;
+  descricao_en?: string;
+  parceiro_id?: string;
+  categoria?: string;
+  beneficio_membro_pt?: string;
+  beneficio_membro_en?: string;
+  destaque: boolean;
+  ativo: boolean;
+  preco?: number;
+  moeda?: 'USD' | 'BRL';
+  created_at: string;
+  updated_at?: string;
+  partner_name?: string;
   // SSO fields for external services
-  is_external?: boolean
-  external_url?: string
-  sso_enabled?: boolean
-  sso_callback_path?: string
+  is_external?: boolean;
+  external_url?: string;
+  sso_enabled?: boolean;
+  sso_callback_path?: string;
 }
 
 export interface ServiceStats {

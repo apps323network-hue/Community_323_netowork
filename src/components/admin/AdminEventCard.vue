@@ -13,15 +13,21 @@
       <!-- Header -->
       <div class="flex items-start justify-between mb-4">
         <div class="flex-1">
-          <h3 class="text-white text-xl font-bold mb-2 line-clamp-2">{{ event.titulo }}</h3>
+          <h3 class="text-white text-xl font-bold mb-1 line-clamp-2">{{ event.titulo_pt }}</h3>
+          <p v-if="event.titulo_en" class="text-white/40 text-sm mb-2 italic line-clamp-1">{{ event.titulo_en }}</p>
           <StatusBadge :status="event.status" />
         </div>
       </div>
 
       <!-- Description -->
-      <p v-if="event.descricao" class="text-white/60 text-sm mb-4 line-clamp-2">
-        {{ event.descricao }}
-      </p>
+      <div v-if="event.descricao_pt || event.descricao_en" class="space-y-2 mb-4">
+        <p v-if="event.descricao_pt" class="text-white/60 text-sm line-clamp-2">
+          {{ event.descricao_pt }}
+        </p>
+        <p v-if="event.descricao_en" class="text-white/40 text-xs italic line-clamp-1">
+          EN: {{ event.descricao_en }}
+        </p>
+      </div>
 
       <!-- Event Details -->
       <div class="space-y-2 mb-4">
@@ -33,9 +39,12 @@
           <span class="material-symbols-outlined text-secondary text-base">schedule</span>
           <span>{{ formattedTime }}</span>
         </div>
-        <div v-if="event.local" class="flex items-center gap-2 text-white/70 text-sm">
-          <span class="material-symbols-outlined text-secondary text-base">location_on</span>
-          <span>{{ event.local }}</span>
+        <div v-if="event.local_pt || event.local_en" class="flex items-start gap-2 text-white/70 text-sm">
+          <span class="material-symbols-outlined text-secondary text-base mt-0.5">location_on</span>
+          <div class="flex flex-col">
+            <span v-if="event.local_pt">{{ event.local_pt }}</span>
+            <span v-if="event.local_en" class="text-white/40 text-xs italic">{{ event.local_en }}</span>
+          </div>
         </div>
         <div class="flex items-center gap-2 text-white/70 text-sm">
           <span class="material-symbols-outlined text-secondary text-base">person</span>
@@ -48,47 +57,50 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex flex-col gap-3">
-        <div class="flex gap-3">
+      <div class="grid grid-cols-2 gap-3">
+        <!-- Pending State Buttons -->
+        <template v-if="event.status === 'pending'">
           <button
-            v-if="event.status === 'pending'"
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all"
+            class="flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all"
             @click="$emit('approve')"
           >
             <span class="material-symbols-outlined text-base">check_circle</span>
             Aprovar
           </button>
           <button
-            v-if="event.status === 'pending'"
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all"
+            class="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all"
             @click="$emit('reject')"
           >
             <span class="material-symbols-outlined text-base">cancel</span>
             Rejeitar
           </button>
-        </div>
-        <div class="flex gap-3">
-          <button
-            v-if="event.status === 'approved'"
-            class="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all"
-            :class="event.destaque 
-              ? 'bg-gradient-to-r from-primary to-secondary text-black border border-transparent shadow-[0_0_15px_rgba(244,37,244,0.3)]' 
-              : 'bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10'"
-            @click="$emit('toggle-destaque')"
-          >
-            <span class="material-symbols-outlined text-base">{{ event.destaque ? 'star' : 'star_border' }}</span>
-            {{ event.destaque ? 'Em Destaque' : 'Definir Destaque' }}
-          </button>
-          <button
-            class="flex items-center justify-center gap-2 px-4 py-2 bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10 rounded-lg font-semibold transition-all"
-            @click="$emit('view-details')"
-          >
-            <span class="material-symbols-outlined text-base">visibility</span>
-            Ver Detalhes
-          </button>
-        </div>
+        </template>
+
+        <!-- Approved State Destaque Button -->
         <button
-          class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all"
+          v-if="event.status === 'approved'"
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all"
+          :class="event.destaque 
+            ? 'bg-gradient-to-r from-primary to-secondary text-black border border-transparent shadow-[0_0_15px_rgba(244,37,244,0.3)]' 
+            : 'bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10'"
+          @click="$emit('toggle-destaque')"
+        >
+          <span class="material-symbols-outlined text-base">{{ event.destaque ? 'star' : 'star_border' }}</span>
+          {{ event.destaque ? 'Em Destaque' : 'Destaque' }}
+        </button>
+
+        <!-- Common Buttons -->
+        <button
+          class="flex items-center justify-center gap-2 px-4 py-2 bg-surface-lighter hover:bg-surface-highlight text-white border border-white/10 rounded-lg font-semibold transition-all"
+          @click="$emit('view-details')"
+        >
+          <span class="material-symbols-outlined text-base">visibility</span>
+          Ver Detalhes
+        </button>
+
+        <button
+          class="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg font-semibold transition-all"
+          :class="event.status === 'approved' ? 'col-span-2' : ''"
           @click="$emit('delete')"
         >
           <span class="material-symbols-outlined text-base">delete</span>

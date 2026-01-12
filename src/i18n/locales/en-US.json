@@ -1,17 +1,17 @@
 {
     "months": {
-        "jan": "JAN",
-        "feb": "FEB",
-        "mar": "MAR",
-        "apr": "APR",
-        "may": "MAY",
-        "jun": "JUN",
-        "jul": "JUL",
-        "aug": "AUG",
-        "sep": "SEP",
-        "oct": "OCT",
-        "nov": "NOV",
-        "dec": "DEC"
+        "jan": "January",
+        "feb": "February",
+        "mar": "March",
+        "apr": "April",
+        "may": "May",
+        "jun": "June",
+        "jul": "July",
+        "aug": "August",
+        "sep": "September",
+        "oct": "October",
+        "nov": "November",
+        "dec": "December"
     },
     "common": {
         "hello": "Hello",
@@ -21,6 +21,18 @@
         "cancel": "Cancel",
         "confirm": "Confirm",
         "save": "Save",
+        "guestBlocker": {
+            "title": "Sign Up to Continue",
+            "message": "Join thousands of Brazilians connected in the USA",
+            "cta": "Create Free Account",
+            "terms": "By signing up, you agree to our Terms of Use and Privacy Policy",
+            "benefits": [
+                "Full access to all features",
+                "Connect with Brazilians in your region",
+                "Join exclusive events",
+                "Receive benefits and discounts"
+            ]
+        },
         "saving": "Saving...",
         "delete": "Delete",
         "edit": "Edit",
@@ -174,6 +186,12 @@
         "resetPasswordError": "Error resetting password. Please try again.",
         "invalidResetLink": "Invalid or expired recovery link."
     },
+    "home": {
+        "guestBannerTitle": "Join the Community",
+        "guestBannerDescription": "Connect with Brazilians in the USA and share your experiences",
+        "moreContentTitle": "Want to see more?",
+        "moreContentMessage": "Sign up for free to access all community content and interact with other Brazilians."
+    },
     "members": {
         "title": "Community",
         "description": "Connect with Brazilian artists, entrepreneurs, and visionaries in the USA.",
@@ -221,6 +239,9 @@
     },
     "events": {
         "title": "Upcoming Events",
+        "createEvent": "Create Event",
+        "enrollmentRequired": "You must be enrolled in this program to confirm attendance.",
+        "goToProgram": "View Program",
         "description": "Participate in exclusive 323 Network community events.",
         "searchPlaceholder": "Search events...",
         "filterAll": "All",
@@ -264,6 +285,20 @@
         "heroPlaceholder": "Join Brazilian professionals for a night of connections and business opportunities.",
         "registerNow": "Register Now",
         "locationToBeDefined": "Location to be defined",
+        "selectProgram": "Select a program...",
+        "mustEnrollToCreateEvent": "You must be enrolled in a program to create events.",
+        "eventLocationPlaceholder": "Ex: Miami, FL",
+        "day": "Day",
+        "month": "Month",
+        "year": "Year",
+        "hour": "Hour",
+        "minute": "Minute",
+        "validation": {
+            "fillTitle": "Please fill in the event title",
+            "selectProgram": "Please select the event program",
+            "imageOnly": "Please select only image files",
+            "imageTooLarge": "The image must be at most 20MB"
+        },
         "rsvp": "RSVP",
         "startsIn": "Starts in",
         "notFound": "Event not found",
@@ -366,7 +401,7 @@
         "gotIt": "Got it, let's start!",
         "memberBenefitTitle": "Member Benefit",
         "contractService": "Contract Service",
-        "requestSupport": "Request Service",
+        "requestSupport": "Access Now",
         "mustBeLoggedInToContract": "You must be logged in to contract a service.",
         "mustBeLoggedInToRequest": "You must be logged in to request a service.",
         "requestSuccess": "Request sent successfully! The partner will contact you shortly.",
@@ -430,7 +465,10 @@
         "termsAndConditions": "Terms and Conditions",
         "benefitLocked": "Benefit Locked",
         "benefitLockedDesc": "This benefit is only available for {plan} plan members",
-        "upgradeNow": "Upgrade Now"
+        "upgradeNow": "Upgrade Now",
+        "guestBlockerTitle": "See All {count} Benefits",
+        "guestBlockerDesc": "Sign up for free to access exclusive discounts and premium partnerships",
+        "guestBlockerButton": "Create Free Account"
     },
     "connections": {
         "title": "My Network",
@@ -606,6 +644,10 @@
     "posts": {
         "whatsOnYourMind": "What's on your mind?",
         "createPost": "Create Post",
+        "startPost": "Start a post",
+        "photo": "Photo",
+        "video": "Video",
+        "publishing": "Publishing...",
         "createEvent": "Create Event",
         "post": "Post",
         "addPhoto": "Add Photo",
@@ -1120,7 +1162,7 @@
         },
         "actions": {
             "accessNow": "Access Now",
-            "secureMySpot": "Secure My Spot"
+            "secureMySpot": "Watch Now"
         },
         "admin": {
             "createProgram": "Create Program",
@@ -1285,5 +1327,83 @@
         "termCreated": "Term created successfully",
         "termUpdated": "Term updated successfully",
         "fillAllFields": "Please fill all fields"
+    },
+    "subscriptions": {
+        "title": "Subscription",
+        "alreadySubscribed": {
+            "title": "You are a Premium Member!",
+            "description": "Your subscription is active. Enjoy all the exclusive benefits and stand out in the 323 Network community.",
+            "nextRenewal": "Next renewal: {date}"
+        },
+        "viewBenefits": "View My Benefits",
+        "plans": {
+            "premium": {
+                "badge": "Premium Plan",
+                "title": "Stand Out in the Community",
+                "description": "Become a Premium member to unlock exclusive features, gain authority, and connect with Brazilians worldwide.",
+                "monthly": "/month",
+                "cancelAnytime": "Cancel anytime",
+                "feesIncluded": "Stripe fees included",
+                "priceWithFees": "Final price: {total} (Base: {base} + Fees: {fees})"
+            }
+        },
+        "actions": {
+            "subscribe": "Start Now",
+            "processing": "Processing..."
+        },
+        "canceledNotice": "Checkout canceled. You can try again whenever you want.",
+        "badges": {
+            "secure": "Secure Payment",
+            "stripe": "Stripe Checkout",
+            "cancelAnytime": "Cancel Anytime"
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "items": {
+                "whatIs": {
+                    "q": "What is the Premium plan?",
+                    "a": "It is our premium plan for those who want to have more visibility and credibility within 323 Network, whether to offer services or to stand out as a professional in the community."
+                },
+                "benefits": {
+                    "q": "What are the real benefits of the highlight?",
+                    "a": "Premium members appear at the top of professional lists and have a visual badge that generates more trust for those seeking services or connections on the platform."
+                },
+                "cancel": {
+                    "q": "How does cancellation work?",
+                    "a": "You can cancel at any time directly through your billing panel. Access to benefits remains active until the end of the monthly cycle already paid."
+                }
+            }
+        },
+        "benefits": {
+            "verified": "Verified Badge (Premium Badge) on profile",
+            "unlimitedServices": "Publish unlimited services and opportunities",
+            "priorityHighlight": "Priority highlight in all member searches",
+            "earlyAccess": "Early access to new platform features",
+            "boostedProfile": "Boosted profile with extra links and gallery",
+            "prioritySupport": "Priority support via exclusive channel"
+        }
+    },
+    "admin": {
+        "events": {
+            "title": "Events Admin",
+            "subtitle": "Manage and approve community events",
+            "newEvent": "New Event",
+            "messages": {
+                "destaqueSuccess": "Event set as featured!",
+                "destaqueRemoved": "Event removed from featured",
+                "destaqueError": "Error updating event featured status",
+                "deleteSuccess": "Event deleted successfully!",
+                "deleteError": "Error deleting event",
+                "createSuccess": "Event created successfully!",
+                "createError": "Error creating event"
+            },
+            "errors": {
+                "fillAllDateFields": "Please fill in all date and time fields",
+                "programNotFound": "Program not found for date validation",
+                "programExpired": "Cannot create events for program \"{programTitle}\" because it is already expired (ended on {endDate}).",
+                "eventBeforeStart": "Event date is before program start ({startDate}).",
+                "eventAfterEnd": "Event date is after program end ({endDate})."
+            }
+        }
     }
 }

@@ -416,7 +416,7 @@ export const useModulesStore = defineStore('modules', {
         async getYouTubeVideoDetails(videoId: string): Promise<YouTubeVideoDetails | null> {
             try {
                 // Redirecionando para o n8n para usar as mesmas credenciais do upload
-                const baseUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || 'https://nwh.suaiden.com/webhook-test'
+                const baseUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || 'https://nwh.suaiden.com/webhook'
                 const response = await fetch(`${baseUrl}/youtube-metadata`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

@@ -722,7 +722,17 @@ function formatDuration(seconds: number | null) {
 }
 
 function handleSubmit() {
-  emit('save', { ...formData.value })
+  const dataToSave = { ...formData.value }
+  
+  // Limpar campos que pertencem apenas a aulas antes de salvar um módulo
+  if (props.mode === 'module') {
+    delete dataToSave.youtube_video_id
+    delete dataToSave.duration_seconds
+    delete dataToSave.youtube_thumbnail_url
+    delete dataToSave.is_preview
+  }
+  
+  emit('save', dataToSave)
 }
 
 // Material management functions

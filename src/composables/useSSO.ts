@@ -17,7 +17,7 @@ export function useSSO() {
                           window.location.hostname.includes('localhost')
     
     // Se for MatrículaUSA, usar URLs específicas por ambiente
-    if (service.nome === 'MatrículaUSA' || service.nome?.includes('Matrícula')) {
+    if (service.nome_pt === 'MatrículaUSA' || service.nome_pt?.includes('Matrícula')) {
       if (isDevelopment) {
         // URL de desenvolvimento do Matrícula US (IP local)
         return 'http://192.168.101.3:5173'

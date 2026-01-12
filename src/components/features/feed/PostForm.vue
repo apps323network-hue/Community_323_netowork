@@ -9,7 +9,7 @@
         @click="showPostModal = true"
         class="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-full text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all"
       >
-        Comece uma publicação
+        {{ t('posts.startPost') }}
       </button>
     </div>
 
@@ -20,21 +20,21 @@
         class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group"
       >
         <span class="material-symbols-outlined text-blue-500 text-xl">image</span>
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Foto</span>
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ t('posts.photo') }}</span>
       </button>
       <button
         @click="openVideoUpload"
         class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group"
       >
         <span class="material-symbols-outlined text-green-600 text-xl">videocam</span>
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Vídeo</span>
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ t('posts.video') }}</span>
       </button>
       <button
         @click="openEventModal"
         class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group"
       >
         <span class="material-symbols-outlined text-orange-500 text-xl">event</span>
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Evento</span>
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ t('posts.event') }}</span>
       </button>
     </div>
   </Card>
@@ -63,7 +63,7 @@
         <div class="py-4" style="min-height: 300px;">
           <RichTextEditor
             v-model="content"
-            placeholder="Sobre o que você quer falar?"
+            :placeholder="t('posts.aboutWhat')"
             ref="editorRef"
             :minimal="true"
             class="min-h-[280px]"
@@ -100,8 +100,8 @@
             :disabled="!content.trim() || loading"
             class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
           >
-            <span v-if="loading">Publicando...</span>
-            <span v-else>Publicar</span>
+            <span v-if="loading">{{ t('posts.publishing') }}</span>
+            <span v-else>{{ t('posts.publish') }}</span>
           </button>
         </div>
 
@@ -118,7 +118,7 @@
     <div class="space-y-4">
       <div>
         <div class="flex justify-between items-center mb-2">
-          <label class="block text-sm font-semibold text-gray-300">Programa *</label>
+          <label class="block text-sm font-semibold text-gray-300">{{ t('programs.title') }} *</label>
           <router-link to="/programs" class="text-xs text-primary hover:underline flex items-center gap-1">
             {{ t('programs.viewPrograms') }} <span class="material-symbols-outlined text-xs">open_in_new</span>
           </router-link>
@@ -126,22 +126,22 @@
         <Select
           v-model="eventForm.program_id"
           :options="programOptions"
-          placeholder="Selecione um programa..."
+          :placeholder="t('events.selectProgram')"
           class="w-full"
         />
         <p v-if="programs.length > 0 && !programs.some(p => p.isEnrolled) && !loading" class="text-xs text-yellow-500 mt-1">
-          Você precisa estar matriculado em um programa para criar eventos.
+          {{ t('events.mustEnrollToCreateEvent') }}
         </p>
       </div>
 
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">Título do Evento *</label>
+        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.eventTitle') }} *</label>
         <input
           v-model="eventForm.titulo"
           type="text"
           required
           class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-          placeholder="Ex: Networking em Miami"
+          :placeholder="t('events.eventTitlePlaceholder')"
         />
       </div>
       <div>
@@ -150,7 +150,7 @@
           v-model="eventForm.descricao"
           rows="3"
           class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-          placeholder="Descreva o evento..."
+          :placeholder="t('events.eventDescriptionPlaceholder')"
         ></textarea>
       </div>
       <div>
@@ -198,14 +198,14 @@
         </div>
         <div class="grid grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs text-gray-400 mb-1">Dia</label>
+            <label class="block text-xs text-gray-400 mb-1">{{ t('events.day') }}</label>
             <div class="relative">
               <select
                 v-model="dateTime.day"
                 required
                 class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
-                <option value="">Dia</option>
+                <option value="">{{ t('events.day') }}</option>
                 <option v-for="d in 31" :key="d" :value="d.toString().padStart(2, '0')">
                   {{ d.toString().padStart(2, '0') }}
                 </option>
@@ -216,14 +216,14 @@
             </div>
           </div>
           <div>
-            <label class="block text-xs text-gray-400 mb-1">Mês</label>
+            <label class="block text-xs text-gray-400 mb-1">{{ t('events.month') }}</label>
             <div class="relative">
               <select
                 v-model="dateTime.month"
                 required
                 class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
-                <option value="">Mês</option>
+                <option value="">{{ t('events.month') }}</option>
                 <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
                   {{ getMonthName(m) }}
                 </option>
@@ -234,14 +234,14 @@
             </div>
           </div>
           <div>
-            <label class="block text-xs text-gray-400 mb-1">Ano</label>
+            <label class="block text-xs text-gray-400 mb-1">{{ t('events.year') }}</label>
             <div class="relative">
               <select
                 v-model="dateTime.year"
                 required
                 class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
-                <option value="">Ano</option>
+                <option value="">{{ t('events.year') }}</option>
                 <option v-for="y in getYearOptions()" :key="y" :value="y">
                   {{ y }}
                 </option>
@@ -272,14 +272,14 @@
         <label class="block text-sm font-semibold text-gray-300 mb-2">Hora *</label>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-gray-400 mb-1">Hora</label>
+            <label class="block text-xs text-gray-400 mb-1">{{ t('events.hour') }}</label>
             <div class="relative">
               <select
                 v-model="dateTime.hour"
                 required
                 class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
-                <option value="">Hora</option>
+                <option value="">{{ t('events.hour') }}</option>
                 <option v-for="h in 24" :key="h - 1" :value="(h - 1).toString().padStart(2, '0')">
                   {{ (h - 1).toString().padStart(2, '0') }}
                 </option>
@@ -290,14 +290,14 @@
             </div>
           </div>
           <div>
-            <label class="block text-xs text-gray-400 mb-1">Minuto</label>
+            <label class="block text-xs text-gray-400 mb-1">{{ t('events.minute') }}</label>
             <div class="relative">
               <select
                 v-model="dateTime.minute"
                 required
                 class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
-                <option value="">Minuto</option>
+                <option value="">{{ t('events.minute') }}</option>
                 <option value="00">00</option>
                 <option value="30">30</option>
               </select>
@@ -314,7 +314,7 @@
           v-model="eventForm.local"
           type="text"
           class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-          placeholder="Ex: Miami, FL"
+          :placeholder="t('events.eventLocationPlaceholder')"
         />
       </div>
       
@@ -423,7 +423,7 @@ const dateTime = ref({
   minute: '',
 })
 
-const userName = computed(() => userStore.profile?.nome || authStore.user?.email?.split('@')[0] || 'Usuário')
+const userName = computed(() => userStore.profile?.nome || authStore.user?.email?.split('@')[0] || t('common.user'))
 const userAvatar = computed(() => userStore.profile?.avatar_url || authStore.user?.user_metadata?.avatar_url || '')
 
 const emit = defineEmits<{
@@ -519,12 +519,12 @@ async function handleImageSelect(event: Event) {
   if (!file) return
 
   if (!file.type.startsWith('image/')) {
-    error.value = 'Por favor, selecione apenas arquivos de imagem'
+    error.value = t('events.validation.imageOnly')
     return
   }
 
   if (file.size > 20 * 1024 * 1024) {
-    error.value = 'A imagem deve ter no máximo 20MB'
+    error.value = t('events.validation.imageTooLarge')
     return
   }
 
@@ -599,7 +599,7 @@ async function uploadEventImage(): Promise<string | null> {
     return publicUrl
   } catch (err: any) {
     console.error('Error uploading event image:', err)
-    error.value = 'Erro ao fazer upload da imagem. Tente novamente.'
+    error.value = t('posts.form.uploadError')
     return null
   } finally {
     uploadingImage.value = false
@@ -631,7 +631,7 @@ async function uploadImage(): Promise<string | null> {
     return publicUrl
   } catch (err: any) {
     console.error('Error uploading image:', err)
-    error.value = 'Erro ao fazer upload da imagem. Tente novamente.'
+    error.value = t('posts.form.uploadError')
     return null
   } finally {
     uploadingImage.value = false
@@ -691,15 +691,15 @@ async function handleSubmit() {
 
     if (newPost.status === 'pending') {
       const { toast } = await import('vue-sonner')
-      toast.success('Post criado! Aguardando aprovação do admin.', {
-        description: 'Seu post será revisado e publicado em breve.',
+      toast.success(t('posts.form.pendingApproval'), {
+        description: t('posts.form.pendingApprovalDesc'),
         duration: 5000,
       })
     }
 
     emit('post-created', newPost.id)
   } catch (err: any) {
-    error.value = err.message || 'Erro ao criar post. Tente novamente.'
+    error.value = err.message || t('posts.form.createError')
     console.error('Error creating post:', err)
   } finally {
     loading.value = false
@@ -707,11 +707,8 @@ async function handleSubmit() {
 }
 
 function getMonthName(month: number): string {
-  const months = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ]
-  return months[month - 1]
+  const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+  return t(`months.${monthKeys[month - 1]}`)
 }
 
 function getYearOptions(): number[] {
@@ -762,12 +759,12 @@ async function handleCreateEvent() {
   error.value = null
   
   if (!eventForm.value.titulo || eventForm.value.titulo.trim() === '') {
-    error.value = 'Por favor, preencha o título do evento'
+    error.value = t('events.validation.fillTitle')
     return
   }
   
   if (!eventForm.value.program_id) {
-    error.value = 'Por favor, selecione o programa do evento'
+    error.value = t('events.validation.selectProgram')
     return
   }
   

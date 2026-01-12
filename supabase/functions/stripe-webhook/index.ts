@@ -23,8 +23,8 @@ Deno.serve(async (req) => {
 
         // Escolher chave Stripe baseada no ambiente
         const stripeKey = isProduction
-            ? Deno.env.get('STRIPE_SECRET_KEY_LIVE')
-            : Deno.env.get('STRIPE_SECRET_KEY')
+            ? Deno.env.get('STRIPE_SECRET_KEY')
+            : Deno.env.get('STRIPE_SECRET_KEY_TEST')
 
         if (!stripeKey) {
             throw new Error(`Stripe key not configured for ${isProduction ? 'production' : 'test'} environment`)
@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
         // 2. Selecionar o Secret correto
         const webhookSecret = isLive
             ? Deno.env.get('STRIPE_WEBHOOK_SECRET')
-            : Deno.env.get('STRIPE_TEST_WEBHOOK_SECRET')
+            : Deno.env.get('STRIPE_WEBHOOK_SECRET_TEST')
 
         if (!webhookSecret) {
             console.error(`Webhook secret não configurado para ambiente: ${isLive ? 'LIVE' : 'TEST'}`)
@@ -74,6 +74,44 @@ Deno.serve(async (req) => {
         const supabase = createClient(supabaseUrl, supabaseKey)
 
         console.log(`Webhook received: ${event.type}`)
+
+        // Helper para notificar todos os admins
+        async function notifyAdmins(type: string, title: string, content: string, metadata: any = {}) {
+            try {
+                const { data: admins, error: adminsError } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('role', 'admin');
+
+                if (adminsError) {
+                    console.error('Error fetching admins:', adminsError);
+                    return;
+                }
+
+                if (admins && admins.length > 0) {
+                    const notifications = admins.map((admin: any) => ({
+                        user_id: admin.id,
+                        type,
+                        title,
+                        content,
+                        metadata: { ...metadata, is_admin_alert: true }
+                    }));
+                    await supabase.from('notifications').insert(notifications);
+                    console.log(`Notifications sent to ${admins.length} admins`);
+                }
+            } catch (err) {
+                console.error('Error in notifyAdmins:', err);
+            }
+        }
+
+        // Helper para pegar nome do usuário
+        async function getUserDisplay(userId: string) {
+            const { data } = await supabase.from('profiles').select('nome').eq('id', userId).single();
+            if (data?.nome) return data.nome;
+            
+            const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+            return authUser?.user?.email || userId;
+        }
 
         // Processar eventos
         switch (event.type) {
@@ -122,12 +160,12 @@ Deno.serve(async (req) => {
                         console.error('Error updating request:', requestError)
                     }
 
-                    // Criar notificação in-app
+                    // Criar notificação in-app (English for user)
                     await supabase.from('notifications').insert({
                         user_id: userId,
                         type: 'payment_success',
-                        title: 'Pagamento confirmado!',
-                        content: 'Seu pagamento foi processado com sucesso. O parceiro entrará em contato em breve.',
+                        title: 'Payment confirmed!',
+                        content: 'Your payment has been processed successfully. The partner will contact you soon.',
                         metadata: {
                             service_request_id: serviceRequestId,
                             payment_id: paymentId
@@ -166,12 +204,12 @@ Deno.serve(async (req) => {
                     // 2. Incrementar contador de alunos no programa
                     await supabase.rpc('increment_program_students', { program_id: programId })
 
-                    // 3. Notificação In-App
+                    // 3. Notificação In-App (English for user)
                     await supabase.from('notifications').insert({
                         user_id: userId,
                         type: 'program_enrolled',
-                        title: 'Inscrição confirmada!',
-                        content: 'Seu acesso ao programa foi liberado. Bons estudos!',
+                        title: 'Enrollment confirmed!',
+                        content: 'Your access to the program has been granted. Enjoy your studies!',
                         metadata: {
                             program_id: programId,
                             enrollment_id: enrollmentId
@@ -227,13 +265,13 @@ Deno.serve(async (req) => {
                             })
                             .eq('id', paymentId)
 
-                        // Notificar usuário
+                        // Notificar usuário (English)
                         if (userId) {
                             await supabase.from('notifications').insert({
                                 user_id: userId,
                                 type: 'payment_failed',
-                                title: 'Pagamento não concluído',
-                                content: 'Houve um problema com seu pagamento. Por favor, tente novamente.',
+                                title: 'Payment failed',
+                                content: 'There was a problem with your payment. Please try again.',
                                 metadata: { payment_id: paymentId }
                             })
                         }
@@ -261,13 +299,203 @@ Deno.serve(async (req) => {
                             await supabase.from('notifications').insert({
                                 user_id: userId,
                                 type: 'program_payment_failed',
-                                title: 'Pagamento de programa falhou',
-                                content: 'Não conseguimos processar o pagamento da sua inscrição. Tente novamente.',
+                                title: 'Enrollment payment failed',
+                                content: "We couldn't process your enrollment payment. Please try again.",
                                 metadata: { enrollment_id: enrollmentId }
                             })
                         }
                     }
                 }
+                break
+            }
+
+            // ====== SUBSCRIPTION EVENTS ======
+            case 'customer.subscription.created':
+            case 'customer.subscription.updated': {
+                const subscription = event.data.object as Stripe.Subscription
+                const userId = subscription.metadata?.user_id
+                const subscriptionDbId = subscription.metadata?.subscription_id
+
+                if (!userId) {
+                    console.log('No user_id in subscription metadata, skipping')
+                    break
+                }
+
+                console.log(`Processing subscription ${event.type}:`, subscription.id)
+
+                // Map Stripe status to our status
+                let status = 'pending'
+                if (subscription.status === 'active') status = 'active'
+                else if (subscription.status === 'canceled') status = 'canceled'
+                else if (subscription.status === 'past_due') status = 'past_due'
+                else if (subscription.status === 'paused') status = 'paused'
+
+                const updateData: any = {
+                    stripe_subscription_id: subscription.id,
+                    stripe_customer_id: subscription.customer as string,
+                    status: status,
+                    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+                    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+                    cancel_at_period_end: subscription.cancel_at_period_end,
+                    updated_at: new Date().toISOString()
+                }
+
+                // Update by subscription_id if we have it, otherwise by user_id
+                if (subscriptionDbId) {
+                    const { error } = await supabase
+                        .from('subscriptions')
+                        .update(updateData)
+                        .eq('id', subscriptionDbId)
+
+                    if (error) console.error('Error updating subscription:', error)
+                } else {
+                    const { error } = await supabase
+                        .from('subscriptions')
+                        .update(updateData)
+                        .eq('user_id', userId)
+                        .eq('plan_type', subscription.metadata?.plan_type || 'premium')
+
+                    if (error) console.error('Error updating subscription by user_id:', error)
+                }
+
+                // Send notification on activation (English for user)
+                if (status === 'active') {
+                    // Update User Profile Plan
+                    await supabase
+                        .from('profiles')
+                        .update({ plano: 'Premium' })
+                        .eq('id', userId)
+
+                    await supabase.from('notifications').insert({
+                        user_id: userId,
+                        type: 'subscription_activated',
+                        title: 'Subscription activated! 🎉',
+                        content: 'Your subscription has been activated successfully. You can now enjoy all Premium benefits!',
+                        metadata: { subscription_id: subscription.id }
+                    })
+
+                    // Notificar Admin
+                    const userName = await getUserDisplay(userId);
+                    await notifyAdmins(
+                        'admin_subscription_activated',
+                        'Assinatura Ativada',
+                        `O usuário ${userName} ativou com sucesso a assinatura Premium.`,
+                        { user_id: userId, stripe_subscription_id: subscription.id }
+                    );
+                }
+
+                if (event.type === 'customer.subscription.created') {
+                    const userName = await getUserDisplay(userId);
+                    await notifyAdmins(
+                        'admin_subscription_created',
+                        'Nova Assinatura',
+                        `O usuário ${userName} iniciou uma nova assinatura (Status: ${status}).`,
+                        { user_id: userId, stripe_subscription_id: subscription.id }
+                    );
+                }
+
+                console.log(`Subscription ${subscription.id} updated to status: ${status}`)
+                break
+            }
+
+            case 'customer.subscription.deleted': {
+                const subscription = event.data.object as Stripe.Subscription
+                const userId = subscription.metadata?.user_id
+
+                if (!userId) {
+                    console.log('No user_id in deleted subscription metadata')
+                    break
+                }
+
+                console.log(`Subscription deleted:`, subscription.id)
+
+                const { error } = await supabase
+                    .from('subscriptions')
+                    .update({
+                        status: 'canceled',
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('stripe_subscription_id', subscription.id)
+
+                if (error) console.error('Error canceling subscription:', error)
+
+                // Revert User Profile Plan to Free
+                await supabase
+                    .from('profiles')
+                    .update({ plano: 'Free' })
+                    .eq('id', userId)
+
+                // Notify user (English)
+                await supabase.from('notifications').insert({
+                    user_id: userId,
+                    type: 'subscription_canceled',
+                    title: 'Subscription canceled',
+                    content: 'Your subscription has been canceled. You will no longer be able to publish new services.',
+                    metadata: { subscription_id: subscription.id }
+                })
+
+                // Notificar Admin
+                const userName = await getUserDisplay(userId);
+                await notifyAdmins(
+                    'admin_subscription_canceled',
+                    'Assinatura Cancelada',
+                    `A assinatura de ${userName} foi cancelada no Stripe.`,
+                    { user_id: userId, stripe_subscription_id: subscription.id }
+                );
+
+                break
+            }
+
+            case 'invoice.payment_failed': {
+                const invoice = event.data.object as Stripe.Invoice
+                const subscriptionId = invoice.subscription as string
+
+                if (!subscriptionId) break
+
+                console.log(`Invoice payment failed for subscription:`, subscriptionId)
+
+                const { error } = await supabase
+                    .from('subscriptions')
+                    .update({
+                        status: 'past_due',
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('stripe_subscription_id', subscriptionId)
+
+                if (error) console.error('Error updating subscription to past_due:', error)
+
+                // Get user from subscription to revert plan
+                const { data: sub } = await supabase
+                    .from('subscriptions')
+                    .select('user_id')
+                    .eq('stripe_subscription_id', subscriptionId)
+                    .single()
+
+                if (sub?.user_id) {
+                    // Revert User Profile Plan to Free on delinquency
+                    await supabase
+                        .from('profiles')
+                        .update({ plano: 'Free' })
+                        .eq('id', sub.user_id)
+
+                    await supabase.from('notifications').insert({
+                        user_id: sub.user_id,
+                        type: 'payment_failed',
+                        title: 'Subscription payment failed',
+                        content: "We couldn't process your subscription payment. Please update your payment details.",
+                        metadata: { subscription_id: subscriptionId }
+                    })
+
+                    // Notificar Admin
+                    const userName = await getUserDisplay(sub.user_id);
+                    await notifyAdmins(
+                        'admin_subscription_delinquency',
+                        'ALERTA: Inadimplência',
+                        `Falha no pagamento da assinatura de ${userName}. O acesso foi restrito (Status: Past Due).`,
+                        { user_id: sub.user_id, stripe_subscription_id: subscriptionId }
+                    );
+                }
+
                 break
             }
 

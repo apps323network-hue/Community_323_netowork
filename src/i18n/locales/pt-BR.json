@@ -1,17 +1,17 @@
 {
     "months": {
-        "jan": "JAN",
-        "feb": "FEV",
-        "mar": "MAR",
-        "apr": "ABR",
-        "may": "MAI",
-        "jun": "JUN",
-        "jul": "JUL",
-        "aug": "AGO",
-        "sep": "SET",
-        "oct": "OUT",
-        "nov": "NOV",
-        "dec": "DEZ"
+        "jan": "Janeiro",
+        "feb": "Fevereiro",
+        "mar": "Março",
+        "apr": "Abril",
+        "may": "Maio",
+        "jun": "Junho",
+        "jul": "Julho",
+        "aug": "Agosto",
+        "sep": "Setembro",
+        "oct": "Outubro",
+        "nov": "Novembro",
+        "dec": "Dezembro"
     },
     "common": {
         "hello": "Olá",
@@ -21,6 +21,18 @@
         "cancel": "Cancelar",
         "confirm": "Confirmar",
         "save": "Salvar",
+        "guestBlocker": {
+            "title": "Cadastre-se para Continuar",
+            "message": "Junte-se a milhares de brasileiros conectados nos EUA",
+            "cta": "Criar Conta Grátis",
+            "terms": "Ao se cadastrar, você concorda com nossos Termos de Uso e Política de Privacidade",
+            "benefits": [
+                "Acesso completo a todos os recursos",
+                "Conecte-se com brasileiros na sua região",
+                "Participe de eventos exclusivos",
+                "Receba benefícios e descontos"
+            ]
+        },
         "saving": "Salvando...",
         "delete": "Deletar",
         "edit": "Editar",
@@ -175,6 +187,12 @@
         "resetPasswordError": "Erro ao redefinir senha. Tente novamente.",
         "invalidResetLink": "Link de recuperação inválido ou expirado."
     },
+    "home": {
+        "guestBannerTitle": "Junte-se à Comunidade",
+        "guestBannerDescription": "Conecte-se com brasileiros nos EUA e compartilhe suas experiências",
+        "moreContentTitle": "Quer ver mais?",
+        "moreContentMessage": "Cadastre-se gratuitamente para acessar todo o conteúdo da comunidade e interagir com outros brasileiros."
+    },
     "members": {
         "title": "Comunidade",
         "description": "Conecte-se com artistas, empreendedores e visionários brasileiros nos EUA.",
@@ -224,6 +242,8 @@
         "title": "Próximos Eventos",
         "description": "Participe de eventos exclusivos da comunidade 323 Network.",
         "createEvent": "Criar Evento",
+        "enrollmentRequired": "Você precisa estar matriculado neste programa para confirmar presença.",
+        "goToProgram": "Ver Programa",
         "searchPlaceholder": "Buscar eventos...",
         "filterAll": "Todos",
         "filterNetworking": "Networking",
@@ -267,6 +287,20 @@
         "heroPlaceholder": "Junte-se a profissionais brasileiros para uma noite de conexões e oportunidades de negócios.",
         "registerNow": "Confirmar Presença",
         "locationToBeDefined": "Local a definir",
+        "selectProgram": "Selecione um programa...",
+        "mustEnrollToCreateEvent": "Você precisa estar matriculado em um programa para criar eventos.",
+        "eventLocationPlaceholder": "Ex: Miami, FL",
+        "day": "Dia",
+        "month": "Mês",
+        "year": "Ano",
+        "hour": "Hora",
+        "minute": "Minuto",
+        "validation": {
+            "fillTitle": "Por favor, preencha o título do evento",
+            "selectProgram": "Por favor, selecione o programa do evento",
+            "imageOnly": "Por favor, selecione apenas arquivos de imagem",
+            "imageTooLarge": "A imagem deve ter no máximo 20MB"
+        },
         "rsvp": "RSVP",
         "startsIn": "Começa em",
         "notFound": "Evento não encontrado",
@@ -341,8 +375,6 @@
         "contract": "Contratar",
         "request": "Solicitar",
         "contracting": "Você está contratando",
-        "contractService": "Contratar Serviço",
-        "requestSupport": "Solicitar Suporte",
         "accessService": "Acessar Serviço",
         "redirecting": "Redirecionando...",
         "requesting": "Você está solicitando atendimento para",
@@ -373,7 +405,7 @@
         "gotIt": "Entendi, vamos começar!",
         "memberBenefitTitle": "Benefício Membro",
         "contractService": "Contratar Serviço",
-        "requestSupport": "Solicitar Atendimento",
+        "requestSupport": "Acessar Agora",
         "mustBeLoggedInToContract": "Você precisa estar logado para contratar um serviço.",
         "mustBeLoggedInToRequest": "Você precisa estar logado para solicitar um serviço.",
         "requestSuccess": "Solicitação enviada com sucesso! O parceiro entrará em contato em breve.",
@@ -437,7 +469,10 @@
         "termsAndConditions": "Termos e Condições",
         "benefitLocked": "Benefício Bloqueado",
         "benefitLockedDesc": "Este benefício está disponível apenas para membros do plano {plan}",
-        "upgradeNow": "Fazer Upgrade"
+        "upgradeNow": "Fazer Upgrade",
+        "guestBlockerTitle": "Veja Todos os {count} Benefícios",
+        "guestBlockerDesc": "Cadastre-se gratuitamente para acessar descontos exclusivos e parcerias premium",
+        "guestBlockerButton": "Criar Conta Grátis"
     },
     "connections": {
         "title": "Minha Rede",
@@ -613,6 +648,10 @@
     "posts": {
         "whatsOnYourMind": "No que você está pensando?",
         "createPost": "Criar Post",
+        "startPost": "Comece uma publicação",
+        "photo": "Foto",
+        "video": "Vídeo",
+        "publishing": "Publicando...",
         "createEvent": "Criar Evento",
         "post": "Publicar",
         "addPhoto": "Adicionar Foto",
@@ -1215,8 +1254,75 @@
             "notApplicable": "Este cupom não é aplicável para este programa"
         }
     },
+    "subscriptions": {
+        "title": "Assinatura",
+        "alreadySubscribed": {
+            "title": "Você é um Membro Premium!",
+            "description": "Sua assinatura está ativa. Aproveite todos os benefícios exclusivos e destaque-se na comunidade 323 Network.",
+            "nextRenewal": "Próxima renovação: {date}"
+        },
+        "viewBenefits": "Ver Meus Benefícios",
+        "plans": {
+            "premium": {
+                "badge": "Plano Premium",
+                "title": "Destaque-se na Comunidade",
+                "description": "Torne-se um membro Premium para desbloquear recursos exclusivos, ganhar autoridade e conectar-se com brasileiros em todo o mundo.",
+                "monthly": "/mês",
+                "cancelAnytime": "Cancele quando quiser",
+                "feesIncluded": "Taxas do Stripe inclusas",
+                "priceWithFees": "Preço final: {total} (Base: {base} + Taxas: {fees})"
+            }
+        },
+        "actions": {
+            "subscribe": "Começar Agora",
+            "processing": "Processando..."
+        },
+        "canceledNotice": "Checkout cancelado. Você pode tentar novamente quando quiser.",
+        "badges": {
+            "secure": "Pagamento Seguro",
+            "stripe": "Stripe Checkout",
+            "cancelAnytime": "Cancele a Qualquer Momento"
+        },
+        "faq": {
+            "title": "Perguntas Frequentes",
+            "items": {
+                "whatIs": {
+                    "q": "O que é o plano Premium?",
+                    "a": "É o nosso plano premium para quem deseja ter mais visibilidade e credibilidade dentro da 323 Network, seja para oferecer serviços ou para se destacar como profissional na comunidade."
+                },
+                "benefits": {
+                    "q": "Quais os reais benefícios do destaque?",
+                    "a": "Membros Premium aparecem no topo das listas de profissionais e têm um selo visual que gera mais confiança para quem busca por serviços ou conexões na plataforma."
+                },
+                "cancel": {
+                    "q": "Como funciona o cancelamento?",
+                    "a": "Você pode cancelar a qualquer momento diretamente pelo seu painel de faturamento. O acesso aos benefícios permanece ativo até o fim do ciclo mensal já pago."
+                }
+            }
+        },
+        "benefits": {
+            "verified": "Selo de Verificado (Badge Premium) no perfil",
+            "unlimitedServices": "Publique serviços e oportunidades ilimitadas",
+            "priorityHighlight": "Destaque priority em todas as buscas de membros",
+            "earlyAccess": "Acesso antecipado a novos recursos da plataforma",
+            "boostedProfile": "Perfil turbinado com links extras e galeria",
+            "prioritySupport": "Suporte prioritário via canal exclusivo"
+        }
+    },
     "admin": {
         "events": {
+            "title": "Admin de Eventos",
+            "subtitle": "Gerencie e aprove eventos da comunidade",
+            "newEvent": "Novo Evento",
+            "messages": {
+                "destaqueSuccess": "Evento definido como destaque!",
+                "destaqueRemoved": "Evento removido do destaque",
+                "destaqueError": "Erro ao atualizar destaque do evento",
+                "deleteSuccess": "Evento apagado com sucesso!",
+                "deleteError": "Erro ao apagar evento",
+                "createSuccess": "Evento criado com sucesso!",
+                "createError": "Erro ao criar evento"
+            },
             "errors": {
                 "fillAllDateFields": "Por favor, preencha todos os campos de data e hora",
                 "programNotFound": "Programa não encontrado para validação de datas",

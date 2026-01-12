@@ -31,8 +31,8 @@
       </div>
       
       <div>
-        <h4 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ benefit.nome }}</h4>
-        <p class="text-sm text-slate-700 dark:text-gray-300 mt-1 line-clamp-2">{{ benefit.descricao }}</p>
+        <h4 class="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ currentLocale === 'pt-BR' ? benefit.nome_pt : (benefit.nome_en || benefit.nome_pt) }}</h4>
+        <p class="text-sm text-slate-700 dark:text-gray-300 mt-1 line-clamp-2">{{ currentLocale === 'pt-BR' ? benefit.descricao_pt : (benefit.descricao_en || benefit.descricao_pt) }}</p>
       </div>
     </div>
   </div>
@@ -40,10 +40,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useLocale } from '@/composables/useLocale'
 import type { Benefit } from '@/types/benefits'
 
-const { t } = useI18n()
+const { locale: currentLocale, t } = useLocale()
 
 interface Props {
   benefit: Benefit

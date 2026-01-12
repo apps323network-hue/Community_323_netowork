@@ -88,10 +88,13 @@ import EventFormStep2 from './EventFormStep2.vue'
 import type { EventStatus } from '@/types/events'
 
 interface EventFormData {
-  titulo: string
-  descricao: string
+  titulo_pt: string
+  titulo_en: string
+  descricao_pt: string
+  descricao_en: string
   tipo: string
-  local: string
+  local_pt: string
+  local_en: string
   image_url: string
   status: EventStatus
   program_id: string
@@ -128,10 +131,13 @@ const currentStep = ref(1)
 const submitting = ref(false)
 
 const formData = ref<EventFormData>({
-  titulo: '',
-  descricao: '',
+  titulo_pt: '',
+  titulo_en: '',
+  descricao_pt: '',
+  descricao_en: '',
   tipo: '',
-  local: '',
+  local_pt: '',
+  local_en: '',
   image_url: '',
   status: 'approved',
   program_id: '',
@@ -160,10 +166,13 @@ watch(isOpen, (newVal) => {
 function resetForm() {
   currentStep.value = 1
   formData.value = {
-    titulo: '',
-    descricao: '',
+    titulo_pt: '',
+    titulo_en: '',
+    descricao_pt: '',
+    descricao_en: '',
     tipo: '',
-    local: '',
+    local_pt: '',
+    local_en: '',
     image_url: '',
     status: 'approved',
     program_id: '',
@@ -205,7 +214,7 @@ function handleImageRemove() {
 
 function nextStep() {
   // Validar campos da etapa 1
-  if (!formData.value.titulo || !formData.value.tipo || !formData.value.program_id) {
+  if (!formData.value.titulo_pt || !formData.value.titulo_en || !formData.value.tipo || !formData.value.program_id) {
     emit('validation-error', 'Por favor, preencha todos os campos obrigatórios')
     return false
   }
