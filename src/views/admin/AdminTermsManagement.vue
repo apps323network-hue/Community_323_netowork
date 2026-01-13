@@ -124,7 +124,7 @@
 
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTermsManagement.title') }}
+              {{ t('adminTermsManagement.termTitleLabel') }}
             </label>
             <input
               v-model="termForm.title"
