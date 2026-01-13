@@ -66,7 +66,7 @@
                   : (completedLessons.includes(lesson.id) ? 'bg-secondary/20 text-secondary' : 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-white')
               ]"
             >
-              <span class="material-symbols-outlined text-lg">
+              <span v-if="lesson.youtube_video_id" class="material-symbols-outlined text-lg">
                 {{ completedLessons.includes(lesson.id) ? 'check_circle' : (currentLessonId === lesson.id ? 'play_arrow' : 'play_circle') }}
               </span>
               <span v-else class="material-symbols-outlined text-lg">
