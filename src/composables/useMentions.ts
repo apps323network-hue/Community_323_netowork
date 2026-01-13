@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { isLocalhost } from '@/utils/localhost'
 
 export function useMentions() {
   const loading = ref(false)
@@ -19,12 +20,18 @@ export function useMentions() {
     error.value = null
 
     try {
-      const { data, error: queryError } = await supabase
+      let queryBuilder = supabase
         .from('profiles')
         .select('id, nome, email, avatar_url')
         .or(`nome.ilike.%${query}%,email.ilike.%${query}%`)
         .eq('status', 'active') // Only active users
-        .limit(limit)
+
+      // Excluir usuários de teste em produção (apenas mostrar em dev)
+      if (!isLocalhost()) {
+        queryBuilder = queryBuilder.eq('is_test_user', false)
+      }
+
+      const { data, error: queryError } = await queryBuilder.limit(limit)
 
       if (queryError) throw queryError
 
@@ -62,12 +69,18 @@ export function useMentions() {
       // Use ilike for case-insensitive matching
       const mentionsPromises = mentionedUsernames.map(async (username) => {
         // Use the same search logic as searchUsers for consistency
-        const { data: userDataArray, error: userError } = await supabase
+        let mentionQuery = supabase
           .from('profiles')
           .select('id')
           .or(`nome.ilike.%${username}%,email.ilike.%${username}%`)
           .eq('status', 'active')
-          .limit(1)
+
+        // Excluir usuários de teste em produção (apenas mostrar em dev)
+        if (!isLocalhost()) {
+          mentionQuery = mentionQuery.eq('is_test_user', false)
+        }
+
+        const { data: userDataArray, error: userError } = await mentionQuery.limit(1)
 
         if (userError || !userDataArray || userDataArray.length === 0) {
           console.warn(`User not found for mention: @${username}`)

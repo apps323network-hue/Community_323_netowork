@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { isLocalhost } from '@/utils/localhost'
 
 export function useBookmarks() {
   const bookmarks = ref<Set<string>>(new Set())
@@ -147,10 +148,17 @@ export function useBookmarks() {
         return []
       }
 
-      const { data: profilesData, error: profilesError } = await supabase
+      let profilesQuery = supabase
         .from('profiles')
         .select('*')
         .in('id', memberIds)
+
+      // Excluir usuários de teste em produção (apenas mostrar em dev)
+      if (!isLocalhost()) {
+        profilesQuery = profilesQuery.eq('is_test_user', false)
+      }
+
+      const { data: profilesData, error: profilesError } = await profilesQuery
 
       if (profilesError) throw profilesError
 
