@@ -62,7 +62,42 @@
         "daysAgo": "d ago",
         "secondsShort": "Sec",
         "next": "Next",
-        "previous": "Previous"
+        "previous": "Previous",
+        "hide": "Hide",
+        "show": "Show"
+    },
+    "onboarding": {
+        "progress": "Step {current} of {total}",
+        "finish": "Finish",
+        "success": "Profile created successfully!",
+        "error": "Error saving profile",
+        "step1": {
+            "title": "Basic Information",
+            "subtitle": "Let's start by getting to know you better",
+            "namePlaceholder": "Your full name",
+            "professionPlaceholder": "Ex: Entrepreneur, Developer, Designer",
+            "avatarHint": "Add a profile photo (optional)",
+            "uploading": "Uploading..."
+        },
+        "step2": {
+            "title": "Location",
+            "subtitle": "Where are you located?"
+        },
+        "step3": {
+            "title": "About You",
+            "subtitle": "Tell us a little more about yourself",
+            "bioPlaceholder": "Write a brief description about yourself...",
+            "bioHint": "Maximum 500 characters",
+            "tagsHint": "Select your interests (optional)",
+            "goalsHint": "Add your goals in the community (optional)"
+        },
+        "errors": {
+            "nameRequired": "Full name is required",
+            "professionRequired": "Area of work is required",
+            "countryRequired": "Country is required",
+            "stateRequired": "State is required",
+            "cityRequired": "City is required"
+        }
     },
     "navigation": {
         "home": "Feed",
@@ -110,7 +145,7 @@
         "firstName": "First Name",
         "lastName": "Last Name",
         "phone": "Phone",
-        "phonePlaceholder": "(optional) Ex: +1 555 123 4567",
+        "phonePlaceholder": "",
         "callback": {
             "processing": "Processing authentication...",
             "pleaseWait": "Please wait"
@@ -282,6 +317,15 @@
         "eventTitle": "Event Title",
         "eventBanner": "Event Banner",
         "dateTime": "Date and Time",
+        "date": "Date",
+        "time": "Time",
+        "expired": "Expired",
+        "validity": "Validity",
+        "day": "Day",
+        "month": "Month",
+        "year": "Year",
+        "hour": "Hour",
+        "minute": "Minute",
         "changeImage": "Change image",
         "addBanner": "Add banner",
         "featuredEvent": "Featured Event",
@@ -300,8 +344,14 @@
             "fillTitle": "Please fill in the event title",
             "selectProgram": "Please select the event program",
             "imageOnly": "Please select only image files",
-            "imageTooLarge": "The image must be at most 20MB"
+            "imageTooLarge": "The image must be at most 20MB",
+            "fillAllDateTimeFields": "Please fill in all date and time fields. Missing: {missing}",
+            "titleContainsBannedWords": "The event title contains offensive words. Please review the content.",
+            "descriptionContainsBannedWords": "The event description contains offensive words. Please review the content."
         },
+        "mustEnrollToCreateEventMessage": "You must be enrolled in this program to create an event.",
+        "errorCreatingEvent": "Error creating event. Please try again.",
+        "undefinedDate": "Undefined date",
         "rsvp": "RSVP",
         "startsIn": "Starts in",
         "notFound": "Event not found",
@@ -647,6 +697,7 @@
     },
     "posts": {
         "whatsOnYourMind": "What's on your mind?",
+        "aboutWhat": "What do you want to share?",
         "createPost": "Create Post",
         "startPost": "Start a post",
         "photo": "Photo",
@@ -654,6 +705,7 @@
         "publishing": "Publishing...",
         "createEvent": "Create Event",
         "post": "Post",
+        "publish": "Publish",
         "addPhoto": "Add Photo",
         "addVideo": "Add Video",
         "like": "Like",

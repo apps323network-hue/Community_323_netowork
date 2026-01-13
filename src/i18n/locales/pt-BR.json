@@ -62,7 +62,42 @@
         "daysAgo": "d atrás",
         "secondsShort": "Seg",
         "next": "Próxima",
-        "previous": "Anterior"
+        "previous": "Anterior",
+        "hide": "Ocultar",
+        "show": "Mostrar"
+    },
+    "onboarding": {
+        "progress": "Passo {current} de {total}",
+        "finish": "Finalizar",
+        "success": "Perfil criado com sucesso!",
+        "error": "Erro ao salvar perfil",
+        "step1": {
+            "title": "Informações Básicas",
+            "subtitle": "Vamos começar conhecendo você melhor",
+            "namePlaceholder": "Seu nome completo",
+            "professionPlaceholder": "Ex: Empreendedor, Desenvolvedor, Designer",
+            "avatarHint": "Adicione uma foto de perfil (opcional)",
+            "uploading": "Enviando..."
+        },
+        "step2": {
+            "title": "Localização",
+            "subtitle": "Onde você está localizado?"
+        },
+        "step3": {
+            "title": "Sobre Você",
+            "subtitle": "Conte um pouco mais sobre você",
+            "bioPlaceholder": "Escreva uma breve descrição sobre você...",
+            "bioHint": "Máximo de 500 caracteres",
+            "tagsHint": "Selecione seus interesses (opcional)",
+            "goalsHint": "Adicione seus objetivos na comunidade (opcional)"
+        },
+        "errors": {
+            "nameRequired": "Nome completo é obrigatório",
+            "professionRequired": "Área de atuação é obrigatória",
+            "countryRequired": "País é obrigatório",
+            "stateRequired": "Estado é obrigatório",
+            "cityRequired": "Cidade é obrigatória"
+        }
     },
     "navigation": {
         "home": "Feed",
@@ -110,7 +145,7 @@
         "firstName": "Nome",
         "lastName": "Sobrenome",
         "phone": "Telefone",
-        "phonePlaceholder": "(opcional) Ex: +1 555 123 4567",
+        "phonePlaceholder": "",
         "callback": {
             "processing": "Processando autenticação...",
             "pleaseWait": "Por favor, aguarde"
@@ -284,6 +319,15 @@
         "eventTitle": "Título do Evento",
         "eventBanner": "Banner do Evento",
         "dateTime": "Data e Hora",
+        "date": "Data",
+        "time": "Hora",
+        "expired": "Expirado",
+        "validity": "Validade",
+        "day": "Dia",
+        "month": "Mês",
+        "year": "Ano",
+        "hour": "Hora",
+        "minute": "Minuto",
         "changeImage": "Trocar imagem",
         "addBanner": "Adicionar banner",
         "featuredEvent": "Evento Destaque",
@@ -302,8 +346,14 @@
             "fillTitle": "Por favor, preencha o título do evento",
             "selectProgram": "Por favor, selecione o programa do evento",
             "imageOnly": "Por favor, selecione apenas arquivos de imagem",
-            "imageTooLarge": "A imagem deve ter no máximo 20MB"
+            "imageTooLarge": "A imagem deve ter no máximo 20MB",
+            "fillAllDateTimeFields": "Por favor, preencha todos os campos de data e hora. Faltando: {missing}",
+            "titleContainsBannedWords": "O título do evento contém palavras ofensivas. Por favor, revise o conteúdo.",
+            "descriptionContainsBannedWords": "A descrição do evento contém palavras ofensivas. Por favor, revise o conteúdo."
         },
+        "mustEnrollToCreateEventMessage": "Você precisa estar matriculado neste programa para criar um evento.",
+        "errorCreatingEvent": "Erro ao criar evento. Tente novamente.",
+        "undefinedDate": "Data indefinida",
         "rsvp": "RSVP",
         "startsIn": "Começa em",
         "notFound": "Evento não encontrado",
@@ -653,6 +703,7 @@
     },
     "posts": {
         "whatsOnYourMind": "No que você está pensando?",
+        "aboutWhat": "Sobre o que você quer compartilhar?",
         "createPost": "Criar Post",
         "startPost": "Comece uma publicação",
         "photo": "Foto",
@@ -660,6 +711,7 @@
         "publishing": "Publicando...",
         "createEvent": "Criar Evento",
         "post": "Publicar",
+        "publish": "Publicar",
         "addPhoto": "Adicionar Foto",
         "addVideo": "Adicionar Vídeo",
         "like": "Curtir",

@@ -79,6 +79,12 @@ const routes: RouteRecordRaw[] = [
     // Página pública - não requer autenticação
   },
   {
+    path: '/onboarding',
+    name: 'Onboarding',
+    component: () => import('@/views/Onboarding.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/parceiros',
     name: 'PartnersLanding',
     component: () => import('@/views/public/PartnersLanding.vue'),
@@ -456,13 +462,30 @@ router.beforeEach(async (to, _from, next) => {    // O Supabase adiciona type=re
     return
   }
 
-  // Verificar se usuário está banido
+  // Verificar se usuário está banido e onboarding
   if (requiresAuth && authStore.user) {
     const userStore = useUserStore()
 
     // Se profile não estiver carregado, buscar
     if (!userStore.profile) {
       await userStore.fetchProfile(authStore.user.id)
+    }
+
+    // Verificar onboarding
+    if (to.path === '/onboarding') {
+      // Se já completou onboarding, redirecionar para home
+      const { hasCompletedOnboarding } = await import('@/composables/useOnboarding')
+      if (hasCompletedOnboarding(userStore.profile)) {
+        next({ name: 'Home' })
+        return
+      }
+    } else {
+      // Se não completou onboarding e não está na página de onboarding, redirecionar
+      const { needsOnboarding } = await import('@/composables/useOnboarding')
+      if (needsOnboarding(userStore.profile)) {
+        next({ name: 'Onboarding' })
+        return
+      }
     }
 
     // Redirecionar usuário banido para página de aviso
