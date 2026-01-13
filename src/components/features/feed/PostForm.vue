@@ -185,14 +185,14 @@
       <!-- Data -->
       <div>
         <div class="flex justify-between items-center mb-2">
-          <label class="block text-sm font-semibold text-gray-300">Data *</label>
+          <label class="block text-sm font-semibold text-gray-300">{{ t('events.date') }} *</label>
           <div v-if="selectedProgram" class="text-xs">
             <span v-if="isProgramExpired(selectedProgram)" class="text-red-400 font-medium flex items-center gap-1">
               <span class="material-symbols-outlined text-[14px]">warning</span>
-              Expirado: {{ formatDate(selectedProgram.program_end_date) }}
+              {{ t('events.expired') }}: {{ formatDate(selectedProgram.program_end_date) }}
             </span>
             <span v-else class="text-emerald-400 font-medium tracking-wide">
-              Validade: {{ formatDate(selectedProgram.program_start_date) }} - {{ formatDate(selectedProgram.program_end_date) }}
+              {{ t('events.validity') }}: {{ formatDate(selectedProgram.program_start_date) }} - {{ formatDate(selectedProgram.program_end_date) }}
             </span>
           </div>
         </div>
@@ -269,7 +269,7 @@
 
       <!-- Hora -->
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">Hora *</label>
+        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.time') }} *</label>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs text-gray-400 mb-1">{{ t('events.hour') }}</label>
@@ -388,7 +388,7 @@ const selectedProgram = computed(() => {
 })
 
 function formatDate(dateString: string | null) {
-  if (!dateString) return 'Data indefinida'
+  if (!dateString) return t('events.undefinedDate')
   return new Date(dateString).toLocaleDateString()
 }
 
@@ -402,7 +402,7 @@ const programOptions = computed(() => {
     value: p.id,
     label: p.title_pt,
     disabled: !p.isEnrolled,
-    disabledMessage: 'Você precisa estar matriculado neste programa para criar um evento.'
+    disabledMessage: t('events.mustEnrollToCreateEventMessage')
   }))
 })
 
@@ -550,12 +550,12 @@ async function handleEventImageSelect(event: Event) {
   if (!file) return
 
   if (!file.type.startsWith('image/')) {
-    error.value = 'Por favor, selecione apenas arquivos de imagem'
+    error.value = t('events.validation.imageOnly')
     return
   }
 
   if (file.size > 20 * 1024 * 1024) {
-    error.value = 'A imagem deve ter no máximo 20MB'
+    error.value = t('events.validation.imageTooLarge')
     return
   }
 
@@ -772,13 +772,13 @@ async function handleCreateEvent() {
   
   if (!dataHora) {
     const missingFields = []
-    if (!dateTime.value.day) missingFields.push('Dia')
-    if (!dateTime.value.month) missingFields.push('Mês')
-    if (!dateTime.value.year) missingFields.push('Ano')
-    if (!dateTime.value.hour) missingFields.push('Hora')
-    if (!dateTime.value.minute) missingFields.push('Minuto')
+    if (!dateTime.value.day) missingFields.push(t('events.day'))
+    if (!dateTime.value.month) missingFields.push(t('events.month'))
+    if (!dateTime.value.year) missingFields.push(t('events.year'))
+    if (!dateTime.value.hour) missingFields.push(t('events.hour'))
+    if (!dateTime.value.minute) missingFields.push(t('events.minute'))
     
-    error.value = `Por favor, preencha todos os campos de data e hora. Faltando: ${missingFields.join(', ')}`
+    error.value = t('events.fillAllDateTimeFields', { missing: missingFields.join(', ') })
     return
   }
 
@@ -832,13 +832,13 @@ async function handleCreateEvent() {
     const descCheck = eventForm.value.descricao ? await checkBannedWords(eventForm.value.descricao) : { found: false, action: null, words: [] }
     
     if (titleCheck.found) {
-      error.value = 'O título do evento contém palavras ofensivas. Por favor, revise o conteúdo.'
+      error.value = t('events.validation.titleContainsBannedWords')
       loading.value = false
       return
     }
     
     if (descCheck.found) {
-      error.value = 'A descrição do evento contém palavras ofensivas. Por favor, revise o conteúdo.'
+      error.value = t('events.validation.descriptionContainsBannedWords')
       loading.value = false
       return
     }
@@ -919,7 +919,7 @@ async function handleCreateEvent() {
     emit('post-created', newPost.id)
     emit('event-created', data.id)
   } catch (err: any) {
-    error.value = err.message || 'Erro ao criar evento. Tente novamente.'
+    error.value = err.message || t('events.errorCreatingEvent')
   } finally {
     loading.value = false
   }

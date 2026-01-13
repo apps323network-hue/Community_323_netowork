@@ -35,6 +35,7 @@ export interface UserProfile {
   total_points?: number
   created_at?: string
   updated_at?: string
+  onboarding_completed?: boolean
 }
 
 export const useUserStore = defineStore('user', () => {

@@ -174,6 +174,7 @@ export const useAuthStore = defineStore('auth', () => {
         password,
         options: {
           data: userData,
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       })
       if (authError) throw authError
