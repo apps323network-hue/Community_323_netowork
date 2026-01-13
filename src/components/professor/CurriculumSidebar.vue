@@ -147,7 +147,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['select-module', 'select-lesson', 'add-module', 'add-lesson'])
 
-const { locale: currentLocale, t } = useLocale()
+const { locale: currentLocale } = useLocale()
 const modulesStore = useModulesStore()
 
 // Local copy for draggable

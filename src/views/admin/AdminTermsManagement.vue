@@ -148,6 +148,7 @@
 
 
         </div>
+        </div>
 
         <template #footer>
           <div class="flex gap-3">
@@ -195,7 +196,10 @@ import Modal from '@/components/ui/Modal.vue'
 import RichTextEditor from '@/components/ui/RichTextEditor.vue'
 import DOMPurify from 'dompurify'
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
 import type { ApplicationTerm } from '@/composables/useTermsAcceptance'
+
+const { t } = useI18n()
 
 
 

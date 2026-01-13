@@ -447,7 +447,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useLocale } from '@/composables/useLocale'
+
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import { useProgramsStore } from '@/stores/programs'
 import { useAuthStore } from '@/stores/auth'
@@ -463,7 +463,7 @@ import MaterialsTab from '@/components/professor/MaterialsTab.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useLocale()
+
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
 const authStore = useAuthStore()

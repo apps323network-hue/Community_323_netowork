@@ -299,7 +299,7 @@ const props = defineProps<{
   programId: string
 }>()
 
-const { t, locale: currentLocale } = useLocale()
+const { locale: currentLocale } = useLocale()
 const modulesStore = useModulesStore()
 
 const showModal = ref(false)

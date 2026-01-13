@@ -208,7 +208,7 @@ import { useLocale } from '@/composables/useLocale'
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import { useProgramsStore } from '@/stores/programs'
 
-const { locale: currentLocale, t } = useLocale()
+const { locale: currentLocale } = useLocale()
 const programsStore = useProgramsStore()
 
 const search = ref('')
