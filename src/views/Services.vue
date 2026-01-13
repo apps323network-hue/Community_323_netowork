@@ -39,11 +39,9 @@
               class="flex items-center justify-center gap-2 rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 border border-primary/30 text-primary text-xs sm:text-sm md:text-base font-bold backdrop-blur-sm transition-all w-full sm:w-auto"
             >
               <span class="material-symbols-outlined text-sm sm:text-base">add_circle</span>
-              Publicar Serviço
+              {{ t('services.publishService') }}
             </button>
-            <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white text-xs sm:text-sm md:text-base font-medium backdrop-blur-sm transition-colors w-full sm:w-auto" @click="howItWorks">
-              {{ t('services.howItWorks') }}
-            </button>
+
           </div>
         </div>
       </div>
@@ -255,43 +253,7 @@
         </p>
       </div>
     </Modal>
-    <!-- Modal Como Funciona -->
-    <Modal
-      v-model="showHowItWorksModal"
-      :title="t('services.howItWorksTitle')"
-    >
-      <div class="space-y-6 sm:space-y-8 py-2 sm:py-4">
-        <!-- Step 1 -->
-        <div class="relative pl-6 sm:pl-8 border-l-2 border-slate-200 dark:border-white/10 group">
-          <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-white dark:bg-surface-dark border-2 border-primary shadow-[0_0_10px_rgba(244,37,244,0.5)] group-hover:scale-125 transition-transform"></div>
-          <h3 class="text-slate-900 dark:text-white text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step1Title') }}</h3>
-          <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm">{{ t('services.step1Desc') }}</p>
-        </div>
 
-        <!-- Step 2 -->
-        <div class="relative pl-6 sm:pl-8 border-l-2 border-slate-200 dark:border-white/10 group">
-          <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-white dark:bg-surface-dark border-2 border-secondary shadow-[0_0_10px_rgba(0,243,255,0.5)] group-hover:scale-125 transition-transform"></div>
-          <h3 class="text-slate-900 dark:text-white text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step2Title') }}</h3>
-          <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm">{{ t('services.step2Desc') }}</p>
-        </div>
-
-        <!-- Step 3 -->
-        <div class="relative pl-6 sm:pl-8 border-l-2 border-transparent group">
-          <div class="absolute -left-[7px] sm:-left-[9px] top-0 h-3 w-3 sm:h-4 sm:w-4 rounded-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_15px_rgba(255,255,255,0.5)] group-hover:scale-125 transition-transform"></div>
-          <h3 class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary text-base sm:text-lg font-bold mb-1.5 sm:mb-2">{{ t('services.step3Title') }}</h3>
-          <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm">{{ t('services.step3Desc') }}</p>
-        </div>
-
-        <div class="pt-3 sm:pt-4 flex justify-center">
-          <button 
-            @click="showHowItWorksModal = false"
-            class="px-6 sm:px-8 py-2 rounded-full border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-white text-xs sm:text-sm transition-colors"
-          >
-            {{ t('services.gotIt') }}
-          </button>
-        </div>
-      </div>
-    </Modal>
 
     <!-- Modal Criar Serviço -->
     <Modal
@@ -453,7 +415,6 @@ const services = ref<any[]>([])
 const activeFilter = ref('all')
 
 const showRequestModal = ref(false)
-const showHowItWorksModal = ref(false)
 const showCreateServiceModal = ref(false)
 const selectedService = ref<any>(null)
 const requestMessage = ref('')
@@ -722,9 +683,7 @@ function exploreServices() {
   el?.scrollIntoView({ behavior: 'smooth' })
 }
 
-function howItWorks() {
-  showHowItWorksModal.value = true
-}
+
 
 async function handlePublishService() {
   // Check if user is logged in
@@ -737,8 +696,7 @@ async function handlePublishService() {
   // Check subscription status
   await subscriptionsStore.fetchSubscription()
   if (!subscriptionsStore.hasActiveSubscription) {
-    toast.error('Apenas membros Premium podem publicar serviços')
-    router.push('/precos')
+    router.push('/subscription')
     return
   }
 

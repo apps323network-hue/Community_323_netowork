@@ -4,10 +4,10 @@
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
-          Reports de <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Conteúdo</span>
+          Content <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Reports</span>
         </h1>
         <p class="text-slate-600 dark:text-white/60 text-lg">
-          Gerencie reports de conteúdo inapropriado da comunidade
+          Manage community content reports and inappropriate content
         </p>
       </div>
 
@@ -79,25 +79,25 @@ const loading = computed(() => adminStore.loading)
 const tabs = computed(() => [
   {
     id: 'all',
-    label: 'Todos',
+    label: 'All',
     badge: undefined,
     badgeClass: '',
   },
   {
     id: 'pending',
-    label: 'Pendentes',
+    label: 'Pending',
     badge: reportStats.value.pending > 0 ? reportStats.value.pending : undefined,
     badgeClass: 'bg-yellow-500/20 text-yellow-400',
   },
   {
     id: 'resolved',
-    label: 'Resolvidos',
+    label: 'Resolved',
     badge: undefined,
     badgeClass: '',
   },
   {
     id: 'dismissed',
-    label: 'Descartados',
+    label: 'Dismissed',
     badge: undefined,
     badgeClass: '',
   },

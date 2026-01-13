@@ -28,7 +28,7 @@
           <div
             v-if="modelValue"
             :class="[
-              'relative z-10 w-full max-w-lg rounded-xl sm:rounded-2xl',
+              'relative z-10 w-full rounded-xl sm:rounded-2xl',
               'bg-white dark:bg-surface-dark',
               'border border-slate-200 dark:border-white/10',
               'shadow-2xl',
@@ -74,7 +74,7 @@ interface Props {
   modelValue: boolean
   title?: string
   closable?: boolean
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -92,6 +92,9 @@ const sizeClasses = computed(() => {
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
+    '2xl': 'max-w-5xl',
+    '3xl': 'max-w-6xl',
+    '4xl': 'max-w-7xl',
   }
   return sizes[props.size]
 })

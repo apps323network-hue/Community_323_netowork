@@ -36,10 +36,10 @@
           v-model="filterStatus"
           class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary dark:focus:ring-secondary outline-none"
         >
-          <option value="all">{{ t('programs.admin.allStatuses') }}</option>
-          <option value="published">{{ t('programs.admin.published') }}</option>
-          <option value="draft">{{ t('programs.admin.draft') }}</option>
-          <option value="archived">{{ t('programs.admin.archived') }}</option>
+          <option value="all">All Statuses</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+          <option value="archived">Archived</option>
         </select>
 
         <select
@@ -61,12 +61,12 @@
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/5">
-                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">{{ t('programs.admin.tableProgram') }}</th>
-                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">{{ t('programs.admin.tableCategory') }}</th>
-                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">{{ t('programs.admin.tableStudents') }}</th>
-                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">{{ t('programs.admin.tablePrice') }}</th>
-                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">{{ t('programs.admin.tableStatus') }}</th>
-                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm text-right">{{ t('programs.admin.tableActions') }}</th>
+                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Program</th>
+                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Category</th>
+                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Students</th>
+                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Price</th>
+                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm">Status</th>
+                <th class="p-4 font-semibold text-slate-700 dark:text-gray-300 text-sm text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-white/5">
@@ -136,7 +136,7 @@
                     <RouterLink
                       :to="`/admin/programs/${program.id}/matriculas`"
                       class="p-2 text-slate-500 hover:text-primary dark:hover:text-secondary bg-slate-100 dark:bg-white/5 rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
-                      :title="t('programs.admin.enrollments')"
+                      :title="'Enrollments'"
                     >
                       <span class="material-icons text-sm">people</span>
                     </RouterLink>
@@ -150,7 +150,7 @@
                       <button
                       @click="deleteProgram(program)"
                       class="p-2 text-slate-500 hover:text-red-500 bg-slate-100 dark:bg-white/5 rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
-                      :title="t('programs.admin.delete')"
+                      :title="'Delete program'"
                     >
                       <span class="material-icons text-sm">delete</span>
                     </button>
@@ -187,13 +187,13 @@
               @click="programToDelete = null" 
               class="flex-1 px-4 py-3 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
             >
-              {{ t('programs.admin.cancel') }}
+              Cancel
             </button>
             <button 
               @click="confirmDelete" 
               class="flex-1 px-4 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
             >
-              {{ t('programs.admin.deleteNow') }}
+              Delete Now
             </button>
           </div>
         </div>
@@ -208,7 +208,7 @@ import { useLocale } from '@/composables/useLocale'
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import { useProgramsStore } from '@/stores/programs'
 
-const { locale: currentLocale, t } = useLocale()
+const { locale: currentLocale } = useLocale()
 const programsStore = useProgramsStore()
 
 const search = ref('')

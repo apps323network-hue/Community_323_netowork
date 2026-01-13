@@ -25,13 +25,13 @@
 
     <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all group shadow-lg dark:shadow-xl">
       <div class="flex items-center justify-between mb-4">
-        <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Ocultos</span>
+        <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Hidden</span>
         <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">
           <span class="material-symbols-outlined text-slate-500 dark:text-white/50 text-xl">visibility_off</span>
         </div>
       </div>
       <div class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ stats.hidden }}</div>
-      <div class="text-xs text-slate-500 dark:text-white/40">Posts ocultos</div>
+      <div class="text-xs text-slate-500 dark:text-white/40">Hidden posts</div>
     </div>
 
     <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all group shadow-lg dark:shadow-xl">

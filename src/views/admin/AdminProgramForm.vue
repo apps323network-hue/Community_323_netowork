@@ -12,7 +12,7 @@
           </RouterLink>
           <div>
             <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
-              {{ isEditMode ? t('programs.admin.editProgram') : t('programs.admin.createProgram') }}
+              {{ isEditMode ? 'Edit Program' : 'Create Program' }}
             </h1>
             <p class="text-slate-600 dark:text-gray-400 mt-1" v-if="isEditMode && form.title_pt">
               Editing: {{ form.title_pt }}
@@ -63,7 +63,7 @@
               <!-- Photo Upload (4/12) -->
               <div class="lg:col-span-5 xl:col-span-4 space-y-2">
                 <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 uppercase letter-spacing-1">
-                  Foto do Programa
+                  Program Photo
                 </label>
                 <div 
                   @click="imageInput?.click()"
@@ -72,7 +72,7 @@
                   <img v-if="imagePreview || form.thumbnail_url" :src="imagePreview || form.thumbnail_url" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div v-if="imagePreview || form.thumbnail_url" class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white">
                     <span class="material-icons text-4xl mb-2">cloud_upload</span>
-                    <span class="text-sm font-bold uppercase tracking-widest">Alterar Foto</span>
+                    <span class="text-sm font-bold uppercase tracking-widest">Change Photo</span>
                   </div>
                   
                   <template v-if="!imagePreview && !form.thumbnail_url">
@@ -80,8 +80,8 @@
                       <div class="w-16 h-16 bg-slate-200 dark:bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                         <span class="material-icons text-3xl text-slate-400">image</span>
                       </div>
-                      <p class="text-sm text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider">Selecionar Foto</p>
-                      <p class="text-[10px] text-slate-400 mt-2">JPG, PNG • Máx 5MB</p>
+                      <p class="text-sm text-slate-600 dark:text-slate-400 font-bold uppercase tracking-wider">Select Photo</p>
+                      <p class="text-[10px] text-slate-400 mt-2">JPG, PNG • Max 5MB</p>
                     </div>
                   </template>
                 </div>
@@ -93,13 +93,13 @@
                 <!-- Left Side: Category and Titles -->
                 <div class="space-y-6">
                   <div>
-                    <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-2">Categoria *</label>
+                    <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-2">Category *</label>
                     <select v-model="form.category" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 outline-none transition-all">
-                      <option value="curso">Conteúdo</option>
-                      <option value="mentoria">Mentoria</option>
+                      <option value="curso">Content</option>
+                      <option value="mentoria">Mentorship</option>
                       <option value="workshop">Workshop</option>
-                      <option value="evento_premium">Evento Premium</option>
-                      <option value="servico_especializado">Serviço Especializado</option>
+                      <option value="evento_premium">Premium Event</option>
+                      <option value="servico_especializado">Specialized Service</option>
                     </select>
                   </div>
                   
@@ -117,7 +117,7 @@
 
                 <!-- Right Side: Professors -->
                 <div class="flex flex-col h-full">
-                  <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-3">Professores (Instrutores) *</label>
+                  <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-3">Professors (Instructors) *</label>
                   <div class="flex-1 bg-slate-50 dark:bg-black/20 p-4 rounded-2xl border border-slate-200 dark:border-white/10 overflow-y-auto custom-scrollbar min-h-[220px]">
                     <div class="grid grid-cols-1 gap-2">
                       <div v-for="prof in professors" :key="prof.id" class="flex items-center gap-4 p-3 rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all group">
@@ -140,7 +140,7 @@
                       </div>
                     </div>
                   </div>
-                  <p class="text-[10px] text-slate-500 mt-2 italic px-2">Selecione um ou mais professores para este programa.</p>
+                  <p class="text-[10px] text-slate-500 mt-2 italic px-2">Select one or more professors for this program.</p>
                 </div>
               </div>
             </div>
@@ -153,7 +153,7 @@
               <div class="space-y-6">
                 <div class="flex items-center gap-2 mb-2">
                   <span class="material-icons text-primary/60">translate</span>
-                  <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-wider text-sm">Conteúdo em Português</h3>
+                  <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-wider text-sm">Content in Portuguese</h3>
                 </div>
                 <div class="space-y-4 bg-slate-50/50 dark:bg-white/5 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
                   <div>
@@ -192,61 +192,61 @@
             <!-- Price and Slots -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="p-4 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/5">
-                <h3 class="font-bold text-slate-900 dark:text-white mb-4">Precificação e Vagas</h3>
+                <h3 class="font-bold text-slate-900 dark:text-white mb-4">Pricing and Slots</h3>
                 <div class="space-y-4">
                   <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Preço (USD) *</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Price (USD) *</label>
                     <div class="relative">
                       <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
                       <input v-model.number="form.price_usd" required type="number" step="0.01" class="w-full pl-8 pr-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white" />
                     </div>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Vagas Máximas</label>
-                    <input v-model.number="form.max_students" type="number" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white" placeholder="Vazio para ilimitado" />
+                    <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Max Slots</label>
+                    <input v-model.number="form.max_students" type="number" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white" placeholder="Empty for unlimited" />
                   </div>
                    <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Carga Horária (horas)</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Duration (hours)</label>
                     <input v-model.number="form.duration_hours" type="number" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white" />
                   </div>
                 </div>
               </div>
 
                <div class="p-4 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/5">
-                <h3 class="font-bold text-slate-900 dark:text-white mb-4">Datas e Publicação</h3>
+                <h3 class="font-bold text-slate-900 dark:text-white mb-4">Dates and Publishing</h3>
                 <div class="space-y-4">
                   <div>
                     <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Status</label>
                     <select v-model="form.status" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white">
-                      <option value="draft">Rascunho (Oculto)</option>
-                      <option value="published">Publicado (Visível)</option>
-                      <option value="archived">Arquivado</option>
+                      <option value="draft">Draft (Hidden)</option>
+                      <option value="published">Published (Visible)</option>
+                      <option value="archived">Archived</option>
                     </select>
                   </div>
                   <div class="flex items-center gap-2 mt-6">
                     <input v-model="form.featured" type="checkbox" id="featured" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" />
-                    <label for="featured" class="text-slate-700 dark:text-gray-300 font-medium">Programa em Destaque (⭐)</label>
+                    <label for="featured" class="text-slate-700 dark:text-gray-300 font-medium">Featured Program (⭐)</label>
                   </div>
                   
                   <div class="flex items-center gap-2 mt-4">
                     <input v-model="form.localhost_only" type="checkbox" id="localhost_only" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" />
                     <label for="localhost_only" class="text-slate-700 dark:text-gray-300 font-medium">
-                      Apenas Localhost (🔧 Debug)
+                      Localhost Only (🔧 Debug)
                     </label>
                   </div>
                   <p v-if="form.localhost_only" class="text-xs text-amber-600 dark:text-amber-400 mt-1 ml-7">
-                    ⚠️ Este programa permitirá acesso local sem pagamento para debug
+                    ⚠️ This program will allow free local access for debugging
                   </p>
                    
                   <div class="border-t border-slate-200 dark:border-white/10 my-4 pt-6">
-                    <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">Metas e Pré-requisitos</h4>
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">Goals and Prerequisites</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Início das Inscrições</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Enrollment Start</label>
                         <input v-model="form.enrollment_start_date" type="datetime-local" class="w-full text-sm px-4 py-2 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark" />
                       </div>
                       <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Fim das Inscrições</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Enrollment End</label>
                         <input v-model="form.enrollment_end_date" type="datetime-local" class="w-full text-sm px-4 py-2 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark" />
                       </div>
                       <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
@@ -272,9 +272,9 @@
               <div class="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span class="material-icons text-4xl text-primary">add_link</span>
               </div>
-              <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">Crie o programa primeiro</h3>
+              <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">Create the program first</h3>
               <p class="text-slate-500 max-w-sm mx-auto">
-                Para gerenciar módulos, aulas e materiais, você precisa primeiro salvar as informações básicas do programa.
+                To manage modules, lessons, and materials, you must first save the basic program information.
               </p>
             </div>
             <div v-else class="flex flex-col h-[700px]">
@@ -338,24 +338,24 @@
                 </div>
                 <div>
                   <h3 class="font-bold text-slate-900 dark:text-white">Google Classroom</h3>
-                  <p class="text-sm text-slate-500">Integração para acesso automático ao conteúdo</p>
+                  <p class="text-sm text-slate-500">Integration for automatic content access</p>
                 </div>
               </div>
 
                <div class="space-y-4 max-w-lg">
                  <div class="flex items-center gap-2">
                     <input v-model="form.classroom_enabled" type="checkbox" id="classroom_enabled" class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" />
-                    <label for="classroom_enabled" class="text-slate-700 dark:text-gray-300 font-medium">Habilitar Integração</label>
+                    <label for="classroom_enabled" class="text-slate-700 dark:text-gray-300 font-medium">Enable Integration</label>
                   </div>
 
                   <div v-if="form.classroom_enabled" class="space-y-4 pl-7 border-l-2 border-slate-200 dark:border-white/10 ml-2.5">
                     <div>
                       <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Link de Convite (Invite Link)</label>
                       <input v-model="form.classroom_invite_link" type="text" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white" placeholder="https://classroom.google.com/..." />
-                      <p class="text-xs text-slate-500 mt-1">Este link será mostrado ao aluno após a matrícula.</p>
+                      <p class="text-xs text-slate-500 mt-1">This link will be shown to students after enrollment.</p>
                     </div>
                     <div>
-                      <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">ID do Conteúdo (Opcional)</label>
+                      <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1">Content ID (Optional)</label>
                       <input v-model="form.classroom_course_id" type="text" class="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white" placeholder="Ex: 123456789" />
                     </div>
 
@@ -364,10 +364,10 @@
                       <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20">
                         <div class="flex items-center gap-2 mb-2">
                           <span class="material-icons text-blue-400 text-sm">science</span>
-                          <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Modo de Teste Exclusivo</h4>
+                          <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Exclusive Test Mode</h4>
                         </div>
                         <p class="text-[11px] text-blue-300 mb-4">
-                          Envie um convite agora mesmo para o seu e-mail para validar a integração, sem precisar pagar ou criar matrículas.
+                          Send an invite to your email right now to validate the integration, without needing to pay or enroll.
                         </p>
                         <button
                           type="button"
@@ -377,11 +377,11 @@
                         >
                           <template v-if="testingInvite">
                             <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                            Enviando...
+                            Sending...
                           </template>
                           <template v-else>
                             <span class="material-icons text-sm">send</span>
-                            Enviar Convite para: {{ authStore.user?.email }}
+                            Send Invite to: {{ authStore.user?.email }}
                           </template>
                         </button>
                       </div>
@@ -399,8 +399,8 @@
                   <span class="material-icons">gavel</span>
                 </div>
                 <div>
-                  <h3 class="font-bold text-slate-900 dark:text-white">Termos e Condições Específicos</h3>
-                  <p class="text-sm text-slate-500">Defina os termos que o usuário deve aceitar antes de se matricular neste programa.</p>
+                  <h3 class="font-bold text-slate-900 dark:text-white">Specific Terms and Conditions</h3>
+                  <p class="text-sm text-slate-500">Define terms users must accept before enrolling in this program.</p>
                 </div>
               </div>
 
@@ -417,7 +417,7 @@
                     class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white text-sm leading-relaxed" 
                     placeholder="Escreva os termos em português aqui... (Suporta texto simples)"
                   ></textarea>
-                  <p class="text-[10px] text-slate-500 italic">Estes termos serão exibidos em um modal antes do pagamento/matrícula.</p>
+                  <p class="text-[10px] text-slate-500 italic">These terms will be displayed in a modal before payment/enrollment.</p>
                 </div>
 
                 <!-- Termos em Inglês -->
@@ -447,7 +447,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useLocale } from '@/composables/useLocale'
+
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import { useProgramsStore } from '@/stores/programs'
 import { useAuthStore } from '@/stores/auth'
@@ -463,7 +463,7 @@ import MaterialsTab from '@/components/professor/MaterialsTab.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useLocale()
+
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
 const authStore = useAuthStore()
@@ -477,8 +477,8 @@ const isCreatingContent = ref(false)
 const targetModuleForLesson = ref<any>(null)
 
 const contentSubTabs = [
-  { id: 'grade', label: 'Grade Curricular' },
-  { id: 'materials', label: 'Materiais de Apoio' },
+  { id: 'grade', label: 'Curriculum' },
+  { id: 'materials', label: 'Support Materials' },
 ]
 
 const modules = computed(() => modulesStore.getModulesByProgram(route.params.id as string || ''))
@@ -636,16 +636,16 @@ async function handleSaveContent(formData: any) {
     }
     
     isCreatingContent.value = false
-    toast.success('Salvo com sucesso!')
+    toast.success('Saved successfully!')
   } catch (error: any) {
     console.error('Error saving content:', error)
-    toast.error('Erro ao salvar: ' + (error.message || 'Erro desconhecido'))
+    toast.error('Error saving: ' + (error.message || 'Unknown error'))
   }
 }
 
 async function handleDeleteContent(item: any) {
   const label = contentEditorMode.value === 'module' ? 'módulo' : 'aula'
-  if (!confirm(`Deseja realmente excluir este ${label}? Esta ação não pode ser desfeita.`)) return
+  if (!confirm(`Are you sure you want to delete this ${label}? This action cannot be undone.`)) return
 
   try {
     if (contentEditorMode.value === 'module') {
@@ -656,10 +656,10 @@ async function handleDeleteContent(item: any) {
     
     await modulesStore.fetchModulesWithLessons(route.params.id as string)
     selectedContentItem.value = null
-    toast.success('Excluído com sucesso!')
+    toast.success('Deleted successfully!')
   } catch (error: any) {
     console.error('Error deleting content:', error)
-    toast.error('Erro ao excluir: ' + (error.message || 'Erro desconhecido'))
+    toast.error('Error deleting: ' + (error.message || 'Unknown error'))
   }
 }
 
@@ -670,13 +670,13 @@ const handleFileSelect = (event: Event) => {
   if (!file) return
 
   if (!file.type.startsWith('image/')) {
-    toast.error('Por favor, selecione apenas arquivos de imagem')
+    toast.error('Please select only image files')
     return
   }
 
   // Max 5MB
   if (file.size > 5 * 1024 * 1024) {
-    toast.error('A imagem deve ter no máximo 5MB')
+    toast.error('Image must be at most 5MB')
     return
   }
 
@@ -710,7 +710,7 @@ const uploadImage = async (file: File, path: string) => {
     return publicUrl
   } catch (err: any) {
     console.error(`Error uploading ${path}:`, err)
-    throw new Error(`Erro ao fazer upload: ${err.message}`)
+    throw new Error(`Error uploading: ${err.message}`)
   }
 }
 
@@ -741,16 +741,16 @@ const handleSubmit = async () => {
         id: route.params.id as string,
         ...form.value
       })
-      toast.success('Programa atualizado com sucesso!')
+      toast.success('Program updated successfully!')
     } else {
       await programsStore.createProgram(form.value)
-      toast.success('Programa criado com sucesso!')
+      toast.success('Program created successfully!')
     }
 
     router.push('/admin/programs')
   } catch (error: any) {
     console.error('Error saving program:', error)
-    toast.error(error.message || 'Erro ao salvar o programa. Verifique o console.')
+    toast.error(error.message || 'Error saving program. Check console.')
   } finally {
     saving.value = false
   }
@@ -769,10 +769,10 @@ const handleTestInvite = async () => {
     })
 
     if (error) throw error
-    toast.success(`Convite enviado com sucesso para ${authStore.user.email}! Verifique seu e-mail.`)
+    toast.success(`Invite sent successfully to ${authStore.user.email}! Check your email.`)
   } catch (err: any) {
     console.error('Test invite error:', err)
-    toast.error('Erro ao enviar convite: ' + (err.message || 'Erro desconhecido'))
+    toast.error('Error sending invite: ' + (err.message || 'Unknown error'))
   } finally {
     testingInvite.value = false
   }

@@ -422,14 +422,14 @@ async function handleUnban(userId: string) {
 async function handleUpdateRole(userId: string, role: UserRole) {
   try {
     await usersStore.updateUserRole(userId, role)
-    toast.success('Cargo atualizado com sucesso')
-    // Atualizar dados do usuário na lista local sem recarregar tudo
+    toast.success('Role updated successfully')
+    // Update user data in local list without reloading everything
     const user = usersStore.paginatedMembers.find(u => u.id === userId)
     if (user) {
       user.role = role
     }
   } catch (error: any) {
-    toast.error(error.message || 'Erro ao atualizar cargo')
+    toast.error(error.message || 'Error updating role')
     console.error('Error updating user role:', error)
   }
 }

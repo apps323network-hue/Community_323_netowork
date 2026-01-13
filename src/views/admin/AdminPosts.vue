@@ -21,7 +21,7 @@
           class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
         >
           <span class="material-symbols-outlined">add</span>
-          <span class="hidden sm:inline">Novo Post</span>
+          <span class="hidden sm:inline">New Post</span>
         </button>
       </div>
 
@@ -94,33 +94,33 @@
       >
         <form @submit.prevent="handleCreatePost" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Tipo *</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Type *</label>
             <select
               v-model="newPostData.tipo"
               required
               class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
             >
-              <option value="">Selecione...</option>
+              <option value="">Select...</option>
               <option value="networking">Networking</option>
-              <option value="ofereco_servico">Ofereço Serviço</option>
-              <option value="procuro_ajuda">Procuro Ajuda</option>
-              <option value="oportunidade">Oportunidade</option>
+              <option value="ofereco_servico">Offering Service</option>
+              <option value="procuro_ajuda">Seeking Help</option>
+              <option value="oportunidade">Opportunity</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Conteúdo *</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">Content *</label>
             <textarea
               v-model="newPostData.conteudo"
               rows="6"
               required
               class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0a040f] p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] outline-none transition-all"
-              placeholder="Escreva o conteúdo do post..."
+              placeholder="Write the post content..."
             ></textarea>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-white mb-2">Imagem (Opcional)</label>
+            <label class="block text-sm font-medium text-white mb-2">Image (Optional)</label>
             
             <!-- Preview da imagem -->
             <div v-if="imagePreview" class="mb-3 relative">
@@ -168,7 +168,7 @@
                 :false-value="'pending'"
                 class="w-4 h-4 rounded border-slate-300 dark:border-white/10 bg-white dark:bg-[#0a040f] text-primary focus:ring-primary"
               />
-              <span class="text-sm text-slate-700 dark:text-white">Criar já aprovado</span>
+              <span class="text-sm text-slate-700 dark:text-white">Create as approved</span>
             </label>
           </div>
 
@@ -312,11 +312,11 @@ async function handleModalApprove(postId: string) {
     await adminStore.fetchPendingPosts()
     await adminStore.fetchAllPosts()
     await adminStore.fetchPostStats()
-    toast.success('Post aprovado com sucesso!')
+    toast.success('Post approved successfully!')
     showModerationModal.value = false
     selectedPost.value = null
   } catch (err: any) {
-    toast.error(err.message || 'Erro ao aprovar post')
+    toast.error(err.message || 'Error approving post')
     console.error('Error approving post:', err)
   }
 }
@@ -367,13 +367,13 @@ function handleImageSelect(event: Event) {
 
   // Validar tipo de arquivo
   if (!file.type.startsWith('image/')) {
-    toast.error('Por favor, selecione apenas arquivos de imagem')
+    toast.error('Please select image files only')
     return
   }
 
   // Validar tamanho (máximo 20MB)
   if (file.size > 20 * 1024 * 1024) {
-    toast.error('A imagem deve ter no máximo 20MB')
+    toast.error('Image must be at most 20MB')
     return
   }
 
@@ -461,7 +461,7 @@ async function handleCreatePost() {
     
     console.log('[AdminPosts] Post criado com sucesso:', createdPost?.id)
     
-    toast.success('Post criado com sucesso!')
+    toast.success('Post created successfully!')
     showCreateModal.value = false
     
     // Reset form
@@ -475,7 +475,7 @@ async function handleCreatePost() {
     imagePreview.value = null
   } catch (err: any) {
     console.error('[AdminPosts] Erro ao criar post:', err)
-    toast.error(err.message || 'Erro ao criar post')
+    toast.error(err.message || 'Error creating post')
   } finally {
     submitting.value = false
     console.log('[AdminPosts] Finalizando criação de post')

@@ -23,10 +23,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const label = computed(() => {
   const labels: Record<UserStatus, string> = {
-    pending: 'Pendente',
-    active: 'Ativo',
-    suspended: 'Suspenso',
-    banned: 'Banido',
+    pending: 'Pending',
+    active: 'Active',
+    suspended: 'Suspended',
+    banned: 'Banned',
   }
   return labels[props.status]
 })

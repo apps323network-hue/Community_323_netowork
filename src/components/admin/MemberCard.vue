@@ -36,7 +36,7 @@
         <div class="flex flex-col gap-1 min-w-0 flex-1">
           <!-- Name + Badges -->
           <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-white font-bold text-lg truncate leading-tight">{{ user.nome || 'Usuário' }}</h3>
+            <h3 class="text-white font-bold text-lg truncate leading-tight">{{ user.nome || 'User' }}</h3>
 
             <span v-if="user.plano" class="px-2 py-0.5 rounded-lg text-[10px] font-medium" :class="planClass">
               {{ user.plano }}
@@ -56,9 +56,9 @@
                 @change="handleRoleChange"
                 class="appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 pr-8 text-xs text-white/80 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer hover:bg-white/10"
               >
-                <option value="user" class="bg-slate-900 text-white">Membro</option>
+                <option value="user" class="bg-slate-900 text-white">Member</option>
                 <option value="professor" class="bg-slate-900 text-white">Professor</option>
-                <option value="partner" class="bg-slate-900 text-white">Parceiro</option>
+                <option value="partner" class="bg-slate-900 text-white">Partner</option>
                 <option value="admin" class="bg-slate-900 text-white">Admin</option>
               </select>
               <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-white/40 text-sm pointer-events-none group-hover/role:text-white/60 transition-colors">
@@ -83,11 +83,11 @@
           </div>
           <div class="flex flex-col items-center" title="Conexões">
             <span class="text-white font-black text-lg">{{ user.connections_count || 0 }}</span>
-            <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Conexões</span>
+            <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Connections</span>
           </div>
           <div class="flex flex-col items-center" title="Pontos">
             <span class="text-primary font-black text-lg">{{ user.pontos || 0 }}</span>
-            <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Pontos</span>
+            <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Points</span>
           </div>
         </div>
 
@@ -96,7 +96,7 @@
           <button
             @click="$emit('view-profile', user.id)"
             class="p-2 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
-            title="Ver Perfil"
+            title="View Profile"
           >
             <span class="material-symbols-outlined text-lg">visibility</span>
           </button>
@@ -105,7 +105,7 @@
             v-if="user.status === 'active'"
             @click="$emit('suspend', user.id)"
             class="p-2 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-500/60 hover:text-yellow-500 hover:bg-yellow-500/20 transition-all"
-            title="Suspender"
+            title="Suspend"
           >
             <span class="material-symbols-outlined text-lg">timer</span>
           </button>
@@ -114,7 +114,7 @@
             v-if="user.status === 'suspended'"
             @click="$emit('unsuspend', user.id)"
             class="p-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500/60 hover:text-green-500 hover:bg-green-500/20 transition-all"
-            title="Ativar"
+            title="Activate"
           >
             <span class="material-symbols-outlined text-lg">play_circle</span>
           </button>
@@ -123,7 +123,7 @@
             v-if="user.status !== 'banned'"
             @click="$emit('ban', user.id)"
             class="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all"
-            title="Banir"
+            title="Ban"
           >
             <span class="material-symbols-outlined text-lg">block</span>
           </button>
@@ -132,7 +132,7 @@
             v-if="user.status === 'banned'"
             @click="$emit('unban', user.id)"
             class="p-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500/60 hover:text-green-500 hover:bg-green-500/20 transition-all"
-            title="Remover Banimento"
+            title="Unban"
           >
             <span class="material-symbols-outlined text-lg">check_circle</span>
           </button>
@@ -143,7 +143,7 @@
     <!-- Strikes Warning (if any) -->
     <div v-if="user.strikes && user.strikes > 0" class="mt-4 flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/20 rounded-lg">
       <span class="material-symbols-outlined text-red-500 text-lg">warning</span>
-      <span class="text-red-400 text-xs font-medium">{{ user.strikes }} strike(s) ativo(s)</span>
+      <span class="text-red-400 text-xs font-medium">{{ user.strikes }} active strike(s)</span>
     </div>
 
     <!-- Footer Info -->
@@ -154,7 +154,7 @@
       </div>
       <div class="flex items-center gap-1">
         <span class="material-symbols-outlined text-[12px]">calendar_today</span>
-        <span>Cadastrado {{ cadastradoText }}</span>
+        <span>Registered {{ cadastradoText }}</span>
       </div>
     </div>
   </div>

@@ -4,10 +4,10 @@
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
-          {{ t('admin.events.title') }}
+          Events Admin
         </h1>
         <p class="text-slate-600 dark:text-white/60 text-lg">
-          {{ t('admin.events.subtitle') }}
+          Manage and approve community events
         </p>
       </div>
 

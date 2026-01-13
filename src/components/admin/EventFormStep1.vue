@@ -144,7 +144,7 @@ watch(selectedProgram, (newVal) => {
 })
 
 function formatDate(dateString: string | null) {
-  if (!dateString) return 'Data indefinida'
+  if (!dateString) return 'Undefined date'
   return new Date(dateString).toLocaleDateString('pt-BR')
 }
 

@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { supabase } from '@/lib/supabase'
 import { logAdminAction } from '@/lib/auditLog'
+import { isLocalhost } from '@/utils/localhost'
 import { useAdminBaseStore } from './base'
 import type { AdminUser, UserStats, UserStatus, UserRole, MemberFilters, PaginationMeta, SortColumn, SortDirection } from '@/types/admin'
 
@@ -411,6 +412,11 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
         .from('profiles')
         .select('*', { count: 'exact' })
         .neq('status', 'rejected')
+
+      // Excluir usuários de teste em produção (apenas mostrar em dev)
+      if (!isLocalhost()) {
+        query = query.eq('is_test_user', false)
+      }
 
       // Apply filters
       if (filters.value.search) {

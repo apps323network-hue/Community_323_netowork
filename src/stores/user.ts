@@ -36,6 +36,7 @@ export interface UserProfile {
   created_at?: string
   updated_at?: string
   onboarding_completed?: boolean
+  is_test_user?: boolean
 }
 
 export const useUserStore = defineStore('user', () => {

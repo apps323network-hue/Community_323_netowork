@@ -7,8 +7,8 @@
     <!-- Progress Indicator -->
     <div class="mb-6">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-xs text-slate-600 dark:text-white/60">Etapa {{ currentStep }} de 2</span>
-        <span class="text-xs text-slate-600 dark:text-white/60">{{ currentStep === 1 ? 'Informações Básicas' : 'Data e Localização' }}</span>
+        <span class="text-xs text-slate-600 dark:text-white/60">Step {{ currentStep }} of 2</span>
+        <span class="text-xs text-slate-600 dark:text-white/60">{{ currentStep === 1 ? 'Basic Information' : 'Date and Location' }}</span>
       </div>
       <div class="w-full bg-slate-200 dark:bg-white/10 rounded-full h-2">
         <div 
@@ -49,7 +49,7 @@
           @click="nextStep"
           class="flex-1 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg transition-all"
         >
-          Próximo
+          Next
         </button>
         <button
           v-if="currentStep === 2"
@@ -57,7 +57,7 @@
           @click="prevStep"
           class="px-4 py-2 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
         >
-          Voltar
+          Back
         </button>
         <button
           v-if="currentStep === 2"
@@ -65,7 +65,7 @@
           :disabled="submitting"
           class="flex-1 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
         >
-          {{ submitting ? 'Criando...' : 'Criar Evento' }}
+          {{ submitting ? 'Creating...' : 'Create Event' }}
         </button>
         <button
           v-if="currentStep === 1"
@@ -73,7 +73,7 @@
           @click="handleCancel"
           class="px-4 py-2 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
         >
-          Cancelar
+          Cancel
         </button>
       </div>
     </form>
@@ -215,7 +215,7 @@ function handleImageRemove() {
 function nextStep() {
   // Validate step 1 fields
   if (!formData.value.titulo_pt || !formData.value.titulo_en || !formData.value.tipo || !formData.value.program_id) {
-    emit('validation-error', 'Por favor, preencha todos os campos obrigatórios')
+    emit('validation-error', 'Please fill in all required fields')
     return false
   }
   currentStep.value = 2
@@ -237,7 +237,7 @@ function handleSubmit() {
     // Validate step 2 fields
     if (!dateTime.value.day || !dateTime.value.month || !dateTime.value.year || 
         !dateTime.value.hour || !dateTime.value.minute) {
-      emit('validation-error', 'Por favor, preencha todos os campos de data e hora')
+      emit('validation-error', 'Please fill in all date and time fields')
       return
     }
     

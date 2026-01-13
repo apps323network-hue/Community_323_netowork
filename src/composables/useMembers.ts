@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { isLocalhost } from '@/utils/localhost'
 import type { Member, MemberFilters, MemberPagination } from '@/types/members'
 
 export function useMembers() {
@@ -35,6 +36,11 @@ export function useMembers() {
       // Excluir o próprio usuário logado
       if (currentUserId) {
         query = query.neq('id', currentUserId)
+      }
+
+      // Excluir usuários de teste em produção (apenas mostrar em dev)
+      if (!isLocalhost()) {
+        query = query.eq('is_test_user', false)
       }
 
       // Aplicar filtros

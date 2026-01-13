@@ -5,9 +5,9 @@
       <div>
         <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
           <span class="w-1.5 h-6 sm:h-8 bg-red-500 rounded-full"></span>
-          {{ t('professor.manage.materialsTab.title') }}
+          Support Materials
         </h2>
-        <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-medium mt-1">{{ t('professor.manage.materialsTab.subtitle') }}</p>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 font-medium mt-1">Manage all support files and resources for this program</p>
       </div>
       <button
         type="button"
@@ -16,7 +16,7 @@
         class="flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white dark:bg-white dark:text-black font-black rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
       >
         <span class="material-symbols-outlined text-lg">upload_file</span>
-        {{ t('professor.manage.materialsTab.newMaterial') }}
+        Upload Material
       </button>
     </div>
 
@@ -25,9 +25,9 @@
       <div class="bg-secondary/10 p-8 rounded-full w-fit mx-auto mb-6">
         <span class="material-symbols-outlined text-5xl sm:text-6xl text-secondary">folder_open</span>
       </div>
-      <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">{{ t('professor.manage.materialsTab.createModulesFirst') }}</h3>
+      <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">Create modules first</h3>
       <p class="text-slate-600 dark:text-gray-400 text-sm sm:text-base max-w-sm mx-auto px-4">
-        {{ t('professor.manage.materialsTab.createModulesDesc') }}
+        You need to create at least one module before adding support materials.
       </p>
     </div>
 
@@ -36,9 +36,9 @@
       <div class="bg-slate-100 dark:bg-white/5 p-8 rounded-full w-fit mx-auto mb-6">
         <span class="material-symbols-outlined text-5xl sm:text-6xl text-slate-400">description</span>
       </div>
-      <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">{{ t('professor.manage.materialsTab.noMaterials') }}</h3>
+      <h3 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2">No materials yet</h3>
       <p class="text-slate-600 dark:text-gray-400 text-sm sm:text-base mb-6 max-w-sm mx-auto px-4">
-        {{ t('professor.manage.materialsTab.noMaterialsDesc') }}
+        Upload PDF files, slides, or other resources to help your students.
       </p>
       <button
         type="button"
@@ -46,7 +46,7 @@
         class="px-8 py-3 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20 inline-flex items-center gap-2 text-xs sm:text-sm"
       >
         <span class="material-symbols-outlined text-lg">add_circle</span>
-        {{ t('professor.manage.materialsTab.uploadFirst') }}
+        Upload First Material
       </button>
     </div>
 
@@ -70,7 +70,7 @@
             </div>
             <div class="text-left">
               <h3 class="text-base font-black text-slate-900 dark:text-white">{{ getModuleTitle(module) }}</h3>
-              <p class="text-xs text-slate-500 font-medium">{{ t('professor.manage.materialsTab.materialsCount', { count: getModuleMaterialCount(module.id) }) }}</p>
+              <p class="text-xs text-slate-500 font-medium">{{ getModuleMaterialCount(module.id) }} materials</p>
             </div>
           </div>
           <span class="material-symbols-outlined text-slate-400 transition-transform" :class="{ 'rotate-180': expandedModules.includes(module.id) }">
@@ -82,7 +82,7 @@
         <div v-show="expandedModules.includes(module.id)" class="border-t border-slate-200 dark:border-white/10">
           <!-- Module-level materials -->
           <div class="p-4 bg-slate-50/50 dark:bg-black/10">
-            <p class="text-xs font-black text-slate-500 uppercase tracking-wider mb-3 px-2">{{ t('professor.manage.materialsTab.moduleMaterials') }}</p>
+            <p class="text-xs font-black text-slate-500 uppercase tracking-wider mb-3 px-2">Module Materials</p>
             <draggable
               :model-value="getModuleLevelMaterials(module.id)"
               @update:model-value="(newList: ProgramMaterial[]) => handleMaterialUpdate(newList, module.id, null)"
@@ -130,7 +130,7 @@
                   />
                 </template>
                 <template #footer>
-                  <p v-if="getLessonMaterials(lesson.id).length === 0" class="text-xs text-slate-400 italic col-span-2">{{ t('professor.manage.materialsTab.dropMaterialsLink') }}</p>
+                  <p v-if="getLessonMaterials(lesson.id).length === 0" class="text-xs text-slate-400 italic col-span-2">Drag and drop materials here or use the upload button</p>
                 </template>
               </draggable>
             </div>
@@ -142,7 +142,7 @@
       <div v-if="getGeneralMaterials().length > 0" class="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/5 shadow-lg p-6">
         <h3 class="text-base font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
           <span class="material-symbols-outlined text-slate-400">description</span>
-          {{ t('professor.manage.materialsTab.generalMaterials') }}
+          General Materials
         </h3>
         <draggable
           :model-value="getGeneralMaterials()"
@@ -171,7 +171,7 @@
     >
       <div class="bg-white dark:bg-surface-dark rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 dark:border-white/10">
         <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-          <h3 class="text-xl font-black text-slate-900 dark:text-white">{{ t('professor.manage.contentEditor.addMaterial') }}</h3>
+          <h3 class="text-xl font-black text-slate-900 dark:text-white">Add Material</h3>
           <button
             type="button"
             @click="closeModal"
@@ -185,7 +185,7 @@
           <!-- File Upload -->
           <div>
             <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">
-              {{ t('professor.manage.contentEditor.titlePdf') }}
+              PDF File
             </label>
             <input
               type="file"
@@ -195,42 +195,42 @@
               class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-secondary/10 file:text-secondary hover:file:bg-secondary/20"
             />
             <p class="text-xs text-slate-500 dark:text-gray-400 mt-2">
-              {{ t('professor.manage.contentEditor.maxFileSize') }}
+              Maximum file size: 10MB
             </p>
           </div>
 
           <!-- Title PT -->
           <div>
             <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">
-              {{ t('professor.manage.contentEditor.materialTitle') }}
+              Título (PT) *
             </label>
             <input
               v-model="formData.title_pt"
               type="text"
               required
               class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all"
-              :placeholder="t('professor.manage.contentEditor.titlePlaceholder')"
+              :placeholder="'Título em português'"
             />
           </div>
 
           <!-- Title EN -->
           <div>
             <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">
-              {{ t('professor.manage.contentEditor.materialTitleEn') }}
+              Title (EN) *
             </label>
             <input
               v-model="formData.title_en"
               type="text"
               required
               class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all"
-              :placeholder="t('professor.manage.contentEditor.titleEnPlaceholder')"
+              :placeholder="'Title in English'"
             />
           </div>
 
           <!-- Module Selection -->
           <div>
             <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">
-              {{ t('professor.manage.materialsTab.linkToModule') }}
+              Link to Module (Optional)
             </label>
             <select
               v-model="formData.module_id"
@@ -238,7 +238,7 @@
               required
               class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all"
             >
-              <option value="">{{ t('professor.manage.materialsTab.selectModule') }}</option>
+              <option value="">General Program Material (No Module)</option>
               <option v-for="module in modules" :key="module.id" :value="module.id">
                 {{ getModuleTitle(module) }}
               </option>
@@ -248,13 +248,13 @@
           <!-- Lesson Selection (optional, shown when module is selected) -->
           <div v-if="formData.module_id">
             <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">
-              {{ t('professor.manage.materialsTab.linkToLesson') }}
+              Link to Lesson (Optional)
             </label>
             <select
               v-model="formData.lesson_id"
               class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all"
             >
-              <option value="">{{ t('professor.manage.materialsTab.moduleMaterialPlaceholder') }}</option>
+              <option value="">Module Specific Material (No Lesson)</option>
               <option v-for="lesson in getModuleLessons(formData.module_id)" :key="lesson.id" :value="lesson.id">
                 {{ getLessonTitle(lesson) }}
               </option>
@@ -268,7 +268,7 @@
               @click="closeModal"
               class="px-6 py-3 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
             >
-              {{ t('professor.manage.contentEditor.cancel') }}
+              Cancel
             </button>
             <button
               type="button"
@@ -276,7 +276,7 @@
               :disabled="modulesStore.loading || !selectedFile"
               class="px-6 py-3 bg-secondary text-black font-bold rounded-xl hover:bg-secondary/90 transition-all shadow-lg hover:shadow-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {{ modulesStore.loading ? t('professor.manage.contentEditor.saving') : t('professor.manage.contentEditor.uploadMaterial') }}
+              {{ modulesStore.loading ? 'Saving...' : 'Upload Material' }}
             </button>
           </div>
         </div>
@@ -299,7 +299,7 @@ const props = defineProps<{
   programId: string
 }>()
 
-const { t, locale: currentLocale } = useLocale()
+const { locale: currentLocale } = useLocale()
 const modulesStore = useModulesStore()
 
 const showModal = ref(false)

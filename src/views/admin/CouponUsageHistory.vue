@@ -12,10 +12,10 @@
           </RouterLink>
           <div>
             <h1 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
-              Histórico de Usos
+              Usage History
             </h1>
             <p class="text-slate-500 dark:text-gray-400 font-medium">
-              Visualize quem e onde os cupons foram aplicados.
+              See who and where coupons were applied.
             </p>
           </div>
         </div>
@@ -29,7 +29,7 @@
             <input
               v-model="search"
               type="text"
-              placeholder="Buscar por código, usuário ou programa..."
+              placeholder="Search by code, user or program..."
               class="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary dark:focus:ring-secondary outline-none transition-all"
             />
           </div>
@@ -42,11 +42,11 @@
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-slate-50 dark:bg-white/5 border-b border-slate-100 dark:border-white/5">
-                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Cupom</th>
-                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Usuário</th>
-                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Programa</th>
-                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Desconto</th>
-                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Data</th>
+                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Coupon</th>
+                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">User</th>
+                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Program</th>
+                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Discount</th>
+                <th class="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Date</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-white/5">
@@ -71,7 +71,7 @@
                       <span v-else class="text-xs font-bold text-slate-400 uppercase">{{ (use.profiles?.nome || 'U').substring(0, 1) }}</span>
                     </div>
                     <div class="flex flex-col min-w-0">
-                      <span class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ use.profiles?.nome || 'Usuário Desconhecido' }}</span>
+                      <span class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ use.profiles?.nome || 'Unknown User' }}</span>
                       <span class="text-[10px] text-slate-400 truncate">{{ use.profiles?.email }}</span>
                     </div>
                   </div>
@@ -104,7 +104,7 @@
                 <td colspan="5" class="p-20 text-center">
                   <div class="flex flex-col items-center justify-center opacity-30 grayscale">
                     <span class="material-icons text-6xl mb-4">history_toggle_off</span>
-                    <p class="text-xl font-bold text-slate-500 dark:text-white uppercase tracking-tighter">Nenhum uso registrado</p>
+                    <p class="text-xl font-bold text-slate-500 dark:text-white uppercase tracking-tighter">No usage records found</p>
                   </div>
                 </td>
               </tr>
@@ -114,7 +114,7 @@
                 <td colspan="5" class="p-20 text-center">
                    <div class="flex flex-col items-center justify-center gap-4 animate-pulse">
                     <div class="w-12 h-12 border-4 border-slate-200 dark:border-white/10 border-t-primary rounded-full animate-spin"></div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Carregando histórico...</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading history...</p>
                   </div>
                 </td>
               </tr>
