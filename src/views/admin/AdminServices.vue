@@ -532,10 +532,7 @@ async function handleSubmit() {
   try {
     submitting.value = true
 
-    const dataToSave = {
-      ...formData.value,
-      preco: formData.value.preco ? Math.round(formData.value.preco * 100) : undefined
-    }
+
 
     if (editingService.value) {
       await adminStore.updateService(editingService.value.id, formData.value)

@@ -164,7 +164,7 @@
 import { computed } from 'vue'
 import type { AdminUser, UserRole } from '@/types/admin'
 import { formatDistanceToNow } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+
 import UserStatusBadge from '@/components/ui/UserStatusBadge.vue'
 import { enUS } from 'date-fns/locale'
 
