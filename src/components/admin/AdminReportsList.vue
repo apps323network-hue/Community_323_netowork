@@ -8,7 +8,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Buscar reports..."
+            placeholder="Search reports..."
             class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           />
         </div>
@@ -18,31 +18,31 @@
           v-model="filterStatus"
           class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
-          <option value="">Todos os status</option>
-          <option value="pending">Pendentes</option>
-          <option value="reviewed">Revisados</option>
-          <option value="resolved">Resolvidos</option>
-          <option value="dismissed">Descartados</option>
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="resolved">Resolved</option>
+          <option value="dismissed">Dismissed</option>
         </select>
         <select
           v-model="filterItemType"
           class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
-          <option value="">Todos os tipos</option>
+          <option value="">All types</option>
           <option value="post">Posts</option>
-          <option value="comment">Comentários</option>
-          <option value="user">Usuários</option>
+          <option value="comment">Comments</option>
+          <option value="user">Users</option>
         </select>
         <select
           v-model="filterReason"
           class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
-          <option value="">Todos os motivos</option>
+          <option value="">All reasons</option>
           <option value="spam">Spam</option>
-          <option value="inappropriate">Inapropriado</option>
-          <option value="harassment">Assédio</option>
+          <option value="inappropriate">Inappropriate</option>
+          <option value="harassment">Harassment</option>
           <option value="fake_news">Fake News</option>
-          <option value="other">Outro</option>
+          <option value="other">Other</option>
         </select>
       </div>
     </div>
@@ -56,7 +56,7 @@
     <div v-else-if="!loading && filteredReports.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10">
       <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-6xl mb-4">report</span>
       <p class="text-slate-600 dark:text-gray-400 font-medium">
-        {{ searchQuery || filterStatus || filterItemType || filterReason ? 'Nenhum report encontrado' : 'Nenhum report cadastrado' }}
+        {{ searchQuery || filterStatus || filterItemType || filterReason ? 'No reports found' : 'No reports registered' }}
       </p>
     </div>
 
@@ -93,7 +93,7 @@
 
             <!-- Preview do conteúdo reportado -->
             <div class="bg-slate-50 dark:bg-surface-card rounded-lg p-4 border border-slate-200 dark:border-white/5 mb-3">
-              <p class="text-slate-600 dark:text-white/60 text-xs mb-2">Conteúdo reportado:</p>
+              <p class="text-slate-600 dark:text-white/60 text-xs mb-2">Reported content:</p>
               <p class="text-slate-700 dark:text-white/80 text-sm line-clamp-2">
                 {{ getReportedItemPreview(report) }}
               </p>
@@ -103,20 +103,20 @@
             <div class="space-y-2 text-sm">
               <div class="flex items-center gap-2 text-slate-600 dark:text-white/60">
                 <span class="material-symbols-outlined text-base">person</span>
-                <span>Reportado por: <span class="text-slate-900 dark:text-white font-medium">{{ report.reporter_name || 'Usuário' }}</span></span>
+                <span>Reported by: <span class="text-slate-900 dark:text-white font-medium">{{ report.reporter_name || 'User' }}</span></span>
               </div>
               <div class="flex items-center gap-2 text-slate-600 dark:text-white/60">
                 <span class="material-symbols-outlined text-base">schedule</span>
                 <span>{{ formatDate(report.created_at) }}</span>
               </div>
               <div v-if="report.description" class="mt-2 p-3 bg-slate-50 dark:bg-surface-card rounded-lg border border-slate-200 dark:border-white/5">
-                <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Descrição:</p>
+                <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Description:</p>
                 <p class="text-slate-700 dark:text-white/80 text-sm">{{ report.description }}</p>
               </div>
               <div v-if="report.resolved_by" class="flex items-center gap-2 text-slate-600 dark:text-white/60 mt-2">
                 <span class="material-symbols-outlined text-base">check_circle</span>
-                <span>Resolvido por: <span class="text-slate-900 dark:text-white font-medium">{{ report.resolver_name || 'Admin' }}</span></span>
-                <span v-if="report.resolved_at" class="text-slate-500 dark:text-white/40">em {{ formatDate(report.resolved_at) }}</span>
+                <span>Resolved by: <span class="text-slate-900 dark:text-white font-medium">{{ report.resolver_name || 'Admin' }}</span></span>
+                <span v-if="report.resolved_at" class="text-slate-500 dark:text-white/40">at {{ formatDate(report.resolved_at) }}</span>
               </div>
             </div>
           </div>
@@ -129,7 +129,7 @@
               class="flex items-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 border border-green-500/30 rounded-lg font-semibold transition-all text-sm"
             >
               <span class="material-symbols-outlined text-base">check_circle</span>
-              <span>Resolver</span>
+              <span>Resolve</span>
             </button>
             <button
               v-if="report.status === 'pending'"
@@ -137,14 +137,14 @@
               class="flex items-center gap-2 px-4 py-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-600 dark:text-gray-400 border border-gray-500/30 rounded-lg font-semibold transition-all text-sm"
             >
               <span class="material-symbols-outlined text-base">close</span>
-              <span>Descartar</span>
+              <span>Dismiss</span>
             </button>
             <button
               @click="$emit('view-details', report.id)"
               class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-surface-lighter hover:bg-slate-200 dark:hover:bg-surface-highlight text-slate-700 dark:text-white border border-slate-200 dark:border-white/10 rounded-lg font-semibold transition-all text-sm"
             >
               <span class="material-symbols-outlined text-base">visibility</span>
-              <span>Ver Detalhes</span>
+              <span>View Details</span>
             </button>
           </div>
         </div>
@@ -215,8 +215,8 @@ const filteredReports = computed(() => {
 function getItemTypeLabel(type: string): string {
   const labels: Record<string, string> = {
     post: 'Post',
-    comment: 'Comentário',
-    user: 'Usuário',
+    comment: 'Comment',
+    user: 'User',
   }
   return labels[type] || type
 }
@@ -232,10 +232,10 @@ function getItemTypeClass(type: string): string {
 
 function getStatusLabel(status: string): string {
   const labels: Record<string, string> = {
-    pending: 'Pendente',
-    reviewed: 'Revisado',
-    resolved: 'Resolvido',
-    dismissed: 'Descartado',
+    pending: 'Pending',
+    reviewed: 'Reviewed',
+    resolved: 'Resolved',
+    dismissed: 'Dismissed',
   }
   return labels[status] || status
 }
@@ -253,10 +253,10 @@ function getStatusClass(status: string): string {
 function getReasonLabel(reason: string): string {
   const labels: Record<string, string> = {
     spam: 'Spam',
-    inappropriate: 'Inapropriado',
-    harassment: 'Assédio',
+    inappropriate: 'Inappropriate',
+    harassment: 'Harassment',
     fake_news: 'Fake News',
-    other: 'Outro',
+    other: 'Other',
   }
   return labels[reason] || reason
 }
@@ -275,9 +275,9 @@ function getReasonClass(reason: string): string {
 function getReportedItemPreview(report: Report): string {
   if (report.reported_item) {
     if (report.reported_item_type === 'post' || report.reported_item_type === 'comment') {
-      return (report.reported_item as any).conteudo || 'Sem conteúdo'
+      return (report.reported_item as any).conteudo || 'No content'
     } else if (report.reported_item_type === 'user') {
-      return (report.reported_item as any).nome || 'Usuário'
+      return (report.reported_item as any).nome || 'User'
     }
   }
   return `ID: ${report.reported_item_id}`
@@ -285,7 +285,7 @@ function getReportedItemPreview(report: Report): string {
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
-  return date.toLocaleDateString('pt-BR', {
+  return date.toLocaleDateString('en-US', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',

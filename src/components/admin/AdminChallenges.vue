@@ -3,15 +3,15 @@
     <!-- Header com botão Adicionar -->
     <div class="flex justify-between items-center">
       <div>
-        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-1">Desafios</h2>
-        <p class="text-slate-600 dark:text-white/60 text-sm">Gerencie desafios para gamificação e engajamento</p>
+        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-1">Challenges</h2>
+        <p class="text-slate-600 dark:text-white/60 text-sm">Manage challenges for gamification and engagement</p>
       </div>
       <button
         @click="showFormModal = true; editingChallenge = null"
         class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
       >
         <span class="material-symbols-outlined">add</span>
-        <span class="hidden sm:inline">Adicionar Desafio</span>
+        <span class="hidden sm:inline">Add Challenge</span>
       </button>
     </div>
 
@@ -23,7 +23,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Buscar desafio..."
+            placeholder="Search challenge..."
             class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           />
         </div>
@@ -33,21 +33,21 @@
           v-model="filterType"
           class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
-          <option value="">Todos os tipos</option>
+          <option value="">All types</option>
           <option value="post">Post</option>
-          <option value="comment">Comentário</option>
-          <option value="event">Evento</option>
-          <option value="connection">Conexão</option>
-          <option value="engagement">Engajamento</option>
-          <option value="other">Outro</option>
+          <option value="comment">Comment</option>
+          <option value="event">Event</option>
+          <option value="connection">Connection</option>
+          <option value="engagement">Engagement</option>
+          <option value="other">Other</option>
         </select>
         <select
           v-model="filterActive"
           class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
-          <option value="">Todos</option>
-          <option value="true">Ativos</option>
-          <option value="false">Inativos</option>
+          <option value="">All</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
         </select>
       </div>
     </div>
@@ -60,7 +60,7 @@
     <div v-else-if="filteredChallenges.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10">
       <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-6xl mb-4">emoji_events</span>
       <p class="text-slate-600 dark:text-gray-400 font-medium">
-        {{ searchQuery || filterType || filterActive ? 'Nenhum desafio encontrado' : 'Nenhum desafio cadastrado' }}
+        {{ searchQuery || filterType || filterActive ? 'No challenges found' : 'No challenges registered' }}
       </p>
     </div>
 
@@ -84,30 +84,30 @@
                 class="px-2 py-1 rounded-full text-xs font-bold"
                 :class="challenge.ativo ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'"
               >
-                {{ challenge.ativo ? 'Ativo' : 'Inativo' }}
+                {{ challenge.ativo ? 'Active' : 'Inactive' }}
               </span>
             </div>
             <p v-if="challenge.descricao" class="text-slate-600 dark:text-white/60 text-sm mb-3">{{ challenge.descricao }}</p>
             <div class="flex items-center gap-4 text-sm text-slate-600 dark:text-white/60">
               <div class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-lg">stars</span>
-                <span class="font-semibold text-primary">{{ challenge.pontos }} pontos</span>
+                <span class="font-semibold text-primary">{{ challenge.pontos }} points</span>
               </div>
               <div v-if="challenge.prazo" class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-lg">schedule</span>
-                <span>Prazo: {{ formatDate(challenge.prazo) }}</span>
+                <span>Deadline: {{ formatDate(challenge.prazo) }}</span>
               </div>
               <div class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-lg">people</span>
-                <span>{{ challenge.total_participants || 0 }} participantes</span>
+                <span>{{ challenge.total_participants || 0 }} participants</span>
               </div>
               <div class="flex items-center gap-1">
                 <span class="material-symbols-outlined text-lg">check_circle</span>
-                <span>{{ challenge.total_completed || 0 }} completados</span>
+                <span>{{ challenge.total_completed || 0 }} completed</span>
               </div>
             </div>
             <p class="text-slate-500 dark:text-white/40 text-xs mt-3">
-              Criado em {{ formatDate(challenge.created_at) }} por {{ challenge.creator_name || 'Admin' }}
+              Created at {{ formatDate(challenge.created_at) }} by {{ challenge.creator_name || 'Admin' }}
             </p>
           </div>
           <div class="flex gap-2">
@@ -133,51 +133,51 @@
     <!-- Modal de Formulário -->
     <Modal
       v-model="showFormModal"
-      :title="editingChallenge ? 'Editar Desafio' : 'Adicionar Desafio'"
+      :title="editingChallenge ? 'Edit Challenge' : 'Add Challenge'"
       size="md"
     >
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Nome do Desafio *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Challenge Name *</label>
           <input
             v-model="formData.nome"
             type="text"
             required
             class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-            placeholder="Ex: Criar 5 posts esta semana"
+            placeholder="Ex: Create 5 posts this week"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Descrição</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Description</label>
           <textarea
             v-model="formData.descricao"
             rows="3"
             class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
-            placeholder="Descreva o desafio em detalhes..."
+            placeholder="Describe the challenge in detail..."
           />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Tipo *</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Type *</label>
             <select
               v-model="formData.tipo"
               required
               class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
             >
-              <option value="">Selecione...</option>
+              <option value="">Select...</option>
               <option value="post">Post</option>
-              <option value="comment">Comentário</option>
-              <option value="event">Evento</option>
-              <option value="connection">Conexão</option>
-              <option value="engagement">Engajamento</option>
-              <option value="other">Outro</option>
+              <option value="comment">Comment</option>
+              <option value="event">Event</option>
+              <option value="connection">Connection</option>
+              <option value="engagement">Engagement</option>
+              <option value="other">Other</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Pontos *</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Points *</label>
             <input
               v-model.number="formData.pontos"
               type="number"
@@ -191,13 +191,13 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Prazo (opcional)</label>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Deadline (optional)</label>
             <input
               v-model="formData.prazo"
               type="datetime-local"
               class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
             />
-            <p class="text-slate-500 dark:text-white/40 text-xs mt-1">Deixe em branco para desafio sem prazo</p>
+            <p class="text-slate-500 dark:text-white/40 text-xs mt-1">Leave blank for no deadline</p>
           </div>
 
           <div>
@@ -209,10 +209,10 @@
                   type="checkbox"
                   class="w-5 h-5 text-primary focus:ring-primary rounded"
                 />
-                <span class="text-slate-900 dark:text-white text-sm">Ativo</span>
+                <span class="text-slate-900 dark:text-white text-sm">Active</span>
               </label>
             </div>
-            <p class="text-slate-500 dark:text-white/40 text-xs mt-1">Desafios inativos não aparecem para usuários</p>
+            <p class="text-slate-500 dark:text-white/40 text-xs mt-1">Inactive challenges do not appear to users</p>
           </div>
         </div>
 
@@ -222,14 +222,14 @@
             :disabled="submitting"
             class="flex-1 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
           >
-            {{ submitting ? 'Salvando...' : (editingChallenge ? 'Salvar Alterações' : 'Adicionar Desafio') }}
+            {{ submitting ? 'Saving...' : (editingChallenge ? 'Save Changes' : 'Add Challenge') }}
           </button>
           <button
             type="button"
             @click="showFormModal = false"
             class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
-            Cancelar
+            Cancel
           </button>
         </div>
       </form>
@@ -238,15 +238,15 @@
     <!-- Modal de Confirmação de Delete -->
     <Modal
       v-model="showDeleteModal"
-      title="Confirmar Exclusão"
+      title="Confirm Delete"
       size="sm"
     >
       <div class="space-y-4">
         <p class="text-slate-700 dark:text-white/80">
-          Tem certeza que deseja remover o desafio <strong class="text-slate-900 dark:text-white">"{{ challengeToDelete?.nome }}"</strong>?
+          Are you sure you want to remove the challenge <strong class="text-slate-900 dark:text-white">"{{ challengeToDelete?.nome }}"</strong>?
         </p>
         <p class="text-slate-600 dark:text-white/60 text-sm">
-          Esta ação não pode ser desfeita. O progresso dos usuários neste desafio será mantido, mas o desafio não estará mais disponível.
+          This action cannot be undone. User progress on this challenge will be kept, but the challenge will no longer be available.
         </p>
         <div class="flex gap-3 pt-4">
           <button
@@ -254,13 +254,13 @@
             :disabled="submitting"
             class="flex-1 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-600 dark:text-red-400 font-medium transition-all disabled:opacity-50"
           >
-            {{ submitting ? 'Deletando...' : 'Deletar' }}
+            {{ submitting ? 'Deleting...' : 'Delete' }}
           </button>
           <button
             @click="showDeleteModal = false"
             class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
-            Cancelar
+            Cancel
           </button>
         </div>
       </div>
@@ -327,11 +327,11 @@ const filteredChallenges = computed(() => {
 function getTypeLabel(tipo: string): string {
   const labels: Record<string, string> = {
     post: 'Post',
-    comment: 'Comentário',
-    event: 'Evento',
-    connection: 'Conexão',
-    engagement: 'Engajamento',
-    other: 'Outro',
+    comment: 'Comment',
+    event: 'Event',
+    connection: 'Connection',
+    engagement: 'Engagement',
+    other: 'Other',
   }
   return labels[tipo] || tipo
 }
@@ -350,7 +350,7 @@ function getTypeClass(tipo: string): string {
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
-  return date.toLocaleDateString('pt-BR', {
+  return date.toLocaleDateString('en-US', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -379,7 +379,7 @@ function confirmDelete(challenge: Challenge) {
 
 async function handleSubmit() {
   if (!formData.value.nome.trim() || !formData.value.tipo || !formData.value.pontos) {
-    toast.error('Por favor, preencha todos os campos obrigatórios')
+    toast.error('Please fill all required fields')
     return
   }
 
@@ -397,16 +397,16 @@ async function handleSubmit() {
 
     if (editingChallenge.value) {
       await adminStore.updateChallenge(editingChallenge.value.id, challengeData)
-      toast.success('Desafio atualizado com sucesso!')
+      toast.success('Challenge updated successfully!')
     } else {
       await adminStore.createChallenge(challengeData)
-      toast.success('Desafio criado com sucesso!')
+      toast.success('Challenge created successfully!')
     }
 
     showFormModal.value = false
     resetForm()
   } catch (error: any) {
-    toast.error(error.message || 'Erro ao salvar desafio')
+    toast.error(error.message || 'Error saving challenge')
     console.error('Error saving challenge:', error)
   } finally {
     submitting.value = false
@@ -419,11 +419,11 @@ async function handleDelete() {
   try {
     submitting.value = true
     await adminStore.deleteChallenge(challengeToDelete.value.id)
-    toast.success('Desafio removido com sucesso!')
+    toast.success('Challenge removed successfully!')
     showDeleteModal.value = false
     challengeToDelete.value = null
   } catch (error: any) {
-    toast.error(error.message || 'Erro ao deletar desafio')
+    toast.error(error.message || 'Error deleting challenge')
     console.error('Error deleting challenge:', error)
   } finally {
     submitting.value = false

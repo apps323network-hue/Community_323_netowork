@@ -26,9 +26,9 @@
       >
         <div class="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-surface-lighter/30">
           <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            {{ t('notifications.notifications') }}
+            Notifications
             <span v-if="unreadCount > 0" class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-black">
-              {{ unreadCount }} {{ t('notifications.new') }}
+              {{ unreadCount }} new
             </span>
           </h3>
           <button 
@@ -36,7 +36,7 @@
             @click="handleMarkAllAsRead"
             class="text-xs text-primary hover:text-primary/80 font-bold transition-colors"
           >
-            {{ t('notifications.markAllAsRead') }}
+            Mark all as read
           </button>
         </div>
 
@@ -49,7 +49,7 @@
             <div class="size-12 rounded-full bg-slate-50 dark:bg-surface-lighter flex items-center justify-center text-slate-400">
               <span class="material-icons-outlined">notifications_off</span>
             </div>
-            <p class="text-sm text-slate-500 dark:text-gray-400">{{ t('notifications.noNotifications') }}</p>
+            <p class="text-sm text-slate-500 dark:text-gray-400">No notifications</p>
           </div>
 
           <div v-else class="divide-y divide-slate-50 dark:divide-white/5">
@@ -89,16 +89,16 @@
     </Transition>
 
     <!-- Mobile Modal -->
-    <Modal v-model="isOpen" :title="t('notifications.notifications')" :closable="true" v-if="isMobile">
+    <Modal v-model="isOpen" title="Notifications" :closable="true" v-if="isMobile">
       <div class="flex items-center justify-between mb-4" v-if="unreadCount > 0">
         <span class="text-sm text-slate-600 dark:text-gray-400">
-          {{ unreadCount }} {{ t('notifications.newNotifications') }}
+          {{ unreadCount }} new notifications
         </span>
         <button 
           @click="handleMarkAllAsRead"
           class="text-xs text-primary hover:text-primary/80 font-bold transition-colors"
         >
-          {{ t('notifications.markAllAsRead') }}
+          Mark all as read
         </button>
       </div>
 
@@ -111,7 +111,7 @@
           <div class="size-12 rounded-full bg-slate-50 dark:bg-surface-lighter flex items-center justify-center text-slate-400">
             <span class="material-icons-outlined">notifications_off</span>
           </div>
-          <p class="text-sm text-slate-500 dark:text-gray-400">{{ t('notifications.noNotifications') }}</p>
+          <p class="text-sm text-slate-500 dark:text-gray-400">No notifications</p>
         </div>
 
         <div v-else class="space-y-2">
@@ -158,10 +158,8 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useNotifications } from '@/composables/useNotifications'
-import { useLocale } from '@/composables/useLocale'
 import Modal from '@/components/ui/Modal.vue'
 
-const { t } = useLocale()
 const router = useRouter()
 const {
   notifications,
@@ -235,11 +233,11 @@ function formatTime(date: string) {
   const postDate = new Date(date)
   const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000)
 
-  if (diffInSeconds < 60) return 'agora'
+  if (diffInSeconds < 60) return 'now'
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`
   if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`
-  return postDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+  return postDate.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' })
 }
 
 function handleClickOutside(event: MouseEvent) {

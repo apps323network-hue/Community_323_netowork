@@ -4,10 +4,10 @@
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
-          <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Desafios</span>
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">Challenges</span>
         </h1>
         <p class="text-slate-600 dark:text-white/60 text-lg">
-          Gerencie desafios para gamificação e engajamento da comunidade
+          Manage challenges for gamification and community engagement
         </p>
       </div>
 
@@ -21,40 +21,40 @@
             </div>
           </div>
           <div class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ challengeStats.total }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">Desafios cadastrados</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Registered Challenges</div>
         </div>
 
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Ativos</span>
+            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Active</span>
             <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">
               <span class="material-symbols-outlined text-slate-500 dark:text-white/50 text-xl">check_circle</span>
             </div>
           </div>
           <div class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ challengeStats.active }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">Desafios ativos</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Active Challenges</div>
         </div>
 
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Participantes</span>
+            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Participants</span>
             <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">
               <span class="material-symbols-outlined text-slate-500 dark:text-white/50 text-xl">people</span>
             </div>
           </div>
           <div class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ challengeStats.totalParticipants }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">Total de participantes</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Total Participants</div>
         </div>
 
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Completados</span>
+            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Completed</span>
             <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">
               <span class="material-symbols-outlined text-slate-500 dark:text-white/50 text-xl">stars</span>
             </div>
           </div>
           <div class="text-4xl font-black text-slate-900 dark:text-white mb-1">{{ challengeStats.totalCompleted }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">Desafios completados</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Completed Challenges</div>
         </div>
       </div>
 

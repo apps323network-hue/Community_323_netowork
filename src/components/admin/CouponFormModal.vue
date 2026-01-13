@@ -8,7 +8,7 @@
       <!-- Code -->
       <div>
         <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
-          Código do Cupom *
+          Coupon Code *
         </label>
         <input
           v-model="formData.code"
@@ -18,7 +18,7 @@
           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary dark:focus:ring-secondary outline-none uppercase"
           required
         />
-        <p class="text-xs text-slate-500 mt-1">Letras maiúsculas e números apenas</p>
+        <p class="text-xs text-slate-500 mt-1">Uppercase letters and numbers only</p>
       </div>
 
       <!-- Description -->
@@ -69,16 +69,16 @@
       <!-- Scope Type -->
       <div>
         <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
-          Aplicável a *
+          Applicable to *
         </label>
         <select
           v-model="formData.scope_type"
           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary dark:focus:ring-secondary outline-none"
           required
         >
-          <option value="all">Todos os Programas</option>
-          <option value="specific_programs">Programas Específicos</option>
-          <option value="category">Categoria de Programa</option>
+          <option value="all">All Programs</option>
+          <option value="specific_programs">Specific Programs</option>
+          <option value="category">Program Category</option>
         </select>
       </div>
 
@@ -129,7 +129,7 @@
               </div>
               
               <span v-if="formData.applicable_programs.includes(program.id)" class="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">
-                Selecionado
+                Selected
               </span>
             </div>
             
@@ -165,17 +165,17 @@
       <!-- Category -->
       <div v-if="formData.scope_type === 'category'">
         <label class="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
-          Categoria
+          Category
         </label>
         <select
           v-model="formData.applicable_category"
           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:ring-2 focus:ring-primary dark:focus:ring-secondary outline-none"
         >
-          <option value="curso">Conteúdo</option>
-          <option value="mentoria">Mentorias</option>
+          <option value="curso">Content</option>
+          <option value="mentoria">Mentorships</option>
           <option value="workshop">Workshops</option>
-          <option value="evento_premium">Eventos Premium</option>
-          <option value="servico_especializado">Serviços</option>
+          <option value="evento_premium">Premium Events</option>
+          <option value="servico_especializado">Services</option>
         </select>
       </div>
 
@@ -401,7 +401,7 @@ async function handleSubmit() {
         .eq('id', props.coupon.id)
 
       if (error) throw error
-      toast.success('Cupom atualizado com sucesso!')
+      toast.success('Coupon updated successfully!')
     } else {
       // Create
       payload.created_by = authStore.user?.id
@@ -411,7 +411,7 @@ async function handleSubmit() {
         .insert(payload)
 
       if (error) throw error
-      toast.success('Cupom criado com sucesso!')
+      toast.success('Coupon created successfully!')
     }
 
     emit('saved')

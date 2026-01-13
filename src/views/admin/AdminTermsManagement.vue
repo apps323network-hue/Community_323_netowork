@@ -7,11 +7,11 @@
           <div>
             <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
               <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">
-                {{ t('adminTermsManagement.pageTitle') }}
+                Manage Terms of Use
               </span>
             </h1>
             <p class="text-slate-600 dark:text-white/60 text-lg">
-              {{ t('adminTermsManagement.description') }}
+              Create and manage the Platform's Terms of Use and Privacy Policies.
             </p>
           </div>
           <Button
@@ -20,7 +20,7 @@
             size="lg"
           >
             <span class="material-symbols-outlined mr-2">add</span>
-            {{ t('adminTermsManagement.createTerm') }}
+            Create Term
           </Button>
         </div>
       </div>
@@ -42,19 +42,19 @@
                   <span class="material-symbols-outlined text-sm">category</span>
                   {{
                     term.term_type === 'terms_of_service'
-                      ? t('adminTermsManagement.termsOfService')
-                      : t('adminTermsManagement.privacyPolicy')
+                      ? 'Terms of Service'
+                      : 'Privacy Policy'
                   }}
                 </span>
                 <span class="flex items-center gap-1">
                   <span class="material-symbols-outlined text-sm">tag</span>
-                  {{ t('adminTermsManagement.version') }} {{ term.version }}
+                  Version {{ term.version }}
                 </span>
                 <span
                   v-if="term.is_active"
                   class="px-2 py-1 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded-full text-xs font-medium"
                 >
-                  {{ t('adminTermsManagement.active') }}
+                  Active
                 </span>
               </div>
             </div>
@@ -62,7 +62,7 @@
 
           <div class="mb-4">
             <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
-              {{ t('adminTermsManagement.createdAt') }}:
+              Created at:
             </p>
             <p class="text-xs text-slate-500 dark:text-slate-500">
               {{ formatDate(term.created_at) }}
@@ -76,7 +76,7 @@
               @click="editTerm(term)"
             >
               <span class="material-symbols-outlined text-sm mr-1">edit</span>
-              {{ t('common.edit') }}
+              Edit
             </Button>
             <Button
               v-if="!term.is_active"
@@ -86,7 +86,7 @@
               :loading="activating === term.id"
             >
               <span class="material-symbols-outlined text-sm mr-1">check_circle</span>
-              {{ t('adminTermsManagement.activate') }}
+              Activate
             </Button>
             <Button
               variant="outline"
@@ -94,7 +94,7 @@
               @click="previewTerm(term)"
             >
               <span class="material-symbols-outlined text-sm mr-1">visibility</span>
-              {{ t('common.view') }}
+              View
             </Button>
           </div>
         </div>
@@ -103,61 +103,64 @@
       <!-- Create/Edit Modal -->
       <Modal
         v-model="showCreateModal"
-        :title="editingTerm ? t('adminTermsManagement.editTerm') : t('adminTermsManagement.createTerm')"
+        :title="editingTerm ? 'Edit Term' : 'Create Term'"
         :closable="true"
-        size="xl"
+        size="4xl"
       >
         <div class="space-y-6 flex flex-col h-full min-h-0">
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTermsManagement.termType') }}
-            </label>
-            <select
-              v-model="termForm.term_type"
-              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
-              :disabled="editingTerm !== null"
-            >
-              <option value="terms_of_service">{{ t('adminTermsManagement.termsOfService') }}</option>
-              <option value="privacy_policy">{{ t('adminTermsManagement.privacyPolicy') }}</option>
-            </select>
-          </div>
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div :class="editingTerm ? 'md:col-span-7' : 'md:col-span-9'">
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+                Title
+              </label>
+              <input
+                v-model="termForm.title"
+                type="text"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Enter term title"
+              />
+            </div>
 
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTermsManagement.title') }}
-            </label>
-            <input
-              v-model="termForm.title"
-              type="text"
-              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
-              :placeholder="t('adminTermsManagement.titlePlaceholder')"
-            />
+            <div class="md:col-span-3">
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+                Term Type
+              </label>
+              <select
+                v-model="termForm.term_type"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="terms_of_service">Terms of Service</option>
+                <option value="privacy_policy">Privacy Policy</option>
+              </select>
+            </div>
+
+            <div v-if="editingTerm" class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+                Version
+              </label>
+              <input
+                v-model.number="termForm.version"
+                type="number"
+                min="1"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
           </div>
 
           <div class="flex-1 min-h-0 flex flex-col">
             <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2 flex-shrink-0">
-              {{ t('adminTermsManagement.content') }}
+              Content
             </label>
             <div class="flex-1 min-h-0">
               <RichTextEditor
                 v-model="termForm.content"
-                :placeholder="t('adminTermsManagement.contentPlaceholder')"
+                placeholder="Enter term content..."
                 max-height="100%"
               />
             </div>
           </div>
 
-          <div v-if="editingTerm">
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTermsManagement.version') }}
-            </label>
-            <input
-              v-model.number="termForm.version"
-              type="number"
-              min="1"
-              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
+
         </div>
 
         <template #footer>
@@ -166,14 +169,14 @@
               variant="outline"
               @click="cancelEdit"
             >
-              {{ t('common.cancel') }}
+              Cancel
             </Button>
             <Button
               variant="primary"
               @click="saveTerm"
               :loading="saving"
             >
-              {{ t('common.save') }}
+              Save
             </Button>
           </div>
         </template>
@@ -198,7 +201,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
+
 import { supabase } from '@/lib/supabase'
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import Button from '@/components/ui/Button.vue'
@@ -208,7 +211,7 @@ import DOMPurify from 'dompurify'
 import { toast } from 'vue-sonner'
 import type { ApplicationTerm } from '@/composables/useTermsAcceptance'
 
-const { t } = useI18n()
+
 
 const terms = ref<ApplicationTerm[]>([])
 const loading = ref(false)
@@ -237,7 +240,7 @@ const sanitizedPreviewContent = computed(() => {
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
-  return date.toLocaleString('pt-BR', {
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -257,8 +260,8 @@ async function fetchTerms() {
     if (error) throw error
     terms.value = data || []
   } catch (err: any) {
-    console.error('Erro ao buscar termos:', err)
-    toast.error(err.message || 'Erro ao buscar termos')
+    console.error('Error fetching terms:', err)
+    toast.error(err.message || 'Error fetching terms')
   } finally {
     loading.value = false
   }
@@ -290,7 +293,7 @@ function cancelEdit() {
 
 async function saveTerm() {
   if (!termForm.value.title || !termForm.value.content) {
-    toast.error(t('adminTermsManagement.fillAllFields'))
+    toast.error('Please fill in all required fields')
     return
   }
 
@@ -308,7 +311,7 @@ async function saveTerm() {
         .eq('id', editingTerm.value.id)
 
       if (error) throw error
-      toast.success(t('adminTermsManagement.termUpdated'))
+      toast.success('Term updated successfully')
     } else {
       // Criar novo termo
       // Buscar última versão do mesmo tipo
@@ -333,14 +336,14 @@ async function saveTerm() {
         })
 
       if (error) throw error
-      toast.success(t('adminTermsManagement.termCreated'))
+      toast.success('Term created successfully')
     }
 
     cancelEdit()
     await fetchTerms()
   } catch (err: any) {
-    console.error('Erro ao salvar termo:', err)
-    toast.error(err.message || 'Erro ao salvar termo')
+    console.error('Error saving term:', err)
+    toast.error(err.message || 'Error saving term')
   } finally {
     saving.value = false
   }
@@ -350,7 +353,7 @@ async function activateTerm(termId: string) {
   activating.value = termId
   try {
     const term = terms.value.find((t) => t.id === termId)
-    if (!term) throw new Error('Termo não encontrado')
+    if (!term) throw new Error('Term not found')
 
     // Desativar todos os termos do mesmo tipo
     const { error: deactivateError } = await supabase
@@ -369,11 +372,11 @@ async function activateTerm(termId: string) {
 
     if (activateError) throw activateError
 
-    toast.success(t('adminTermsManagement.termActivated'))
+    toast.success('Term activated successfully')
     await fetchTerms()
   } catch (err: any) {
-    console.error('Erro ao ativar termo:', err)
-    toast.error(err.message || 'Erro ao ativar termo')
+    console.error('Error activating term:', err)
+    toast.error(err.message || 'Error activating term')
   } finally {
     activating.value = null
   }
@@ -390,8 +393,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Standard CSS replacement for @apply rules to fix linter errors */
 .prose {
-  @apply text-slate-700 dark:text-slate-300;
+  color: #334155; /* text-slate-700 */
+}
+:deep(.dark) .prose {
+  color: #cbd5e1; /* dark:text-slate-300 */
 }
 
 .prose h1,
@@ -400,24 +407,43 @@ onMounted(() => {
 .prose h4,
 .prose h5,
 .prose h6 {
-  @apply text-slate-900 dark:text-white font-bold mt-6 mb-4;
+  color: #0f172a; /* text-slate-900 */
+  font-weight: 700; /* font-bold */
+  margin-top: 1.5rem; /* mt-6 */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+:deep(.dark) .prose h1,
+:deep(.dark) .prose h2,
+:deep(.dark) .prose h3,
+:deep(.dark) .prose h4,
+:deep(.dark) .prose h5,
+:deep(.dark) .prose h6 {
+  color: #ffffff; /* dark:text-white */
 }
 
 .prose p {
-  @apply mb-4 leading-relaxed;
+  margin-bottom: 1rem; /* mb-4 */
+  line-height: 1.625; /* leading-relaxed */
 }
 
 .prose ul,
 .prose ol {
-  @apply mb-4 pl-6;
+  margin-bottom: 1rem; /* mb-4 */
+  padding-left: 1.5rem; /* pl-6 */
 }
 
 .prose li {
-  @apply mb-2;
+  margin-bottom: 0.5rem; /* mb-2 */
 }
 
 .prose a {
-  @apply text-primary hover:text-cyan-300 underline;
+  color: #f425f4; /* text-primary */
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  color: #67e8f9; /* hover:text-cyan-300 */
 }
 
 @keyframes gradient {

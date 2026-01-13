@@ -130,7 +130,7 @@ const menuItems = computed(() => [
     badgeClass: '',
   },
   {
-    path: '/admin/termos-aceites',
+    path: '/admin/termos-aceitos',
     label: 'Terms Acceptance',
     icon: 'description',
     badge: undefined,

@@ -4,15 +4,15 @@
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Assinaturas</h1>
-          <p class="text-slate-600 dark:text-gray-400 mt-1">Gerenciar assinaturas e configurar preços</p>
+          <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Subscriptions</h1>
+          <p class="text-slate-600 dark:text-gray-400 mt-1">Manage subscriptions and configure prices</p>
         </div>
         <button
           @click="showPriceModal = true"
           class="flex items-center gap-2 px-4 py-2.5 bg-primary dark:bg-secondary text-white font-bold rounded-lg hover:opacity-90 transition"
         >
           <span class="material-icons text-lg">settings</span>
-          Configurar Preço
+          Configure Price
         </button>
       </div>
 
@@ -24,7 +24,7 @@
               <span class="material-icons text-green-500 text-xl">check_circle</span>
             </div>
             <div>
-              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Ativas</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Active</p>
               <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.active }}</p>
             </div>
           </div>
@@ -35,7 +35,7 @@
               <span class="material-icons text-yellow-500 text-xl">pending</span>
             </div>
             <div>
-              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Pendentes</p>
+              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Pending</p>
               <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.pending }}</p>
             </div>
           </div>
@@ -98,7 +98,7 @@
           <input 
             v-model="searchQuery"
             type="text"
-            placeholder="Buscar por nome ou e-mail..."
+            placeholder="Search by name or email..."
             class="w-full pl-9 pr-4 py-2 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 text-sm focus:border-secondary focus:ring-0 transition-all"
           />
         </div>
@@ -112,18 +112,18 @@
 
         <div v-else-if="filteredSubscriptions.length === 0" class="py-12 text-center">
           <span class="material-icons text-4xl text-slate-400">inbox</span>
-          <p class="mt-2 text-slate-500 dark:text-gray-400">Nenhuma assinatura encontrada</p>
+          <p class="mt-2 text-slate-500 dark:text-gray-400">No subscriptions found</p>
         </div>
 
         <table v-else class="w-full">
           <thead class="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Usuário</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
               <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Valor</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Período</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Criado em</th>
-              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Ações</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Period</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Created At</th>
+              <th class="px-6 py-3 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200 dark:divide-white/5">
@@ -134,7 +134,7 @@
                     <span class="text-primary font-bold">{{ sub.profile?.nome?.charAt(0) || '?' }}</span>
                   </div>
                   <div>
-                    <p class="font-medium text-slate-900 dark:text-white">{{ sub.profile?.nome || 'Usuário' }}</p>
+                    <p class="font-medium text-slate-900 dark:text-white">{{ sub.profile?.nome || 'User' }}</p>
                     <p class="text-xs text-slate-500">{{ sub.profile?.email || sub.user_id?.slice(0, 8) }}</p>
                   </div>
                 </div>
@@ -149,7 +149,7 @@
               </td>
               <td class="px-6 py-4 text-sm text-slate-500">
                 <template v-if="sub.current_period_end">
-                  até {{ formatDate(sub.current_period_end) }}
+                  to {{ formatDate(sub.current_period_end) }}
                 </template>
                 <template v-else>-</template>
               </td>
@@ -162,7 +162,7 @@
                   @click="confirmCancel(sub)"
                   class="text-red-500 hover:text-red-600 text-sm font-medium"
                 >
-                  Cancelar
+                  Cancel
                 </button>
               </td>
             </tr>
@@ -172,10 +172,10 @@
     </div>
 
     <!-- Price Config Modal -->
-    <Modal v-model="showPriceModal" title="Configurar Preço da Assinatura">
+    <Modal v-model="showPriceModal" title="Configure Subscription Price">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Preço Mensal (em centavos USD)</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Monthly Price (in USD cents)</label>
           <div class="relative">
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
             <input
@@ -187,13 +187,13 @@
             />
           </div>
           <p class="text-xs text-slate-500 mt-1">
-            Valor atual: {{ formatCurrency(priceConfig.price_cents) }} por mês
+            Current value: {{ formatCurrency(priceConfig.price_cents) }} per month
           </p>
         </div>
 
         <div class="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-sm">
           <span class="material-icons text-base align-middle mr-1">warning</span>
-          Alterar o preço afetará apenas novas assinaturas. Assinaturas existentes manterão o valor atual.
+          Changing the price will only affect new subscriptions. Existing subscriptions will keep the current price.
         </div>
 
         <div class="flex gap-3">
@@ -201,14 +201,14 @@
             @click="showPriceModal = false"
             class="flex-1 px-4 py-3 rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-300 font-medium hover:bg-slate-50 dark:hover:bg-white/5"
           >
-            Cancelar
+            Cancel
           </button>
           <button
             @click="savePrice"
             :disabled="savingPrice"
             class="flex-1 px-4 py-3 rounded-lg bg-primary text-white font-bold hover:opacity-90 disabled:opacity-50"
           >
-            {{ savingPrice ? 'Salvando...' : 'Salvar' }}
+            {{ savingPrice ? 'Saving...' : 'Save' }}
           </button>
         </div>
       </div>
@@ -249,11 +249,11 @@ const priceConfig = ref({
 })
 
 const statusFilters = [
-  { value: 'all', label: 'Todas' },
-  { value: 'active', label: 'Ativas' },
-  { value: 'pending', label: 'Pendentes' },
-  { value: 'canceled', label: 'Canceladas' },
-  { value: 'past_due', label: 'Inadimplentes' }
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Active' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'canceled', label: 'Canceled' },
+  { value: 'past_due', label: 'Past Due' }
 ]
 
 const stats = computed(() => {
@@ -293,11 +293,11 @@ const filteredSubscriptions = computed(() => {
 
 function getStatusLabel(status: string) {
   const labels: Record<string, string> = {
-    active: 'Ativa',
-    pending: 'Pendente',
-    canceled: 'Cancelada',
-    past_due: 'Inadimplente',
-    paused: 'Pausada'
+    active: 'Active',
+    pending: 'Pending',
+    canceled: 'Canceled',
+    past_due: 'Past Due',
+    paused: 'Paused'
   }
   return labels[status] || status
 }
@@ -322,7 +322,7 @@ function formatCurrency(cents: number) {
 }
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('pt-BR', {
+  return new Date(date).toLocaleDateString('en-US', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'
@@ -345,7 +345,7 @@ async function fetchSubscriptions() {
     subscriptions.value = data || []
   } catch (error) {
     console.error('Error fetching subscriptions:', error)
-    toast.error('Erro ao carregar assinaturas')
+    toast.error('Error loading subscriptions')
   } finally {
     loading.value = false
   }
@@ -387,18 +387,18 @@ async function savePrice() {
 
     if (error) throw error
     
-    toast.success('Preço atualizado com sucesso!')
+    toast.success('Price updated successfully!')
     showPriceModal.value = false
   } catch (error) {
     console.error('Error saving price:', error)
-    toast.error('Erro ao salvar preço')
+    toast.error('Error saving price')
   } finally {
     savingPrice.value = false
   }
 }
 
 async function confirmCancel(sub: Subscription) {
-  if (!confirm('Tem certeza que deseja cancelar esta assinatura?')) return
+  if (!confirm('Are you sure you want to cancel this subscription?')) return
   
   try {
     const { error } = await supabase
@@ -411,11 +411,11 @@ async function confirmCancel(sub: Subscription) {
 
     if (error) throw error
     
-    toast.success('Assinatura cancelada')
+    toast.success('Subscription canceled')
     await fetchSubscriptions()
   } catch (error) {
     console.error('Error canceling subscription:', error)
-    toast.error('Erro ao cancelar assinatura')
+    toast.error('Error canceling subscription')
   }
 }
 

@@ -3,15 +3,15 @@
     <!-- Header com botão Adicionar -->
     <div class="flex justify-between items-center">
       <div>
-        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-1">Palavras Proibidas</h2>
-        <p class="text-slate-600 dark:text-white/60 text-sm">Gerencie palavras e frases proibidas para moderação automática</p>
+        <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-1">Banned Words</h2>
+        <p class="text-slate-600 dark:text-white/60 text-sm">Manage prohibited words and phrases for automatic moderation</p>
       </div>
       <button
         @click="showFormModal = true; editingWord = null"
         class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
       >
         <span class="material-symbols-outlined">add</span>
-        <span class="hidden sm:inline">Adicionar Palavra</span>
+        <span class="hidden sm:inline">Add Word</span>
       </button>
     </div>
 
@@ -23,7 +23,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Buscar palavra..."
+            placeholder="Search word..."
             class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           />
         </div>
@@ -33,19 +33,19 @@
           v-model="filterCategory"
           class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
-          <option value="">Todas as categorias</option>
+          <option value="">All categories</option>
           <option value="spam">Spam</option>
-          <option value="ofensivo">Ofensivo</option>
-          <option value="outro">Outro</option>
+          <option value="ofensivo">Offensive</option>
+          <option value="outro">Other</option>
         </select>
         <select
           v-model="filterAction"
           class="px-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
-          <option value="">Todas as ações</option>
-          <option value="block">Bloquear</option>
-          <option value="warn">Avisar</option>
-          <option value="replace">Substituir</option>
+          <option value="">All actions</option>
+          <option value="block">Block</option>
+          <option value="warn">Warn</option>
+          <option value="replace">Replace</option>
         </select>
       </div>
     </div>
@@ -58,7 +58,7 @@
     <div v-else-if="filteredWords.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10">
       <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-6xl mb-4">block</span>
       <p class="text-slate-600 dark:text-gray-400 font-medium">
-        {{ searchQuery || filterCategory || filterAction ? 'Nenhuma palavra encontrada' : 'Nenhuma palavra proibida cadastrada' }}
+        {{ searchQuery || filterCategory || filterAction ? 'No words found' : 'No banned words registered' }}
       </p>
     </div>
 
@@ -86,7 +86,7 @@
               </span>
             </div>
             <p class="text-slate-500 dark:text-white/40 text-xs">
-              Criado em {{ formatDate(word.created_at) }}
+              Created at {{ formatDate(word.created_at) }}
             </p>
           </div>
           <div class="flex gap-2">
@@ -112,47 +112,47 @@
     <!-- Modal de Formulário -->
     <Modal
       v-model="showFormModal"
-      :title="editingWord ? 'Editar Palavra Proibida' : 'Adicionar Palavra Proibida'"
+      :title="editingWord ? 'Edit Banned Word' : 'Add Banned Word'"
       size="md"
     >
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Palavra ou Frase *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Word or Phrase *</label>
           <input
             v-model="formData.word"
             type="text"
             required
             class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
-            placeholder="Ex: palavra proibida ou frase completa"
+            placeholder="Ex: forbidden word or full phrase"
           />
-          <p class="text-slate-500 dark:text-white/40 text-xs mt-1">A verificação é case-insensitive</p>
+          <p class="text-slate-500 dark:text-white/40 text-xs mt-1">Verification is case-insensitive</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Categoria *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Category *</label>
           <select
             v-model="formData.category"
             required
             class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           >
-            <option value="">Selecione...</option>
+            <option value="">Select...</option>
             <option value="spam">Spam</option>
-            <option value="ofensivo">Ofensivo</option>
-            <option value="outro">Outro</option>
+            <option value="ofensivo">Offensive</option>
+            <option value="outro">Other</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Ação *</label>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Action *</label>
           <select
             v-model="formData.action"
             required
             class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
           >
-            <option value="">Selecione...</option>
-            <option value="block">Bloquear - Não permite criar o conteúdo</option>
-            <option value="warn">Avisar - Cria como pending para revisão</option>
-            <option value="replace">Substituir - Substitui por asteriscos automaticamente</option>
+            <option value="">Select...</option>
+            <option value="block">Block - Don't allow content creation</option>
+            <option value="warn">Warn - Create as pending for review</option>
+            <option value="replace">Replace - Automatically replace with asterisks</option>
           </select>
         </div>
 
@@ -162,14 +162,14 @@
             :disabled="submitting"
             class="flex-1 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
           >
-            {{ submitting ? 'Salvando...' : (editingWord ? 'Salvar Alterações' : 'Adicionar Palavra') }}
+            {{ submitting ? 'Saving...' : (editingWord ? 'Save Changes' : 'Add Word') }}
           </button>
           <button
             type="button"
             @click="showFormModal = false"
             class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
-            Cancelar
+            Cancel
           </button>
         </div>
       </form>
@@ -178,15 +178,15 @@
     <!-- Modal de Confirmação de Delete -->
     <Modal
       v-model="showDeleteModal"
-      title="Confirmar Exclusão"
+      title="Confirm Delete"
       size="sm"
     >
       <div class="space-y-4">
         <p class="text-slate-700 dark:text-white/80">
-          Tem certeza que deseja remover a palavra <strong class="text-slate-900 dark:text-white">"{{ wordToDelete?.word }}"</strong>?
+          Are you sure you want to remove the word <strong class="text-slate-900 dark:text-white">"{{ wordToDelete?.word }}"</strong>?
         </p>
         <p class="text-slate-600 dark:text-white/60 text-sm">
-          Esta ação não pode ser desfeita.
+          This action cannot be undone.
         </p>
         <div class="flex gap-3 pt-4">
           <button
@@ -194,13 +194,13 @@
             :disabled="submitting"
             class="flex-1 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-red-600 dark:text-red-400 font-medium transition-all disabled:opacity-50"
           >
-            {{ submitting ? 'Deletando...' : 'Deletar' }}
+            {{ submitting ? 'Deleting...' : 'Delete' }}
           </button>
           <button
             @click="showDeleteModal = false"
             class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
           >
-            Cancelar
+            Cancel
           </button>
         </div>
       </div>
@@ -260,8 +260,8 @@ const filteredWords = computed(() => {
 function getCategoryLabel(category: string): string {
   const labels: Record<string, string> = {
     spam: 'Spam',
-    ofensivo: 'Ofensivo',
-    outro: 'Outro',
+    ofensivo: 'Offensive',
+    outro: 'Other',
   }
   return labels[category] || category
 }
@@ -277,9 +277,9 @@ function getCategoryClass(category: string): string {
 
 function getActionLabel(action: string): string {
   const labels: Record<string, string> = {
-    block: 'Bloquear',
-    warn: 'Avisar',
-    replace: 'Substituir',
+    block: 'Block',
+    warn: 'Warn',
+    replace: 'Replace',
   }
   return labels[action] || action
 }
@@ -295,7 +295,7 @@ function getActionClass(action: string): string {
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
-  return date.toLocaleDateString('pt-BR', {
+  return date.toLocaleDateString('en-US', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -319,7 +319,7 @@ function confirmDelete(word: BannedWord) {
 
 async function handleSubmit() {
   if (!formData.value.word.trim() || !formData.value.category || !formData.value.action) {
-    toast.error('Por favor, preencha todos os campos')
+    toast.error('Please fill all fields')
     return
   }
 
@@ -332,20 +332,20 @@ async function handleSubmit() {
         category: formData.value.category as 'spam' | 'ofensivo' | 'outro',
         action: formData.value.action as 'block' | 'warn' | 'replace',
       })
-      toast.success('Palavra atualizada com sucesso!')
+      toast.success('Word updated successfully!')
     } else {
       await adminStore.createBannedWord({
         word: formData.value.word.trim(),
         category: formData.value.category as 'spam' | 'ofensivo' | 'outro',
         action: formData.value.action as 'block' | 'warn' | 'replace',
       })
-      toast.success('Palavra adicionada com sucesso!')
+      toast.success('Word added successfully!')
     }
 
     showFormModal.value = false
     resetForm()
   } catch (error: any) {
-    toast.error(error.message || 'Erro ao salvar palavra')
+    toast.error(error.message || 'Error saving word')
     console.error('Error saving banned word:', error)
   } finally {
     submitting.value = false
@@ -358,11 +358,11 @@ async function handleDelete() {
   try {
     submitting.value = true
     await adminStore.deleteBannedWord(wordToDelete.value.id)
-    toast.success('Palavra removida com sucesso!')
+    toast.success('Word removed successfully!')
     showDeleteModal.value = false
     wordToDelete.value = null
   } catch (error: any) {
-    toast.error(error.message || 'Erro ao deletar palavra')
+    toast.error(error.message || 'Error deleting word')
     console.error('Error deleting banned word:', error)
   } finally {
     submitting.value = false

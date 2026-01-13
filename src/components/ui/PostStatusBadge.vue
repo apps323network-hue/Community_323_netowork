@@ -22,10 +22,10 @@ const props = defineProps<Props>()
 
 const label = computed(() => {
   const labels: Record<PostStatus, string> = {
-    pending: 'Pendente',
-    approved: 'Aprovado',
-    hidden: 'Oculto',
-    removed: 'Removido',
+    pending: 'Pending',
+    approved: 'Approved',
+    hidden: 'Hidden',
+    removed: 'Removed',
     spam: 'Spam',
   }
   return labels[props.status] || props.status

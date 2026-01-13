@@ -330,6 +330,7 @@
         "title": "Services",
         "description": "Find specialized services for Brazilians in the USA.",
         "searchPlaceholder": "Search services...",
+        "publishService": "Publish Service",
         "categories": "Categories",
         "allCategories": "All categories",
         "requestService": "Request Service",

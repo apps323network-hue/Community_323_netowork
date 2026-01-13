@@ -37,7 +37,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-xs text-white/60 mb-1">Mês</label>
+          <label class="block text-xs text-white/60 mb-1">Month</label>
           <div class="relative">
             <select
               v-model="dateTime.month"
@@ -45,7 +45,7 @@
               class="custom-select w-full rounded-lg border border-white/10 bg-surface-dark p-3 pr-10 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none cursor-pointer transition-all hover:border-white/20"
               @change="updateDateTime"
             >
-              <option value="">Mês</option>
+              <option value="">Month</option>
               <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
                 {{ getMonthName(m) }}
               </option>
@@ -145,7 +145,7 @@
     </div>
 
     <div>
-      <label class="block text-sm font-medium text-white mb-2">Imagem (Opcional)</label>
+      <label class="block text-sm font-medium text-white mb-2">Image (Optional)</label>
       
       <!-- Preview da imagem -->
       <div v-if="imagePreview" class="mb-3 relative">
@@ -250,7 +250,7 @@ watch(() => props.dateTime, (newVal) => {
 }, { deep: true })
 
 function formatDate(dateString: string | null) {
-  if (!dateString) return 'Data indefinida'
+  if (!dateString) return 'Undefined date'
   return new Date(dateString).toLocaleDateString('pt-BR')
 }
 

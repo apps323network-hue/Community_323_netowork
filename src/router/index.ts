@@ -139,6 +139,12 @@ const routes: RouteRecordRaw[] = [
     meta: { publicAccess: true },
   },
   {
+    path: '/servicos/:id',
+    name: 'ServiceDetail',
+    component: () => import('@/views/ServiceDetail.vue'),
+    meta: { publicAccess: true },
+  },
+  {
     path: '/meus-servicos',
     name: 'MeusServicos',
     component: () => import('@/views/MeusServicos.vue'),
@@ -334,7 +340,7 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, requiresRole: 'admin' },
   },
   {
-    path: '/admin/termos-aceites',
+    path: '/admin/termos-aceitos',
     name: 'AdminTermsAcceptance',
     component: () => import('@/views/admin/AdminTermsAcceptance.vue'),
     meta: { requiresAuth: true, requiresRole: 'admin' },
@@ -392,22 +398,22 @@ const router = createRouter({
 
 // Guard de autenticação
 router.beforeEach(async (to, _from, next) => {    // O Supabase adiciona type=recovery no hash quando é reset password
-    if (to.path === '/' || to.path === '') {
-      const hash = window.location.hash
-      const hashParams = new URLSearchParams(hash.substring(1))
-      const type = hashParams.get('type')
-      const accessToken = hashParams.get('access_token')
+  if (to.path === '/' || to.path === '') {
+    const hash = window.location.hash
+    const hashParams = new URLSearchParams(hash.substring(1))
+    const type = hashParams.get('type')
+    const accessToken = hashParams.get('access_token')
 
-      if (type === 'recovery' && accessToken) {
-        // Redirecionar para página de reset password PRESERVANDO o hash
-        next({
-          path: '/reset-password',
-          hash: hash, // Crucial: mantém o token para a próxima página
-          replace: true
-        })
-        return
-      }
+    if (type === 'recovery' && accessToken) {
+      // Redirecionar para página de reset password PRESERVANDO o hash
+      next({
+        path: '/reset-password',
+        hash: hash, // Crucial: mantém o token para a próxima página
+        replace: true
+      })
+      return
     }
+  }
   const authStore = useAuthStore()
 
   // Aguardar inicialização do Firebase/Supabase se necessário

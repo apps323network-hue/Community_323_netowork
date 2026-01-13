@@ -49,18 +49,7 @@
             </Button>
           </router-link>
 
-          <router-link to="/brasileiro-nos-eua">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              class="min-w-[180px] border-slate-300 dark:border-white/30 text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 shadow-sm"
-            >
-              <span class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-xl">explore</span>
-                {{ t('errors.explore') }}
-              </span>
-            </Button>
-          </router-link>
+
         </div>
       </div>
     </div>

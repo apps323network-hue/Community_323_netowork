@@ -61,7 +61,7 @@
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">home</span>
-                    Voltar ao Site
+                    Back to Site
                   </RouterLink>
                   <RouterLink
                     to="/perfil"
@@ -69,7 +69,7 @@
                     @click="showUserMenu = false"
                   >
                     <span class="material-symbols-outlined text-[20px]">person</span>
-                    Meu Perfil
+                    My Profile
                   </RouterLink>
                   <div class="border-t border-slate-200 dark:border-white/10 my-1"></div>
                   <button
@@ -77,7 +77,7 @@
                     class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left"
                   >
                     <span class="material-symbols-outlined text-[20px]">logout</span>
-                    Sair
+                    Logout
                   </button>
                 </div>
               </div>

@@ -20,10 +20,7 @@
       </template>
     </div>
 
-    <!-- Arrow on hover -->
-    <div class="absolute top-0 right-0 p-1.5 sm:p-2 md:p-4 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-      <span class="material-symbols-outlined text-secondary text-base sm:text-lg md:text-xl">arrow_outward</span>
-    </div>
+
 
     <div>
       <!-- Icon based on category or default -->
@@ -104,10 +101,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useLocale } from '@/composables/useLocale'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import { useAuthStore } from '@/stores/auth'
 
+const router = useRouter()
 const { locale: currentLocale, t } = useLocale()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 const authStore = useAuthStore()
@@ -188,6 +187,13 @@ function handleAction() {
     showAuthModal('signup')
     return
   }
-  emit('request-service', props.service)
+  
+  // If service has a price, redirect to detail page
+  if (props.service.preco) {
+    router.push(`/servicos/${props.service.id}`)
+  } else {
+    // Otherwise, emit request-service event for free services
+    emit('request-service', props.service)
+  }
 }
 </script>

@@ -6,22 +6,21 @@
         <div>
           <h1 class="text-slate-900 dark:text-white text-4xl lg:text-5xl font-black mb-3">
             <span class="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">
-              {{ t('adminTerms.title') }}
+              Accepted Terms
             </span>
           </h1>
           <p class="text-slate-600 dark:text-white/60 text-lg">
-            {{ t('adminTerms.description') }}
+            Monitor user acceptance logs for security and compliance.
           </p>
         </div>
         <Button
           variant="outline"
           size="sm"
           @click="handleRefresh"
-          :loading="loading"
           class="flex items-center gap-2"
         >
           <span class="material-symbols-outlined">refresh</span>
-          {{ t('common.refresh') }}
+          Refresh
         </Button>
       </div>
 
@@ -29,46 +28,46 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">{{ t('adminTerms.stats.total') }}</span>
+            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Total Acceptances</span>
             <div class="p-2 bg-slate-100 dark:bg-white/5 rounded-lg">
               <span class="material-symbols-outlined text-slate-500 dark:text-white/50 text-xl">description</span>
             </div>
           </div>
           <div class="text-3xl font-black text-slate-900 dark:text-white mb-1">{{ stats.total }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">{{ t('adminTerms.stats.totalDescription') }}</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Total registered acceptances</div>
         </div>
 
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">{{ t('adminTerms.stats.terms') }}</span>
+            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Terms of Service</span>
             <div class="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg">
               <span class="material-symbols-outlined text-primary text-xl">gavel</span>
             </div>
           </div>
           <div class="text-3xl font-black text-slate-900 dark:text-white mb-1">{{ stats.terms_of_service }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">{{ t('adminTerms.stats.termsDescription') }}</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Accepted Terms of Service</div>
         </div>
 
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">{{ t('adminTerms.stats.privacy') }}</span>
+            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Privacy Policy</span>
             <div class="p-2 bg-secondary/10 dark:bg-secondary/20 rounded-lg">
               <span class="material-symbols-outlined text-secondary text-xl">privacy_tip</span>
             </div>
           </div>
           <div class="text-3xl font-black text-slate-900 dark:text-white mb-1">{{ stats.privacy_policy }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">{{ t('adminTerms.stats.privacyDescription') }}</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Accepted Privacy Policies</div>
         </div>
 
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
-            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">{{ t('adminTerms.stats.today') }}</span>
+            <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Today</span>
             <div class="p-2 bg-green-100 dark:bg-green-500/20 rounded-lg">
               <span class="material-symbols-outlined text-green-600 dark:text-green-400 text-xl">today</span>
             </div>
           </div>
           <div class="text-3xl font-black text-slate-900 dark:text-white mb-1">{{ stats.today }}</div>
-          <div class="text-xs text-slate-500 dark:text-white/40">{{ t('adminTerms.stats.todayDescription') }}</div>
+          <div class="text-xs text-slate-500 dark:text-white/40">Acceptances today</div>
         </div>
       </div>
 
@@ -77,21 +76,21 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTerms.filters.type') }}
+              Type
             </label>
             <select
               v-model="filters.term_type"
               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              <option value="">{{ t('common.all') }}</option>
-              <option value="terms_of_service">{{ t('adminTerms.filters.termsOfService') }}</option>
-              <option value="privacy_policy">{{ t('adminTerms.filters.privacyPolicy') }}</option>
+              <option value="">All</option>
+              <option value="terms_of_service">Terms of Service</option>
+              <option value="privacy_policy">Privacy Policy</option>
             </select>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTerms.filters.startDate') }}
+              Start Date
             </label>
             <input
               v-model="filters.start_date"
@@ -102,7 +101,7 @@
 
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTerms.filters.endDate') }}
+              End Date
             </label>
             <input
               v-model="filters.end_date"
@@ -115,10 +114,9 @@
             <Button
               variant="primary"
               @click="applyFilters"
-              :loading="loading"
               full-width
             >
-              {{ t('common.apply') }}
+              Apply Filters
             </Button>
           </div>
         </div>
@@ -131,22 +129,22 @@
             <thead class="bg-slate-50 dark:bg-surface-lighter border-b border-slate-200 dark:border-white/10">
               <tr>
                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-wider">
-                  {{ t('adminTerms.table.user') }}
+                  User
                 </th>
                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-wider">
-                  {{ t('adminTerms.table.term') }}
+                  Term
                 </th>
                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-wider">
-                  {{ t('adminTerms.table.type') }}
+                  Type
                 </th>
                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-wider">
-                  {{ t('adminTerms.table.acceptedAt') }}
+                  Accepted At
                 </th>
                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-wider">
-                  {{ t('adminTerms.table.ipAddress') }}
+                  IP Address
                 </th>
                 <th class="px-6 py-4 text-left text-xs font-bold text-slate-600 dark:text-white/60 uppercase tracking-wider">
-                  {{ t('adminTerms.table.actions') }}
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -157,7 +155,7 @@
               >
                 <td colspan="6" class="px-6 py-12 text-center">
                   <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-                  <p class="mt-4 text-slate-600 dark:text-slate-400">{{ t('common.loading') }}</p>
+                  <p class="mt-4 text-slate-600 dark:text-slate-400">Loading acceptances...</p>
                 </td>
               </tr>
 
@@ -167,7 +165,7 @@
               >
                 <td colspan="6" class="px-6 py-12 text-center">
                   <span class="material-symbols-outlined text-6xl text-slate-400 dark:text-slate-500 mb-4">description</span>
-                  <p class="text-slate-600 dark:text-slate-400">{{ t('adminTerms.noAcceptances') }}</p>
+                  <p class="text-slate-600 dark:text-slate-400">No acceptances found.</p>
                 </td>
               </tr>
 
@@ -197,7 +195,7 @@
                     {{ acceptance.term?.title || 'N/A' }}
                   </div>
                   <div class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ t('adminTerms.table.version') }} {{ acceptance.term?.version || 'N/A' }}
+                    Version {{ acceptance.term?.version || 'N/A' }}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -211,8 +209,8 @@
                   >
                     {{
                       acceptance.term_type === 'terms_of_service'
-                        ? t('adminTerms.filters.termsOfService')
-                        : t('adminTerms.filters.privacyPolicy')
+                        ? 'Terms of Service'
+                        : 'Privacy Policy'
                     }}
                   </span>
                 </td>
@@ -230,7 +228,7 @@
                     :disabled="downloadingPDF === acceptance.id"
                   >
                     <span class="material-symbols-outlined text-sm mr-1">download</span>
-                    {{ t('adminTerms.downloadPDF') }}
+                    Download PDF
                   </Button>
                 </td>
               </tr>
@@ -245,14 +243,12 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import Button from '@/components/ui/Button.vue'
 import { useAdminTermsAcceptanceStore } from '@/stores/admin/termsAcceptance'
 import { toast } from 'vue-sonner'
 
-const { t } = useI18n()
 const route = useRoute()
 const store = useAdminTermsAcceptanceStore()
 
@@ -272,7 +268,7 @@ const filters = ref<{
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
-  return date.toLocaleString('pt-BR', {
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -297,9 +293,9 @@ async function handleDownloadPDF(acceptanceId: string) {
   downloadingPDF.value = acceptanceId
   try {
     await store.downloadAcceptancePDF(acceptanceId)
-    toast.success(t('adminTerms.pdfDownloaded'))
+    toast.success('PDF downloaded successfully')
   } catch (error: any) {
-    toast.error(error.message || t('adminTerms.pdfError'))
+    toast.error(error.message || 'Error downloading PDF')
   } finally {
     downloadingPDF.value = null
   }
@@ -322,7 +318,7 @@ async function handleRefresh() {
     ])
     // Removido toast de sucesso conforme solicitado
   } catch (error: any) {
-    toast.error(error.message || t('common.refreshError'))
+    toast.error(error.message || 'Error refreshing data')
   }
 }
 
@@ -330,7 +326,7 @@ async function handleRefresh() {
 watch(
   () => route.path,
   async (newPath) => {
-    if (newPath === '/admin/termos-aceites') {
+    if (newPath === '/admin/termos-aceitos') {
       // Sempre recarregar quando acessar a página
       await handleRefresh()
     }

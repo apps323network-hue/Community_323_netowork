@@ -5,9 +5,9 @@
         <div class="bg-secondary/10 p-6 rounded-full w-fit mx-auto mb-6">
           <span class="material-symbols-outlined text-5xl text-secondary">edit_note</span>
         </div>
-        <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">{{ t('professor.manage.contentEditor.selectItem') }}</h3>
+        <h3 class="text-xl font-black text-slate-900 dark:text-white mb-2">Select an item to edit</h3>
         <p class="text-slate-500 dark:text-gray-400 text-sm font-medium">
-          {{ t('professor.manage.contentEditor.selectItemDesc') }}
+          Choose a module or lesson from the sidebar to manage its content.
         </p>
       </div>
     </div>
@@ -25,14 +25,14 @@
         <div class="flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest overflow-hidden">
           <span class="truncate">{{ programName }}</span>
           <span class="material-symbols-outlined text-sm flex-shrink-0">chevron_right</span>
-          <span class="text-secondary flex-shrink-0">{{ isCreating ? t('professor.manage.contentEditor.new') : t('professor.manage.contentEditor.editing') }} {{ mode === 'module' ? t('professor.manage.contentEditor.module') : t('professor.manage.contentEditor.lesson') }}</span>
+          <span class="text-secondary flex-shrink-0">{{ isCreating ? 'New' : 'Editing' }} {{ mode === 'module' ? 'Module' : 'Lesson' }}</span>
         </div>
       </div>
 
       <!-- Editor Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 sm:mb-10 gap-6">
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-tight">
-          {{ mode === 'module' ? t('professor.manage.contentEditor.moduleSettings') : t('professor.manage.contentEditor.lessonDetails') }}
+          {{ mode === 'module' ? 'Module Settings' : 'Lesson Details' }}
         </h2>
         <div class="flex gap-3 sm:gap-4">
           <button 
@@ -40,7 +40,7 @@
             @click.prevent="$emit('cancel')" 
             class="flex-1 sm:flex-none px-4 sm:px-6 py-3 sm:py-2 rounded-xl font-bold text-slate-600 dark:text-gray-400 bg-white dark:bg-white/5 sm:bg-transparent border border-slate-200 dark:border-white/10 sm:border-0 hover:bg-slate-200 dark:hover:bg-white/10 transition-all text-sm sm:text-base"
           >
-            {{ t('professor.manage.contentEditor.cancel') }}
+            Cancel
           </button>
           <button 
             type="button"
@@ -48,7 +48,7 @@
             :disabled="loading"
             class="flex-[2] sm:flex-none px-6 sm:px-8 py-3 sm:py-2 bg-secondary text-black font-black rounded-xl hover:bg-secondary/90 shadow-lg shadow-secondary/20 transition-all disabled:opacity-50 text-sm sm:text-base"
           >
-            {{ loading ? t('professor.manage.contentEditor.saving') : t('professor.manage.contentEditor.save') }}
+            {{ loading ? 'Saving...' : 'Save' }}
           </button>
         </div>
       </div>
@@ -59,28 +59,28 @@
           <!-- Shared Fields for both Module and Lesson -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.titlePt') }}</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Título (PT) *</label>
               <input 
                 v-model="formData.title_pt" 
                 type="text" 
                 class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium"
-                :placeholder="t('professor.manage.contentEditor.titlePlaceholder')"
+                :placeholder="'Título em português'"
               />
             </div>
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.titleEn') }}</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Title (EN) *</label>
               <input 
                 v-model="formData.title_en" 
                 type="text" 
                 class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-medium"
-                :placeholder="t('professor.manage.contentEditor.titleEnPlaceholder')"
+                :placeholder="'Title in English'"
               />
             </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.descriptionPt') }}</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Descrição (PT)</label>
               <textarea 
                 v-model="formData.description_pt" 
                 rows="3"
@@ -88,7 +88,7 @@
               ></textarea>
             </div>
             <div class="space-y-2">
-              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">{{ t('professor.manage.contentEditor.descriptionEn') }}</label>
+              <label class="block text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-wider">Description (EN)</label>
               <textarea 
                 v-model="formData.description_en" 
                 rows="3"
@@ -101,7 +101,7 @@
           <div v-if="mode === 'lesson'" class="pt-8 border-t border-slate-100 dark:border-white/5 space-y-8">
             <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
               <span class="material-symbols-outlined text-secondary">video_library</span>
-              {{ t('professor.manage.contentEditor.videoContent') }}
+              Video Content
             </h3>
 
             <!-- YouTube Video Section -->
@@ -116,7 +116,7 @@
                     videoSource === 'link' ? 'bg-white dark:bg-surface-dark text-secondary shadow-md' : 'text-slate-500'
                   ]"
                 >
-                  {{ t('professor.manage.contentEditor.pasteLink') }}
+                  Paste Link
                 </button>
                 <button 
                   type="button"
@@ -126,7 +126,7 @@
                     videoSource === 'upload' ? 'bg-white dark:bg-surface-dark text-secondary shadow-md' : 'text-slate-500'
                   ]"
                 >
-                  {{ t('professor.manage.contentEditor.upload') }}
+                  Upload Video
                 </button>
                 <button 
                   type="button"
@@ -136,7 +136,7 @@
                     videoSource === 'none' ? 'bg-white dark:bg-surface-dark text-secondary shadow-md' : 'text-slate-500'
                   ]"
                 >
-                  Sem Vídeo
+                  No Video
                 </button>
               </div>
               
@@ -144,7 +144,7 @@
               <div v-if="videoSource === 'none'" class="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
                 <p class="text-sm text-amber-400 flex items-center gap-2">
                   <span class="material-symbols-outlined text-sm">info</span>
-                  Esta aula será criada sem vídeo. O conteúdo estará disponível apenas na descrição e materiais.
+                  This lesson will be created without a video. Content will only be available in the description and materials.
                 </p>
               </div>
 
@@ -157,7 +157,7 @@
                       type="text" 
                       @input="handleVideoIdInput"
                       class="w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl pl-12 pr-4 py-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-secondary outline-none transition-all font-bold"
-                      :placeholder="t('professor.manage.contentEditor.youtubePlaceholder')"
+                      :placeholder="'Paste YouTube video link (e.g., https://youtu.be/...)'"
                     />
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">smart_display</span>
                   </div>
@@ -168,7 +168,7 @@
                     class="px-6 bg-slate-900 text-white dark:bg-white dark:text-black rounded-xl font-black hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2 disabled:opacity-50"
                   >
                     <span class="material-symbols-outlined text-sm" :class="{ 'animate-spin': fetchingMetadata }">{{ fetchingMetadata ? 'sync' : 'auto_fix' }}</span>
-                    {{ fetchingMetadata ? t('professor.manage.contentEditor.fetching') : t('professor.manage.contentEditor.autoFill') }}
+                    {{ fetchingMetadata ? 'Fetching...' : 'Auto-Fill Info' }}
                   </button>
                 </div>
               </div>
@@ -198,7 +198,7 @@
                         <span class="material-symbols-outlined text-6xl text-green-500 animate-in zoom-in duration-500">check_circle</span>
                       </div>
                       <div class="space-y-2">
-                        <h3 class="text-xl font-black text-slate-900 dark:text-white">{{ t('programs.youtubeUpload.uploadSuccessTitle') || 'Upload Concluído!' }}</h3>
+                        <h3 class="text-xl font-black text-slate-900 dark:text-white">Upload Completed!</h3>
                         <p class="text-sm text-slate-600 dark:text-slate-400 font-medium max-w-xs mx-auto">
                           {{ uploadState.message }}
                         </p>
@@ -208,7 +208,7 @@
                         type="button"
                         class="text-secondary text-xs font-black uppercase tracking-widest hover:underline pt-2"
                       >
-                        {{ t('programs.youtubeUpload.uploadAnother') || 'Enviar outro vídeo' }}
+                        Upload another video
                       </button>
                     </div>
                   </div>
@@ -219,15 +219,15 @@
                       <span class="material-symbols-outlined text-4xl text-secondary">cloud_upload</span>
                     </div>
                     <div>
-                      <p class="text-slate-900 dark:text-white font-black">{{ t('programs.youtubeUpload.dragDropTitle') }}</p>
-                      <p class="text-slate-500 dark:text-gray-400 text-xs mt-1">{{ t('programs.youtubeUpload.dragDropSubtitle') }}</p>
+                      <p class="text-slate-900 dark:text-white font-black">Drag and Drop Video</p>
+                      <p class="text-slate-500 dark:text-gray-400 text-xs mt-1">MP4, MOV, or WEBM up to 2GB</p>
                     </div>
                   </div>
 
                   <!-- Uploading State -->
                   <div v-else class="space-y-6">
                     <div class="flex items-center justify-between text-sm font-black mb-2">
-                       <span class="text-slate-900 dark:text-white uppercase tracking-wider">{{ uploadState.progress === 100 ? t('programs.youtubeUpload.finishingStatus') : t('programs.youtubeUpload.uploadingStatus') }}</span>
+                       <span class="text-slate-900 dark:text-white uppercase tracking-wider">{{ uploadState.progress === 100 ? 'Finishing...' : 'Uploading...' }}</span>
                        <span class="text-secondary">{{ uploadState.progress }}%</span>
                     </div>
                     <div class="w-full h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
@@ -258,8 +258,8 @@
                   </div>
                 </div>
                 <div class="flex-1 space-y-2">
-                  <p class="text-[10px] font-black uppercase text-secondary tracking-widest">{{ t('professor.manage.contentEditor.previewVideo') }}</p>
-                  <p class="font-black text-lg line-clamp-1">{{ formData.title_pt || t('professor.manage.contentEditor.videoTitlePlaceholder') }}</p>
+                  <p class="text-[10px] font-black uppercase text-secondary tracking-widest">Video Preview</p>
+                  <p class="font-black text-lg line-clamp-1">{{ formData.title_pt || 'Video Title' }}</p>
                   <div class="flex items-center gap-4 text-xs font-bold text-slate-400">
                     <span class="flex items-center gap-1">
                       <span class="material-symbols-outlined text-sm">schedule</span>
@@ -280,8 +280,8 @@
                     <span class="material-symbols-outlined text-secondary">visibility</span>
                   </div>
                   <div>
-                    <h4 class="text-sm font-black text-slate-900 dark:text-white">{{ t('professor.manage.contentEditor.allowPreview') }}</h4>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase">{{ t('professor.manage.contentEditor.allowPreviewDesc') }}</p>
+                    <h4 class="text-sm font-black text-slate-900 dark:text-white">Allow Free Preview</h4>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">Make this lesson available for free (without login/payment)</p>
                   </div>
                </div>
                <input 
@@ -297,9 +297,9 @@
                 <div>
                   <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary">description</span>
-                    {{ t('professor.manage.contentEditor.materials') }}
+                    Support Materials
                   </h3>
-                  <p class="text-xs text-slate-500 mt-1">{{ t('professor.manage.contentEditor.materialsDesc') }}</p>
+                  <p class="text-xs text-slate-500 mt-1">PDFs and downloadable files for students</p>
                 </div>
                 <button
                   type="button"
@@ -307,7 +307,7 @@
                   class="px-4 py-2 bg-primary text-white dark:bg-secondary dark:text-black font-bold rounded-xl hover:opacity-90 transition-all text-sm flex items-center gap-2"
                 >
                   <span class="material-symbols-outlined text-sm">add</span>
-                  {{ t('professor.manage.contentEditor.addMaterial') }}
+                  Add Material
                 </button>
               </div>
 
@@ -332,7 +332,7 @@
                       @click="downloadMaterial(material)"
                       type="button"
                       class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
-                      :title="t('common.download')"
+                      :title="'Download'"
                     >
                       <span class="material-symbols-outlined text-sm">download</span>
                     </button>
@@ -341,7 +341,7 @@
               </div>
               <div v-else class="text-center py-8 bg-slate-50 dark:bg-black/20 rounded-xl border border-dashed border-slate-200 dark:border-white/10">
                 <span class="material-symbols-outlined text-slate-300 dark:text-gray-700 text-4xl mb-2">folder_open</span>
-                <p class="text-sm text-slate-500 font-medium">{{ t('professor.manage.contentEditor.noMaterials') }}</p>
+                <p class="text-sm text-slate-500 font-medium">No materials added yet.</p>
               </div>
             </div>
           </div>
@@ -361,7 +361,7 @@
   >
     <div class="bg-white dark:bg-surface-dark rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-white/10">
       <div class="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between">
-        <h3 class="text-xl font-black text-slate-900 dark:text-white">{{ t('professor.manage.contentEditor.addMaterial') }}</h3>
+        <h3 class="text-xl font-black text-slate-900 dark:text-white">Add Material</h3>
         <button
           @click="showMaterialUpload = false"
           class="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
@@ -372,7 +372,7 @@
 
       <form @submit.prevent="handleMaterialUpload" class="p-6 space-y-4">
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">{{ t('professor.manage.contentEditor.titlePdf') }}</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">PDF File</label>
           <input
             type="file"
             accept=".pdf"
@@ -380,11 +380,11 @@
             required
             class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-black/40 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
           />
-          <p class="text-xs text-slate-500 dark:text-gray-400 mt-2">{{ t('professor.manage.contentEditor.maxFileSize') }}</p>
+          <p class="text-xs text-slate-500 dark:text-gray-400 mt-2">Maximum file size: 10MB</p>
         </div>
 
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">{{ t('professor.manage.contentEditor.materialTitle') }}</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Título (PT) *</label>
           <input
             v-model="materialFormData.title_pt"
             type="text"
@@ -395,7 +395,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">{{ t('professor.manage.contentEditor.materialTitleEn') }}</label>
+          <label class="block text-sm font-bold text-slate-700 dark:text-gray-300 mb-2">Title (EN) *</label>
           <input
             v-model="materialFormData.title_en"
             type="text"
@@ -411,14 +411,14 @@
             @click="showMaterialUpload = false"
             class="px-6 py-3 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
           >
-            {{ t('professor.manage.contentEditor.cancel') }}
+            Cancel
           </button>
           <button
             type="submit"
             :disabled="uploadingMaterial || !materialFile"
             class="px-6 py-3 bg-primary text-white dark:bg-secondary dark:text-black font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ uploadingMaterial ? t('professor.manage.contentEditor.saving') : t('professor.manage.contentEditor.uploadMaterial') }}
+            {{ uploadingMaterial ? 'Saving...' : 'Upload Material' }}
           </button>
         </div>
       </form>
@@ -555,11 +555,11 @@ async function fetchYouTubeMetadata() {
       
       console.log('Metadata synced from n8n:', details)
       
-      toast.success(t('programs.youtubeUpload.metadataSynced') || 'Metadados sincronizados!')
+      toast.success('Metadata synced!')
     }
   } catch (err) {
     console.error('Error fetching youtube metadata:', err)
-    toast.error('Erro ao buscar metadados do vídeo')
+    toast.error('Error fetching video metadata')
   } finally {
     fetchingMetadata.value = false
   }
@@ -635,14 +635,14 @@ async function startYouTubeUpload(file: File) {
       (progress) => {
         uploadState.value.progress = progress
         if (progress === 100) {
-          toast.info(t('programs.youtubeUpload.finishingStatus') || 'Finalizando...')
+          toast.info('Finishing...')
         }
       }
     )
 
     if (response.success) {
       uploadState.value.status = 'success'
-      uploadState.value.message = t('programs.youtubeUpload.uploadSuccess')
+      uploadState.value.message = 'Upload successful!'
       uploadState.value.progress = 100
       
       console.log('Upload success state:', uploadState.value)
@@ -653,16 +653,16 @@ async function startYouTubeUpload(file: File) {
   } catch (err: any) {
     console.error('Upload error:', err)
     uploadState.value.status = 'error'
-    uploadState.value.message = t('programs.youtubeUpload.uploadError')
+    uploadState.value.message = 'Upload error'
     uploadState.value.isUploading = false
-    toast.error('Erro no upload: ' + (err.message || 'Erro desconhecido'))
+    toast.error('Upload failed: ' + (err.message || 'Unknown error'))
   }
 }
 
 
 function formatDuration(seconds: number | null) {
   if (seconds === null || seconds === undefined) {
-    return t('programs.youtubeUpload.processing') || 'Processando...'
+    return 'Processing...'
   }
   const hours = Math.floor(seconds / 3600)
   const mins = Math.floor((seconds % 3600) / 60)

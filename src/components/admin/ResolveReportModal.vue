@@ -1,11 +1,11 @@
 <template>
-  <Modal v-model="isOpen" title="Resolver Report" size="lg">
+  <Modal v-model="isOpen" title="Resolve Report" size="lg">
     <div class="space-y-6">
       <!-- Informações do Report -->
       <div class="bg-slate-50 dark:bg-surface-card rounded-lg p-4 border border-slate-200 dark:border-white/5">
         <div class="space-y-3">
           <div>
-            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Tipo de Item</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Type of Item</p>
             <span
               class="inline-block px-2 py-1 rounded-full text-xs font-bold"
               :class="getItemTypeClass(report?.reported_item_type || '')"
@@ -14,7 +14,7 @@
             </span>
           </div>
           <div>
-            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Motivo</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Reason</p>
             <span
               class="inline-block px-2 py-1 rounded-full text-xs font-bold"
               :class="getReasonClass(report?.reason || '')"
@@ -23,11 +23,11 @@
             </span>
           </div>
           <div>
-            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Reportado por</p>
-            <p class="text-slate-900 dark:text-white font-medium">{{ report?.reporter_name || 'Usuário' }}</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Reported by</p>
+            <p class="text-slate-900 dark:text-white font-medium">{{ report?.reporter_name || 'User' }}</p>
           </div>
           <div v-if="report?.description">
-            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Descrição</p>
+            <p class="text-slate-600 dark:text-white/60 text-xs mb-1">Description</p>
             <p class="text-slate-700 dark:text-white/80 text-sm">{{ report.description }}</p>
           </div>
         </div>
@@ -35,7 +35,7 @@
 
       <!-- Preview do Item Reportado -->
       <div class="bg-slate-50 dark:bg-surface-card rounded-lg p-4 border border-slate-200 dark:border-white/5">
-        <p class="text-slate-600 dark:text-white/60 text-xs mb-3">Conteúdo Reportado:</p>
+        <p class="text-slate-600 dark:text-white/60 text-xs mb-3">Reported Content:</p>
         <div v-if="report?.reported_item">
           <div v-if="report.reported_item_type === 'post' || report.reported_item_type === 'comment'">
             <p class="text-slate-700 dark:text-white/80 text-sm whitespace-pre-line">{{ (report.reported_item as any).conteudo }}</p>
@@ -63,7 +63,7 @@
                 />
               </div>
               <div>
-                <p class="text-slate-900 dark:text-white font-medium">{{ (report.reported_item as any).nome || 'Usuário' }}</p>
+                <p class="text-slate-900 dark:text-white font-medium">{{ (report.reported_item as any).nome || 'User' }}</p>
                 <p class="text-slate-600 dark:text-white/60 text-xs">{{ (report.reported_item as any).email || '' }}</p>
                 <p class="text-slate-600 dark:text-white/60 text-xs">{{ (report.reported_item as any).area_atuacao || '' }}</p>
               </div>
@@ -71,13 +71,13 @@
           </div>
         </div>
         <div v-else class="text-slate-500 dark:text-white/40 text-sm">
-          Carregando conteúdo...
+          Loading content...
         </div>
       </div>
 
       <!-- Seleção de Ação -->
       <div>
-        <label class="block text-slate-900 dark:text-white/80 text-sm font-semibold mb-3">Ação a Tomar *</label>
+        <label class="block text-slate-900 dark:text-white/80 text-sm font-semibold mb-3">Action to Take *</label>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             :class="[
@@ -89,7 +89,7 @@
             @click="action = 'remove_content'"
           >
             <span class="material-symbols-outlined text-lg">delete</span>
-            Remover Conteúdo
+            Remove Content
           </button>
           <button
             :class="[
@@ -101,7 +101,7 @@
             @click="action = 'ban_user'"
           >
             <span class="material-symbols-outlined text-lg">person_off</span>
-            Banir Usuário
+            Ban User
           </button>
           <button
             :class="[
@@ -113,19 +113,19 @@
             @click="action = 'dismiss'"
           >
             <span class="material-symbols-outlined text-lg">close</span>
-            Descartar Report
+            Dismiss Report
           </button>
         </div>
       </div>
 
       <!-- Campo de Detalhes -->
       <div v-if="action && action !== 'dismiss'">
-        <label class="block text-slate-900 dark:text-white/80 text-sm font-semibold mb-2">Detalhes (opcional)</label>
+        <label class="block text-slate-900 dark:text-white/80 text-sm font-semibold mb-2">Details (optional)</label>
         <textarea
           v-model="details"
           rows="3"
           class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
-          placeholder="Adicione observações sobre a ação tomada..."
+          placeholder="Add comments about the action taken..."
         />
       </div>
 
@@ -135,9 +135,9 @@
         <div class="flex items-start gap-2">
           <span class="material-symbols-outlined text-red-400 text-lg">warning</span>
           <div class="flex-1">
-            <p class="text-red-400 text-sm font-semibold">Ação Destrutiva</p>
+            <p class="text-red-400 text-sm font-semibold">Destructive Action</p>
             <p class="text-red-400/80 text-xs mt-1">
-              {{ action === 'ban_user' ? 'Banir o usuário é uma ação permanente e não pode ser desfeita facilmente.' : 'Remover o conteúdo é uma ação permanente e não pode ser desfeita.' }}
+              {{ action === 'ban_user' ? 'Banning the user is a permanent action and cannot be easily undone.' : 'Removing content is a permanent action and cannot be undone.' }}
             </p>
           </div>
         </div>
@@ -155,14 +155,14 @@
           @click="isOpen = false"
           class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
         >
-          Cancelar
+          Cancel
         </button>
         <button
           @click="handleSubmit"
           :disabled="!action || processing"
           class="px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ processing ? 'Processando...' : 'Confirmar Ação' }}
+          {{ processing ? 'Processing...' : 'Confirm Action' }}
         </button>
       </div>
     </template>
@@ -234,8 +234,8 @@ async function loadReportDetails() {
 function getItemTypeLabel(type: string): string {
   const labels: Record<string, string> = {
     post: 'Post',
-    comment: 'Comentário',
-    user: 'Usuário',
+    comment: 'Comment',
+    user: 'User',
   }
   return labels[type] || type
 }
@@ -252,10 +252,10 @@ function getItemTypeClass(type: string): string {
 function getReasonLabel(reason: string): string {
   const labels: Record<string, string> = {
     spam: 'Spam',
-    inappropriate: 'Inapropriado',
-    harassment: 'Assédio',
+    inappropriate: 'Inappropriate',
+    harassment: 'Harassment',
     fake_news: 'Fake News',
-    other: 'Outro',
+    other: 'Other',
   }
   return labels[reason] || reason
 }
@@ -273,7 +273,7 @@ function getReasonClass(reason: string): string {
 
 async function handleSubmit() {
   if (!action.value || !props.report) {
-    error.value = 'Por favor, selecione uma ação'
+    error.value = 'Please select an action'
     return
   }
 
@@ -283,7 +283,7 @@ async function handleSubmit() {
   try {
     if (action.value === 'dismiss') {
       await adminStore.dismissReport(props.report.id, details.value || undefined)
-      toast.success('Report descartado com sucesso!')
+      toast.success('Report dismissed successfully!')
     } else {
       const resolveInput: ReportResolveInput = {
         action: action.value,
@@ -291,13 +291,13 @@ async function handleSubmit() {
       }
 
       await adminStore.resolveReport(props.report.id, resolveInput)
-      toast.success('Report resolvido com sucesso!')
+      toast.success('Report resolved successfully!')
     }
 
     isOpen.value = false
     emit('resolved')
   } catch (err: any) {
-    error.value = err.message || 'Erro ao resolver report. Tente novamente.'
+    error.value = err.message || 'Error resolving report. Please try again.'
     console.error('Error resolving report:', err)
   } finally {
     processing.value = false
