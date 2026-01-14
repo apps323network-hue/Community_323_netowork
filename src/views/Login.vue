@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-background-dark">
+  <div class="min-h-screen bg-slate-50 dark:bg-background-dark overflow-x-hidden">
     <!-- Login Content -->
   <div
       class="flex min-h-screen relative text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-primary selection:text-white"
@@ -52,12 +52,15 @@
     <div
       class="w-full lg:w-1/2 flex flex-col justify-start items-center p-6 sm:p-8 bg-white dark:bg-background-dark relative overflow-y-auto"
     >
-      <div
-        class="lg:hidden absolute top-[-20%] left-[-20%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px]"
-      ></div>
-      <div
-        class="lg:hidden absolute bottom-[-20%] right-[-20%] w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px]"
-      ></div>
+      <!-- Background Blobs Wrapper -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div
+          class="lg:hidden absolute top-[-20%] left-[-20%] w-[400px] h-[400px] bg-primary/20 rounded-full blur-[100px]"
+        ></div>
+        <div
+          class="lg:hidden absolute bottom-[-20%] right-[-20%] w-[400px] h-[400px] bg-secondary/20 rounded-full blur-[100px]"
+        ></div>
+      </div>
       
       <!-- Theme and Language Controls -->
       <div class="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-3 z-20">

@@ -10,7 +10,7 @@
       </div>
       
       <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 max-w-md mx-auto px-2 font-medium">
-        Conectando a comunidade brasileira através de negócios, cultura e inovação. Junte-se à revolução neon.
+        Conectando a comunidade brasileira através de negócios, cultura e inovação.
       </p>
       
       <div class="flex justify-center space-x-4 sm:space-x-6 mb-3 sm:mb-4">

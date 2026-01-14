@@ -6,17 +6,17 @@
 
     <div v-else-if="!service" class="flex flex-col items-center justify-center min-h-[60vh] gap-4">
       <span class="material-symbols-outlined text-6xl text-slate-400">error</span>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Service not found</h2>
-      <p class="text-slate-600 dark:text-gray-400">The service you're looking for doesn't exist or has been removed.</p>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ t('services.notFound') }}</h2>
+      <p class="text-slate-600 dark:text-gray-400">{{ t('services.notFoundDesc') }}</p>
       <router-link to="/servicos">
-        <Button variant="primary">Back to Services</Button>
+        <Button variant="primary">{{ t('services.backToServices') }}</Button>
       </router-link>
     </div>
 
     <div v-else class="max-w-5xl mx-auto space-y-8">
       <!-- Header -->
       <div class="flex items-center gap-4">
-        <router-link to="/servicos" class="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors">
+        <router-link to="/servicos" class="hidden md:block p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors">
           <span class="material-symbols-outlined">arrow_back</span>
         </router-link>
         <div class="flex-1">
@@ -30,13 +30,13 @@
         <!-- Left Column - Service Details -->
         <div class="lg:col-span-2 space-y-6">
           <!-- Service Image/Icon -->
-          <div v-if="service.imagem_url" class="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10">
-            <img :src="service.imagem_url" :alt="service.nome" class="w-full h-64 object-cover" />
+          <div v-if="service.image_url" class="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10">
+            <img :src="service.image_url" :alt="service.nome" class="w-full h-64 object-cover" />
           </div>
 
           <!-- Description -->
           <div class="bg-white dark:bg-surface-card rounded-2xl border border-slate-200 dark:border-white/10 p-6">
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">About this service</h2>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">{{ t('services.about') }}</h2>
             <div class="prose dark:prose-invert max-w-none text-slate-600 dark:text-gray-300">
               {{ service.descricao }}
             </div>
@@ -55,7 +55,7 @@
 
           <!-- Terms and Conditions -->
           <div v-if="service.terms_content_pt || service.terms_content_en" class="bg-white dark:bg-surface-card rounded-2xl border border-slate-200 dark:border-white/10 p-6">
-            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Terms and Conditions</h2>
+            <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">{{ t('services.terms') }}</h2>
             <div class="prose dark:prose-invert max-w-none text-sm text-slate-600 dark:text-gray-300 max-h-64 overflow-y-auto">
               {{ currentLocale === 'pt-BR' ? (service.terms_content_pt || service.terms_content_en) : (service.terms_content_en || service.terms_content_pt) }}
             </div>
@@ -70,11 +70,11 @@
               <div class="text-4xl font-black text-slate-900 dark:text-white mb-2">
                 {{ formatPrice(service.preco, service.moeda) }}
               </div>
-              <p class="text-sm text-slate-500 dark:text-gray-500">One-time payment</p>
+              <p class="text-sm text-slate-500 dark:text-gray-500">{{ t('services.oneTimePayment') }}</p>
             </div>
 
-            <!-- Payment Method Selection -->
-            <div class="space-y-3">
+            <!-- Payment Method Selection (Only for internal services) -->
+            <div v-if="!service.is_external" class="space-y-3">
               <label class="text-sm font-bold text-slate-700 dark:text-gray-300">{{ t('services.paymentMethod') }}</label>
               <div class="grid grid-cols-2 gap-3">
                 <button
@@ -102,8 +102,8 @@
               </div>
             </div>
 
-            <!-- Price Breakdown -->
-            <div v-if="paymentMethod" class="p-4 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
+            <!-- Price Breakdown (Internal Only) -->
+            <div v-if="paymentMethod && !service.is_external" class="p-4 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
               <div class="flex justify-between items-center text-sm">
                 <span class="text-slate-500 dark:text-gray-400">{{ t('services.serviceValue') }}</span>
                 <span class="text-slate-900 dark:text-white font-medium">{{ formatPrice(service.preco, service.moeda) }}</span>
@@ -141,12 +141,24 @@
                 @click.stop
               />
               <p class="text-xs font-bold text-slate-700 dark:text-gray-300 leading-normal">
-                I have read and agree to the Terms and Conditions specific to this service.
+                {{ t('services.termsAgreement') }}
               </p>
             </div>
 
-            <!-- Checkout Button -->
+            <!-- Checkout Button or External Link -->
+            <a
+              v-if="service.is_external"
+              :href="service.external_url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-full py-4 rounded-xl flex items-center justify-center gap-2 font-bold text-lg transition-all shadow-lg hover:scale-[1.02] bg-gradient-to-r from-primary to-secondary text-black shadow-primary/25 hover:shadow-primary/40"
+            >
+              <span>{{ t('services.accessNow') }}</span>
+              <span class="material-symbols-outlined">open_in_new</span>
+            </a>
+
             <button
+              v-else
               @click="handleCheckout"
               :disabled="submitting || !paymentMethod || ((service.terms_content_pt || service.terms_content_en) && !acceptedTerms)"
               class="w-full rounded-lg bg-gradient-to-r from-primary to-secondary py-3 text-sm font-bold text-black shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"

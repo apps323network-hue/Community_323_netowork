@@ -43,22 +43,23 @@
           :key="item.path"
           :to="item.path"
           class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group"
-          :class="$route.path === item.path 
+          :class="isActive(item.path) 
             ? 'text-primary' 
             : 'text-slate-500 dark:text-white/60 hover:text-primary'"
         >
           <span 
-            class="material-symbols-outlined text-[24px] transition-all"
-            :class="$route.path === item.path 
-              ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' 
-              : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]'"
+            class="material-symbols-outlined transition-all"
+            :class="[
+              isActive(item.path) ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]',
+              item.path === '/programs' ? 'text-[32px]' : 'text-[24px]'
+            ]"
           >
             {{ item.icon }}
           </span>
-          <span class="text-[10px] mt-0.5 font-medium" :class="$route.path === item.path ? 'text-primary' : 'text-slate-500 dark:text-white/60'">{{ item.label }}</span>
+
           <!-- Indicador ativo -->
           <span
-            v-if="$route.path === item.path"
+            v-if="isActive(item.path)"
             class="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-primary shadow-[0_0_8px_rgba(244,37,244,0.8)]"
           ></span>
         </RouterLink>
@@ -116,11 +117,19 @@ function handleEditProfile() {
   router.push('/perfil')
 }
 
+// Helper to check if a route is active (including sub-routes)
+function isActive(path: string) {
+  if (path === '/') {
+    return route.path === '/'
+  }
+  return route.path.startsWith(path)
+}
+
 const mobileMenuItems = computed(() => [
   { path: '/', label: t('navigation.home'), icon: 'home' },
   { path: '/comunidade', label: t('navigation.community'), icon: 'people' },
+  { path: '/programs', label: t('navigation.programs'), icon: 'play_arrow' },
   { path: '/eventos', label: t('navigation.events'), icon: 'event' },
-  { path: '/programs', label: t('navigation.programs'), icon: 'school' },
   { path: '/servicos', label: t('navigation.services'), icon: 'business_center' },
 ])
 </script>
