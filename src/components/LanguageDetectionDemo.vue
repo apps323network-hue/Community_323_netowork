@@ -67,7 +67,7 @@
         <button
           v-for="language in availableLanguages"
           :key="language.code"
-          @click="changeLanguage(language.code)"
+          @click="changeLanguage(language.code as 'pt-BR' | 'en-US')"
           class="flex items-center gap-4 p-4 rounded-xl border-2 transition-all"
           :class="[
             language.isActive
