@@ -83,8 +83,20 @@
       </div>
 
       <!-- Services List -->
-      <div v-if="loading && allServices.length === 0" class="flex justify-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div v-if="initialLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-for="i in 6" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/10 animate-pulse h-64">
+          <div class="flex justify-between mb-4">
+            <div class="h-6 bg-slate-200 dark:bg-white/10 rounded w-3/4"></div>
+            <div class="h-4 bg-slate-200 dark:bg-white/10 rounded w-1/4"></div>
+          </div>
+          <div class="h-4 bg-slate-200 dark:bg-white/10 rounded w-full mb-2"></div>
+          <div class="h-4 bg-slate-200 dark:bg-white/10 rounded w-5/6 mb-4"></div>
+          <div class="h-8 bg-slate-200 dark:bg-white/10 rounded w-1/2 mb-4"></div>
+          <div class="flex gap-2">
+            <div class="h-10 bg-slate-200 dark:bg-white/10 rounded flex-1"></div>
+            <div class="h-10 bg-slate-200 dark:bg-white/10 rounded w-12"></div>
+          </div>
+        </div>
       </div>
 
       <div v-else-if="displayedServices.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10">
@@ -428,6 +440,7 @@ const router = useRouter()
 const adminStore = useAdminStore()
 
 const activeFilter = ref<'all' | 'active' | 'inactive' | 'featured' | 'pending'>('all')
+const initialLoading = ref(true)
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const submitting = ref(false)
@@ -622,14 +635,21 @@ function closeModal() {
 }
 
 onMounted(async () => {
-  const isAdmin = await adminStore.checkIsAdmin()
-  if (!isAdmin) {
-    router.push('/')
-    return
-  }
+  initialLoading.value = true
+  try {
+    const isAdmin = await adminStore.checkIsAdmin()
+    if (!isAdmin) {
+      router.push('/')
+      return
+    }
 
-  await adminStore.fetchAllServices()
-  await adminStore.fetchServiceStats()
+    await Promise.all([
+      adminStore.fetchAllServices(),
+      adminStore.fetchServiceStats()
+    ])
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

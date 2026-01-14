@@ -1,12 +1,44 @@
 <template>
-  <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,37,244,0.2)] group">
+  <div v-if="loading" class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 animate-pulse group">
+    <div class="flex flex-col sm:flex-row items-start justify-between gap-6">
+      <div class="flex items-start gap-4 flex-1">
+        <div class="w-16 h-16 rounded-full bg-white/5 shrink-0"></div>
+        <div class="flex flex-col gap-2 flex-1">
+          <div class="h-6 bg-white/10 rounded-lg w-1/3"></div>
+          <div class="h-4 bg-white/5 rounded-lg w-1/2"></div>
+          <div class="flex gap-2 mt-2">
+            <div class="h-8 bg-white/5 rounded-lg w-24"></div>
+            <div class="h-4 bg-white/5 rounded-lg w-32 mt-2"></div>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col items-end gap-4 shrink-0 w-full sm:w-auto">
+        <div class="flex gap-4">
+          <div class="w-12 h-10 bg-white/5 rounded-lg"></div>
+          <div class="w-12 h-10 bg-white/5 rounded-lg"></div>
+          <div class="w-12 h-10 bg-white/5 rounded-lg"></div>
+        </div>
+        <div class="flex gap-2 pt-2 border-t border-white/5 w-full justify-end">
+          <div class="w-10 h-10 bg-white/5 rounded-lg"></div>
+          <div class="w-10 h-10 bg-white/5 rounded-lg"></div>
+          <div class="w-10 h-10 bg-white/5 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-8 flex items-center justify-between border-t border-white/5 pt-2">
+      <div class="w-24 h-3 bg-white/5 rounded"></div>
+      <div class="w-32 h-3 bg-white/5 rounded"></div>
+    </div>
+  </div>
+
+  <div v-else class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,37,244,0.2)] group">
     <div class="flex flex-col sm:flex-row items-start justify-between gap-6">
       <!-- Left Side: Avatar + Info -->
       <div class="flex items-start gap-4 flex-1 min-w-0">
         <!-- Avatar -->
         <div class="relative shrink-0">
           <img 
-            v-if="user.avatar_url" 
+            v-if="user?.avatar_url" 
             :src="user.avatar_url" 
             :alt="user.nome || 'User'"
             class="w-16 h-16 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-primary/50 transition-all"
@@ -29,22 +61,23 @@
         <div class="flex flex-col gap-1 min-w-0 flex-1">
           <!-- Name + Badges -->
           <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-white font-bold text-lg truncate leading-tight">{{ user.nome || 'User' }}</h3>
+            <h3 class="text-white font-bold text-lg truncate leading-tight">{{ user?.nome || 'User' }}</h3>
 
-            <span v-if="user.plano" class="px-2 py-0.5 rounded-lg text-[10px] font-medium" :class="planClass">
+            <span v-if="user?.plano" class="px-2 py-0.5 rounded-lg text-[10px] font-medium" :class="planClass">
               {{ user.plano }}
             </span>
             
-            <UserStatusBadge :status="user.status" size="sm" />
+            <UserStatusBadge v-if="user" :status="user.status" size="sm" />
           </div>
 
           <!-- Email -->
-          <p class="text-white/60 text-sm font-medium truncate">{{ user.email }}</p>
+          <p class="text-white/60 text-sm font-medium truncate">{{ user?.email }}</p>
 
           <!-- Role Selector -->
           <div class="flex flex-wrap items-center gap-3 mt-2">
             <div class="relative group/role">
               <select
+                v-if="user"
                 :value="user.role || 'user'"
                 @change="handleRoleChange"
                 class="appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 pr-8 text-xs text-white/80 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer hover:bg-white/10"
@@ -72,15 +105,15 @@
         <!-- Stats -->
         <div class="flex gap-4 w-full sm:w-auto justify-around sm:justify-end">
           <div class="flex flex-col items-center" title="Total de Posts">
-            <span class="text-white font-black text-lg">{{ user.post_count || 0 }}</span>
+            <span class="text-white font-black text-lg">{{ user?.post_count || 0 }}</span>
             <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Posts</span>
           </div>
           <div class="flex flex-col items-center" title="Conexões">
-            <span class="text-white font-black text-lg">{{ user.connections_count || 0 }}</span>
+            <span class="text-white font-black text-lg">{{ user?.connections_count || 0 }}</span>
             <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Connections</span>
           </div>
           <div class="flex flex-col items-center" title="Pontos">
-            <span class="text-primary font-black text-lg">{{ user.pontos || 0 }}</span>
+            <span class="text-primary font-black text-lg">{{ user?.pontos || 0 }}</span>
             <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest">Points</span>
           </div>
         </div>
@@ -88,6 +121,7 @@
         <!-- Admin Actions -->
         <div class="flex items-center gap-2 pt-2 border-t border-white/5 w-full justify-end">
           <button
+            v-if="user"
             @click="$emit('view-profile', user.id)"
             class="p-2 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
             title="View Profile"
@@ -96,7 +130,7 @@
           </button>
           
           <button
-            v-if="user.status === 'active'"
+            v-if="user?.status === 'active'"
             @click="$emit('suspend', user.id)"
             class="p-2 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-500/60 hover:text-yellow-500 hover:bg-yellow-500/20 transition-all"
             title="Suspend"
@@ -105,7 +139,7 @@
           </button>
           
           <button
-            v-if="user.status === 'suspended'"
+            v-if="user?.status === 'suspended'"
             @click="$emit('unsuspend', user.id)"
             class="p-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500/60 hover:text-green-500 hover:bg-green-500/20 transition-all"
             title="Activate"
@@ -114,7 +148,7 @@
           </button>
 
           <button
-            v-if="user.status !== 'banned'"
+            v-if="user?.status !== 'banned' && user"
             @click="$emit('ban', user.id)"
             class="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500/60 hover:text-red-500 hover:bg-red-500/20 transition-all"
             title="Ban"
@@ -123,7 +157,7 @@
           </button>
           
           <button
-            v-if="user.status === 'banned'"
+            v-if="user?.status === 'banned' && user"
             @click="$emit('unban', user.id)"
             class="p-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500/60 hover:text-green-500 hover:bg-green-500/20 transition-all"
             title="Unban"
@@ -135,13 +169,13 @@
     </div>
 
     <!-- Strikes Warning (if any) -->
-    <div v-if="user.strikes && user.strikes > 0" class="mt-4 flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/20 rounded-lg">
+    <div v-if="user?.strikes && user.strikes > 0" class="mt-4 flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/20 rounded-lg">
       <span class="material-symbols-outlined text-red-500 text-lg">warning</span>
       <span class="text-red-400 text-xs font-medium">{{ user.strikes }} active strike(s)</span>
     </div>
 
     <!-- Footer Info -->
-    <div class="mt-4 flex items-center justify-between text-[10px] text-white/30 border-t border-white/5 pt-2">
+    <div v-if="user" class="mt-4 flex items-center justify-between text-[10px] text-white/30 border-t border-white/5 pt-2">
       <div class="flex items-center gap-1">
         <span class="material-symbols-outlined text-[12px]">schedule</span>
         <span>{{ lastSeenText }}</span>
@@ -163,7 +197,8 @@ import UserStatusBadge from '@/components/ui/UserStatusBadge.vue'
 import { enUS } from 'date-fns/locale'
 
 interface Props {
-  user: AdminUser
+  user?: AdminUser
+  loading?: boolean
 }
 
 const props = defineProps<Props>()
@@ -178,14 +213,14 @@ const emit = defineEmits<{
 }>()
 
 const initials = computed(() => {
-  if (!props.user.nome) return 'U'
+  if (!props.user?.nome) return 'U'
   const names = props.user.nome.split(' ')
   if (names.length === 1) return names[0].charAt(0).toUpperCase()
   return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase()
 })
 
 const isOnline = computed(() => {
-  if (!props.user.last_seen_at) return false
+  if (!props.user?.last_seen_at) return false
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
   return new Date(props.user.last_seen_at) > fiveMinutesAgo
 })
@@ -196,10 +231,11 @@ const planClass = computed(() => {
     Member: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
     Premium: 'bg-gradient-to-r from-primary/20 to-secondary/20 text-white border border-primary/30'
   }
-  return classes[props.user.plano || 'Free'] || classes.Free
+  return classes[props.user?.plano || 'Free'] || classes.Free
 })
 
 const locationText = computed(() => {
+  if (!props.user) return ''
   const parts = []
   if (props.user.cidade) parts.push(props.user.cidade)
   if (props.user.estado) parts.push(props.user.estado)
@@ -208,7 +244,7 @@ const locationText = computed(() => {
 })
 
 const lastSeenText = computed(() => {
-  if (!props.user.last_seen_at) return 'Never seen'
+  if (!props.user?.last_seen_at) return 'Never seen'
   return 'Seen ' + formatDistanceToNow(new Date(props.user.last_seen_at), { 
     addSuffix: true, 
     locale: enUS 
@@ -216,6 +252,7 @@ const lastSeenText = computed(() => {
 })
 
 const cadastradoText = computed(() => {
+  if (!props.user?.created_at) return ''
   return formatDistanceToNow(new Date(props.user.created_at), { 
     addSuffix: true, 
     locale: enUS 
@@ -223,6 +260,7 @@ const cadastradoText = computed(() => {
 })
 
 function handleRoleChange(event: Event) {
+  if (!props.user) return
   const role = (event.target as HTMLSelectElement).value as UserRole
   emit('update-role', props.user.id, role)
 }

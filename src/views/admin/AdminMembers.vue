@@ -111,14 +111,9 @@
           </div>
         </div>
 
-        <!-- Loading State -->
-        <div v-if="baseStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
-          <div class="relative w-20 h-20">
-            <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <div class="absolute inset-0 rounded-full shadow-[0_0_30px_rgba(244,37,244,0.3)] animate-pulse"></div>
-          </div>
-          <p class="text-white/60 font-medium animate-pulse tracking-widest uppercase text-sm">Loading members...</p>
+        <!-- Loading State (Skeleton Grid) -->
+        <div v-if="initialLoading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr w-full">
+          <MemberCard v-for="i in 6" :key="i" loading />
         </div>
 
         <!-- Empty State -->
@@ -309,6 +304,7 @@ const baseStore = useAdminBaseStore()
 const currentFilters = ref<MemberFiltersType>({})
 const viewMode = ref<'grid' | 'list'>('list')
 const showBanModal = ref(false)
+const initialLoading = ref(true)
 const userToBan = ref<AdminUser | null>(null)
 const banReason = ref('')
 
@@ -435,16 +431,23 @@ async function handleUpdateRole(userId: string, role: UserRole) {
 }
 
 onMounted(async () => {
-  // Check admin permissions
-  const isAdmin = await baseStore.checkIsAdmin()
-  if (!isAdmin) {
-    router.push('/')
-    return
-  }
+  initialLoading.value = true
+  try {
+    // Check admin permissions
+    const isAdmin = await baseStore.checkIsAdmin()
+    if (!isAdmin) {
+      router.push('/')
+      return
+    }
 
-  // Load initial data
-  await usersStore.fetchUserStats()
-  await usersStore.fetchMembersPaginated(1, 20)
+    // Load initial data concurrently
+    await Promise.all([
+      usersStore.fetchUserStats(),
+      usersStore.fetchMembersPaginated(1, 20)
+    ])
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

@@ -12,7 +12,7 @@
       </div>
 
       <!-- Stats -->
-      <ReportStats :stats="reportStats" />
+      <ReportStats :stats="reportStats" :loading="initialLoading" />
 
       <!-- Tabs -->
       <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-1 border-b border-slate-200 dark:border-white/10">
@@ -39,7 +39,7 @@
       <!-- Content based on active tab -->
       <AdminReportsList
         :reports="displayedReports"
-        :loading="loading"
+        :loading="initialLoading || loading"
         @resolve="handleResolve"
         @dismiss="handleDismiss"
         @view-details="handleViewDetails"
@@ -71,6 +71,7 @@ const adminStore = useAdminStore()
 const activeTab = ref('all')
 const showResolveModal = ref(false)
 const selectedReport = ref<Report | null>(null)
+const initialLoading = ref(true)
 
 const reports = computed(() => adminStore.reports)
 const reportStats = computed(() => adminStore.reportStats)
@@ -149,15 +150,24 @@ async function handleResolved() {
 }
 
 onMounted(async () => {
-  // Verificar se é admin
-  const isAdmin = await adminStore.checkIsAdmin()
-  if (!isAdmin) {
-    router.push('/')
-    return
-  }
+  initialLoading.value = true
+  try {
+    // Verificar se é admin
+    const isAdmin = await adminStore.checkIsAdmin()
+    if (!isAdmin) {
+      router.push('/')
+      return
+    }
 
-  await adminStore.fetchReports()
-  await adminStore.fetchReportStats()
+    await Promise.all([
+      adminStore.fetchReports(),
+      adminStore.fetchReportStats()
+    ])
+  } catch (error) {
+    console.error('Error loading reports data:', error)
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

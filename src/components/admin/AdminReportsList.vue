@@ -48,8 +48,26 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading && filteredReports.length === 0" class="flex justify-center py-12">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    <div v-if="loading" class="space-y-4">
+      <div v-for="i in 3" :key="i" class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-white/10 animate-pulse">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1 space-y-4">
+            <div class="flex gap-2">
+              <div class="h-6 bg-slate-200 dark:bg-white/10 rounded-full w-20"></div>
+              <div class="h-6 bg-slate-200 dark:bg-white/10 rounded-full w-20"></div>
+            </div>
+            <div class="h-20 bg-slate-200 dark:bg-white/10 rounded-lg w-full"></div>
+            <div class="space-y-2">
+              <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-48"></div>
+              <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-32"></div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="h-9 bg-slate-200 dark:bg-white/10 rounded-lg w-28"></div>
+            <div class="h-9 bg-slate-200 dark:bg-white/10 rounded-lg w-28"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Empty State -->

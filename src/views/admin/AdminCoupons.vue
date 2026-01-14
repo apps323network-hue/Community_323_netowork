@@ -31,19 +31,24 @@
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div v-for="stat in stats" :key="stat.label" class="bg-white dark:bg-surface-dark p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-white/5 group hover:border-primary/30 transition-all">
-          <div class="flex items-center gap-4">
-            <div :class="`w-12 h-12 rounded-2xl flex items-center justify-center ${stat.bgClass} transition-transform group-hover:scale-110` ">
-              <span class="material-icons">{{ stat.icon }}</span>
-            </div>
-            <div>
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{{ stat.label }}</p>
-              <p class="text-2xl font-black text-slate-900 dark:text-white leading-none">
-                {{ stat.prefix }}{{ stat.value }}{{ stat.suffix }}
-              </p>
+        <template v-if="initialLoading">
+          <div v-for="i in 4" :key="i" class="bg-white dark:bg-surface-dark p-6 rounded-3xl animate-pulse h-24 border border-slate-200 dark:border-white/5"></div>
+        </template>
+        <template v-else>
+          <div v-for="stat in stats" :key="stat.label" class="bg-white dark:bg-surface-dark p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-white/5 group hover:border-primary/30 transition-all">
+            <div class="flex items-center gap-4">
+              <div :class="`w-12 h-12 rounded-2xl flex items-center justify-center ${stat.bgClass} transition-transform group-hover:scale-110` ">
+                <span class="material-icons">{{ stat.icon }}</span>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{{ stat.label }}</p>
+                <p class="text-2xl font-black text-slate-900 dark:text-white leading-none">
+                  {{ stat.prefix }}{{ stat.value }}{{ stat.suffix }}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
 
       <!-- Filters & Search -->
@@ -193,14 +198,21 @@
               </tr>
 
               <!-- Loading State -->
-              <tr v-if="loading">
-                <td colspan="6" class="p-20 text-center">
-                   <div class="flex flex-col items-center justify-center gap-4 animate-pulse">
-                    <div class="w-12 h-12 border-4 border-slate-200 dark:border-white/10 border-t-primary rounded-full animate-spin"></div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Searching for coupons...</p>
-                  </div>
-                </td>
-              </tr>
+              <template v-if="initialLoading">
+                <tr v-for="i in 5" :key="i" class="animate-pulse">
+                  <td class="p-6">
+                    <div class="space-y-2">
+                      <div class="h-4 bg-slate-200 dark:bg-white/10 rounded w-24"></div>
+                      <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-32"></div>
+                    </div>
+                  </td>
+                  <td class="p-6"><div class="h-5 bg-slate-200 dark:bg-white/10 rounded w-20"></div></td>
+                  <td class="p-6 text-center"><div class="h-5 bg-slate-200 dark:bg-white/10 rounded w-12 mx-auto"></div></td>
+                  <td class="p-6"><div class="h-8 bg-slate-200 dark:bg-white/10 rounded w-24"></div></td>
+                  <td class="p-6"><div class="h-6 bg-slate-200 dark:bg-white/10 rounded-full w-20"></div></td>
+                  <td class="p-6 text-right"><div class="h-8 bg-slate-200 dark:bg-white/10 rounded-xl w-24 ml-auto"></div></td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -226,6 +238,7 @@ import { toast } from 'vue-sonner'
 
 const coupons = ref<any[]>([])
 const loading = ref(true)
+const initialLoading = ref(true)
 const search = ref('')
 const statusFilter = ref('all')
 const typeFilter = ref('all')
@@ -404,8 +417,26 @@ function onCouponSaved() {
   fetchCoupons()
 }
 
-onMounted(() => {
-  fetchCoupons()
+onMounted(async () => {
+  initialLoading.value = true
+  try {
+    const { useAdminBaseStore } = await import('@/stores/admin/base')
+    const baseStore = useAdminBaseStore()
+    
+    // Check admin permissions
+    const isAdmin = await baseStore.checkIsAdmin()
+    if (!isAdmin) {
+      const router = (await import('@/router')).default
+      router.push('/')
+      return
+    }
+
+    await fetchCoupons()
+  } catch (error) {
+    console.error('Error initializing coupons view:', error)
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

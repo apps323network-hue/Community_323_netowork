@@ -25,7 +25,10 @@
       </div>
 
       <!-- Stats -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div v-if="initialLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div v-for="i in 4" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 animate-pulse h-32"></div>
+      </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
             <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Total Acceptances</span>
@@ -149,16 +152,30 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 dark:divide-white/10">
-              <tr
-                v-if="loading && acceptances.length === 0"
-                class="bg-white dark:bg-surface-card"
-              >
-                <td colspan="6" class="px-6 py-12 text-center">
-                  <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
-                  <p class="mt-4 text-slate-600 dark:text-slate-400">Loading acceptances...</p>
-                </td>
-              </tr>
+              <!-- Loading State (Skeleton Rows) -->
+              <template v-if="initialLoading">
+                <tr v-for="i in 5" :key="i" class="animate-pulse">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-white/10"></div>
+                      <div class="space-y-2">
+                        <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-24"></div>
+                        <div class="h-2 bg-slate-200 dark:bg-white/10 rounded w-32"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-32 mb-2"></div>
+                    <div class="h-2 bg-slate-200 dark:bg-white/10 rounded w-16"></div>
+                  </td>
+                  <td class="px-6 py-4"><div class="h-5 bg-slate-200 dark:bg-white/10 rounded-full w-24"></div></td>
+                  <td class="px-6 py-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-24"></div></td>
+                  <td class="px-6 py-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-20"></div></td>
+                  <td class="px-6 py-4"><div class="h-8 bg-slate-200 dark:bg-white/10 rounded w-24"></div></td>
+                </tr>
+              </template>
 
+              <!-- Empty State -->
               <tr
                 v-else-if="acceptances.length === 0"
                 class="bg-white dark:bg-surface-card"
@@ -254,6 +271,7 @@ const store = useAdminTermsAcceptanceStore()
 
 // Usar storeToRefs para manter reatividade
 const { acceptances, stats, loading } = storeToRefs(store)
+const initialLoading = ref(true)
 const downloadingPDF = ref<string | null>(null)
 
 const filters = ref<{
@@ -335,8 +353,23 @@ watch(
 )
 
 onMounted(async () => {
-  // Garantir que os dados sejam carregados sempre que a página é acessada
-  await handleRefresh()
+  initialLoading.value = true
+  try {
+    const { useAdminBaseStore } = await import('@/stores/admin/base')
+    const baseStore = useAdminBaseStore()
+    
+    // Check admin permissions
+    const isAdmin = await baseStore.checkIsAdmin()
+    if (!isAdmin) {
+      const router = (await import('@/router')).default
+      router.push('/')
+      return
+    }
+
+    await handleRefresh()
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

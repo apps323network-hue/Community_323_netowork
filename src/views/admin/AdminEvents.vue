@@ -12,7 +12,7 @@
       </div>
 
       <!-- Stats -->
-      <EventStats :stats="stats" />
+      <EventStats :stats="stats" :loading="initialLoading" />
 
       <!-- Actions -->
       <div class="flex justify-end mb-4">
@@ -34,7 +34,7 @@
       <!-- Events List -->
       <AdminEventList
         :events="displayedEvents"
-        :loading="loading"
+        :loading="initialLoading || loading"
         @approve="handleApprove"
         @reject="handleReject"
         @view-details="handleViewDetails"
@@ -101,9 +101,11 @@ const {
   createEvent,
   toggleEventDestaque,
   deleteEvent,
+  checkIsAdmin,
 } = useAdmin()
 
 const activeFilter = ref<EventStatus | 'all'>('all')
+const initialLoading = ref(true)
 const showApprovalModal = ref(false)
 const showCreateModal = ref(false)
 const showDeleteModal = ref(false)
@@ -344,14 +346,22 @@ async function handleCreateEventSubmit(data: { formData: any; dateTime: any; ima
 }
 
 onMounted(async () => {
-  // Check if admin
-  if (!isAdmin.value) {
-    router.push('/')
-    return
-  }
+  initialLoading.value = true
+  try {
+    // Wait for auth to be ready if needed, or check admin
+    const isAdminUser = await checkIsAdmin()
+    if (!isAdminUser) {
+      router.push('/')
+      return
+    }
 
-  await loadAllEvents()
-  await loadEventStats()
+    await Promise.all([
+      loadAllEvents(),
+      loadEventStats()
+    ])
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

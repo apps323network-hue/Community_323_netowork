@@ -12,7 +12,7 @@
       </div>
 
       <!-- Stats -->
-      <PostStats :stats="postStats" />
+      <PostStats :stats="postStats" :loading="initialLoading" />
 
       <!-- Actions -->
       <div class="flex justify-end mb-4">
@@ -47,25 +47,37 @@
         </button>
       </div>
 
-      <!-- Content based on active tab -->
-      <div v-if="activeTab === 'pending'">
-        <AdminPendingPostsList
-          :posts="pendingPosts"
-          :loading="loading"
-          @approve="handleApprove"
-          @remove="handleRemove"
-          @view-full="handleViewFull"
-        />
+      <!-- Loading State (Initial) -->
+      <div v-if="initialLoading">
+        <div v-if="activeTab === 'pending'" class="space-y-4">
+          <div v-for="i in 3" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-4 sm:p-6 animate-pulse border border-slate-200 dark:border-white/5 h-40"></div>
+        </div>
+        <div v-else class="space-y-3">
+          <div v-for="i in 5" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-4 sm:p-6 animate-pulse border border-slate-200 dark:border-white/5 h-32"></div>
+        </div>
       </div>
 
+      <!-- Content based on active tab -->
       <div v-else>
-        <AdminPostsList
-          :posts="displayedPosts"
-          :loading="loading"
-          @approve="handleApprove"
-          @remove="handleRemove"
-          @view-details="handleViewDetails"
-        />
+        <div v-if="activeTab === 'pending'">
+          <AdminPendingPostsList
+            :posts="pendingPosts"
+            :loading="loading"
+            @approve="handleApprove"
+            @remove="handleRemove"
+            @view-full="handleViewFull"
+          />
+        </div>
+
+        <div v-else>
+          <AdminPostsList
+            :posts="displayedPosts"
+            :loading="loading"
+            @approve="handleApprove"
+            @remove="handleRemove"
+            @view-details="handleViewDetails"
+          />
+        </div>
       </div>
 
       <!-- Moderation Modal -->
@@ -216,6 +228,7 @@ const adminStore = useAdminStore()
 const authStore = useAuthStore()
 
 const activeTab = ref<'pending' | 'all' | 'hidden' | 'removed' | 'spam'>('all')
+const initialLoading = ref(true)
 const showModerationModal = ref(false)
 const showPostViewModal = ref(false)
 const showCreateModal = ref(false)
@@ -483,17 +496,24 @@ async function handleCreatePost() {
 }
 
 onMounted(async () => {
-  // Check if admin
-  const isAdmin = await adminStore.checkIsAdmin()
-  if (!isAdmin) {
-    router.push('/')
-    return
-  }
+  initialLoading.value = true
+  try {
+    // Check if admin
+    const isAdmin = await adminStore.checkIsAdmin()
+    if (!isAdmin) {
+      router.push('/')
+      return
+    }
 
-  // Load initial data based on default tab
-  await adminStore.fetchAllPosts() // Default tab is "All"
-  await adminStore.fetchPendingPosts()
-  await adminStore.fetchPostStats()
+    // Load initial data based on default tab
+    await Promise.all([
+      adminStore.fetchAllPosts(), // Default tab is "All"
+      adminStore.fetchPendingPosts(),
+      adminStore.fetchPostStats()
+    ])
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

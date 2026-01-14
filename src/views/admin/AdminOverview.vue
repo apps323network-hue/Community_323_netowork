@@ -12,7 +12,10 @@
       </div>
 
       <!-- Stats Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div v-if="initialLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div v-for="i in 4" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 animate-pulse h-32"></div>
+      </div>
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Membros -->
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all group shadow-lg dark:shadow-xl">
           <div class="flex items-center justify-between mb-4">
@@ -65,7 +68,11 @@
       </div>
 
       <!-- Quick Actions -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div v-if="initialLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 animate-pulse h-64"></div>
+        <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 animate-pulse h-64"></div>
+      </div>
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Ações Rápidas -->
         <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
           <h2 class="text-slate-900 dark:text-white text-xl font-bold mb-4">Quick Actions</h2>
@@ -162,20 +169,28 @@ import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 const router = useRouter()
 const adminStore = useAdminStore()
 
+const initialLoading = ref(true)
 const userStats = computed(() => adminStore.userStats)
 const postStats = computed(() => adminStore.postStats)
 
 onMounted(async () => {
-  // Verificar se é admin
-  const isAdmin = await adminStore.checkIsAdmin()
-  if (!isAdmin) {
-    router.push('/')
-    return
-  }
+  initialLoading.value = true
+  try {
+    // Verificar se é admin
+    const isAdmin = await adminStore.checkIsAdmin()
+    if (!isAdmin) {
+      router.push('/')
+      return
+    }
 
-  // Carregar estatísticas
-  await adminStore.fetchUserStats()
-  await adminStore.fetchPostStats()
+    // Carregar estatísticas
+    await Promise.all([
+      adminStore.fetchUserStats(),
+      adminStore.fetchPostStats()
+    ])
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

@@ -25,10 +25,11 @@
                 <p class="text-slate-500 text-sm">Manage enrolled students and track progress</p>
              </div>
           </div>
-          <div v-else-if="loading" class="h-12 w-96 bg-slate-200 dark:bg-white/10 animate-pulse rounded-lg"></div>
+          <div v-else-if="initialLoading" class="h-12 w-96 bg-slate-200 dark:bg-white/10 animate-pulse rounded-lg"></div>
         </div>
 
-        <div v-if="enrollments.length > 0 || !loading" class="flex items-center gap-4 bg-white dark:bg-surface-dark p-3 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
+        <div v-if="initialLoading" class="w-48 h-12 bg-slate-200 dark:bg-white/10 animate-pulse rounded-xl"></div>
+        <div v-else-if="enrollments.length > 0 || !loading" class="flex items-center gap-4 bg-white dark:bg-surface-dark p-3 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm">
            <div class="text-center px-4 border-r border-slate-100 dark:border-white/5">
               <div class="text-2xl font-black text-primary dark:text-secondary">{{ enrollments.length }}</div>
               <div class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{{ t('programs.admin.total') }}</div>
@@ -83,94 +84,116 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-white/5">
-              <tr v-for="enrollment in filteredEnrollments" :key="enrollment.id" class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
-                <td class="p-4">
-                  <div class="flex items-center gap-3">
-                    <img v-if="enrollment.user?.avatar_url" :src="enrollment.user.avatar_url" class="w-10 h-10 rounded-full object-cover border-2 border-slate-100 dark:border-white/10" />
-                    <div v-else class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-400 font-bold">
-                        {{ enrollment.user?.nome?.substring(0, 2).toUpperCase() || 'U' }}
-                    </div>
-                    <div>
-                      <div class="font-bold text-slate-900 dark:text-white capitalize">{{ enrollment.user?.nome || 'User' }}</div>
-                      <div class="text-[10px] text-slate-500 font-mono">{{ enrollment.id.split('-')[0] }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="p-4">
-                  <div class="text-sm text-slate-600 dark:text-gray-400">
-                    {{ new Date(enrollment.enrolled_at).toLocaleDateString() }}
-                  </div>
-                  <div class="text-[10px] text-slate-400">
-                    {{ new Date(enrollment.enrolled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
-                  </div>
-                </td>
-                <td class="p-4">
-                   <div class="flex items-center gap-2">
-                     <div class="flex-1 h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden min-w-[60px]">
-                        <div 
-                          class="h-full bg-primary dark:bg-secondary rounded-full transition-all duration-500"
-                          :style="{ width: `${enrollment.progress_percentage || 0}%` }"
-                        ></div>
+              <!-- Loading State -->
+              <template v-if="initialLoading">
+                <tr v-for="i in 5" :key="i" class="animate-pulse">
+                  <td class="p-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-white/10"></div>
+                      <div class="space-y-2">
+                        <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-24"></div>
+                        <div class="h-2 bg-slate-200 dark:bg-white/10 rounded w-16"></div>
                       </div>
-                      <span class="text-xs font-bold text-slate-700 dark:text-white">{{ Math.round(enrollment.progress_percentage || 0) }}%</span>
-                   </div>
-                </td>
-                <td class="p-4">
-                   <span 
-                    class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest"
-                    :class="{
-                      'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400': enrollment.payment_status === 'paid',
-                      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400': enrollment.payment_status === 'pending',
-                      'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400': enrollment.payment_status === 'failed'
-                    }"
-                  >
-                    {{ enrollment.payment_status === 'paid' ? 'Paid' : enrollment.payment_status === 'pending' ? 'Pending' : 'Failed' }}
-                  </span>
-                  <div v-if="enrollment.payment_amount" class="text-[10px] text-slate-400 mt-1">
-                    {{ enrollment.payment_currency || 'USD' }} {{ enrollment.payment_amount }}
-                  </div>
-                </td>
-                <td class="p-4">
-                  <span 
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ring-1 ring-inset"
-                    :class="{
-                      'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/20': enrollment.status === 'active',
-                      'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20': enrollment.status === 'completed',
-                      'bg-yellow-50 text-yellow-700 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400 dark:ring-yellow-400/20': enrollment.status === 'pending',
-                      'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/20': enrollment.status === 'cancelled'
-                    }"
-                  >
-                    {{ formatStatus(enrollment.status) }}
-                  </span>
-                </td>
-                <td class="p-4 text-right">
-                  <div class="flex items-center justify-end gap-1">
-                     <button
-                      @click="openStatusModal(enrollment)"
-                      class="p-2 text-slate-400 hover:text-primary dark:hover:text-secondary rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
-                      title="Change Status"
+                    </div>
+                  </td>
+                  <td class="p-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-20"></div></td>
+                  <td class="p-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-24"></div></td>
+                  <td class="p-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-16"></div></td>
+                  <td class="p-4"><div class="h-4 bg-slate-200 dark:bg-white/10 rounded-full w-20"></div></td>
+                  <td class="p-4 text-right"><div class="h-8 bg-slate-200 dark:bg-white/10 rounded w-16 ml-auto"></div></td>
+                </tr>
+              </template>
+
+              <template v-else>
+                <tr v-for="enrollment in filteredEnrollments" :key="enrollment.id" class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <td class="p-4">
+                    <div class="flex items-center gap-3">
+                      <img v-if="enrollment.user?.avatar_url" :src="enrollment.user.avatar_url" class="w-10 h-10 rounded-full object-cover border-2 border-slate-100 dark:border-white/10" />
+                      <div v-else class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-slate-400 font-bold">
+                          {{ enrollment.user?.nome?.substring(0, 2).toUpperCase() || 'U' }}
+                      </div>
+                      <div>
+                        <div class="font-bold text-slate-900 dark:text-white capitalize">{{ enrollment.user?.nome || 'User' }}</div>
+                        <div class="text-[10px] text-slate-500 font-mono">{{ enrollment.id.split('-')[0] }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="p-4">
+                    <div class="text-sm text-slate-600 dark:text-gray-400">
+                      {{ new Date(enrollment.enrolled_at).toLocaleDateString() }}
+                    </div>
+                    <div class="text-[10px] text-slate-400">
+                      {{ new Date(enrollment.enrolled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
+                    </div>
+                  </td>
+                  <td class="p-4">
+                     <div class="flex items-center gap-2">
+                       <div class="flex-1 h-1.5 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden min-w-[60px]">
+                          <div 
+                            class="h-full bg-primary dark:bg-secondary rounded-full transition-all duration-500"
+                            :style="{ width: `${enrollment.progress_percentage || 0}%` }"
+                          ></div>
+                        </div>
+                        <span class="text-xs font-bold text-slate-700 dark:text-white">{{ Math.round(enrollment.progress_percentage || 0) }}%</span>
+                     </div>
+                  </td>
+                  <td class="p-4">
+                     <span 
+                      class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest"
+                      :class="{
+                        'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400': enrollment.payment_status === 'paid',
+                        'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400': enrollment.payment_status === 'pending',
+                        'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400': enrollment.payment_status === 'failed'
+                      }"
                     >
-                      <span class="material-icons text-sm">settings</span>
-                    </button>
-                    <RouterLink
-                      :to="`/admin/users/${enrollment.user_id}/history`"
-                      class="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
-                      :title="t('programs.admin.viewHistory')"
+                      {{ enrollment.payment_status === 'paid' ? 'Paid' : enrollment.payment_status === 'pending' ? 'Pending' : 'Failed' }}
+                    </span>
+                    <div v-if="enrollment.payment_amount" class="text-[10px] text-slate-400 mt-1">
+                      {{ enrollment.payment_currency || 'USD' }} {{ enrollment.payment_amount }}
+                    </div>
+                  </td>
+                  <td class="p-4">
+                    <span 
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ring-1 ring-inset"
+                      :class="{
+                        'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/20': enrollment.status === 'active',
+                        'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20': enrollment.status === 'completed',
+                        'bg-yellow-50 text-yellow-700 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400 dark:ring-yellow-400/20': enrollment.status === 'pending',
+                        'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/20': enrollment.status === 'cancelled'
+                      }"
                     >
-                      <span class="material-icons text-sm">history</span>
-                    </RouterLink>
-                  </div>
-                </td>
-              </tr>
-              <tr v-if="filteredEnrollments.length === 0 && !loading">
-                <td colspan="6" class="p-16 text-center text-slate-500 dark:text-gray-400">
-                  <div class="flex flex-col items-center gap-2">
-                    <span class="material-icons text-4xl opacity-20">group_off</span>
-                    <p class="font-bold">No enrollments found.</p>
-                    <p class="text-xs opacity-60">Try adjusting your search filters.</p>
-                  </div>
-                </td>
-              </tr>
+                      {{ formatStatus(enrollment.status) }}
+                    </span>
+                  </td>
+                  <td class="p-4 text-right">
+                    <div class="flex items-center justify-end gap-1">
+                       <button
+                        @click="openStatusModal(enrollment)"
+                        class="p-2 text-slate-400 hover:text-primary dark:hover:text-secondary rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+                        title="Change Status"
+                      >
+                        <span class="material-icons text-sm">settings</span>
+                      </button>
+                      <RouterLink
+                        :to="`/admin/users/${enrollment.user_id}/history`"
+                        class="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+                        :title="t('programs.admin.viewHistory')"
+                      >
+                        <span class="material-icons text-sm">history</span>
+                      </RouterLink>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="filteredEnrollments.length === 0">
+                  <td colspan="6" class="p-16 text-center text-slate-500 dark:text-gray-400">
+                    <div class="flex flex-col items-center gap-2">
+                      <span class="material-icons text-4xl opacity-20">group_off</span>
+                      <p class="font-bold">No enrollments found.</p>
+                      <p class="text-xs opacity-60">Try adjusting your search filters.</p>
+                    </div>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -243,6 +266,7 @@ const programsStore = useProgramsStore()
 const program = ref<Program | null>(null)
 const enrollments = ref<ProgramEnrollment[]>([])
 const loading = ref(true)
+const initialLoading = ref(true)
 const updating = ref(false)
 
 const search = ref('')
@@ -302,10 +326,21 @@ const updateStatus = async () => {
 }
 
 onMounted(async () => {
-  loading.value = true
+  initialLoading.value = true
   const programId = route.params.id as string
   
   try {
+    const { useAdminBaseStore } = await import('@/stores/admin/base')
+    const baseStore = useAdminBaseStore()
+    
+    // Check admin permissions
+    const isAdmin = await baseStore.checkIsAdmin()
+    if (!isAdmin) {
+      const router = (await import('@/router')).default
+      router.push('/')
+      return
+    }
+
     // Fetch program details
     const p = await programsStore.fetchProgramById(programId)
     if (p) program.value = p
@@ -317,6 +352,7 @@ onMounted(async () => {
     console.error('Error loading data:', error)
     toast.error(t('programs.admin.errorLoadingEnrollments'))
   } finally {
+    initialLoading.value = false
     loading.value = false
   }
 })
