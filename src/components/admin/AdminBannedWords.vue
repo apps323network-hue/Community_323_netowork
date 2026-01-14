@@ -1,18 +1,27 @@
 <template>
   <div class="space-y-6">
     <!-- Header com botão Adicionar -->
-    <div class="flex justify-between items-center">
+    <div class="flex flex-wrap justify-between items-center gap-4">
       <div>
         <h2 class="text-slate-900 dark:text-white text-2xl font-bold mb-1">Banned Words</h2>
         <p class="text-slate-600 dark:text-white/60 text-sm">Manage prohibited words and phrases for automatic moderation</p>
       </div>
-      <button
-        @click="showFormModal = true; editingWord = null"
-        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
-      >
-        <span class="material-symbols-outlined">add</span>
-        <span class="hidden sm:inline">Add Word</span>
-      </button>
+      <div class="flex gap-2">
+        <button
+          @click="showBulkModal = true; bulkData.words = ''"
+          class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
+        >
+          <span class="material-symbols-outlined">library_add</span>
+          <span class="hidden sm:inline">Bulk Add</span>
+        </button>
+        <button
+          @click="showFormModal = true; editingWord = null"
+          class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg hover:shadow-primary/30 transition-all"
+        >
+          <span class="material-symbols-outlined">add</span>
+          <span class="hidden sm:inline">Add Word</span>
+        </button>
+      </div>
     </div>
 
     <!-- Filtros e Busca -->
@@ -62,48 +71,42 @@
       </p>
     </div>
 
-    <div v-else class="grid grid-cols-1 gap-4">
-      <div
-        v-for="word in filteredWords"
-        :key="word.id"
-        class="bg-white dark:bg-surface-dark rounded-xl p-6 border border-slate-200 dark:border-white/10 hover:border-primary/50 transition-all"
-      >
-        <div class="flex items-start justify-between">
-          <div class="flex-1">
-            <div class="flex items-center gap-3 mb-3">
-              <h3 class="text-slate-900 dark:text-white font-bold text-lg">{{ word.word }}</h3>
-              <span
-                class="px-2 py-1 rounded-full text-xs font-bold"
-                :class="getCategoryClass(word.category)"
-              >
-                {{ getCategoryLabel(word.category) }}
-              </span>
-              <span
-                class="px-2 py-1 rounded-full text-xs font-bold"
-                :class="getActionClass(word.action)"
-              >
-                {{ getActionLabel(word.action) }}
-              </span>
-            </div>
-            <p class="text-slate-500 dark:text-white/40 text-xs">
-              Created at {{ formatDate(word.created_at) }}
-            </p>
+    <!-- Categorias e Chips -->
+    <div v-else class="space-y-8">
+      <div v-for="cat in categories" :key="cat.id" class="space-y-4">
+        <div v-if="getWordsByCategory(cat.id).length > 0" class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-white/10">
+            <span class="w-2 h-2 rounded-full" :class="getCategoryDotClass(cat.id)"></span>
+            <h3 class="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs">{{ cat.label }}</h3>
+            <span class="text-xs text-slate-500 dark:text-white/40">({{ getWordsByCategory(cat.id).length }})</span>
           </div>
-          <div class="flex gap-2">
-            <button
+
+          <div class="flex flex-wrap gap-2">
+            <div
+              v-for="word in getWordsByCategory(cat.id)"
+              :key="word.id"
+              class="group relative flex items-center gap-2 pl-3 pr-2 py-1.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-full hover:border-primary/50 transition-all cursor-pointer"
               @click="editWord(word)"
-              class="p-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white transition-all"
-              title="Editar"
             >
-              <span class="material-symbols-outlined text-lg">edit</span>
-            </button>
-            <button
-              @click="confirmDelete(word)"
-              class="p-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400 transition-all"
-              title="Deletar"
-            >
-              <span class="material-symbols-outlined text-lg">delete</span>
-            </button>
+              <div class="flex flex-col">
+                <span class="text-sm font-medium text-slate-900 dark:text-white">{{ word.word }}</span>
+              </div>
+              
+              <!-- Action Indicator -->
+              <span 
+                class="w-1.5 h-1.5 rounded-full" 
+                :class="getActionDotClass(word.action)"
+                :title="getActionLabel(word.action)"
+              ></span>
+
+              <button
+                @click.stop="confirmDelete(word)"
+                class="flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/40 hover:bg-red-500/20 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                title="Remove"
+              >
+                <span class="material-symbols-outlined text-[14px]">close</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -205,6 +208,70 @@
         </div>
       </div>
     </Modal>
+
+    <!-- Modal de Adição em Massa -->
+    <Modal
+      v-model="showBulkModal"
+      title="Bulk Add Banned Words"
+      size="md"
+    >
+      <div class="space-y-4">
+        <p class="text-slate-600 dark:text-white/60 text-sm">
+          Add multiple words or phrases at once. Separate them with commas or new lines.
+        </p>
+        
+        <div>
+          <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Words/Phrases</label>
+          <textarea
+            v-model="bulkData.words"
+            rows="6"
+            class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            placeholder="word1, word2, phrase one, phrase two"
+          ></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Category *</label>
+            <select
+              v-model="bulkData.category"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            >
+              <option value="spam">Spam</option>
+              <option value="ofensivo">Offensive</option>
+              <option value="outro">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Action *</label>
+            <select
+              v-model="bulkData.action"
+              class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            >
+              <option value="block">Block</option>
+              <option value="warn">Warn</option>
+              <option value="replace">Replace</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button
+            @click="handleBulkSubmit"
+            :disabled="submitting || !bulkData.words.trim()"
+            class="flex-1 px-4 py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+          >
+            {{ submitting ? 'Adding...' : 'Add Words' }}
+          </button>
+          <button
+            @click="showBulkModal = false"
+            class="px-4 py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -224,15 +291,28 @@ const searchQuery = ref('')
 const filterCategory = ref('')
 const filterAction = ref('')
 const showFormModal = ref(false)
+const showBulkModal = ref(false)
 const showDeleteModal = ref(false)
 const editingWord = ref<BannedWord | null>(null)
 const wordToDelete = ref<BannedWord | null>(null)
 const submitting = ref(false)
 
+const categories = [
+  { id: 'spam', label: 'Spam' },
+  { id: 'ofensivo', label: 'Offensive' },
+  { id: 'outro', label: 'Other' },
+]
+
 const formData = ref({
   word: '',
   category: '' as 'spam' | 'ofensivo' | 'outro' | '',
   action: '' as 'block' | 'warn' | 'replace' | '',
+})
+
+const bulkData = ref({
+  words: '',
+  category: 'outro' as 'spam' | 'ofensivo' | 'outro',
+  action: 'block' as 'block' | 'warn' | 'replace',
 })
 
 const filteredWords = computed(() => {
@@ -256,6 +336,10 @@ const filteredWords = computed(() => {
 
   return words
 })
+
+function getWordsByCategory(category: string) {
+  return filteredWords.value.filter(w => w.category === category)
+}
 
 function getCategoryLabel(category: string): string {
   const labels: Record<string, string> = {
@@ -291,6 +375,24 @@ function getActionClass(action: string): string {
     replace: 'bg-blue-500/20 text-blue-400',
   }
   return classes[action] || 'bg-gray-500/20 text-gray-400'
+}
+
+function getActionDotClass(action: string): string {
+  const classes: Record<string, string> = {
+    block: 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]',
+    warn: 'bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.5)]',
+    replace: 'bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.5)]',
+  }
+  return classes[action] || 'bg-gray-500'
+}
+
+function getCategoryDotClass(category: string): string {
+  const classes: Record<string, string> = {
+    spam: 'bg-purple-500',
+    ofensivo: 'bg-red-500',
+    outro: 'bg-gray-500',
+  }
+  return classes[category] || 'bg-gray-500'
 }
 
 function formatDate(dateString: string): string {
@@ -364,6 +466,50 @@ async function handleDelete() {
   } catch (error: any) {
     toast.error(error.message || 'Error deleting word')
     console.error('Error deleting banned word:', error)
+  } finally {
+    submitting.value = false
+  }
+}
+
+async function handleBulkSubmit() {
+  if (!bulkData.value.words.trim()) return
+
+  const words = bulkData.value.words
+    .split(/[,\n]/)
+    .map(w => w.trim())
+    .filter(w => w.length > 0)
+
+  if (words.length === 0) return
+
+  try {
+    submitting.value = true
+    let successCount = 0
+    let failCount = 0
+
+    // Por enquanto inserindo um por um (a store/supabase poderia fazer batch mas vamos usar o que existe)
+    for (const word of words) {
+      try {
+        await adminStore.createBannedWord({
+          word,
+          category: bulkData.value.category,
+          action: bulkData.value.action
+        })
+        successCount++
+      } catch (e) {
+        failCount++
+      }
+    }
+
+    if (failCount === 0) {
+      toast.success(`${successCount} words added successfully!`)
+    } else {
+      toast.success(`${successCount} words added, ${failCount} failed (possibly duplicates).`)
+    }
+
+    showBulkModal.value = false
+    bulkData.value.words = ''
+  } catch (error: any) {
+    toast.error('Error in bulk operation')
   } finally {
     submitting.value = false
   }

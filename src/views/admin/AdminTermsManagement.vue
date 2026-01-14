@@ -107,47 +107,56 @@
         :closable="true"
         size="4xl"
       >
-        <div class="space-y-6 flex flex-col h-full min-h-0">
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div :class="editingTerm ? 'md:col-span-7' : 'md:col-span-9'">
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Title Field -->
+            <div>
               <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
                 Title
               </label>
               <input
                 v-model="termForm.title"
                 type="text"
-                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="Enter term title"
+                class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                placeholder="Ex: Terms of Use - 2024"
               />
             </div>
 
-          <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
-              {{ t('adminTermsManagement.termTitleLabel') }}
-            </label>
-            <input
-              v-model="termForm.title"
-              type="text"
-              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
-              :placeholder="t('adminTermsManagement.titlePlaceholder')"
-            />
+            <!-- Term Type Field -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+                Term Type
+              </label>
+              <select
+                v-model="termForm.term_type"
+                class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              >
+                <option value="terms_of_service">Terms of Service</option>
+                <option value="privacy_policy">Privacy Policy</option>
+              </select>
+            </div>
           </div>
 
-          <div class="flex-1 min-h-0 flex flex-col">
-            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2 flex-shrink-0">
+          <!-- Version Info (Read-only for existing, or hint for new) -->
+          <div v-if="editingTerm" class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-white/5 text-sm">
+            <p class="text-slate-600 dark:text-slate-400">
+              <span class="font-bold">Version {{ termForm.version }}</span>. Editing an active term will update its content directly. To create a new version, close this and use "Create Term".
+            </p>
+          </div>
+
+          <!-- Content Area -->
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
               Content
             </label>
-            <div class="flex-1 min-h-0">
+            <div class="min-h-[400px]">
               <RichTextEditor
                 v-model="termForm.content"
                 placeholder="Enter term content..."
-                max-height="100%"
+                max-height="600px"
               />
             </div>
           </div>
-
-
-        </div>
         </div>
 
         <template #footer>
@@ -385,55 +394,49 @@ onMounted(() => {
 <style scoped>
 /* Standard CSS replacement for @apply rules to fix linter errors */
 .prose {
-  color: #334155; /* text-slate-700 */
-}
-:deep(.dark) .prose {
-  color: #cbd5e1; /* dark:text-slate-300 */
-}
-
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-  color: #0f172a; /* text-slate-900 */
-  font-weight: 700; /* font-bold */
-  margin-top: 1.5rem; /* mt-6 */
-  margin-bottom: 1rem; /* mb-4 */
+  @apply text-slate-700 dark:text-slate-300;
+  font-size: 1.1rem;
+  line-height: 1.8;
 }
 
-:deep(.dark) .prose h1,
-:deep(.dark) .prose h2,
-:deep(.dark) .prose h3,
-:deep(.dark) .prose h4,
-:deep(.dark) .prose h5,
-:deep(.dark) .prose h6 {
-  color: #ffffff; /* dark:text-white */
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply font-black text-slate-900 dark:text-white mt-10 mb-6 tracking-tight;
 }
+
+.prose h1 { @apply text-4xl lg:text-5xl; }
+.prose h2 { @apply text-3xl lg:text-4xl border-b border-slate-200 dark:border-white/10 pb-4; }
+.prose h3 { @apply text-2xl lg:text-3xl; }
+.prose h4 { @apply text-xl lg:text-2xl; }
 
 .prose p {
-  margin-bottom: 1rem; /* mb-4 */
-  line-height: 1.625; /* leading-relaxed */
+  @apply mb-6;
 }
 
-.prose ul,
-.prose ol {
-  margin-bottom: 1rem; /* mb-4 */
-  padding-left: 1.5rem; /* pl-6 */
+.prose ul, .prose ol {
+  @apply mb-8 ml-6;
 }
+
+.prose ul { @apply list-disc; }
+.prose ol { @apply list-decimal; }
 
 .prose li {
-  margin-bottom: 0.5rem; /* mb-2 */
+  @apply mb-3 pl-2;
+}
+
+.prose strong {
+  @apply font-bold text-slate-900 dark:text-white;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary/50 bg-slate-100 dark:bg-white/5 pl-6 py-4 pr-4 italic my-8 rounded-r-lg;
+}
+
+.prose hr {
+  @apply my-12 border-slate-200 dark:border-white/10;
 }
 
 .prose a {
-  color: #f425f4; /* text-primary */
-  text-decoration: underline;
-}
-
-.prose a:hover {
-  color: #67e8f9; /* hover:text-cyan-300 */
+  @apply text-primary hover:text-secondary underline underline-offset-4 transition-colors font-bold;
 }
 
 @keyframes gradient {
