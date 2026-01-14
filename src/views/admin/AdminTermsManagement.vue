@@ -14,11 +14,12 @@
               <span class="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary animate-gradient-x">Terms & Policies</span>
             </h1>
             <p class="text-slate-500 dark:text-slate-400 text-lg font-medium max-w-2xl">
-              Control center for legal documents and platform privacy policies.
+              {{ termScope === 'platform' ? 'Control center for legal documents and platform privacy policies.' : 'View and manage custom terms attached to programs and services.' }}
             </p>
           </div>
           
           <Button
+            v-if="termScope === 'platform'"
             variant="primary"
             @click="showCreateModal = true"
             class="group relative h-16 px-8 rounded-2xl font-black text-black overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-primary/20"
@@ -31,12 +32,41 @@
           </Button>
         </header>
 
-        <!-- Terms List (Scalable List Layout) -->
-        <div v-if="loading" class="flex flex-col gap-4">
-          <div v-for="i in 5" :key="i" class="h-24 rounded-3xl bg-slate-100 dark:bg-white/5 animate-pulse border border-slate-200 dark:border-white/10"></div>
+        <!-- Scope Filter Tabs -->
+        <div class="flex items-center gap-3 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-2 border border-slate-200 dark:border-white/10 w-fit">
+          <button
+            @click="termScope = 'platform'"
+            class="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+            :class="termScope === 'platform' 
+              ? 'bg-primary text-black shadow-lg' 
+              : 'text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white'"
+          >
+            <span class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">public</span>
+              Platform Terms
+            </span>
+          </button>
+          <button
+            @click="termScope = 'item'"
+            class="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+            :class="termScope === 'item' 
+              ? 'bg-secondary text-black shadow-lg' 
+              : 'text-slate-500 dark:text-slate-400 hover:text-secondary dark:hover:text-white'"
+          >
+            <span class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">inventory_2</span>
+              Item-Specific Terms
+            </span>
+          </button>
         </div>
 
-        <div v-else class="flex flex-col gap-4">
+        <!-- Platform Terms List -->
+        <div v-if="termScope === 'platform'">
+          <div v-if="loading" class="flex flex-col gap-4">
+            <div v-for="i in 5" :key="i" class="h-24 rounded-3xl bg-slate-100 dark:bg-white/5 animate-pulse border border-slate-200 dark:border-white/10"></div>
+          </div>
+
+          <div v-else class="flex flex-col gap-4">
           <div
             v-for="term in terms"
             :key="term.id"
@@ -126,6 +156,89 @@
                   <span class="material-symbols-outlined group-hover/btn:scale-110 transition-transform">history</span>
                 </router-link>
               </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- Item-Specific Terms List -->
+        <div v-else-if="termScope === 'item'">
+          <div v-if="loading" class="flex flex-col gap-4">
+            <div v-for="i in 3" :key="i" class="h-32 rounded-3xl bg-slate-100 dark:bg-white/5 animate-pulse border border-slate-200 dark:border-white/10"></div>
+          </div>
+
+          <div v-else class="flex flex-col gap-6">
+            <!-- Header with Create Button -->
+            <div class="flex items-center justify-between">
+              <p class="text-slate-500 dark:text-slate-400 text-sm">
+                Custom terms attached to specific programs or services
+              </p>
+              <Button
+                variant="primary"
+                @click="showItemTermModal = true"
+                class="group relative h-14 px-6 rounded-2xl font-black text-black overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-xl shadow-secondary/20"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-secondary bg-[length:200%_auto] animate-gradient-x"></div>
+                <span class="relative flex items-center gap-2 uppercase tracking-widest text-xs">
+                  <span class="material-symbols-outlined font-bold">add_circle</span>
+                  Create Item Term
+                </span>
+              </Button>
+            </div>
+
+            <!-- Item Terms List -->
+            <div v-if="itemsWithTerms.length > 0" class="flex flex-col gap-4">
+              <div
+                v-for="item in itemsWithTerms"
+                :key="item.id"
+                class="group relative p-0.5 rounded-[2rem] bg-gradient-to-r from-slate-200 to-transparent dark:from-white/10 dark:to-transparent hover:from-secondary/40 transition-all duration-500"
+              >
+                <div class="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-[1.9rem] p-5 md:p-6 border border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-start justify-between gap-6">
+                  <!-- Info Section -->
+                  <div class="flex flex-1 items-start gap-6 w-full">
+                    <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-secondary/10 transition-colors">
+                      <span class="material-symbols-outlined text-secondary text-3xl">
+                        {{ item.type === 'program' ? 'school' : 'business_center' }}
+                      </span>
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-3 mb-2">
+                        <h3 class="text-xl font-black text-slate-900 dark:text-white truncate group-hover:text-secondary transition-colors">
+                          {{ item.name }}
+                        </h3>
+                        <div class="px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-[9px] font-black uppercase tracking-tighter flex items-center gap-1.5 shrink-0">
+                          {{ item.type === 'program' ? 'Program' : 'Service' }}
+                        </div>
+                      </div>
+                      
+                      <div class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2" v-html="item.terms_content_en.substring(0, 150) + '...'"></div>
+                    </div>
+                  </div>
+
+                  <!-- Actions Section -->
+                  <div class="flex items-center gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-white/5">
+                    <button
+                      @click="editItemTerm(item)"
+                      class="h-12 px-5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white text-xs font-bold uppercase tracking-wider hover:bg-secondary/10 hover:border-secondary/30 transition-all flex items-center gap-2"
+                    >
+                      <span class="material-symbols-outlined text-sm">edit</span>
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="flex flex-col items-center justify-center py-20 px-6 text-center">
+              <div class="w-24 h-24 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-5xl text-secondary">inventory_2</span>
+              </div>
+              <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">No Item-Specific Terms Yet</h3>
+              <p class="text-slate-500 dark:text-slate-400 max-w-md mb-6">
+                Click "Create Item Term" above to attach custom terms to a program or service.
+              </p>
             </div>
           </div>
         </div>
@@ -239,13 +352,111 @@
             ></div>
           </div>
         </Modal>
+
+        <!-- Item Term Creation Modal -->
+        <Modal
+          v-model="showItemTermModal"
+          size="4xl"
+          @update:modelValue="(val) => { if (val) fetchProgramsAndServices() }"
+        >
+          <template #header>
+            <div class="flex flex-col gap-1">
+              <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">
+                Create <span class="text-secondary font-black">Item Term</span>
+              </h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Attach custom terms to a specific program or service.</p>
+            </div>
+          </template>
+
+          <div class="space-y-6 py-4">
+            <!-- Item Type Selection -->
+            <div class="grid grid-cols-2 gap-4">
+              <button
+                @click="itemTermForm.item_type = 'program'"
+                class="p-4 rounded-xl border-2 transition-all"
+                :class="itemTermForm.item_type === 'program' 
+                  ? 'border-secondary bg-secondary/10 text-secondary' 
+                  : 'border-slate-200 dark:border-white/10 hover:border-secondary/50'"
+              >
+                <span class="material-symbols-outlined text-3xl mb-2">school</span>
+                <div class="text-xs font-black uppercase">Program</div>
+              </button>
+              <button
+                @click="itemTermForm.item_type = 'service'"
+                class="p-4 rounded-xl border-2 transition-all"
+                :class="itemTermForm.item_type === 'service' 
+                  ? 'border-secondary bg-secondary/10 text-secondary' 
+                  : 'border-slate-200 dark:border-white/10 hover:border-secondary/50'"
+              >
+                <span class="material-symbols-outlined text-3xl mb-2">business_center</span>
+                <div class="text-xs font-black uppercase">Service</div>
+              </button>
+            </div>
+
+            <!-- Item Selection -->
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                Select {{ itemTermForm.item_type === 'program' ? 'Program' : 'Service' }}
+              </label>
+              <select
+                v-model="itemTermForm.item_id"
+                class="w-full px-4 py-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all"
+              >
+                <option value="">-- Select --</option>
+                <template v-if="itemTermForm.item_type === 'program'">
+                  <option v-for="program in programs" :key="program.id" :value="program.id">
+                    {{ program.title_pt || program.title_en }}
+                  </option>
+                </template>
+                <template v-else>
+                  <option v-for="service in services" :key="service.id" :value="service.id">
+                    {{ service.name }}
+                  </option>
+                </template>
+              </select>
+            </div>
+
+            <!-- Content (English Only) -->
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                Terms Content (English)
+              </label>
+              <AdvancedLegalEditor
+                v-model="itemTermForm.content_en"
+                placeholder="Write the custom terms for this item..."
+              />
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex items-center justify-end gap-4 w-full">
+              <button
+                @click="showItemTermModal = false"
+                class="px-8 py-4 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                @click="saveItemTerm"
+                :disabled="saving"
+                class="group relative h-14 px-10 rounded-2xl font-black text-black overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-xl shadow-secondary/20 disabled:opacity-50"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-secondary via-primary to-secondary bg-[length:200%_auto] animate-gradient-x"></div>
+                <span class="relative flex items-center gap-2 uppercase tracking-widest text-xs">
+                  <span class="material-symbols-outlined text-sm font-bold">{{ saving ? 'sync' : 'save' }}</span>
+                  Save Terms
+                </span>
+              </button>
+            </div>
+          </template>
+        </Modal>
       </div>
     </div>
   </AdminLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { supabase } from '@/lib/supabase'
@@ -271,6 +482,18 @@ const showCreateModal = ref(false)
 const showPreviewModal = ref(false)
 const editingTerm = ref<ApplicationTerm | null>(null)
 const previewTermData = ref<ApplicationTerm | null>(null)
+const termScope = ref<'platform' | 'item'>('platform')
+const showItemTermModal = ref(false)
+
+const itemTermForm = ref({
+  item_type: 'program' as 'program' | 'service',
+  item_id: '',
+  content_en: '',
+})
+
+const programs = ref<Array<{ id: string; title_pt: string; title_en: string }>>([])
+const services = ref<Array<{ id: string; name: string }>>([])
+const itemsWithTerms = ref<Array<{ id: string; name: string; type: 'program' | 'service'; terms_content_en: string }>>([])
 
 const termForm = ref({
   title: '',
@@ -439,10 +662,157 @@ async function activateTerm(termId: string) {
   }
 }
 
+// Fetch programs and services for item term creation
+async function fetchProgramsAndServices() {
+  try {
+    const { data: programsData, error: programsError } = await supabase
+      .from('programs')
+      .select('id, title_pt, title_en')
+      .order('created_at', { ascending: false })
+    
+    if (programsError) throw programsError
+    programs.value = programsData || []
+
+    const { data: servicesData, error: servicesError } = await supabase
+      .from('services')
+      .select('id, nome_pt, nome_en')
+      .order('created_at', { ascending: false })
+    
+    if (servicesError) throw servicesError
+    services.value = (servicesData || []).map((s: any) => ({
+      id: s.id,
+      name: s.nome_pt || s.nome_en || 'Unnamed Service'
+    }))
+  } catch (err: any) {
+    console.error('Error fetching programs/services:', err)
+    toast.error('Failed to load programs and services')
+  }
+}
+
+// Fetch items (programs/services) that have custom terms
+async function fetchItemsWithTerms() {
+  loading.value = true
+  try {
+    const items: Array<{ id: string; name: string; type: 'program' | 'service'; terms_content_en: string }> = []
+
+    // Fetch programs with terms
+    const { data: programsData, error: programsError } = await supabase
+      .from('programs')
+      .select('id, title_pt, title_en, terms_content_en')
+      .not('terms_content_en', 'is', null)
+      .neq('terms_content_en', '')
+    
+    if (programsError) throw programsError
+    
+    if (programsData) {
+      items.push(...programsData.map((p: any) => ({
+        id: p.id,
+        name: p.title_pt || p.title_en || 'Unnamed Program',
+        type: 'program' as const,
+        terms_content_en: p.terms_content_en
+      })))
+    }
+
+    // Fetch services with terms
+    const { data: servicesData, error: servicesError } = await supabase
+      .from('services')
+      .select('id, nome_pt, nome_en, terms_content_en')
+      .not('terms_content_en', 'is', null)
+      .neq('terms_content_en', '')
+    
+    if (servicesError) throw servicesError
+    
+    if (servicesData) {
+      items.push(...servicesData.map((s: any) => ({
+        id: s.id,
+        name: s.nome_pt || s.nome_en || 'Unnamed Service',
+        type: 'service' as const,
+        terms_content_en: s.terms_content_en
+      })))
+    }
+
+    itemsWithTerms.value = items
+  } catch (err: any) {
+    console.error('Error fetching items with terms:', err)
+    toast.error('Failed to load items with terms')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Save item-specific term
+async function saveItemTerm() {
+  if (!itemTermForm.value.item_id) {
+    toast.error('Please select a program or service')
+    return
+  }
+
+  if (!itemTermForm.value.content_en) {
+    toast.error('Please provide term content')
+    return
+  }
+
+  saving.value = true
+  try {
+    const tableName = itemTermForm.value.item_type === 'program' ? 'programs' : 'services'
+    
+    const { error } = await supabase
+      .from(tableName)
+      .update({
+        terms_content_en: itemTermForm.value.content_en,
+      })
+      .eq('id', itemTermForm.value.item_id)
+
+    if (error) throw error
+
+    toast.success('Item terms saved successfully!')
+    showItemTermModal.value = false
+    
+    // Reload items list
+    await fetchItemsWithTerms()
+    
+    // Reset form
+    itemTermForm.value = {
+      item_type: 'program',
+      item_id: '',
+      content_en: '',
+    }
+  } catch (err: any) {
+    console.error('Error saving item term:', err)
+    toast.error(err.message || 'Failed to save item terms')
+  } finally {
+    saving.value = false
+  }
+}
+
+// Edit item-specific term
+function editItemTerm(item: { id: string; name: string; type: 'program' | 'service'; terms_content_en: string }) {
+  itemTermForm.value = {
+    item_type: item.type,
+    item_id: item.id,
+    content_en: item.terms_content_en,
+  }
+  showItemTermModal.value = true
+}
+
 function previewTerm(term: ApplicationTerm) {
   previewTermData.value = term
   showPreviewModal.value = true
 }
+
+// Watch for item term modal opening
+watch(showItemTermModal, (newVal) => {
+  if (newVal) {
+    fetchProgramsAndServices()
+  }
+})
+
+// Watch for scope changes to load items with terms
+watch(termScope, (newVal) => {
+  if (newVal === 'item') {
+    fetchItemsWithTerms()
+  }
+})
 
 onMounted(() => {
   fetchTerms()
