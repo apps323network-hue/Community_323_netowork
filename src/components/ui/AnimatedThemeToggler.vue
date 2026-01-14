@@ -87,6 +87,11 @@ const handleToggle = async () => {
     console.error('Animation failed', e)
   }
 }
+
+// Expose handleToggle so parent components can trigger it
+defineExpose({
+  handleToggle
+})
 </script>
 
 <style>

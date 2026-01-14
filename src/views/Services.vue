@@ -19,26 +19,26 @@
         <div class="relative z-10 flex flex-col gap-3 sm:gap-4 md:gap-6 px-3 sm:px-4 md:px-6 lg:px-12 py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 text-center md:text-left items-center md:items-start">
           <div class="flex flex-col gap-2 sm:gap-3 max-w-2xl w-full">
             <div class="inline-flex items-center gap-1 sm:gap-2 self-center md:self-start px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm shadow-[0_0_15px_rgba(0,243,255,0.1)]">
-              <span class="material-symbols-outlined text-secondary text-sm sm:text-base md:text-[18px]">verified</span>
-              <span class="text-secondary text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
+              <span class="material-symbols-outlined text-secondary text-base sm:text-base md:text-[18px]">verified</span>
+              <span class="text-secondary text-[11px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
             </div>
-            <h1 class="text-slate-900 dark:text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight tracking-tight">
+            <h1 class="text-slate-900 dark:text-white text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight tracking-tight">
               {{ t('services.heroTitle1') }} <br class="hidden sm:block"/>
               <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary drop-shadow-[0_0_15px_rgba(244,37,244,0.3)]">{{ t('services.heroTitle2') }}</span>
             </h1>
-            <p class="text-slate-600 dark:text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mt-1 sm:mt-2">
+            <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-sm md:text-base lg:text-lg font-medium leading-relaxed max-w-lg mt-2 sm:mt-2">
               {{ t('services.heroDescription') }}
             </p>
           </div>
-          <div class="flex flex-col sm:flex-row flex-wrap gap-2.5 sm:gap-3 md:gap-4 justify-center md:justify-start mt-2 w-full sm:w-auto">
-            <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-gradient-to-r from-primary to-secondary text-black text-xs sm:text-sm md:text-base font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)] hover:shadow-[0_0_40px_rgba(0,243,255,0.5)] hover:scale-105 w-full sm:w-auto" @click="exploreServices">
+          <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-3 md:gap-4 justify-center md:justify-start mt-4 sm:mt-2 w-full sm:w-auto">
+            <button class="flex items-center justify-center rounded-lg h-12 sm:h-10 md:h-12 px-6 sm:px-4 md:px-6 bg-gradient-to-r from-primary to-secondary text-black text-sm sm:text-sm md:text-base font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)] hover:shadow-[0_0_40px_rgba(0,243,255,0.5)] hover:scale-105 w-full sm:w-auto" @click="exploreServices">
               {{ t('services.exploreServices') }}
             </button>
             <button 
               @click="handlePublishService"
-              class="flex items-center justify-center gap-2 rounded-lg h-9 sm:h-10 md:h-12 px-3 sm:px-4 md:px-6 bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 border border-primary/30 text-primary text-xs sm:text-sm md:text-base font-bold backdrop-blur-sm transition-all w-full sm:w-auto"
+              class="flex items-center justify-center gap-2 rounded-lg h-12 sm:h-10 md:h-12 px-6 sm:px-4 md:px-6 bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/20 border border-primary/30 text-primary text-sm sm:text-sm md:text-base font-bold backdrop-blur-sm transition-all w-full sm:w-auto"
             >
-              <span class="material-symbols-outlined text-sm sm:text-base">add_circle</span>
+              <span class="material-symbols-outlined text-base sm:text-base">add_circle</span>
               {{ t('services.publishService') }}
             </button>
 
@@ -52,14 +52,14 @@
           v-for="filter in filters"
           :key="filter.id"
           :class="[
-            'flex h-8 sm:h-9 md:h-10 shrink-0 items-center justify-center gap-x-1 sm:gap-x-1.5 md:gap-x-2 rounded-full px-2.5 sm:px-3 md:px-4 lg:px-5 transition-all outline-none',
+            'flex h-9 sm:h-10 md:h-11 shrink-0 items-center justify-center gap-x-1 sm:gap-x-1.5 md:gap-x-2 rounded-full px-4 sm:px-5 md:px-6 lg:px-7 transition-all outline-none',
             activeFilter === filter.id
               ? 'bg-secondary text-black shadow-[0_0_15px_rgba(0,243,255,0.4)] hover:scale-105 font-bold'
               : 'bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-white/5 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white group font-medium'
           ]"
           @click="activeFilter = filter.id"
         >
-          <span class="text-[10px] sm:text-xs md:text-sm whitespace-nowrap">{{ filter.label }}</span>
+          <span class="text-xs sm:text-sm md:text-base whitespace-nowrap">{{ filter.label }}</span>
         </button>
       </div>
 

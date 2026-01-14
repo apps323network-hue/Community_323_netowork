@@ -40,7 +40,7 @@
             @click="handleSave"
             :disabled="saving || !hasChanges"
             :class="[
-              'px-6 py-2.5 rounded-full font-bold text-sm transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+              'hidden md:block px-6 py-2.5 rounded-full font-bold text-sm transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
               hasChanges 
                 ? 'bg-gradient-to-r from-secondary to-primary text-white shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:shadow-[0_0_20px_rgba(255,0,153,0.5)]'
                 : 'bg-input-bg border border-input-border text-text-muted hover:text-white'
@@ -72,11 +72,13 @@
             @edit-avatar="handleEditAvatar"
           />
 
-          <ProfileSocialLinks
-            v-model:linkedin="editableProfile.linkedin"
-            v-model:instagram="editableProfile.instagram"
-            :readonly="isPreviewMode"
-          />
+          <div class="hidden lg:block space-y-6">
+            <ProfileSocialLinks
+              v-model:linkedin="editableProfile.linkedin"
+              v-model:instagram="editableProfile.instagram"
+              :readonly="isPreviewMode"
+            />
+          </div>
         </div>
 
         <!-- Right Content - Forms -->
@@ -92,6 +94,15 @@
             v-model:bio="editableProfile.bio"
             :readonly="isPreviewMode"
           />
+
+          <!-- Mobile Social Links (Visible only on mobile/tablet) -->
+          <div class="lg:hidden">
+            <ProfileSocialLinks
+              v-model:linkedin="editableProfile.linkedin"
+              v-model:instagram="editableProfile.instagram"
+              :readonly="isPreviewMode"
+            />
+          </div>
 
           <!-- ============================================
                FUNCIONALIDADE DESATIVADA: CONQUISTAS E DESAFIOS
@@ -152,8 +163,8 @@
             @manage-subscription="handleManageSubscription"
           />
 
-          <!-- Mobile Sticky Footer -->
-          <div v-if="!isPreviewMode" class="md:hidden sticky bottom-4 z-40 bg-surface-dark/90 backdrop-blur border border-[#492249] p-4 rounded-xl shadow-2xl flex gap-3">
+          <!-- Mobile Footer Actions (Non-sticky) -->
+          <div v-if="!isPreviewMode" class="md:hidden mt-6 bg-surface-dark/90 backdrop-blur border border-[#492249] p-4 rounded-xl shadow-2xl flex gap-3">
             <button class="flex-1 py-3 rounded-full border border-input-border text-white font-bold text-sm">
               {{ t('common.cancel') }}
             </button>

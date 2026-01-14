@@ -181,6 +181,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/contact-us',
+    name: 'ContactUs',
+    component: () => import('@/views/ContactUs.vue'),
+    meta: { publicAccess: true },
+  },
+  {
     path: '/upgrade',
     name: 'Upgrade',
     component: () => import('@/views/Upgrade.vue'),

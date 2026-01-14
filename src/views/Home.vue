@@ -1,6 +1,6 @@
 <template>
   <HomeLayout>
-    <div class="space-y-8 w-full">
+    <div class="space-y-6 w-full">
       <!-- Post Form (only for authenticated users) -->
       <PostForm v-if="isAuthenticated" @post-created="handlePostCreated" @event-created="handleEventCreated" />
       
@@ -9,10 +9,10 @@
         <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">{{ t('home.guestBannerTitle') }}</h3>
         <p class="text-slate-600 dark:text-gray-300 mb-6 font-medium">{{ t('home.guestBannerDescription') }}</p>
         <button 
-          @click="showAuthModal('signup')"
+          @click="showAuthModal('login')"
           class="px-8 py-3 bg-gradient-to-r from-secondary to-primary text-white font-black rounded-xl hover:shadow-lg transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-2 mx-auto"
         >
-          {{ t('auth.register') || 'Criar Conta Grátis' }}
+          {{ t('auth.loginOrRegister') }}
           <span class="material-icons-outlined text-sm">arrow_forward</span>
         </button>
       </div>

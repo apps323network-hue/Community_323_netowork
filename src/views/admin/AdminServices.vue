@@ -345,6 +345,99 @@
             </div>
           </div>
 
+
+
+          <!-- Service Image -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Service Image</h3>
+                <p class="text-xs text-slate-500 dark:text-gray-400">Add a cover image for your service.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 border-b border-slate-200 dark:border-white/10">
+              <button
+                type="button"
+                @click="imageUploadType = 'file'"
+                class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+                :class="imageUploadType === 'file' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200'"
+              >
+                Upload File
+              </button>
+              <button
+                type="button"
+                @click="imageUploadType = 'url'"
+                class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+                :class="imageUploadType === 'url' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200'"
+              >
+                Image URL
+              </button>
+            </div>
+
+            <div v-if="imageUploadType === 'file'" class="animate-in fade-in slide-in-from-top-2">
+              <label class="block w-full border-2 border-dashed border-slate-300 dark:border-white/20 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors">
+                <input type="file" accept="image/*" class="hidden" @change="handleImageUpload">
+                <div v-if="uploadingImage" class="flex flex-col items-center">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
+                  <span class="text-sm text-slate-500">Uploading...</span>
+                </div>
+                <div v-else class="flex flex-col items-center">
+                  <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
+                  <p class="text-sm font-medium text-slate-900 dark:text-white">Click to upload</p>
+                  <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">PNG, JPG, GIF up to 2MB</p>
+                </div>
+              </label>
+            </div>
+
+            <div v-else class="animate-in fade-in slide-in-from-top-2">
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Image URL</label>
+              <input
+                v-model="formData.image_url"
+                type="url"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+
+            <!-- Preview -->
+            <div v-if="formData.image_url" class="relative group rounded-lg overflow-hidden w-full max-w-sm aspect-video bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+              <img :src="formData.image_url" class="w-full h-full object-cover">
+              <button
+                type="button"
+                @click="formData.image_url = ''"
+                class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- External Service Config -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">External Service</h3>
+                <p class="text-xs text-slate-500 dark:text-gray-400">If enabled, users will be redirected to an external URL instead of checking out here.</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="formData.is_external" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/20 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
+            <div v-if="formData.is_external" class="animate-in fade-in slide-in-from-top-2">
+              <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">External URL *</label>
+              <input
+                v-model="formData.external_url"
+                type="url"
+                :required="formData.is_external"
+                class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-lighter p-3 text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                placeholder="https://example.com/checkout"
+              />
+            </div>
+          </div>
+
           <div class="flex gap-4">
             <label class="flex items-center gap-2 cursor-pointer">
               <input
@@ -423,6 +516,7 @@ import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import Modal from '@/components/ui/Modal.vue'
 import type { AdminService } from '@/types/admin'
 import { toast } from 'vue-sonner'
+import { supabase } from '@/lib/supabase'
 
 const router = useRouter()
 const adminStore = useAdminStore()
@@ -436,6 +530,54 @@ const editingService = ref<AdminService | null>(null)
 const showRejectModal = ref(false)
 const rejectionReason = ref('')
 const serviceToReject = ref<string | null>(null)
+
+// Image Upload State
+const imageUploadType = ref<'file' | 'url'>('file')
+const uploadingImage = ref(false)
+
+async function handleImageUpload(event: Event) {
+  const input = event.target as HTMLInputElement
+  if (!input.files || input.files.length === 0) return
+
+  const file = input.files[0]
+  if (!file.type.startsWith('image/')) {
+    toast.error('Please upload an image file')
+    return
+  }
+
+  // 2MB limit
+  if (file.size > 2 * 1024 * 1024) {
+    toast.error('Image must be less than 2MB')
+    return
+  }
+
+  try {
+    uploadingImage.value = true
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+    const filePath = `${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('service-images')
+      .upload(filePath, file)
+
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('service-images')
+      .getPublicUrl(filePath)
+
+    formData.value.image_url = publicUrl
+    toast.success('Image uploaded successfully')
+  } catch (error: any) {
+    console.error('Error uploading image:', error)
+    toast.error('Error uploading image')
+  } finally {
+    uploadingImage.value = false
+    // Clear input
+    input.value = ''
+  }
+}
 
 const showModal = computed({
   get: () => showCreateModal.value || showEditModal.value,
@@ -495,6 +637,9 @@ const formData = ref<Partial<AdminService>>({
   moeda: 'USD',
   terms_content_pt: '',
   terms_content_en: '',
+  is_external: false,
+  external_url: '',
+  image_url: '',
 })
 
 function formatPrice(cents: number, currency: string = 'USD'): string {
@@ -524,6 +669,9 @@ function editService(service: AdminService) {
     moeda: service.moeda || 'USD',
     terms_content_pt: service.terms_content_pt || '',
     terms_content_en: service.terms_content_en || '',
+    is_external: service.is_external || false,
+    external_url: service.external_url || '',
+    image_url: service.image_url || '',
   }
   showEditModal.value = true
 }
@@ -616,8 +764,9 @@ function closeModal() {
     rejection_reason: '',
     preco: undefined,
     moeda: 'USD',
-    terms_content_pt: '',
-    terms_content_en: '',
+
+    is_external: false,
+    external_url: '',
   }
 }
 
