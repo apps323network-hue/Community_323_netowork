@@ -518,7 +518,22 @@ async function fetchServices() {
     const { data, error: fetchError } = await query.order('destaque', { ascending: false })
 
     if (fetchError) throw fetchError
-    services.value = data || []
+    
+    // Filter out user-created "Tradução de Documentos" service in production (only show on localhost)
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    
+    services.value = (data || []).filter((service: any) => {
+      // Hide user-created translation service in production
+      // Check by name since it's a user-created service
+      const isTranslationService = 
+        service.nome_pt?.toLowerCase().includes('tradução de documentos') ||
+        service.nome_en?.toLowerCase().includes('document translation')
+      
+      if (isTranslationService && service.is_user_service && !isLocalhost) {
+        return false
+      }
+      return true
+    })
   } catch (error) {
     console.error('Error fetching services:', error)
   } finally {

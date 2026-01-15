@@ -18,61 +18,66 @@
 
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-              <span class="material-icons text-green-500 text-xl">check_circle</span>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Active</p>
-              <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.active }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center">
-              <span class="material-icons text-yellow-500 text-xl">pending</span>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Pending</p>
-              <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.pending }}</p>
+        <template v-if="initialLoading">
+          <div v-for="i in 5" :key="i" class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5 animate-pulse h-24"></div>
+        </template>
+        <template v-else>
+          <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                <span class="material-icons text-green-500 text-xl">check_circle</span>
+              </div>
+              <div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Active</p>
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.active }}</p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-              <span class="material-icons text-red-500 text-xl">trending_down</span>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Churn</p>
-              <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.churnRate }}%</p>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-              <span class="material-icons text-blue-500 text-xl">analytics</span>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">ARPU</p>
-              <p class="text-xl font-black text-slate-900 dark:text-white">{{ formatCurrency(stats.arpu) }}</p>
+          <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                <span class="material-icons text-yellow-500 text-xl">pending</span>
+              </div>
+              <div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Pending</p>
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.pending }}</p>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <span class="material-icons text-primary text-xl">payments</span>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">MRR</p>
-              <p class="text-xl font-black text-slate-900 dark:text-white">{{ formatCurrency(stats.mrr) }}</p>
+          <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                <span class="material-icons text-red-500 text-xl">trending_down</span>
+              </div>
+              <div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">Churn</p>
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ stats.churnRate }}%</p>
+              </div>
             </div>
           </div>
-        </div>
+          <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <span class="material-icons text-blue-500 text-xl">analytics</span>
+              </div>
+              <div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">ARPU</p>
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ formatCurrency(stats.arpu) }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-surface-dark rounded-xl p-5 border border-slate-200 dark:border-white/5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <span class="material-icons text-primary text-xl">payments</span>
+              </div>
+              <div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 dark:text-gray-400">MRR</p>
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ formatCurrency(stats.mrr) }}</p>
+              </div>
+            </div>
+          </div>
+        </template>
       </div>
 
       <!-- Search and Filters -->
@@ -106,8 +111,34 @@
 
       <!-- Subscriptions Table -->
       <div class="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/5 overflow-hidden">
-        <div v-if="loading" class="flex justify-center py-12">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div v-if="initialLoading" class="overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10">
+              <tr>
+                <th v-for="i in 6" :key="i" class="px-6 py-3 h-10">
+                  <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-full"></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 dark:divide-white/5">
+              <tr v-for="i in 5" :key="i" class="animate-pulse">
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-white/10"></div>
+                    <div class="space-y-2">
+                      <div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-24"></div>
+                      <div class="h-2 bg-slate-200 dark:bg-white/10 rounded w-16"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4"><div class="h-4 bg-slate-200 dark:bg-white/10 rounded-full w-20"></div></td>
+                <td class="px-6 py-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-16"></div></td>
+                <td class="px-6 py-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-24"></div></td>
+                <td class="px-6 py-4"><div class="h-3 bg-slate-200 dark:bg-white/10 rounded w-20"></div></td>
+                <td class="px-6 py-4 text-right"><div class="h-4 bg-slate-200 dark:bg-white/10 rounded w-12 ml-auto"></div></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div v-else-if="filteredSubscriptions.length === 0" class="py-12 text-center">
@@ -238,6 +269,7 @@ interface Subscription {
 }
 
 const loading = ref(true)
+const initialLoading = ref(true)
 const subscriptions = ref<Subscription[]>([])
 const activeFilter = ref('all')
 const searchQuery = ref('')
@@ -419,8 +451,29 @@ async function confirmCancel(sub: Subscription) {
   }
 }
 
-onMounted(() => {
-  fetchSubscriptions()
-  fetchPriceConfig()
+onMounted(async () => {
+  initialLoading.value = true
+  try {
+    const { useAdminBaseStore } = await import('@/stores/admin/base')
+    const baseStore = useAdminBaseStore()
+    
+    // Check admin permissions
+    const isAdmin = await baseStore.checkIsAdmin()
+    if (!isAdmin) {
+      const router = (await import('@/router')).default
+      router.push('/')
+      return
+    }
+
+    await Promise.all([
+      fetchSubscriptions(),
+      fetchPriceConfig()
+    ])
+  } catch (error) {
+    console.error('Error initializing subscriptions view:', error)
+  } finally {
+    initialLoading.value = false
+    loading.value = false
+  }
 })
 </script>

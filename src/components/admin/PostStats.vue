@@ -1,5 +1,9 @@
 <template>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div v-for="i in 4" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 animate-pulse h-32"></div>
+  </div>
+
+  <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 hover:border-secondary/50 transition-all group shadow-lg dark:shadow-xl">
       <div class="flex items-center justify-between mb-4">
         <span class="text-slate-600 dark:text-white/70 text-sm font-medium">Total</span>
@@ -52,8 +56,8 @@ import type { PostStats } from '@/types/admin'
 
 interface Props {
   stats: PostStats
+  loading?: boolean
 }
 
 defineProps<Props>()
 </script>
-

@@ -61,13 +61,13 @@ const routes: RouteRecordRaw[] = [
     // Não usar requiresGuest pois o Supabase cria uma sessão temporária durante recovery
   },
   {
-    path: '/termos',
+    path: '/terms-of-service',
     name: 'Terms',
     component: () => import('@/views/Terms.vue'),
     meta: { publicAccess: true },
   },
   {
-    path: '/politica-privacidade',
+    path: '/privacy-policy',
     name: 'PrivacyPolicy',
     component: () => import('@/views/PrivacyPolicy.vue'),
     meta: { publicAccess: true },

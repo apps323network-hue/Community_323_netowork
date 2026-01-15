@@ -56,17 +56,29 @@
           </div>
 
           <!-- New Today -->
-          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-secondary/50 transition-all group">
+          <button
+            @click="filterByToday"
+            class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-secondary/50 transition-all group cursor-pointer"
+            :class="{ 'border-secondary shadow-[0_0_30px_rgba(0,243,255,0.3)] scale-105': currentFilters.dateRange === 'today' }"
+          >
             <div class="flex items-center gap-4">
-              <div class="p-3 rounded-xl bg-secondary/10 border border-secondary/20">
+              <div class="p-3 rounded-xl bg-secondary/10 border border-secondary/20 group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-secondary text-2xl">person_add</span>
               </div>
-              <div>
+              <div class="text-left">
                 <p class="text-white/50 text-xs font-medium mb-1">New Today</p>
                 <p class="text-white text-2xl font-black">{{ usersStore.userStats.newToday }}</p>
+                <p class="text-secondary text-[10px] font-bold uppercase tracking-wider mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Click to filter
+                </p>
               </div>
             </div>
-          </div>
+            <!-- Active indicator -->
+            <div 
+              v-if="currentFilters.dateRange === 'today'"
+              class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full animate-pulse"
+            ></div>
+          </button>
 
           <!-- Engagement Rate -->
           <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-purple-500/50 transition-all group">
@@ -87,10 +99,18 @@
 
         <!-- Results Info -->
         <div class="flex items-center justify-between mb-6">
-          <p class="text-white/60 text-sm">
-            Showing <span class="text-white font-bold">{{ usersStore.paginatedMembers.length }}</span> of 
-            <span class="text-white font-bold">{{ usersStore.pagination.totalItems }}</span> members
-          </p>
+          <div>
+            <p class="text-white/60 text-sm">
+              Showing <span class="text-white font-bold">{{ usersStore.paginatedMembers.length }}</span> of 
+              <span class="text-white font-bold">{{ usersStore.pagination.totalItems }}</span> members
+            </p>
+            <p v-if="currentFilters.dateRange && currentFilters.dateRange !== 'all'" class="text-secondary text-xs font-bold mt-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">filter_alt</span>
+              <span v-if="currentFilters.dateRange === 'today'">Registered today</span>
+              <span v-else-if="currentFilters.dateRange === 'week'">Registered this week</span>
+              <span v-else-if="currentFilters.dateRange === 'month'">Registered this month</span>
+            </p>
+          </div>
 
           <!-- View Toggle -->
           <div class="flex items-center gap-2">
@@ -111,14 +131,9 @@
           </div>
         </div>
 
-        <!-- Loading State -->
-        <div v-if="baseStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
-          <div class="relative w-20 h-20">
-            <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <div class="absolute inset-0 rounded-full shadow-[0_0_30px_rgba(244,37,244,0.3)] animate-pulse"></div>
-          </div>
-          <p class="text-white/60 font-medium animate-pulse tracking-widest uppercase text-sm">Loading members...</p>
+        <!-- Loading State (Skeleton Grid) -->
+        <div v-if="initialLoading" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr w-full">
+          <MemberCard v-for="i in 6" :key="i" loading />
         </div>
 
         <!-- Empty State -->
@@ -154,6 +169,7 @@
               @ban="handleBan"
               @unban="handleUnban"
               @update-role="handleUpdateRole"
+              @approve="handleApprove"
             />
           </div>
 
@@ -169,6 +185,7 @@
               @ban="handleBan"
               @unban="handleUnban"
               @update-role="handleUpdateRole"
+              @approve="handleApprove"
             />
           </div>
         </div>
@@ -293,6 +310,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { supabase } from '@/lib/supabase'
 import { useAdminUsersStore } from '@/stores/admin/users'
 import { useAdminBaseStore } from '@/stores/admin/base'
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
@@ -309,6 +327,7 @@ const baseStore = useAdminBaseStore()
 const currentFilters = ref<MemberFiltersType>({})
 const viewMode = ref<'grid' | 'list'>('list')
 const showBanModal = ref(false)
+const initialLoading = ref(true)
 const userToBan = ref<AdminUser | null>(null)
 const banReason = ref('')
 
@@ -358,6 +377,18 @@ async function handleClearFilters() {
   await usersStore.fetchMembersPaginated(1, usersStore.pagination.pageSize)
 }
 
+async function filterByToday() {
+  // Toggle filter: if already filtering by today, clear it; otherwise set it
+  if (currentFilters.value.dateRange === 'today') {
+    currentFilters.value = { ...currentFilters.value, dateRange: undefined }
+  } else {
+    currentFilters.value = { ...currentFilters.value, dateRange: 'today' }
+  }
+  usersStore.setFilters(currentFilters.value)
+  await usersStore.fetchMembersPaginated(1, usersStore.pagination.pageSize)
+}
+
+
 async function handlePageChange(page: number) {
   await usersStore.fetchMembersPaginated(page, usersStore.pagination.pageSize)
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -379,6 +410,27 @@ function handleSuspend(_userId: string) {
 
 function handleUnsuspend(_userId: string) {
   toast.info('Functionality will be implemented soon')
+}
+
+async function handleApprove(userId: string) {
+  try {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ status: 'active' })
+      .eq('id', userId)
+    
+    if (error) throw error
+    
+    toast.success('Member approved successfully!')
+    await usersStore.fetchMembersPaginated(
+      usersStore.pagination.currentPage,
+      usersStore.pagination.pageSize
+    )
+    await usersStore.fetchUserStats()
+  } catch (error: any) {
+    toast.error(error.message || 'Failed to approve member')
+    console.error('Error approving member:', error)
+  }
 }
 
 function handleBan(userId: string) {
@@ -435,16 +487,23 @@ async function handleUpdateRole(userId: string, role: UserRole) {
 }
 
 onMounted(async () => {
-  // Check admin permissions
-  const isAdmin = await baseStore.checkIsAdmin()
-  if (!isAdmin) {
-    router.push('/')
-    return
-  }
+  initialLoading.value = true
+  try {
+    // Check admin permissions
+    const isAdmin = await baseStore.checkIsAdmin()
+    if (!isAdmin) {
+      router.push('/')
+      return
+    }
 
-  // Load initial data
-  await usersStore.fetchUserStats()
-  await usersStore.fetchMembersPaginated(1, 20)
+    // Load initial data concurrently
+    await Promise.all([
+      usersStore.fetchUserStats(),
+      usersStore.fetchMembersPaginated(1, 20)
+    ])
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>
 

@@ -1,5 +1,9 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div v-for="i in 4" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 animate-pulse h-28"></div>
+  </div>
+
+  <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <div class="bg-white dark:bg-surface-card rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-lg dark:shadow-xl">
       <div class="flex items-center justify-between mb-2">
         <span class="text-slate-600 dark:text-white/60 text-sm font-medium">Total</span>
@@ -39,11 +43,8 @@ import type { EventStats } from '@/types/admin'
 
 interface Props {
   stats: EventStats
+  loading?: boolean
 }
 
 defineProps<Props>()
 </script>
-
-
-
-

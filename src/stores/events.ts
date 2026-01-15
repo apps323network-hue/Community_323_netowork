@@ -705,7 +705,7 @@ export const useEventStore = defineStore('events', () => {
           local_pt: input.local_pt || null,
           local_en: input.local_en || null,
           image_url: input.image_url || null,
-          status: 'pending', // Sempre criar como pending
+          status: 'approved', // Criar como approved por padrão
           created_by: currentUserId.value,
           partner_id: input.partner_id || null,
           program_id: input.program_id, // Add program_id

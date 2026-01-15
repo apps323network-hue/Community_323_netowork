@@ -439,6 +439,27 @@ export const useAdminUsersStore = defineStore('admin-users', () => {
         query = query.in('pais', filters.value.countries)
       }
 
+      // Apply date range filter
+      if (filters.value.dateRange && filters.value.dateRange !== 'all') {
+        const now = new Date()
+        let startDate: Date
+
+        if (filters.value.dateRange === 'today') {
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        } else if (filters.value.dateRange === 'week') {
+          // Start of this week (Sunday)
+          const dayOfWeek = now.getDay()
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek)
+        } else if (filters.value.dateRange === 'month') {
+          // Start of this month
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        } else {
+          startDate = new Date(0) // Fallback to beginning of time
+        }
+
+        query = query.gte('created_at', startDate.toISOString())
+      }
+
       // Apply sorting
       query = query.order(sortBy.value, { ascending: sortDirection.value === 'asc' })
 

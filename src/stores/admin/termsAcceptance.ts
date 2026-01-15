@@ -42,6 +42,7 @@ export const useAdminTermsAcceptanceStore = defineStore('admin-terms-acceptance'
    */
   async function fetchAcceptances(filters?: {
     term_type?: 'terms_of_service' | 'privacy_policy'
+    term_id?: string
     user_id?: string
     start_date?: string
     end_date?: string
@@ -62,6 +63,10 @@ export const useAdminTermsAcceptanceStore = defineStore('admin-terms-acceptance'
       // Aplicar filtros
       if (filters?.term_type) {
         query = query.eq('term_type', filters.term_type)
+      }
+
+      if (filters?.term_id) {
+        query = query.eq('term_id', filters.term_id)
       }
 
       if (filters?.user_id) {
@@ -109,9 +114,9 @@ export const useAdminTermsAcceptanceStore = defineStore('admin-terms-acceptance'
         const profile = profilesMap.get(item.user_id)
         return {
           ...item,
-          user_name: profile?.nome || 'N/A',
-          user_email: profile?.email || 'N/A',
-          user_country: profile?.pais || 'N/A',
+          user_name: profile?.nome || 'Unknown User',
+          user_email: profile?.email || '',
+          user_country: profile?.pais || '',
           user_avatar: profile?.avatar_url || null,
         }
       }) as TermAcceptanceWithDetails[]

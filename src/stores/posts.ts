@@ -369,11 +369,8 @@ export const usePostStore = defineStore('posts', () => {
       }
 
       // Determinar status baseado na verificação
-      let postStatus: 'pending' | 'approved' = 'pending'
-      if (bannedCheck.found && bannedCheck.action === 'warn') {
-        postStatus = 'pending'
-      } else if (!bannedCheck.found) {
-        // Se não encontrou palavras proibidas, ainda cria como pending (padrão)
+      let postStatus: 'pending' | 'approved' = 'approved'
+      if (bannedCheck.found && (bannedCheck.action === 'block' || bannedCheck.action === 'warn')) {
         postStatus = 'pending'
       }
 

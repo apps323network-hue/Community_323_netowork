@@ -1,15 +1,15 @@
 <template>
-  <div v-if="loading && events.length === 0" class="space-y-4">
-    <div v-for="i in 3" :key="i" class="bg-surface-card rounded-xl p-6 animate-pulse border border-white/5">
-      <div class="h-48 bg-gray-700 rounded-lg mb-4"></div>
-      <div class="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-      <div class="h-4 bg-gray-700 rounded w-1/2"></div>
+  <div v-if="loading && events.length === 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-for="i in 3" :key="i" class="bg-white dark:bg-surface-card rounded-xl p-6 animate-pulse border border-slate-200 dark:border-white/5 h-80">
+      <div class="h-48 bg-slate-200 dark:bg-white/10 rounded-lg mb-4"></div>
+      <div class="h-6 bg-slate-200 dark:bg-white/10 rounded w-3/4 mb-2"></div>
+      <div class="h-4 bg-slate-200 dark:bg-white/10 rounded w-1/2"></div>
     </div>
   </div>
 
-  <div v-else-if="!loading && events.length === 0" class="text-center py-12">
-    <span class="material-symbols-outlined text-white/40 text-6xl mb-4">event_busy</span>
-    <p class="text-white/60 text-lg">No events found</p>
+  <div v-else-if="!loading && events.length === 0" class="flex flex-col items-center justify-center py-12 bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-white/10 w-full col-span-full">
+    <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-6xl mb-4">event_busy</span>
+    <p class="text-slate-500 dark:text-gray-400 font-medium">No events found</p>
   </div>
 
   <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

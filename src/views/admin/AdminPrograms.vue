@@ -70,11 +70,35 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-white/5">
-              <tr 
-                v-for="program in filteredPrograms" 
-                :key="program.id"
-                class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
-              >
+              <!-- Loading State (Skeleton Rows) -->
+              <template v-if="initialLoading">
+                <tr v-for="i in 5" :key="i" class="animate-pulse">
+                  <td class="p-4">
+                    <div class="flex items-center gap-4">
+                      <div class="h-12 w-16 rounded-lg bg-slate-200 dark:bg-white/10 shrink-0"></div>
+                      <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-slate-200 dark:bg-white/10 rounded-full w-24"></div>
+                        <div class="h-3 bg-slate-200 dark:bg-white/10 rounded-full w-32"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="p-4"><div class="h-6 bg-slate-200 dark:bg-white/10 rounded-lg w-20"></div></td>
+                  <td class="p-4">
+                    <div class="h-4 bg-slate-200 dark:bg-white/10 rounded-full w-12 mb-2"></div>
+                    <div class="w-24 h-1.5 bg-slate-100 dark:bg-white/10 rounded-full"></div>
+                  </td>
+                  <td class="p-4"><div class="h-4 bg-slate-200 dark:bg-white/10 rounded-full w-12"></div></td>
+                  <td class="p-4"><div class="h-6 bg-slate-200 dark:bg-white/10 rounded-full w-20"></div></td>
+                  <td class="p-4"><div class="h-8 bg-slate-200 dark:bg-white/10 rounded-lg w-24 ml-auto"></div></td>
+                </tr>
+              </template>
+
+              <template v-else>
+                <tr 
+                  v-for="program in filteredPrograms" 
+                  :key="program.id"
+                  class="hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                >
                 <td class="p-4">
                   <div class="flex items-center gap-4">
                     <div class="h-12 w-16 rounded-lg bg-slate-200 dark:bg-white/10 overflow-hidden flex-shrink-0">
@@ -157,12 +181,13 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="filteredPrograms.length === 0">
-                <td colspan="6" class="p-12 text-center text-slate-500 dark:text-gray-400">
-                  <span class="material-icons text-4xl mb-2 opacity-50">block</span>
-                  <p>No programs found.</p>
-                </td>
-              </tr>
+                <tr v-if="filteredPrograms.length === 0">
+                  <td colspan="6" class="p-12 text-center text-slate-500 dark:text-gray-400">
+                    <span class="material-icons text-4xl mb-2 opacity-50">block</span>
+                    <p>No programs found.</p>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -214,6 +239,7 @@ const programsStore = useProgramsStore()
 const search = ref('')
 const filterStatus = ref('all')
 const filterCategory = ref('all')
+const initialLoading = ref(true)
 const programToDelete = ref<any>(null)
 
 const filteredPrograms = computed(() => {
@@ -245,7 +271,23 @@ const confirmDelete = async () => {
   }
 }
 
-onMounted(() => {
-  programsStore.fetchPrograms(true)
+onMounted(async () => {
+  initialLoading.value = true
+  try {
+    const { useAdminBaseStore } = await import('@/stores/admin/base')
+    const baseStore = useAdminBaseStore()
+    
+    // Check admin permissions
+    const isAdmin = await baseStore.checkIsAdmin()
+    if (!isAdmin) {
+      const router = (await import('@/router')).default
+      router.push('/')
+      return
+    }
+
+    await programsStore.fetchPrograms(true)
+  } finally {
+    initialLoading.value = false
+  }
 })
 </script>

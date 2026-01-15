@@ -71,7 +71,7 @@
       <!-- Copyright -->
       <div class="border-t border-gray-200 dark:border-gray-800/50 py-6 text-center">
         <p class="text-muted-foreground/70 text-xs">
-          © US Venture Prep — An American Dream Program.
+          © 323 Network — An American Dream Program.
         </p>
       </div>
     </footer>

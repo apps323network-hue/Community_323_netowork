@@ -120,6 +120,82 @@
         </div>
       </div>
 
+      <!-- Date Range Quick Filters -->
+      <div class="relative" ref="dateDropdownRef">
+        <button
+          @click="toggleDropdown('date')"
+          class="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all min-w-[140px] justify-between"
+          :class="{ 'border-secondary shadow-[0_0_15px_rgba(0,243,255,0.3)]': modelValue.dateRange }"
+        >
+          <span class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-lg">calendar_today</span>
+            <span class="text-sm">{{ dateButtonText }}</span>
+          </span>
+          <span class="material-symbols-outlined text-sm">
+            {{ activeDropdown === 'date' ? 'expand_less' : 'expand_more' }}
+          </span>
+        </button>
+        
+        <div 
+          v-if="activeDropdown === 'date'"
+          class="absolute top-full right-0 mt-2 w-64 bg-slate-800 border border-white/10 rounded-xl shadow-xl z-20 py-2"
+        >
+          <!-- Quick Filters -->
+          <div class="px-3 py-2 border-b border-white/5">
+            <p class="text-white/40 text-xs font-bold uppercase tracking-wider mb-2">Quick Filters</p>
+            <div class="space-y-1">
+              <button
+                @click="setDateRange('today')"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-secondary/10 border border-secondary/30': modelValue.dateRange === 'today' }"
+              >
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'today' ? 'text-secondary' : 'text-white/60'">today</span>
+                  <span class="text-white/80 text-sm font-medium">Today</span>
+                </span>
+                <span v-if="modelValue.dateRange === 'today'" class="material-symbols-outlined text-secondary text-sm">check</span>
+              </button>
+              
+              <button
+                @click="setDateRange('week')"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-secondary/10 border border-secondary/30': modelValue.dateRange === 'week' }"
+              >
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'week' ? 'text-secondary' : 'text-white/60'">date_range</span>
+                  <span class="text-white/80 text-sm font-medium">This Week</span>
+                </span>
+                <span v-if="modelValue.dateRange === 'week'" class="material-symbols-outlined text-secondary text-sm">check</span>
+              </button>
+              
+              <button
+                @click="setDateRange('month')"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-secondary/10 border border-secondary/30': modelValue.dateRange === 'month' }"
+              >
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'month' ? 'text-secondary' : 'text-white/60'">calendar_month</span>
+                  <span class="text-white/80 text-sm font-medium">This Month</span>
+                </span>
+                <span v-if="modelValue.dateRange === 'month'" class="material-symbols-outlined text-secondary text-sm">check</span>
+              </button>
+              
+              <button
+                @click="setDateRange('all')"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-white/5': !modelValue.dateRange || modelValue.dateRange === 'all' }"
+              >
+                <span class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm text-white/60">all_inclusive</span>
+                  <span class="text-white/80 text-sm font-medium">All Time</span>
+                </span>
+                <span v-if="!modelValue.dateRange || modelValue.dateRange === 'all'" class="material-symbols-outlined text-white/40 text-sm">check</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Clear Filters -->
       <button
         v-if="hasActiveFilters"
@@ -149,10 +225,11 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const activeDropdown = ref<'role' | 'plan' | 'status' | null>(null)
+const activeDropdown = ref<'role' | 'plan' | 'status' | 'date' | null>(null)
 const roleDropdownRef = ref<HTMLElement | null>(null)
 const planDropdownRef = ref<HTMLElement | null>(null)
 const statusDropdownRef = ref<HTMLElement | null>(null)
+const dateDropdownRef = ref<HTMLElement | null>(null)
 const searchTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
 const roleOptions = [
@@ -200,12 +277,21 @@ const statusButtonText = computed(() => {
   return `${props.modelValue.statuses.length} status`
 })
 
+const dateButtonText = computed(() => {
+  if (!props.modelValue.dateRange || props.modelValue.dateRange === 'all') return 'Date'
+  if (props.modelValue.dateRange === 'today') return 'Today'
+  if (props.modelValue.dateRange === 'week') return 'This Week'
+  if (props.modelValue.dateRange === 'month') return 'This Month'
+  return 'Date'
+})
+
 const hasActiveFilters = computed(() => {
   return !!(
     props.modelValue.search ||
     (props.modelValue.roles && props.modelValue.roles.length > 0) ||
     (props.modelValue.plans && props.modelValue.plans.length > 0) ||
-    (props.modelValue.statuses && props.modelValue.statuses.length > 0)
+    (props.modelValue.statuses && props.modelValue.statuses.length > 0) ||
+    (props.modelValue.dateRange && props.modelValue.dateRange !== 'all')
   )
 })
 
@@ -224,7 +310,7 @@ function handleSearchInput(event: Event) {
   }, 300)
 }
 
-function toggleDropdown(dropdown: 'role' | 'plan' | 'status') {
+function toggleDropdown(dropdown: 'role' | 'plan' | 'status' | 'date') {
   activeDropdown.value = activeDropdown.value === dropdown ? null : dropdown
 }
 
@@ -276,6 +362,14 @@ function toggleStatus(status: UserStatus) {
   })
 }
 
+function setDateRange(range: 'today' | 'week' | 'month' | 'all') {
+  emit('update:modelValue', {
+    ...props.modelValue,
+    dateRange: range === 'all' ? undefined : range
+  })
+  activeDropdown.value = null
+}
+
 function clearFilters() {
   emit('update:modelValue', {})
   activeDropdown.value = null
@@ -287,7 +381,8 @@ function handleClickOutside(event: MouseEvent) {
   if (
     roleDropdownRef.value && !roleDropdownRef.value.contains(target) &&
     planDropdownRef.value && !planDropdownRef.value.contains(target) &&
-    statusDropdownRef.value && !statusDropdownRef.value.contains(target)
+    statusDropdownRef.value && !statusDropdownRef.value.contains(target) &&
+    dateDropdownRef.value && !dateDropdownRef.value.contains(target)
   ) {
     activeDropdown.value = null
   }
