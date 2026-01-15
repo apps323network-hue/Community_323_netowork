@@ -14,9 +14,10 @@
       <div class="inline-flex w-24 h-24 items-center justify-center bg-slate-200 dark:bg-white/10 rounded-[32px] mb-4">
          <span class="text-5xl">🔭</span>
       </div>
-      <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Service not found</h2>
-      <p class="text-slate-600 dark:text-gray-400 max-w-md text-center">The service you're looking for doesn't exist or has been removed.</p>
+      <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">{{ t('services.notFound') }}</h2>
+      <p class="text-slate-600 dark:text-gray-400 max-w-md text-center">{{ t('services.notFoundDesc') }}</p>
       <router-link to="/servicos">
+        <Button variant="primary">{{ t('services.backToServices') }}</Button>
         <Button variant="primary" class="mt-4">Back to Services</Button>
       </router-link>
     </div>

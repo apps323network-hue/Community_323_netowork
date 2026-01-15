@@ -140,6 +140,7 @@ export interface AdminService {
   sso_callback_path?: string;
   terms_content_pt?: string;
   terms_content_en?: string;
+  image_url?: string;
 }
 
 export interface ServiceStats {

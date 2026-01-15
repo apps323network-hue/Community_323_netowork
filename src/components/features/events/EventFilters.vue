@@ -1,8 +1,5 @@
 <template>
   <div class="relative w-full lg:w-auto">
-      <!-- Fade gradient no final (apenas mobile) -->
-      <div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background-light dark:from-background-dark to-transparent pointer-events-none lg:hidden z-10"></div>
-    
     <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar w-full lg:flex-nowrap lg:overflow-visible lg:gap-2 pb-1 items-center">
       <button
         v-for="filter in filters"

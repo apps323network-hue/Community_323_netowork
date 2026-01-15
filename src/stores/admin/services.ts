@@ -92,8 +92,10 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
         destaque: serviceData.destaque || false,
         ativo: serviceData.ativo !== undefined ? serviceData.ativo : true,
         status: serviceData.status || 'approved',
+
         preco: serviceData.preco && serviceData.preco > 0 ? serviceData.preco : null,
         moeda: serviceData.moeda && (serviceData.moeda === 'USD' || serviceData.moeda === 'BRL') ? serviceData.moeda : 'USD',
+        image_url: serviceData.image_url || null,
       }
 
       const { data, error: insertError } = await supabase
@@ -174,6 +176,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
       if (updates.moeda !== undefined) {
         cleanData.moeda = updates.moeda && (updates.moeda === 'USD' || updates.moeda === 'BRL') ? updates.moeda : 'USD'
       }
+      if (updates.image_url !== undefined) cleanData.image_url = updates.image_url
 
       const { data, error: updateError } = await supabase
         .from('services')
@@ -212,7 +215,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
   // Aprovar serviço
   async function approveService(serviceId: string) {
     if (!authStore.user) throw new Error('Usuário não autenticado')
-    
+
     loading.value = true
     try {
       const { data, error: updateError } = await supabase
@@ -266,7 +269,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
   // Rejeitar serviço
   async function rejectService(serviceId: string, reason: string) {
     if (!authStore.user) throw new Error('Usuário não autenticado')
-    
+
     loading.value = true
     try {
       const { data, error: updateError } = await supabase

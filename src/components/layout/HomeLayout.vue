@@ -36,14 +36,15 @@
             : 'text-slate-500 dark:text-white/60 hover:text-primary'"
         >
           <span 
-            class="material-symbols-outlined text-[24px] transition-all"
-            :class="$route.path === item.path 
-              ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' 
-              : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]'"
+            class="material-symbols-outlined transition-all"
+            :class="[
+              $route.path === item.path ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]',
+              item.path === '/programs' ? 'text-[32px]' : 'text-[24px]'
+            ]"
           >
             {{ item.icon }}
           </span>
-          <span class="text-[10px] mt-0.5 font-medium">{{ item.label }}</span>
+
           <!-- Indicador ativo -->
           <span
             v-if="$route.path === item.path"
@@ -56,26 +57,29 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
 import AppHeader from './AppHeader.vue'
 import AppSidebar from './AppSidebar.vue'
 import AppRightSidebar from './AppRightSidebar.vue'
 import AppFooter from './AppFooter.vue'
+import { useLocale } from '@/composables/useLocale'
 
 const router = useRouter()
+const { t } = useLocale()
 
 function handleEditProfile() {
   router.push('/perfil')
 }
 
-const mobileMenuItems = [
-  { path: '/', label: 'Home', icon: 'home' },
-  { path: '/comunidade', label: 'Comunidade', icon: 'people' },
-  { path: '/eventos', label: 'Eventos', icon: 'event' },
-  { path: '/servicos', label: 'Serviços', icon: 'business_center' },
-  { path: '/beneficios', label: 'Benefícios', icon: 'card_giftcard' },
-]
+const mobileMenuItems = computed(() => [
+  { path: '/', label: t('navigation.home'), icon: 'home' },
+  { path: '/comunidade', label: t('navigation.community'), icon: 'people' },
+  { path: '/programs', label: t('navigation.programs'), icon: 'play_arrow' },
+  { path: '/eventos', label: t('navigation.events'), icon: 'event' },
+  { path: '/servicos', label: t('navigation.services'), icon: 'business_center' },
+])
 </script>
 
 

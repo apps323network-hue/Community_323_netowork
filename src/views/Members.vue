@@ -15,7 +15,10 @@
             {{ t('members.description') }}
           </p>
         </div>
-        <div class="w-full lg:w-auto flex flex-row gap-3 sm:gap-4">
+        <div 
+          class="w-full lg:w-auto flex-row gap-3 sm:gap-4"
+          :class="isAuthenticated ? 'flex' : 'hidden lg:flex'"
+        >
           <div class="relative group flex-1 lg:flex-initial lg:w-[300px]">
             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
               <span
@@ -25,14 +28,14 @@
             </div>
             <input
               v-model="searchQuery"
-              class="block w-full  mt-1.5 pl-10 sm:pl-11 pr-3 sm:pr-4 py-2.5 sm:py-3 border border-slate-200 dark:border-secondary/50 rounded-lg sm:rounded-xl leading-5 bg-white dark:bg-[#0a040f] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all duration-300"
+              class="block w-full h-[46px] pl-10 sm:pl-11 pr-3 sm:pr-4 border border-slate-200 dark:border-secondary/50 rounded-lg sm:rounded-xl leading-5 bg-white dark:bg-[#0a040f] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all duration-300"
               :placeholder="t('members.searchPlaceholder')"
               type="text"
               @input="handleSearch"
             />
           </div>
           <button
-            class="group flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 border border-slate-200 dark:border-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-gray-200 bg-white dark:bg-[#0a040f] hover:bg-slate-50 dark:hover:bg-secondary/10 hover:border-secondary hover:shadow-[0_0_15px_rgba(244,37,244,0.3)] transition-all duration-300 whitespace-nowrap shrink-0"
+            class="group flex items-center justify-center gap-2 px-4 sm:px-6 h-[46px] mt-0 border border-slate-200 dark:border-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-gray-200 bg-white dark:bg-[#0a040f] hover:bg-slate-50 dark:hover:bg-secondary/10 hover:border-secondary hover:shadow-[0_0_15px_rgba(244,37,244,0.3)] transition-all duration-300 whitespace-nowrap shrink-0"
             @click="showFilters = !showFilters"
           >
             <span class="material-icons text-base sm:text-lg text-secondary group-hover:animate-pulse"
@@ -41,6 +44,11 @@
             {{ t('common.filters') }}
           </button>
         </div>
+      </div>
+
+      <!-- Advanced Feed Search (localhost only) -->
+      <div v-if="isLocalhost" class="relative z-40">
+        <FeedSearch v-model="feedSearchQuery" @search="handleFeedSearch" />
       </div>
 
       <!-- Filters Panel (collapsible) -->
@@ -54,6 +62,19 @@
           @update:view-mode="viewMode = $event"
         />
       </div>
+
+      <!-- Mobile Guest Blocker (Full Block) -->
+      <div v-if="!isAuthenticated" class="lg:hidden mt-8 px-4">
+        <GuestBlocker
+          :show="true"
+          variant="inline"
+          :title="t('common.guestBlocker.title')"
+          :message="t('members.description')"
+        />
+      </div>
+
+      <!-- Main Content (Hidden on mobile if not authenticated) -->
+      <div :class="{ 'hidden lg:block': !isAuthenticated }">
 
       <!-- Featured Section -->
       <section>
@@ -187,6 +208,7 @@
           </button>
         </div>
       </section>
+      </div>
     </div>
   </AppLayout>
 </template>
@@ -200,6 +222,7 @@ import MemberFilters from '@/components/features/members/MemberFilters.vue'
 import MemberCard from '@/components/features/members/MemberCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import GuestBlocker from '@/components/common/GuestBlocker.vue'
+import FeedSearch from '@/components/features/feed/FeedSearch.vue'
 import { useMembers } from '@/composables/useMembers'
 import { useBookmarks } from '@/composables/useBookmarks'
 import { usePublicAccess } from '@/composables/usePublicAccess'
@@ -210,6 +233,20 @@ const { t } = useI18n()
 const { members, loading, pagination, totalPages, fetchMembers } = useMembers()
 const { fetchBookmarkedMembers, fetchBookmarks } = useBookmarks()
 const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
+
+// Localhost detection for FeedSearch
+const isLocalhost = computed(() => {
+  if (typeof window === 'undefined') return false
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+})
+
+// FeedSearch functionality
+const feedSearchQuery = ref('')
+function handleFeedSearch(query: string) {
+  console.log('Feed search query:', query)
+  // For now, we can integrate this with member search or keep it separate
+  // Future: could redirect to a unified search results page
+}
 
 const viewMode = ref<'grid' | 'list'>('list')
 const filters = ref<MemberFiltersType>({})

@@ -294,6 +294,27 @@
                   </div>
                 </div>
               </div>
+      <!-- Create/Edit Modal -->
+      <Modal
+        v-model="showCreateModal"
+        :title="editingTerm ? 'Edit Term' : 'Create Term'"
+        :closable="true"
+        size="4xl"
+      >
+        <div class="space-y-6 flex flex-col h-full min-h-0">
+          <!-- First Row: Title, Term Type, Version -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <!-- Title Field - 7 columns -->
+            <div class="md:col-span-7">
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+                Title
+              </label>
+              <input
+                v-model="termForm.title"
+                type="text"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Enter term title"
+              />
             </div>
 
             <!-- Version Info Warning -->
@@ -304,16 +325,54 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400">Content changes will be saved directly to this active document. For a new version, create a new document.</p>
               </div>
             </div>
+            <!-- Term Type Field - 3 columns -->
+            <div class="md:col-span-3">
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+                Term Type
+              </label>
+              <select
+                v-model="termForm.term_type"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="terms_of_service">Terms of Service</option>
+                <option value="privacy_policy">Privacy Policy</option>
+              </select>
+            </div>
+
+            <!-- Version Field - 2 columns -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2">
+                Version
+              </label>
+              <input
+                v-model.number="termForm.version"
+                type="number"
+                min="1"
+                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="1"
+              />
+            </div>
+          </div>
 
             <!-- Advanced Legal Editor Area -->
             <div class="space-y-4">
               <label class="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest pl-1">Advanced Legal Content</label>
               <AdvancedLegalEditor
+          <!-- Content Field - Full Width -->
+          <div class="flex-1 min-h-0 flex flex-col">
+            <label class="block text-sm font-medium text-slate-700 dark:text-white mb-2 flex-shrink-0">
+              Content
+            </label>
+            <div class="flex-1 min-h-0">
+              <RichTextEditor
                 v-model="termForm.content"
                 placeholder="Draft the complete legal document here (supports tables, alignment, and source code)..."
               />
             </div>
           </div>
+            </div>
+          </div>
+        </div>
 
           <template #footer>
             <div class="flex items-center justify-end gap-4 w-full">

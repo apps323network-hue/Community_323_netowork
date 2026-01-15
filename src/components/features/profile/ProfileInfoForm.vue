@@ -161,7 +161,7 @@ const props = defineProps<{
   state: string
   nationality?: string
   email?: string
-  bio: string
+  bio: string | null
   readonly?: boolean
 }>()
 
