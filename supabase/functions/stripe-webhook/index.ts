@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
         // 2. Selecionar o Secret correto
         const webhookSecret = isLive
             ? Deno.env.get('STRIPE_WEBHOOK_SECRET')
-            : Deno.env.get('STRIPE_WEBHOOK_SECRET_TEST')
+            : Deno.env.get('STRIPE_TEST_WEBHOOK_SECRET')
 
         if (!webhookSecret) {
             console.error(`Webhook secret não configurado para ambiente: ${isLive ? 'LIVE' : 'TEST'}`)
