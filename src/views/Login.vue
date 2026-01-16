@@ -22,11 +22,13 @@
       ></div>
       <div class="relative z-10 flex flex-col items-center text-center max-w-lg">
         <div class="mb-10">
-          <img
-            alt="323 Network Logo"
-            class="w-56 h-auto object-contain drop-shadow-lg"
-            src="/logo-removebg-preview.png"
-          />
+          <router-link to="/" class="block">
+            <img
+              alt="323 Network Logo"
+              class="w-56 h-auto object-contain drop-shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300"
+              src="/logo-removebg-preview.png"
+            />
+          </router-link>
           <!-- American Dream - Minimalista abaixo da logo -->
           <div v-if="source === 'american-dream'" class="mt-4">
             <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-100/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-700/50">
@@ -74,11 +76,13 @@
         
         <!-- Logo Mobile -->
         <div class="lg:hidden flex flex-col items-center mb-6">
-          <img
-            alt="323 Network Logo"
-            class="w-40 h-auto object-contain drop-shadow-lg"
-            src="/logo-removebg-preview.png"
-          />
+          <router-link to="/" class="block">
+            <img
+              alt="323 Network Logo"
+              class="w-40 h-auto object-contain drop-shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300"
+              src="/logo-removebg-preview.png"
+            />
+          </router-link>
           <!-- American Dream - Minimalista abaixo da logo (mobile) -->
           <div v-if="source === 'american-dream'" class="mt-3">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-700/50">
@@ -194,10 +198,19 @@
                 <input
                   id="password"
                   v-model="loginForm.password"
-                  type="password"
-                  class="block w-full pl-10 pr-3 py-3.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
+                  :type="showPassword ? 'text' : 'password'"
+                  class="block w-full pl-10 pr-11 py-3.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
                   required
                 />
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-secondary transition-colors"
+                  @click="showPassword = !showPassword"
+                >
+                  <span class="material-symbols-outlined text-xl">
+                    {{ showPassword ? 'visibility' : 'visibility_off' }}
+                  </span>
+                </button>
               </div>
               <div class="flex items-center justify-end mt-2">
                 <div class="text-sm">
@@ -326,13 +339,24 @@
               <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1" for="reg-password"
                 >{{ t('auth.password') }}</label
               >
-              <input
-                id="reg-password"
-                v-model="registerForm.password"
-                type="password"
-                class="block w-full px-3 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
-                required
-              />
+              <div class="relative group">
+                <input
+                  id="reg-password"
+                  v-model="registerForm.password"
+                  :type="showRegPassword ? 'text' : 'password'"
+                  class="block w-full pl-4 pr-11 py-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all duration-300 sm:text-sm"
+                  required
+                />
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-secondary transition-colors"
+                  @click="showRegPassword = !showRegPassword"
+                >
+                  <span class="material-symbols-outlined text-xl">
+                    {{ showRegPassword ? 'visibility' : 'visibility_off' }}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
           
@@ -528,6 +552,8 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
+const showPassword = ref(false)
+const showRegPassword = ref(false)
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { supabase } from '@/lib/supabase'

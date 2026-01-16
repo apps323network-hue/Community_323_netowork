@@ -1,32 +1,32 @@
 <template>
   <section
     v-if="program"
-    class="relative w-full h-[70vh] lg:h-[85vh] flex items-center overflow-hidden"
+    class="relative w-full min-h-[500px] h-[70vh] max-h-[800px] lg:h-[85vh] lg:max-h-[1000px] flex items-center py-20 lg:py-32"
   >
     <!-- Background Image -->
-    <div class="absolute inset-0 z-0">
+    <div class="absolute inset-0 z-0 overflow-hidden">
       <div 
         class="absolute inset-0 bg-cover bg-center scale-105"
         :style="{ backgroundImage: `url(${program.banner_url || program.thumbnail_url || '/program_placeholder.png'})` }"
       ></div>
       <!-- Gradient Overlays -->
-      <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/60 to-transparent dark:from-background-dark dark:via-background-dark/60 dark:to-transparent"></div>
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-50 via-slate-50/10 to-transparent dark:from-background-dark dark:via-background-dark/10 dark:to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/40 to-transparent dark:from-background-dark dark:via-background-dark/40 dark:to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-50/80 via-transparent to-transparent dark:from-background-dark/80 dark:via-transparent dark:to-transparent"></div>
     </div>
 
     <!-- Content -->
-    <div class="relative z-10 w-full px-4 md:px-12 flex flex-col justify-center h-full pt-10 pb-20">
-      <div class="max-w-2xl animate-fade-in-up space-y-6">
+    <div class="relative z-10 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 flex flex-col justify-center h-full max-w-[2000px] mx-auto">
+      <div class="max-w-2xl lg:max-w-3xl xl:max-w-4xl animate-fade-in-up space-y-4 md:space-y-5 lg:space-y-6">
         <!-- Category Badge -->
         <div class="flex items-center gap-2 mb-2">
-          <div class="bg-gradient-to-r from-secondary to-primary w-1 h-10 rounded-full"></div>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary dark:to-white font-black tracking-[0.2em] uppercase text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">
+          <div class="bg-gradient-to-r from-secondary to-primary w-1 h-8 md:h-10 lg:h-12 rounded-full"></div>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary dark:to-white font-black tracking-[0.15em] md:tracking-[0.2em] uppercase text-lg md:text-xl lg:text-2xl xl:text-3xl drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">
             {{ getCategoryBadge(program.category) }}
           </span>
         </div>
 
         <!-- Title -->
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] drop-shadow-2xl">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black text-slate-900 dark:text-white leading-[0.9] drop-shadow-2xl">
           <template v-if="getProgramTitle(program).includes(':')">
             {{ getProgramTitle(program).split(':')[0] }}<br/>
             <span class="text-neon-gradient">
@@ -39,27 +39,27 @@
         </h1>
 
         <!-- Meta Info -->
-        <div class="flex items-center flex-wrap gap-4 text-sm md:text-base font-medium text-gray-200">
+        <div class="flex items-center flex-wrap gap-3 md:gap-4 text-xs sm:text-sm md:text-base lg:text-lg font-medium text-slate-600 dark:text-gray-200">
           <span v-if="program.duration_hours">{{ program.duration_hours }}{{ t('programs.hoursOfContent') }}</span>
           <span v-if="program.duration_hours && program.category" class="text-gray-400">•</span>
           <span>{{ getCategoryLabel(program.category) }}</span>
         </div>
 
         <!-- Description -->
-        <p class="text-lg md:text-xl text-gray-300 leading-relaxed drop-shadow-md max-w-xl line-clamp-3">
+        <p class="text-base md:text-lg lg:text-xl xl:text-2xl text-slate-700 dark:text-gray-300 leading-relaxed drop-shadow-md max-w-xl lg:max-w-2xl xl:max-w-3xl line-clamp-3">
           {{ getProgramDescription(program) }}
         </p>
 
         <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+        <div class="flex flex-col sm:flex-row gap-3 md:gap-4 pt-3 md:pt-4">
           <button
-            class="px-10 py-4 rounded bg-white text-black font-black text-xl hover:bg-secondary transition-all flex items-center justify-center gap-3 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            class="px-8 md:px-10 lg:px-12 py-3 md:py-4 lg:py-5 rounded bg-slate-900 text-white dark:bg-white dark:text-black font-black text-base md:text-lg lg:text-xl xl:text-2xl hover:bg-secondary hover:text-black transition-all flex items-center justify-center gap-2 md:gap-3 active:scale-95 shadow-lg"
             @click="handleAction"
           >
-            <span class="material-symbols-outlined text-3xl fill-current">
+            <span class="material-symbols-outlined text-2xl md:text-3xl lg:text-4xl fill-current">
               play_arrow
             </span>
-            {{ isEnrolled ? t('programs.actions.accessNow') : (isAuthenticated ? t('programs.actions.secureMySpot') : t('auth.login')) }}
+            {{ isEnrolled ? t('programs.actions.accessNow') : (isAuthenticated ? t('programs.actions.secureMySpot') : t('programs.actions.watch')) }}
           </button>
         </div>
       </div>

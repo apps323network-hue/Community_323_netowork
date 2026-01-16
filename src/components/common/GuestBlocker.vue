@@ -4,17 +4,17 @@
       v-if="show" 
       :class="[
         variant === 'full' 
-          ? 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm' 
-          : 'relative z-10 w-full rounded-2xl border border-white/10 p-8 text-center bg-gradient-to-br from-background-dark to-gray-900 shadow-2xl overflow-hidden'
+          ? 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-sm' 
+          : 'relative z-10 w-full rounded-2xl border border-slate-200 dark:border-white/10 p-8 text-center bg-white dark:bg-gradient-to-br dark:from-background-dark dark:to-gray-900 shadow-2xl overflow-hidden'
       ]"
       @click="handleOverlayClick"
     >
       <!-- Blur overlay for inline mode -->
-      <div v-if="variant === 'inline'" class="absolute inset-0 bg-background-dark/20 backdrop-blur-[2px] pointer-events-none"></div>
+      <div v-if="variant === 'inline'" class="absolute inset-0 bg-white/40 dark:bg-background-dark/20 backdrop-blur-[2px] pointer-events-none"></div>
 
       <div 
         :class="[
-          variant === 'full' ? 'relative max-w-lg w-full mx-4 bg-gradient-to-br from-background-dark to-gray-900 rounded-2xl shadow-2xl border border-white/10 p-8 text-center' : 'relative z-10'
+          variant === 'full' ? 'relative max-w-lg w-full mx-4 bg-white dark:bg-gradient-to-br dark:from-background-dark dark:to-gray-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 p-8 text-center' : 'relative z-10'
         ]"
         @click.stop
       >
@@ -22,7 +22,7 @@
         <button
           v-if="dismissible"
           @click="$emit('dismiss')"
-          class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+          class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:text-gray-400 dark:hover:text-white transition-colors"
         >
           <span class="material-symbols-outlined">close</span>
         </button>
@@ -39,7 +39,7 @@
 
         <!-- Title -->
         <h2 
-          class="font-black text-white mb-3"
+        class="font-black text-slate-900 dark:text-white mb-3"
           :class="variant === 'full' ? 'text-3xl' : 'text-2xl'"
         >
           {{ displayTitle }}
@@ -47,7 +47,7 @@
 
         <!-- Message -->
         <p 
-          class="text-gray-300 mb-8 leading-relaxed"
+        class="text-slate-600 dark:text-gray-300 mb-8 leading-relaxed"
           :class="variant === 'full' ? 'text-lg' : 'text-base'"
         >
           {{ displayMessage }}
@@ -58,7 +58,7 @@
           <div 
             v-for="benefit in displayBenefits" 
             :key="benefit"
-            class="flex items-start gap-3 text-gray-200"
+            class="flex items-start gap-3 text-slate-700 dark:text-gray-200"
           >
             <span class="material-symbols-outlined text-secondary mt-0.5">check_circle</span>
             <span>{{ benefit }}</span>
@@ -75,15 +75,18 @@
           </button>
           <button
             @click="handleLogin"
-            class="flex-1 px-6 py-3 rounded-xl bg-white/10 border border-white/20 text-white font-bold text-lg hover:bg-white/20 transition-all"
+            class="flex-1 px-6 py-3 rounded-xl bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/20 text-slate-900 dark:text-white font-bold text-lg hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
           >
             {{ t('auth.login') || 'Já tenho conta' }}
           </button>
         </div>
 
         <!-- Terms -->
-        <p class="text-xs text-gray-500 mt-6">
-          {{ t('common.guestBlocker.terms') }}
+        <p class="text-xs text-gray-500 mt-6 leading-relaxed">
+          {{ t('common.guestBlocker.termsPrefix') }}
+          <RouterLink to="/termos" class="text-secondary hover:underline font-medium">{{ t('common.guestBlocker.termsLabel') }}</RouterLink>
+          {{ t('common.guestBlocker.termsAnd') }}
+          <RouterLink to="/politica-privacidade" class="text-secondary hover:underline font-medium">{{ t('common.guestBlocker.privacyLabel') }}</RouterLink>
         </p>
       </div>
     </div>

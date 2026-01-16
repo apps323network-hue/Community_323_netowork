@@ -264,12 +264,21 @@ const showEditModal = ref(false)
 
 // Estados para controle de "Mostrar mais"
 const isExpanded = ref(false)
-const MAX_CONTENT_LENGTH = 400 // Aproximadamente 6 linhas de texto
+const MAX_CONTENT_LENGTH = 600 // Aumentado para evitar truncamento prematuro
+const MAX_NEWLINES = 6
 
-// Verifica se o post é longo (baseado no conteúdo sem HTML)
+// Verifica se o post é longo (baseado no conteúdo e quebras de linha)
 const isLongPost = computed(() => {
-  const textContent = props.post.conteudo.replace(/<[^>]*>/g, '')
-  return textContent.length > MAX_CONTENT_LENGTH
+  // Texto puro sem tags
+  const textContent = props.post.conteudo.replace(/<[^>]*>/g, '').trim()
+  
+  // Contar quebras de linha (parágrafos fechados ou brs)
+  // Isso ajuda a detectar textos verticais que têm poucos caracteres mas muitas linhas
+  const newLinesHelpers = props.post.conteudo.match(/<\/p>|<br>|<br\s*\/>/gi) || []
+  const lineCount = newLinesHelpers.length
+
+  // Considerar longo se tiver muitos caracteres OU muitas linhas visuais
+  return textContent.length > MAX_CONTENT_LENGTH || lineCount > MAX_NEWLINES
 })
 
 // Função para alternar entre expandido/colapsado

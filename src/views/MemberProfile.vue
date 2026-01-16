@@ -33,7 +33,7 @@
         >
           <span class="material-icons text-6xl text-red-500">error</span>
         </div>
-        <h2 class="text-2xl font-bold text-white mb-2">
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
           Erro ao carregar perfil
         </h2>
         <p class="text-gray-400">{{ error }}</p>
@@ -69,7 +69,7 @@
                   ? 'border-green-500/40 text-green-500 bg-green-500/5 cursor-default'
                   : connectionStatus === 'pending'
                   ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/5 cursor-default'
-                  : 'bg-gradient-to-r from-secondary/20 to-primary/20 border-secondary/40 text-white hover:border-secondary hover:shadow-neon-blue'
+                  : 'bg-gradient-to-r from-secondary/20 to-primary/20 border-secondary/40 text-slate-600 dark:text-white hover:border-secondary hover:shadow-neon-blue'
                 ]"
                 @click="handleConnect"
                 :disabled="requesting || !!connectionStatus"
@@ -86,7 +86,7 @@
                 :class="[
                   isBookmarked
                     ? 'border-secondary/40 text-secondary bg-secondary/10 hover:bg-secondary/20 shadow-neon-blue'
-                    : 'border-white/10 hover:border-white/20 bg-white/5 text-gray-400 hover:text-white'
+                    : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-white'
                 ]"
                 @click="handleToggleBookmark"
                 :disabled="bookmarkLoading"
@@ -105,21 +105,21 @@
             />
 
             <!-- Quick Contacts (Email/WhatsApp) -->
-            <div v-if="(member.show_whatsapp && member.whatsapp) || ((member.show_email || isAdmin) && member.email)" class="bg-surface-dark border border-white/5 rounded-2xl p-5 space-y-4">
+            <div v-if="(member.show_whatsapp && member.whatsapp) || ((member.show_email || isAdmin) && member.email)" class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 rounded-2xl p-5 space-y-4 shadow-xl shadow-slate-200/50 dark:shadow-none">
               <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest">Contatos Diretos</h4>
               
-              <a v-if="member.show_whatsapp && member.whatsapp" :href="whatsappLink" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-green-500/10 border border-transparent hover:border-green-500/30 transition-all group">
+              <a v-if="member.show_whatsapp && member.whatsapp" :href="whatsappLink" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-green-500/10 border border-slate-300 dark:border-transparent hover:border-green-500/30 transition-all group">
                 <span class="material-symbols-outlined text-green-400">chat</span>
-                <span class="text-sm text-gray-300 group-hover:text-white truncate">WhatsApp</span>
+                <span class="text-sm text-slate-600 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white truncate">WhatsApp</span>
               </a>
               
               <div v-if="isAdmin && member.email && !member.show_email" class="px-3 py-1 bg-secondary/10 border border-secondary/20 rounded-lg mb-2">
                 <span class="text-[10px] text-secondary font-bold uppercase tracking-wider">Visível apenas para Admin</span>
               </div>
 
-              <a v-if="(member.show_email || isAdmin) && member.email" :href="`mailto:${member.email}`" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-secondary/10 border border-transparent hover:border-secondary/30 transition-all group">
+              <a v-if="(member.show_email || isAdmin) && member.email" :href="`mailto:${member.email}`" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-secondary/10 border border-slate-300 dark:border-transparent hover:border-secondary/30 transition-all group">
                 <span class="material-symbols-outlined text-secondary">mail</span>
-                <span class="text-sm text-gray-300 group-hover:text-white truncate">{{ member.email }}</span>
+                <span class="text-sm text-slate-600 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white truncate">{{ member.email }}</span>
               </a>
             </div>
           </div>
@@ -175,8 +175,8 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Interests -->
-              <div class="bg-surface-dark border border-white/5 rounded-2xl p-8 shadow-xl">
-                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                   <span class="material-symbols-outlined text-secondary">interests</span>
                   Interesses
                 </h3>
@@ -189,15 +189,15 @@
               </div>
 
               <!-- Goals -->
-              <div class="bg-surface-dark border border-white/5 rounded-2xl p-8 shadow-xl">
-                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                   <span class="material-symbols-outlined text-secondary">rocket_launch</span>
                   Metas
                 </h3>
                 <div v-if="member.goals?.length" class="space-y-3">
-                  <div v-for="goal in member.goals" :key="goal" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                  <div v-for="goal in member.goals" :key="goal" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-300 dark:border-white/5">
                     <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
-                    <span class="text-gray-300 text-sm font-medium">{{ goal }}</span>
+                    <span class="text-slate-600 dark:text-gray-300 text-sm font-medium">{{ goal }}</span>
                   </div>
                 </div>
                 <p v-else class="text-gray-500 text-sm italic">Nenhuma meta definida.</p>
@@ -205,13 +205,13 @@
             </div>
 
             <!-- Posts Section -->
-            <div class="space-y-8 pt-4">
-              <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-                <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/30">
-                  <span class="material-symbols-outlined text-secondary">feed</span>
+            <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 rounded-2xl p-6 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-6">
+              <h3 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/20">
+                  <span class="material-symbols-outlined text-secondary font-bold">feed</span>
                 </div>
                 Publicações Recentes
-              </h2>
+              </h3>
 
           <!-- Loading Posts -->
           <div v-if="postsLoading" class="flex justify-center py-12">
@@ -244,8 +244,12 @@
               >
                 Carregar mais posts
               </button>
-              <div v-else class="text-gray-400 text-sm">Carregando...</div>
             </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else class="text-center py-8 px-4">
+            <p class="text-slate-500 dark:text-gray-400 text-sm font-medium italic">{{ t('members.noPostsYet') }}</p>
           </div>
 
             </div> <!-- End Posts Area -->
@@ -260,7 +264,7 @@
         >
           <span class="material-icons text-6xl text-gray-400">person_off</span>
         </div>
-        <h2 class="text-2xl font-bold text-white mb-2">Membro não encontrado</h2>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Membro não encontrado</h2>
         <p class="text-gray-400 mb-6">
           O membro que você está procurando não existe ou foi removido.
         </p>
@@ -278,6 +282,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import PostCard from '@/components/features/feed/PostCard.vue'
 import CommentForm from '@/components/features/feed/CommentForm.vue'
@@ -297,6 +302,7 @@ import type { Member } from '@/types/members'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const { fetchMemberById, loading, error } = useMembers()
 loading.value = true // Prevent flash of not found state
 const { posts: memberPosts, loading: postsLoading, hasMore: postsHasMore, loadPosts, loadMorePosts, removeComment } = usePosts()

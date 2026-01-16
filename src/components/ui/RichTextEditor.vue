@@ -13,7 +13,7 @@
         :disabled="!editor.can().chain().focus().toggleBold().run()"
         :class="{ 'is-active': editor.isActive('bold') }"
         class="toolbar-btn"
-        title="Bold"
+        :title="t('common.editor.bold')"
       >
         <span class="material-icons-outlined text-xl">format_bold</span>
       </button>
@@ -24,7 +24,7 @@
         :disabled="!editor.can().chain().focus().toggleItalic().run()"
         :class="{ 'is-active': editor.isActive('italic') }"
         class="toolbar-btn"
-        title="Italic"
+        :title="t('common.editor.italic')"
       >
         <span class="material-icons-outlined text-xl">format_italic</span>
       </button>
@@ -36,7 +36,7 @@
         @click="editor.chain().focus().toggleBulletList().run()"
         :class="{ 'is-active': editor.isActive('bulletList') }"
         class="toolbar-btn"
-        title="Bullet List"
+        :title="t('common.editor.bulletList')"
       >
         <span class="material-icons-outlined text-xl">format_list_bulleted</span>
       </button>
@@ -46,7 +46,7 @@
         @click="editor.chain().focus().toggleOrderedList().run()"
         :class="{ 'is-active': editor.isActive('orderedList') }"
         class="toolbar-btn"
-        title="Ordered List"
+        :title="t('common.editor.orderedList')"
       >
         <span class="material-icons-outlined text-xl">format_list_numbered</span>
       </button>
@@ -60,6 +60,8 @@
 
 <script setup lang="ts">
 import { ref, onBeforeUnmount, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'

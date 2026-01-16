@@ -1,57 +1,49 @@
 <template>
-  <div class="bg-surface-dark/80 backdrop-blur rounded-2xl p-6 border border-input-border">
-    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-      <span class="material-symbols-outlined text-text-muted">settings</span>
+  <div class="bg-white dark:bg-surface-dark/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200 dark:border-input-border shadow-xl shadow-slate-100 dark:shadow-none hover:border-secondary/50 dark:hover:border-secondary/30 transition-all duration-300">
+    <h3 class="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/20">
+        <span class="material-symbols-outlined text-secondary font-bold">settings</span>
+      </div>
       {{ t('profile.settingsTitle') }}
     </h3>
     <div class="space-y-4">
       <!-- Public Profile Toggle -->
-      <div class="flex items-center justify-between py-2 p-3 rounded-lg hover:bg-white/5 transition-colors">
-        <div>
-          <p class="text-white font-medium text-sm">{{ t('profile.publicProfile') }}</p>
-          <p class="text-text-muted text-xs">{{ t('profile.publicProfileDesc') }}</p>
+      <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-input-bg/50 border border-slate-300 dark:border-transparent">
+        <div class="flex flex-col">
+          <span class="text-slate-900 dark:text-white font-black text-sm uppercase tracking-wider">{{ t('profile.publicProfile') }}</span>
+          <p class="text-[11px] text-slate-500 dark:text-text-muted mt-1 font-medium">{{ t('profile.publicProfileDesc') }}</p>
         </div>
-        <button
+        <button 
           @click="$emit('toggle-public')"
-          :class="[
-            'w-12 h-6 rounded-full relative transition-all focus:outline-none',
-            isPublic
-              ? 'bg-secondary/20 border border-secondary shadow-[0_0_8px_rgba(0,240,255,0.3)]'
-              : 'bg-input-bg border border-text-muted/30'
-          ]"
+          class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+          :class="isPublic ? 'bg-secondary shadow-[0_0_10px_rgba(0,240,255,0.4)]' : 'bg-slate-300 dark:bg-gray-700'"
         >
           <span
+            aria-hidden="true"
             :class="[
-              'absolute top-0.5 w-4 h-4 rounded-full transition-transform',
-              isPublic
-                ? 'right-1 bg-secondary shadow-[0_0_5px_rgba(0,240,255,0.8)]'
-                : 'left-1 bg-text-muted'
+              isPublic ? 'translate-x-5' : 'translate-x-0',
+              'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
             ]"
           ></span>
         </button>
       </div>
 
       <!-- Show Email Toggle -->
-      <div class="flex items-center justify-between py-2 p-3 rounded-lg hover:bg-white/5 transition-colors">
-        <div>
-          <p class="text-white font-medium text-sm">{{ t('profile.showEmail') }}</p>
-          <p class="text-text-muted text-xs">{{ t('profile.showEmailDesc') }}</p>
+      <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-input-bg/50 border border-slate-300 dark:border-transparent">
+        <div class="flex flex-col">
+          <span class="text-slate-900 dark:text-white font-black text-sm uppercase tracking-wider">{{ t('profile.showEmail') }}</span>
+          <p class="text-[11px] text-slate-500 dark:text-text-muted mt-1 font-medium">{{ t('profile.showEmailDesc') }}</p>
         </div>
-        <button
+        <button 
           @click="$emit('toggle-email')"
-          :class="[
-            'w-12 h-6 rounded-full relative transition-all focus:outline-none',
-            showEmail
-              ? 'bg-secondary/20 border border-secondary shadow-[0_0_8px_rgba(0,240,255,0.3)]'
-              : 'bg-input-bg border border-text-muted/30'
-          ]"
+          class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+          :class="showEmail ? 'bg-secondary shadow-[0_0_10px_rgba(0,240,255,0.4)]' : 'bg-slate-300 dark:bg-gray-700'"
         >
           <span
+            aria-hidden="true"
             :class="[
-              'absolute top-0.5 w-4 h-4 rounded-full transition-transform',
-              showEmail
-                ? 'right-1 bg-secondary shadow-[0_0_5px_rgba(0,240,255,0.8)]'
-                : 'left-1 bg-text-muted'
+              showEmail ? 'translate-x-5' : 'translate-x-0',
+              'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
             ]"
           ></span>
         </button>
@@ -59,20 +51,21 @@
 
       <!-- Subscription Management (Only for Premium) -->
       <div v-if="isPremium" class="mt-8 pt-6 border-t border-input-border">
-        <div class="bg-gradient-to-br from-secondary/10 to-primary/10 rounded-xl p-4 border border-secondary/20">
-          <div class="flex items-center gap-3 mb-3">
-            <span class="material-symbols-outlined text-secondary">workspace_premium</span>
-            <p class="text-white font-bold text-sm">Assinatura Premium Ativa</p>
+        <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-input-bg/50 border border-slate-100 dark:border-transparent">
+          <div class="flex items-center gap-4">
+            <div class="p-2 rounded-lg bg-primary/10 border border-primary/20">
+              <span class="material-symbols-outlined text-primary font-bold">workspace_premium</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-slate-900 dark:text-white font-black text-sm uppercase tracking-wider">{{ t('profile.premiumAccount') }}</span>
+              <p class="text-[11px] text-slate-500 dark:text-text-muted mt-1 font-medium">{{ t('profile.manageSubscription') }}</p>
+            </div>
           </div>
-          <p class="text-text-muted text-xs mb-4">
-            Gerencie sua assinatura, métodos de pagamento e visualize seu histórico de faturas diretamente no portal do Stripe.
-          </p>
-          <button
+          <button 
             @click="$emit('manage-subscription')"
-            class="w-full py-2.5 rounded-lg bg-secondary/20 border border-secondary text-secondary font-bold text-xs hover:bg-secondary hover:text-white transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)] flex items-center justify-center gap-2"
+            class="px-5 py-2 rounded-xl bg-white dark:bg-transparent border border-slate-200 dark:border-input-border text-slate-600 dark:text-white text-xs font-black uppercase tracking-widest hover:border-primary hover:text-primary transition-all shadow-sm"
           >
-            <span class="material-symbols-outlined text-sm">payments</span>
-            Gerenciar Assinatura e Faturamento
+            {{ t('profile.manage') }}
           </button>
         </div>
       </div>

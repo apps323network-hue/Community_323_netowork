@@ -357,11 +357,11 @@ export const usePostStore = defineStore('posts', () => {
     error.value = null
 
     try {
-      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
-      const sanitizedContent = extractPlainText(input.conteudo)
+      // Extrair texto puro apenas para verificação de palavras banidas
+      const plainTextForCheck = extractPlainText(input.conteudo)
 
-      // Verificar palavras proibidas no conteúdo sanitizado
-      const bannedCheck = await checkBannedWords(sanitizedContent)
+      // Verificar palavras proibidas no texto puro
+      const bannedCheck = await checkBannedWords(plainTextForCheck)
 
       if (bannedCheck.found) {
         // Bloquear qualquer palavra ofensiva encontrada
@@ -379,7 +379,7 @@ export const usePostStore = defineStore('posts', () => {
         .insert({
           user_id: currentUserId.value,
           tipo: input.tipo,
-          conteudo: sanitizedContent, // Salvar apenas texto puro
+          conteudo: input.conteudo, // Salvar com formatação HTML
           image_url: input.image_url || null,
           status: postStatus,
         })
@@ -506,11 +506,11 @@ export const usePostStore = defineStore('posts', () => {
         throw new Error('Posts can only be edited within 5 minutes of creation')
       }
 
-      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
-      const sanitizedContent = extractPlainText(newContent)
+      // Extrair texto puro apenas para verificação de palavras banidas
+      const plainTextForCheck = extractPlainText(newContent)
 
-      // Check banned words on sanitized content
-      const bannedCheck = await checkBannedWords(sanitizedContent)
+      // Check banned words on plain text
+      const bannedCheck = await checkBannedWords(plainTextForCheck)
       if (bannedCheck.found) {
         throw new Error('Your post contains banned words. Please revise the content.')
       }
@@ -519,7 +519,7 @@ export const usePostStore = defineStore('posts', () => {
       const { data, error: updateError } = await supabase
         .from('posts')
         .update({
-          conteudo: sanitizedContent, // Salvar apenas texto puro
+          conteudo: newContent, // Salvar com formatação HTML
           edited_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -616,11 +616,11 @@ export const usePostStore = defineStore('posts', () => {
         throw new Error('Comments can only be edited within 5 minutes of creation')
       }
 
-      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
-      const sanitizedContent = extractPlainText(newContent)
+      // Extrair texto puro apenas para verificação de palavras banidas
+      const plainTextForCheck = extractPlainText(newContent)
 
-      // Check banned words on sanitized content
-      const bannedCheck = await checkBannedWords(sanitizedContent)
+      // Check banned words on plain text
+      const bannedCheck = await checkBannedWords(plainTextForCheck)
       if (bannedCheck.found) {
         throw new Error('Your comment contains banned words. Please revise the content.')
       }
@@ -629,7 +629,7 @@ export const usePostStore = defineStore('posts', () => {
       const { data, error: updateError } = await supabase
         .from('post_comments')
         .update({
-          conteudo: sanitizedContent, // Salvar apenas texto puro
+          conteudo: newContent, // Salvar com formatação HTML
           edited_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -910,11 +910,11 @@ export const usePostStore = defineStore('posts', () => {
     }
 
     try {
-      // Sanitizar conteúdo: sempre salvar apenas texto puro (remove qualquer HTML)
-      const sanitizedContent = extractPlainText(input.conteudo)
+      // Extrair texto puro apenas para verificação de palavras banidas
+      const plainTextForCheck = extractPlainText(input.conteudo)
 
-      // Verificar palavras proibidas no conteúdo sanitizado
-      const bannedCheck = await checkBannedWords(sanitizedContent)
+      // Verificar palavras proibidas no texto puro
+      const bannedCheck = await checkBannedWords(plainTextForCheck)
 
       if (bannedCheck.found) {
         // Bloquear qualquer palavra ofensiva encontrada
@@ -926,7 +926,7 @@ export const usePostStore = defineStore('posts', () => {
         .insert({
           post_id: input.post_id,
           user_id: currentUserId.value,
-          conteudo: sanitizedContent, // Salvar apenas texto puro
+          conteudo: input.conteudo, // Salvar com formatação HTML
         })
         .select('*')
         .single()

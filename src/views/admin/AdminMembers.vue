@@ -6,10 +6,10 @@
       <div class="relative z-10 max-w-[1600px] mx-auto px-4 lg:px-10 py-8">
         <!-- Hero Header -->
         <div class="mb-8">
-          <h1 class="text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight mb-4">
+          <h1 class="text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-tight tracking-tight mb-4">
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary animate-gradient-x bg-[length:200%_auto]">Members</span> Management
           </h1>
-          <p class="text-white/60 text-lg">
+          <p class="text-slate-600 dark:text-white/60 text-lg font-medium">
             Manage, filter and analyze all community members with real-time engagement metrics
           </p>
         </div>
@@ -17,40 +17,40 @@
         <!-- Stats Dashboard -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <!-- Total Members -->
-          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all group">
+          <div class="relative rounded-[24px] p-6 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-white/10 hover:border-primary/50 transition-all group shadow-sm">
             <div class="flex items-center gap-4">
               <div class="p-3 rounded-xl bg-primary/10 border border-primary/20">
                 <span class="material-symbols-outlined text-primary text-2xl">group</span>
               </div>
               <div>
-                <p class="text-white/50 text-xs font-medium mb-1">Total Members</p>
-                <p class="text-white text-2xl font-black">{{ usersStore.userStats.total }}</p>
+                <p class="text-slate-500 dark:text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Total Members</p>
+                <p class="text-slate-900 dark:text-white text-2xl font-black">{{ usersStore.userStats.total }}</p>
               </div>
             </div>
           </div>
 
           <!-- Active Members -->
-          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-green-500/50 transition-all group">
+          <div class="relative rounded-[24px] p-6 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-white/10 hover:border-green-500/50 transition-all group shadow-sm">
             <div class="flex items-center gap-4">
               <div class="p-3 rounded-xl bg-green-500/10 border border-green-500/20">
                 <span class="material-symbols-outlined text-green-500 text-2xl">check_circle</span>
               </div>
               <div>
-                <p class="text-white/50 text-xs font-medium mb-1">Active Members</p>
-                <p class="text-white text-2xl font-black">{{ usersStore.userStats.active }}</p>
+                <p class="text-slate-500 dark:text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Active Members</p>
+                <p class="text-slate-900 dark:text-white text-2xl font-black">{{ usersStore.userStats.active }}</p>
               </div>
             </div>
           </div>
 
           <!-- Pending Approvals -->
-          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-yellow-500/50 transition-all group">
+          <div class="relative rounded-[24px] p-6 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-white/10 hover:border-yellow-500/50 transition-all group shadow-sm">
             <div class="flex items-center gap-4">
               <div class="p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
                 <span class="material-symbols-outlined text-yellow-500 text-2xl">pending_actions</span>
               </div>
               <div>
-                <p class="text-white/50 text-xs font-medium mb-1">Pending</p>
-                <p class="text-white text-2xl font-black">{{ usersStore.userStats.pending }}</p>
+                <p class="text-slate-500 dark:text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Pending</p>
+                <p class="text-slate-900 dark:text-white text-2xl font-black">{{ usersStore.userStats.pending }}</p>
               </div>
             </div>
           </div>
@@ -58,16 +58,16 @@
           <!-- New Today -->
           <button
             @click="filterByToday"
-            class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-secondary/50 transition-all group cursor-pointer"
-            :class="{ 'border-secondary shadow-[0_0_30px_rgba(0,243,255,0.3)] scale-105': currentFilters.dateRange === 'today' }"
+            class="relative rounded-[24px] p-6 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-white/10 hover:border-secondary transition-all group cursor-pointer shadow-sm"
+            :class="{ 'border-secondary shadow-premium-hover scale-[1.02]': currentFilters.dateRange === 'today' }"
           >
             <div class="flex items-center gap-4">
               <div class="p-3 rounded-xl bg-secondary/10 border border-secondary/20 group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined text-secondary text-2xl">person_add</span>
               </div>
               <div class="text-left">
-                <p class="text-white/50 text-xs font-medium mb-1">New Today</p>
-                <p class="text-white text-2xl font-black">{{ usersStore.userStats.newToday }}</p>
+                <p class="text-slate-500 dark:text-white/50 text-xs font-bold uppercase tracking-wider mb-1">New Today</p>
+                <p class="text-slate-900 dark:text-white text-2xl font-black">{{ usersStore.userStats.newToday }}</p>
                 <p class="text-secondary text-[10px] font-bold uppercase tracking-wider mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   Click to filter
                 </p>
@@ -76,19 +76,19 @@
             <!-- Active indicator -->
             <div 
               v-if="currentFilters.dateRange === 'today'"
-              class="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full animate-pulse"
+              class="absolute top-3 right-3 w-2.5 h-2.5 bg-secondary rounded-full animate-pulse shadow-[0_0_10px_rgba(0,243,255,1)]"
             ></div>
           </button>
 
           <!-- Engagement Rate -->
-          <div class="relative rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 hover:border-purple-500/50 transition-all group">
+          <div class="relative rounded-[24px] p-6 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-white/10 hover:border-purple-500/50 transition-all group shadow-sm">
             <div class="flex items-center gap-4">
               <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
                 <span class="material-symbols-outlined text-purple-500 text-2xl">trending_up</span>
               </div>
               <div>
-                <p class="text-white/50 text-xs font-medium mb-1">Engagement</p>
-                <p class="text-white text-2xl font-black">{{ engagementRateText }}</p>
+                <p class="text-slate-500 dark:text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Engagement</p>
+                <p class="text-slate-900 dark:text-white text-2xl font-black">{{ engagementRateText }}</p>
               </div>
             </div>
           </div>
@@ -100,9 +100,9 @@
         <!-- Results Info -->
         <div class="flex items-center justify-between mb-6">
           <div>
-            <p class="text-white/60 text-sm">
-              Showing <span class="text-white font-bold">{{ usersStore.paginatedMembers.length }}</span> of 
-              <span class="text-white font-bold">{{ usersStore.pagination.totalItems }}</span> members
+            <p class="text-slate-500 dark:text-white/60 text-sm font-medium">
+              Showing <span class="text-slate-900 dark:text-white font-black">{{ usersStore.paginatedMembers.length }}</span> of 
+              <span class="text-slate-900 dark:text-white font-black">{{ usersStore.pagination.totalItems }}</span> members
             </p>
             <p v-if="currentFilters.dateRange && currentFilters.dateRange !== 'all'" class="text-secondary text-xs font-bold mt-1 flex items-center gap-1">
               <span class="material-symbols-outlined text-sm">filter_alt</span>
@@ -117,14 +117,14 @@
             <button
               @click="viewMode = 'grid'"
               class="p-2 rounded-lg transition-all"
-              :class="viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'"
+              :class="viewMode === 'grid' ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white' : 'text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'"
             >
               <span class="material-symbols-outlined">grid_view</span>
             </button>
             <button
               @click="viewMode = 'list'"
               class="p-2 rounded-lg transition-all"
-              :class="viewMode === 'list' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white hover:bg-white/5'"
+              :class="viewMode === 'list' ? 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white' : 'text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'"
             >
               <span class="material-symbols-outlined">view_list</span>
             </button>
@@ -147,7 +147,7 @@
           </p>
           <button
             @click="handleClearFilters"
-            class="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all"
+            class="px-6 py-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all font-bold shadow-sm"
           >
             Clear Filters
           </button>
@@ -197,7 +197,7 @@
             <button
               @click="handlePageChange(usersStore.pagination.currentPage - 1)"
               :disabled="usersStore.pagination.currentPage === 1"
-              class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+              class="px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-sm"
             >
               <span class="material-symbols-outlined">chevron_left</span>
               Previous
@@ -211,8 +211,8 @@
                   @click="handlePageChange(page)"
                   class="w-10 h-10 rounded-xl font-bold transition-all"
                   :class="page === usersStore.pagination.currentPage 
-                    ? 'bg-gradient-to-r from-primary to-secondary text-black' 
-                    : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'"
+                    ? 'bg-gradient-to-r from-primary to-secondary text-black shadow-lg shadow-primary/20 scale-105' 
+                    : 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 shadow-sm'"
                 >
                   {{ page }}
                 </button>
@@ -224,7 +224,7 @@
             <button
               @click="handlePageChange(usersStore.pagination.currentPage + 1)"
               :disabled="usersStore.pagination.currentPage === usersStore.pagination.totalPages"
-              class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+              class="px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-sm"
             >
               Next
               <span class="material-symbols-outlined">chevron_right</span>
@@ -232,16 +232,16 @@
           </div>
 
           <!-- Page Size Selector -->
-          <div class="flex items-center gap-3 text-white/60 text-sm">
+          <div class="flex items-center gap-3 text-slate-500 dark:text-white/60 text-sm font-medium">
             <span>Items per page:</span>
             <select
               :value="usersStore.pagination.pageSize"
               @change="handlePageSizeChange"
-              class="px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+              class="px-3 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none shadow-sm"
             >
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
+              <option value="20" class="text-black">20</option>
+              <option value="50" class="text-black">50</option>
+              <option value="100" class="text-black">100</option>
             </select>
           </div>
         </div>

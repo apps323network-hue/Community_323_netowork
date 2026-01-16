@@ -1,7 +1,7 @@
 <template>
   <aside class="lg:sticky lg:top-24 h-fit space-y-8">
     <!-- Profile Card (Authenticated) -->
-    <div v-if="isAuthenticated" class="bg-white dark:bg-surface-dark rounded-2xl p-6 relative overflow-hidden shadow-premium dark:shadow-2xl border border-slate-200/60 dark:border-white/5 group">
+    <div v-if="isAuthenticated" class="bg-white dark:bg-surface-dark rounded-2xl p-6 relative overflow-hidden shadow-premium dark:shadow-2xl border border-slate-200 dark:border-white/5 group">
       <!-- Neon glow effects -->
       <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full -mr-10 -mt-10 group-hover:bg-primary/20 transition-all duration-500"></div>
       <div class="absolute bottom-0 left-0 w-24 h-24 bg-secondary/10 blur-3xl rounded-full -ml-10 -mb-10 group-hover:bg-secondary/20 transition-all duration-500"></div>
@@ -14,7 +14,7 @@
         </div>
         
         <button
-          class="w-full bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-black font-bold py-2.5 px-4 rounded-lg transition-all shadow-lg shadow-secondary/10 hover:shadow-secondary/40"
+          class="w-full bg-transparent border border-secondary text-slate-900 dark:text-secondary hover:bg-secondary hover:text-black font-bold py-2.5 px-4 rounded-lg transition-all shadow-lg shadow-secondary/10 hover:shadow-secondary/40"
           @click="$emit('edit-profile')"
         >
           {{ t('profile.editProfile') }}
@@ -38,14 +38,14 @@
     </div>
 
     <!-- Navigation Menu Card -->
-    <div class="bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-premium dark:shadow-2xl border border-slate-200/60 dark:border-white/5">
+    <div class="bg-white dark:bg-surface-dark rounded-2xl p-4 shadow-premium dark:shadow-2xl border border-slate-200 dark:border-white/5">
       <nav class="space-y-2">
         <RouterLink
           to="/"
           class="flex items-center px-4 py-3 text-sm rounded-lg transition-all"
           :class="$route.path === '/' 
             ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-secondary shadow-neon-blue/10' 
-            : 'font-medium text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+            : 'font-medium text-slate-900 dark:text-gray-400 hover:bg-surface-lighter hover:text-white group'"
         >
           <span 
             class="material-icons-outlined mr-3 transition-colors"
@@ -57,10 +57,10 @@
         </RouterLink>
         <RouterLink
           to="/comunidade"
-          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-400 hover:bg-surface-lighter hover:text-white group transition-all"
+          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-900 dark:text-gray-400 hover:bg-surface-lighter hover:text-white group transition-all"
           :class="$route.path === '/membros' ? 'bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white' : ''"
         >
-          <span class="material-icons-outlined mr-3 text-gray-500 group-hover:text-secondary transition-colors">people_outline</span>
+          <span class="material-icons-outlined mr-3 text-gray-500 group-hover:text-primary transition-colors">people_outline</span>
           {{ t('navigation.community') }}
         </RouterLink>
         <RouterLink
@@ -68,7 +68,7 @@
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
           :class="$route.path === '/conexoes' 
             ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-secondary shadow-neon-blue/10' 
-            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+            : 'text-slate-900 dark:text-gray-400 hover:bg-surface-lighter hover:text-white group'"
         >
           <span 
             class="material-icons-outlined mr-3 transition-colors"
@@ -126,7 +126,7 @@
         </RouterLink>
         <RouterLink
           to="/eventos"
-          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group transition-all"
+          class="flex items-center px-4 py-3 text-sm font-medium rounded-lg text-slate-900 dark:text-gray-400 hover:bg-surface-lighter hover:text-white group transition-all"
         >
           <span class="material-icons-outlined mr-3 text-gray-500 group-hover:text-primary transition-colors">event</span>
           {{ t('navigation.savedEvents') }}
@@ -136,7 +136,7 @@
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
           :class="$route.path === '/my-programs' 
             ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-secondary shadow-neon-blue/10' 
-            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+            : 'text-slate-900 dark:text-gray-400 hover:bg-surface-lighter hover:text-white group'"
         >
           <span 
             class="material-icons-outlined mr-3 transition-colors"
@@ -149,7 +149,7 @@
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
           :class="$route.path === '/meus-pedidos' 
             ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-primary shadow-neon-pink/10' 
-            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+            : 'text-slate-900 dark:text-gray-400 hover:bg-surface-lighter hover:text-white group'"
         >
           <span class="material-icons-outlined mr-3 text-gray-500 group-hover:text-primary transition-colors">assignment</span>
           {{ t('navigation.myOrders') }}
@@ -159,11 +159,11 @@
           class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all"
           :class="$route.path === '/beneficios' 
             ? 'font-semibold bg-slate-100 dark:bg-surface-lighter text-primary dark:text-white border-l-4 border-primary shadow-neon-pink/10' 
-            : 'text-slate-500 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-surface-lighter hover:text-slate-900 dark:hover:text-white group'"
+            : 'text-slate-900 dark:text-gray-400 hover:bg-surface-lighter hover:text-white group'"
         >
           <span 
             class="material-icons-outlined mr-3 transition-colors"
-            :class="$route.path === '/beneficios' ? 'text-primary' : 'text-gray-500 group-hover:text-primary'"
+            :class="$route.path === '/beneficios' ? 'text-primary' : 'text-gray-500 group-hover:text-secondary'"
           >
             card_giftcard
           </span>

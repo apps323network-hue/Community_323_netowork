@@ -8,7 +8,7 @@
           <!-- Back to Events Button -->
           <router-link
             to="/eventos"
-            class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-white hover:text-primary transition-colors whitespace-nowrap"
+            class="group text-xs sm:text-sm font-bold flex items-center gap-1 text-slate-900 dark:text-white hover:text-primary transition-colors whitespace-nowrap"
           >
             <span class="material-symbols-outlined text-primary text-base sm:text-lg group-hover:-translate-x-1 transition-transform">
               arrow_back
@@ -22,17 +22,17 @@
         
         <!-- Title Section -->
         <div>
-          <h1 class="text-white text-3xl lg:text-4xl font-black mb-2">
+          <h1 class="text-slate-900 dark:text-white text-3xl lg:text-4xl font-black mb-2">
             {{ t('calendar.title') }} <span class="neon-text-gradient">{{ t('calendar.titleHighlight') }}</span>
           </h1>
-          <p class="text-white/60">
+          <p class="text-slate-600 dark:text-white/60">
             {{ t('calendar.subtitle') }}
           </p>
         </div>
       </div>
 
       <!-- Calendar -->
-      <div class="bg-surface-card rounded-xl p-2 sm:p-4 lg:p-6 border border-white/5">
+      <div class="bg-white dark:bg-surface-card rounded-xl p-2 sm:p-4 lg:p-6 border border-slate-200 dark:border-white/5">
         <FullCalendar
           :options="calendarOptions"
           class="event-calendar"
@@ -43,11 +43,11 @@
       <div class="flex flex-wrap gap-4 items-center justify-center lg:justify-start">
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 rounded bg-primary/20 border border-primary"></div>
-          <span class="text-white/80 text-sm">{{ t('calendar.legend.presencial') }}</span>
+          <span class="text-slate-700 dark:text-white/80 text-sm">{{ t('calendar.legend.presencial') }}</span>
         </div>
         <div class="flex items-center gap-2">
           <div class="w-4 h-4 rounded bg-secondary/20 border border-secondary"></div>
-          <span class="text-white/80 text-sm">{{ t('calendar.legend.webinar') }}</span>
+          <span class="text-slate-700 dark:text-white/80 text-sm">{{ t('calendar.legend.webinar') }}</span>
         </div>
       </div>
 
@@ -252,6 +252,12 @@ onMounted(async () => {
   --fc-daygrid-event-dot-width: 8px;
   --fc-event-border-radius: 6px;
   --fc-today-bg-color: rgba(244, 37, 244, 0.1);
+}
+
+/* Light theme overrides */
+:deep(.event-calendar):not(.dark *) {
+  --fc-border-color: rgba(0, 0, 0, 0.1);
+  --fc-today-bg-color: rgba(244, 37, 244, 0.05);
 }
 
 :deep(.fc) {
@@ -574,5 +580,101 @@ onMounted(async () => {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ========================================
+   LIGHT THEME STYLES
+   ======================================== */
+
+/* Base calendar text color for light theme */
+:deep(.fc):not(.dark *) {
+  color: #1e293b;
+}
+
+/* Buttons in light theme */
+:deep(.fc-button):not(.dark *) {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #1e293b;
+}
+
+:deep(.fc-button:hover):not(.dark *) {
+  background-color: rgba(244, 37, 244, 0.1);
+  border-color: #f425f4;
+}
+
+:deep(.fc-button-active):not(.dark *) {
+  background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+  border-color: transparent;
+  color: white;
+  font-weight: 800;
+}
+
+:deep(.fc-today-button):not(.dark *) {
+  background-color: rgba(0, 240, 255, 0.1);
+  border-color: #00f0ff;
+  color: #1e293b;
+}
+
+:deep(.fc-today-button:hover):not(.dark *) {
+  background-color: rgba(0, 240, 255, 0.2);
+}
+
+/* Day cells in light theme */
+:deep(.fc-daygrid-day):not(.dark *) {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+:deep(.fc-daygrid-day:hover):not(.dark *) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+:deep(.fc-day-today):not(.dark *) {
+  background-color: rgba(244, 37, 244, 0.05) !important;
+}
+
+/* Column headers in light theme */
+:deep(.fc-col-header-cell):not(.dark *) {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+:deep(.fc-col-header-cell-cushion):not(.dark *) {
+  color: #475569 !important;
+}
+
+/* Borders in light theme */
+:deep(.fc-theme-standard td):not(.dark *), 
+:deep(.fc-theme-standard th):not(.dark *) {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+:deep(.fc-scrollgrid):not(.dark *), 
+:deep(.fc-scrollgrid-section):not(.dark *), 
+:deep(.fc-scrollgrid-section td):not(.dark *), 
+:deep(.fc-scrollgrid-section th):not(.dark *) {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Day numbers in light theme */
+:deep(.fc-daygrid-day-number):not(.dark *), 
+:deep(.fc-daygrid-day-top):not(.dark *) {
+  color: #1e293b;
+}
+
+/* Time grid in light theme */
+:deep(.fc-timegrid-slot):not(.dark *) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+:deep(.fc-timegrid-axis-cushion):not(.dark *), 
+:deep(.fc-timegrid-slot-label-cushion):not(.dark *) {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* Toolbar title in light theme */
+:deep(.fc-toolbar-title):not(.dark *) {
+  color: #1e293b;
+}
+
 </style>
 
