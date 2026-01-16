@@ -87,14 +87,18 @@
       <div class="flex flex-col gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-3 sm:pt-4 md:pt-6 lg:pt-8">
         <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2.5 sm:pb-3 md:pb-4 gap-2">
           <h2 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight truncate">{{ t('services.whatMembersSay') }}</h2>
-          <a class="text-secondary text-[10px] sm:text-xs md:text-sm font-bold hover:underline hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer whitespace-nowrap flex-shrink-0">{{ t('common.seeAll') }}</a>
+          <a v-if="testimonials.length > 0" class="text-secondary text-[10px] sm:text-xs md:text-sm font-bold hover:underline hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer whitespace-nowrap flex-shrink-0">{{ t('common.seeAll') }}</a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+        <div v-if="testimonials.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           <TestimonialCard
             v-for="testimonial in testimonials"
             :key="testimonial.id"
             :testimonial="testimonial"
           />
+        </div>
+        <div v-else class="flex flex-col items-center justify-center py-10 bg-slate-50 dark:bg-white/5 rounded-2xl border border-dashed border-slate-200 dark:border-white/10">
+          <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-4xl mb-2">rate_review</span>
+          <p class="text-slate-500 dark:text-gray-400 text-sm font-medium">{{ t('services.noTestimonials') }}</p>
         </div>
       </div>
 
@@ -453,32 +457,7 @@ const filters = computed(() => {
   return baseFilters
 })
 
-const testimonials = computed(() => [
-  {
-    id: 1,
-    name: 'Lucas Mendes',
-    role: t('services.roleLucas'),
-    text: t('services.testimonialLucas'),
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop',
-  },
-  {
-    id: 2,
-    name: 'Amanda Silva',
-    role: t('services.roleAmanda'),
-    text: t('services.testimonialAmanda'),
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop',
-  },
-  {
-    id: 3,
-    name: 'Beatriz Costa',
-    role: t('services.roleBeatriz'),
-    text: t('services.testimonialBeatriz'),
-    rating: 4.5,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop',
-  },
-])
+const testimonials = computed<any[]>(() => [])
 
 function formatPrice(cents: number, currency: string = 'USD'): string {
   const amount = cents / 100
@@ -817,8 +796,7 @@ async function submitNewService() {
 }
 
 function contactSupport() {
-  const message = encodeURIComponent('Olá! Sou membro da 323 Network e preciso de ajuda com um serviço personalizado.')
-  window.open(`https://wa.me/5511999999999?text=${message}`, '_blank')
+  router.push('/contact-us')
 }
 </script>
 

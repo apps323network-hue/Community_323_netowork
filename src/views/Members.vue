@@ -58,8 +58,6 @@
       >
         <MemberFilters
           v-model="filters"
-          :view-mode="viewMode"
-          @update:view-mode="viewMode = $event"
         />
       </div>
 
@@ -122,35 +120,11 @@
           <h2 class="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white tracking-tight truncate">
             {{ t('members.allMembers') }}
           </h2>
-          <div class="flex gap-1 sm:gap-2 flex-shrink-0">
-            <button
-              :class="[
-                'p-2 rounded-lg transition-colors',
-                viewMode === 'grid'
-                  ? 'bg-primary text-white shadow-md'
-                  : 'text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-primary/20 hover:text-primary',
-              ]"
-              @click="viewMode = 'grid'"
-            >
-              <span class="material-icons text-sm">grid_view</span>
-            </button>
-            <button
-              :class="[
-                'p-2 rounded-lg transition-colors',
-                viewMode === 'list'
-                  ? 'bg-primary text-white shadow-md'
-                  : 'text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-primary/20 hover:text-primary',
-              ]"
-              @click="viewMode = 'list'"
-            >
-              <span class="material-icons text-sm">view_list</span>
-            </button>
-          </div>
+
         </div>
 
-        <!-- Members List/Grid -->
+        <!-- Members List -->
         <div
-          v-if="viewMode === 'list'"
           class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden relative"
         >
           <MemberCard
@@ -159,17 +133,6 @@
             :member="member"
             variant="list"
             :class="{ 'blur-[1px] opacity-60 pointer-events-none': !isAuthenticated && index >= guestLimit - 2 }"
-            @view-profile="handleViewProfile"
-            @bookmark-changed="handleBookmarkChanged"
-          />
-        </div>
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
-          <MemberCard
-            v-for="(member, index) in displayMembers"
-            :key="member.id"
-            :member="member"
-            variant="featured"
-            :class="{ 'blur-[1px] opacity-60 pointer-events-none': !isAuthenticated && index >= guestLimit - 3 }"
             @view-profile="handleViewProfile"
             @bookmark-changed="handleBookmarkChanged"
           />
@@ -248,7 +211,7 @@ function handleFeedSearch(query: string) {
   // Future: could redirect to a unified search results page
 }
 
-const viewMode = ref<'grid' | 'list'>('list')
+
 const filters = ref<MemberFiltersType>({})
 const searchQuery = ref('')
 const showFilters = ref(false)

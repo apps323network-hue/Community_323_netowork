@@ -3,7 +3,7 @@
     ref="buttonRef"
     class="relative inline-flex items-center justify-center p-2 rounded-full text-slate-600 dark:text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors"
     type="button"
-    @click="handleToggle"
+    @click.stop="handleToggle"
   >
     <!-- Ícones -->
     <span class="material-icons-outlined transition-all duration-300" :class="isDark ? 'rotate-90 scale-0 absolute' : 'rotate-0 scale-100'">dark_mode</span>
@@ -19,6 +19,7 @@ import { useTheme } from '@/composables/useTheme'
 const { theme, toggleTheme } = useTheme()
 const buttonRef = ref<HTMLButtonElement | null>(null)
 const isDark = ref(theme.value === 'dark')
+const isAnimating = ref(false)
 
 // Sincronizar estado local com o tema global
 const updateLocalState = () => {
@@ -36,6 +37,8 @@ onMounted(() => {
 })
 
 const handleToggle = async () => {
+  if (isAnimating.value) return
+  
   // Se o browser não suportar View Transitions, faz o toggle normal
   if (!(document as any).startViewTransition) {
     toggleTheme()
@@ -58,6 +61,8 @@ const handleToggle = async () => {
     Math.max(left, right),
     Math.max(top, bottom)
   )
+
+  isAnimating.value = true
 
   // Iniciar transição
   const transition = (document as any).startViewTransition(async () => {
@@ -83,8 +88,13 @@ const handleToggle = async () => {
         pseudoElement: "::view-transition-new(root)",
       }
     )
-  } catch (e) {
-    console.error('Animation failed', e)
+  } catch (e: any) {
+    // AbortError é comum quando uma nova transição começa antes da outra terminar
+    if (e.name !== 'AbortError') {
+      console.error('Animation failed', e)
+    }
+  } finally {
+    isAnimating.value = false
   }
 }
 

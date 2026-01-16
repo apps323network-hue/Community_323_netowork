@@ -4,7 +4,7 @@
     :class="{ 'is-focused': isFocused }"
     :style="{ height: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : (props.maxHeight === '100%' ? '100%' : 'auto'), maxHeight: typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : (props.maxHeight && props.maxHeight !== '100%' ? props.maxHeight : 'none') }"
   >
-    <editor-content :editor="editor" class="editor-content-area" />
+    <editor-content ref="editorContentRef" :editor="editor" class="editor-content-area" />
     
     <div v-if="editor" class="editor-toolbar flex items-center gap-1 p-2 border-t border-slate-200 dark:border-gray-800 bg-slate-50/50 dark:bg-surface-lighter/50 rounded-b-2xl">
       <button 
@@ -91,6 +91,33 @@ const emit = defineEmits(['update:modelValue', 'focus', 'blur'])
 
 const isFocused = ref(false)
 const characterCount = ref(0)
+const editorContentRef = ref<any>(null)
+
+// Função para scroll automático ao cursor
+function scrollToCursor() {
+  requestAnimationFrame(() => {
+    const selection = window.getSelection()
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0)
+      
+      // Criar um span temporário para marcar a posição do cursor
+      const tempSpan = document.createElement('span')
+      tempSpan.style.cssText = 'position: relative; display: inline-block;'
+      
+      try {
+        range.insertNode(tempSpan)
+        tempSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        tempSpan.remove()
+      } catch (e) {
+        // fallback se não conseguir inserir o span
+        if (editorContentRef.value?.$el) {
+          const el = editorContentRef.value.$el
+          el.scrollTop = el.scrollHeight
+        }
+      }
+    }
+  })
+}
 
 const editor = new Editor({
   content: props.modelValue,
@@ -105,6 +132,8 @@ const editor = new Editor({
     attributes: {
       class: 'prose prose-sm dark:prose-invert focus:outline-none max-w-none min-h-[120px] px-5 py-4 text-gray-900 dark:text-white',
     },
+    scrollThreshold: 100,
+    scrollMargin: 100,
   },
   onUpdate: ({ editor }) => {
     const html = editor.getHTML()
@@ -112,6 +141,9 @@ const editor = new Editor({
     const isReallyEmpty = editor.getText().trim() === ''
     emit('update:modelValue', isReallyEmpty ? '' : html)
     characterCount.value = editor.getText().length
+    
+    // Scroll automático para manter cursor visível
+    scrollToCursor()
   },
   onFocus: () => {
     isFocused.value = true
@@ -148,7 +180,6 @@ defineExpose({
 <style scoped>
 .rich-text-editor-container {
   @apply w-full bg-slate-50 dark:bg-surface-lighter border border-slate-200 dark:border-gray-700/50 rounded-2xl transition-all overflow-hidden flex flex-col;
-  min-height: 120px;
 }
 
 .rich-text-editor-container.is-focused {
@@ -159,6 +190,7 @@ defineExpose({
   @apply flex-grow;
   overflow-y: auto;
   overflow-x: hidden;
+  min-height: 0;
 }
 
 .toolbar-btn {

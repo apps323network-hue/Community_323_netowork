@@ -14,7 +14,10 @@
         @click.self="closeModal"
       >
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"></div>
+        <div 
+          class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+          @click="closeModal"
+        ></div>
 
         <!-- Modal Content -->
         <Transition
@@ -68,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch, onUnmounted } from 'vue'
 
 interface Props {
   modelValue: boolean
@@ -97,6 +100,20 @@ const sizeClasses = computed(() => {
     '4xl': 'max-w-7xl',
   }
   return sizes[props.size]
+})
+
+// Bloquear scroll do body quando modal está aberto
+watch(() => props.modelValue, (isOpen) => {
+  if (isOpen) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+}, { immediate: true })
+
+// Garantir que o scroll seja restaurado quando o componente for destruído
+onUnmounted(() => {
+  document.body.style.overflow = ''
 })
 
 function closeModal() {

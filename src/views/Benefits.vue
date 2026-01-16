@@ -172,7 +172,10 @@
                 </li>
               </ul>
             </div>
-            <button class="shrink-0 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-gray-100 px-8 py-4 font-bold text-lg shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-2xl transition-all hover:scale-105">
+            <button 
+              @click="router.push('/contact-us')"
+              class="shrink-0 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-gray-100 px-8 py-4 font-bold text-lg shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-2xl transition-all hover:scale-105"
+            >
               {{ t('benefits.beAPartner') }}
             </button>
           </div>
@@ -185,6 +188,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -196,6 +200,7 @@ import { toast } from 'vue-sonner'
 const { benefits, loading, fetchBenefits, fetchUserBenefits, claimBenefit, isBenefitClaimed } = useBenefits()
 const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 const { t } = useI18n()
+const router = useRouter()
 const activeFilter = ref('all')
 const benefitsSection = ref<HTMLElement | null>(null)
 
