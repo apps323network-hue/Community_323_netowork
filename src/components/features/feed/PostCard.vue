@@ -6,9 +6,9 @@
       <span class="text-xs font-semibold text-secondary uppercase tracking-wider">Fixado</span>
     </div>
 
-    <!-- Topo: Avatar e Nome alinhados pelo centro -->
-    <div class="flex items-center gap-3 md:gap-4 mb-2">
-      <!-- Avatar -->
+    <!-- Layout em Grid: Avatar à esquerda, conteúdo à direita -->
+    <div class="grid grid-cols-[auto_1fr] gap-3 md:gap-4">
+      <!-- Coluna 1: Avatar -->
       <div class="flex-shrink-0">
         <RouterLink :to="`/comunidade/${post.user_id}`" class="relative group no-underline block">
           <div class="absolute -inset-0.5 bg-gradient-to-b from-primary to-purple-600 rounded-full blur opacity-10 group-hover:opacity-40 transition-opacity"></div>
@@ -21,78 +21,79 @@
         </RouterLink>
       </div>
 
-      <!-- Nome e Meta Info -->
-      <div class="flex-1 min-w-0 flex justify-between items-center">
-        <div>
-          <div class="flex flex-wrap items-center gap-x-2 gap-y-0">
-            <RouterLink :to="`/comunidade/${post.user_id}`" class="no-underline group/link">
-              <h4 class="font-bold text-[15px] md:text-base text-gray-900 dark:text-white group-hover/link:text-primary transition-colors">
-                {{ authorName }}
-              </h4>
-            </RouterLink>
+      <!-- Coluna 2: Todo o conteúdo (nome, meta, post) -->
+      <div class="min-w-0">
+        <!-- Header: Nome e Menu -->
+        <div class="flex justify-between items-start mb-2">
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-0">
+              <RouterLink :to="`/comunidade/${post.user_id}`" class="no-underline group/link">
+                <h4 class="font-bold text-[15px] md:text-base text-gray-900 dark:text-white group-hover/link:text-primary transition-colors">
+                  {{ authorName }}
+                </h4>
+              </RouterLink>
+              
+              <span class="text-gray-400 text-xs md:text-sm whitespace-nowrap">
+                • {{ formatTime(post.created_at) }}
+              </span>
+
+              <!-- Badges compactas -->
+              <div class="flex gap-1 items-center">
+                <Badge v-if="isPendingPost" variant="warning" size="sm" class="scale-75 origin-left -ml-1">
+                  Pendente
+                </Badge>
+                <Badge v-if="post.edited_at" variant="secondary" size="sm" class="scale-75 origin-left -ml-1">
+                  Editado
+                </Badge>
+              </div>
+            </div>
             
-            <span class="text-gray-400 text-xs md:text-sm whitespace-nowrap">
-              • {{ formatTime(post.created_at) }}
-            </span>
-
-            <!-- Badges compactas -->
-            <div class="flex gap-1 items-center">
-              <Badge v-if="isPendingPost" variant="warning" size="sm" class="scale-75 origin-left -ml-1">
-                Pendente
-              </Badge>
-              <Badge v-if="post.edited_at" variant="secondary" size="sm" class="scale-75 origin-left -ml-1">
-                Editado
-              </Badge>
-            </div>
+            <!-- Cargo / Área de atuação -->
+            <p class="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 leading-none mt-1 line-clamp-1">
+              {{ authorRole }}
+            </p>
           </div>
-          
-          <!-- Cargo / Área de atuação -->
-          <p class="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 leading-none mt-1 line-clamp-1">
-            {{ authorRole }}
-          </p>
-        </div>
 
-        <!-- Menu Dropdown -->
-        <div class="relative" ref="menuContainer">
-          <button 
-            class="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-full transition-all"
-            @click.stop="showMenu = !showMenu"
-          >
-            <span class="material-icons-outlined text-xl">more_horiz</span>
-          </button>
-          <Transition
-            enter-active-class="transition-all duration-200"
-            enter-from-class="opacity-0 scale-95 translate-y-2"
-            enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition-all duration-200"
-            leave-from-class="opacity-100 scale-100 translate-y-0"
-            leave-to-class="opacity-0 scale-95 translate-y-2"
-          >
-            <div
-              v-if="showMenu"
-              class="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
-              @click.stop
+          <!-- Menu Dropdown -->
+          <div class="relative ml-2" ref="menuContainer">
+            <button 
+              class="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-full transition-all"
+              @click.stop="showMenu = !showMenu"
             >
-              <button v-if="isOwnPost && canEditPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary dark:text-secondary hover:bg-primary/5 transition-colors text-left" @click="handleEdit">
-                <span class="material-icons-outlined text-[20px]">edit</span>
-                {{ t('posts.editPost') }}
-              </button>
-              <button v-if="isOwnPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left" @click="handleDelete">
-                <span class="material-icons-outlined text-[20px]">delete</span>
-                {{ t('posts.deletePost') }}
-              </button>
-              <button v-if="!isOwnPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors text-left" @click="handleReport">
-                <span class="material-icons-outlined text-[20px]">report</span>
-                {{ t('posts.report') }}
-              </button>
-            </div>
-          </Transition>
+              <span class="material-icons-outlined text-xl">more_horiz</span>
+            </button>
+            <Transition
+              enter-active-class="transition-all duration-200"
+              enter-from-class="opacity-0 scale-95 translate-y-2"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition-all duration-200"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-2"
+            >
+              <div
+                v-if="showMenu"
+                class="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
+                @click.stop
+              >
+                <button v-if="isOwnPost && canEditPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary dark:text-secondary hover:bg-primary/5 transition-colors text-left" @click="handleEdit">
+                  <span class="material-icons-outlined text-[20px]">edit</span>
+                  {{ t('posts.editPost') }}
+                </button>
+                <button v-if="isOwnPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left" @click="handleDelete">
+                  <span class="material-icons-outlined text-[20px]">delete</span>
+                  {{ t('posts.deletePost') }}
+                </button>
+                <button v-if="!isOwnPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors text-left" @click="handleReport">
+                  <span class="material-icons-outlined text-[20px]">report</span>
+                  {{ t('posts.report') }}
+                </button>
+              </div>
+            </Transition>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Conteúdo Indentado (abaixo do nome) -->
-    <div class="pl-[52px] md:pl-[60px] pr-1">
+        <!-- Conteúdo do Post (alinhado com o nome) -->
+        <div class="pr-1">
       <div class="mt-1"> <!-- Espaçamento para respiro visual -->
         <div 
           class="text-sm md:text-[15px] text-gray-800 dark:text-gray-200 leading-normal rich-text-content"
@@ -187,6 +188,8 @@
               </span>
             </button>
           </div>
+        </div>
+        </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
   <div class="relative" ref="languageMenuContainer">
     <button
       @click.stop="toggleLanguageMenu"
-      class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-surface-lighter transition-colors border border-slate-200 dark:border-white/10"
+      class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-surface-lighter transition-colors"
       :class="{ 'ring-2 ring-secondary/50': !isDetectedLanguageApplied }"
       type="button"
     >

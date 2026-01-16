@@ -35,7 +35,7 @@
               <!-- Category Badge -->
                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-widest w-fit">
                 <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-                {{ program.category.replace('_', ' ') }}
+                {{ t(`programs.categoryBadges.${program.category}`) }}
               </div>
 
               <h1 class="text-2xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
@@ -100,7 +100,7 @@
                           {{ program.price_usd }}
                         </span>
                       </div>
-                      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} Único</p>
+                      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} {{ t('programs.oneTimePayment') }}</p>
                     </div>
 
                     <!-- CTA Button -->
@@ -109,7 +109,7 @@
                       <div v-if="program.localhost_only && isLocalhost()" class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-center">
                         <p class="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center justify-center gap-2">
                           <span class="material-icons text-sm">bug_report</span>
-                          Modo Debug - Acesso Local
+                          {{ t('programs.debugMode') }}
                         </p>
                       </div>
                       
@@ -128,7 +128,7 @@
                           </template>
                           <template v-else>
                             <template v-if="program.localhost_only && isLocalhost()">
-                              🔧 Acessar (Debug)
+                              {{ t('programs.debugAccess') }}
                             </template>
                             <template v-else>
                               {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
@@ -141,7 +141,7 @@
                       <div v-else class="space-y-4">
                         <div class="py-4 bg-green-500/10 border border-green-500/20 text-green-500 rounded-2xl font-black text-center flex items-center justify-center gap-2 uppercase tracking-widest text-xs shadow-inner">
                           <span class="material-icons text-lg">check_circle</span>
-                          MATRICULADO
+                           {{ t('programs.enrolledUpper') }}
                         </div>
                         <RouterLink
                           :to="`/programs/${program.id}/assistir`"
@@ -184,10 +184,10 @@
                   </div>
                   <div class="flex gap-4 sm:text-right px-1 md:px-0">
                     <div>
-                      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">{{ modules.length }} Módulos</span>
+                       <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">{{ modules.length }} {{ t('programs.modules') }}</span>
                     </div>
                     <div>
-                      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">{{ totalLessons }} Aulas</span>
+                       <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">{{ totalLessons }} {{ t('programs.lessons') }}</span>
                     </div>
                   </div>
                 </div>
@@ -207,7 +207,7 @@
                           <h3 class="font-bold text-base md:text-lg text-slate-900 dark:text-white group-hover:text-secondary transition-colors leading-tight">
                             {{ getTranslatedTitle(module) }}
                           </h3>
-                          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0">{{ module.lessons?.length || 0 }} Aulas</span>
+                           <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0">{{ module.lessons?.length || 0 }} {{ t('programs.lessons') }}</span>
                         </div>
                         <p v-if="getTranslatedDescription(module)" class="text-slate-600 dark:text-gray-400 text-sm leading-relaxed mb-4">{{ getTranslatedDescription(module) }}</p>
                         
@@ -248,7 +248,7 @@
                     
                     <div class="space-y-4 max-w-xl">
                        <div>
-                          <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Instrutor do Programa</p>
+                          <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">{{ t('programs.programInstructor') }}</p>
                           <h3 class="text-3xl font-black text-white tracking-tight">{{ program.instructor_name }}</h3>
                        </div>
                        <p v-if="program.instructor_bio" class="text-slate-400 leading-relaxed italic">
@@ -257,7 +257,7 @@
                        <div class="flex gap-4 justify-center md:justify-start">
                           <div class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold flex items-center gap-2">
                              <span class="material-icons text-sm">verified</span>
-                             Especialista Verificado
+                              {{ t('programs.verifiedExpert') }}
                           </div>
                        </div>
                     </div>
@@ -296,7 +296,7 @@
                   <!-- Price Header -->
                   <div class="text-center space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-widest">
-                      Melhor Oferta do Dia
+                       {{ t('programs.bestOffer') }}
                     </div>
                     <div class="flex justify-center items-baseline gap-1">
                       <span class="text-3xl font-black text-slate-900 dark:text-white leading-none">$</span>
@@ -304,19 +304,19 @@
                         {{ program.price_usd }}
                       </span>
                     </div>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} Único</p>
+                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('programs.paymentModal.total') }} {{ t('programs.oneTimePayment') }}</p>
                   </div>
 
                   <!-- Quick Stats -->
                   <div class="grid grid-cols-2 gap-4">
                     <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 text-center">
                        <span class="material-icons text-primary mb-1">people_alt</span>
-                       <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Alunos</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{{ t('programs.students') }}</p>
                        <p class="text-lg font-black text-slate-900 dark:text-white">{{ program.current_students || 0 }}</p>
                     </div>
                     <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 text-center">
                        <span class="material-icons text-secondary mb-1">verified</span>
-                       <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Vagas</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{{ t('programs.spots') }}</p>
                        <p class="text-lg font-black text-slate-900 dark:text-white">{{ program.max_students || '∞' }}</p>
                     </div>
                   </div>
@@ -382,7 +382,7 @@
                           <span class="material-icons text-sm">history</span>
                        </div>
                        <div>
-                          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Última Atualização</p>
+                           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{{ t('programs.lastUpdate') }}</p>
                           <p class="text-xs font-bold text-slate-700 dark:text-white">{{ new Date(program.updated_at).toLocaleDateString() }}</p>
                        </div>
                     </div>
@@ -391,8 +391,8 @@
                           <span class="material-icons text-sm">language</span>
                        </div>
                        <div>
-                          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Idioma</p>
-                          <p class="text-xs font-bold text-slate-700 dark:text-white">Português (Brasil)</p>
+                           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{{ t('programs.language') }}</p>
+                           <p class="text-xs font-bold text-slate-700 dark:text-white">{{ t('programs.languagePortuguese') }}</p>
                        </div>
                     </div>
                   </div>
@@ -400,18 +400,20 @@
               </div>
 
               <!-- Support Card -->
-              <div class="p-6 rounded-3xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-4 border border-white/10 shadow-xl group cursor-pointer overflow-hidden relative">
-                 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:rotate-12 transition-transform">
-                    <span class="material-icons text-7xl">support_agent</span>
-                 </div>
-                 <div class="w-12 h-12 rounded-2xl bg-white/10 dark:bg-black/10 flex items-center justify-center shrink-0">
-                    <span class="material-icons">help_outline</span>
-                 </div>
-                  <div>
-                    <h4 class="font-bold text-sm leading-tight">Dúvidas sobre o conteúdo?</h4>
-                    <p class="text-xs opacity-60">Fale com nosso suporte especializado</p>
-                  </div>
-              </div>
+              <RouterLink to="/contact-us" class="block">
+                <div class="p-6 rounded-3xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center gap-4 border border-white/10 shadow-xl group cursor-pointer overflow-hidden relative hover:scale-[1.02] transition-all duration-300">
+                   <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:rotate-12 transition-transform">
+                      <span class="material-icons text-7xl">support_agent</span>
+                   </div>
+                   <div class="w-12 h-12 rounded-2xl bg-white/10 dark:bg-black/10 flex items-center justify-center shrink-0">
+                      <span class="material-icons">help_outline</span>
+                   </div>
+                    <div>
+                      <h4 class="font-bold text-sm leading-tight">{{ t('programs.supportQuestion') }}</h4>
+                      <p class="text-xs opacity-60">{{ t('programs.supportContact') }}</p>
+                    </div>
+                </div>
+              </RouterLink>
             </div>
 
           </div>
@@ -424,12 +426,12 @@
            <span class="text-5xl">🔭</span>
         </div>
         <h3 class="text-4xl font-black text-slate-900 dark:text-white mb-4 uppercase tracking-tighter">
-          Programa Perdido na Galáxia
+          {{ t('programs.notFoundGalaxy') }}
         </h3>
-        <p class="text-slate-500 dark:text-gray-400 mb-10 max-w-md mx-auto text-lg">O programa que você procura não está mais nesta órbita. Verifique o link ou explore nossos novos programas.</p>
+         <p class="text-slate-500 dark:text-gray-400 mb-10 max-w-md mx-auto text-lg">{{ t('programs.notFoundDescription') }}</p>
         <RouterLink to="/programs" class="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-black font-black uppercase tracking-widest text-sm shadow-2xl shadow-primary/30 hover:scale-105 transition-all">
           <span class="material-icons">explore</span>
-          Explorar Novos Conteúdos
+           {{ t('programs.exploreNewContent') }}
         </RouterLink>
       </div>
     </div>

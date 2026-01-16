@@ -28,40 +28,7 @@
             <AnimatedThemeToggler />
 
             <!-- Language Switcher -->
-            <div class="relative" ref="languageMenuContainer">
-              <button @click.stop="toggleLanguageMenu" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-white/10 transition-all">
-                <span class="text-base">{{ currentLocaleData.flag }}</span>
-                <span class="text-xs font-bold uppercase hidden sm:block">{{ currentLocaleData.code.split('-')[0] }}</span>
-                <span class="material-symbols-outlined text-sm leading-none transition-transform" :class="{ 'rotate-180': showLanguageMenu }">expand_more</span>
-              </button>
-              
-              <Transition
-                enter-active-class="transition duration-200 ease-out"
-                enter-from-class="transform scale-95 opacity-0"
-                enter-to-class="transform scale-100 opacity-100"
-                leave-active-class="transition duration-150 ease-in"
-                leave-from-class="transform scale-100 opacity-100"
-                leave-to-class="transform scale-95 opacity-0"
-              >
-                <div v-if="showLanguageMenu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-[60] overflow-hidden">
-                  <div class="p-1">
-                    <button
-                      v-for="lo in availableLocales"
-                      :key="lo.code"
-                      @click="handleLocaleChange(lo.code)"
-                      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all"
-                      :class="currentLocale === lo.code 
-                        ? 'bg-primary/10 dark:bg-secondary/10 text-primary dark:text-secondary font-bold' 
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'"
-                    >
-                      <span class="text-lg">{{ lo.flag }}</span>
-                      <span>{{ lo.name }}</span>
-                      <span v-if="currentLocale === lo.code" class="material-icons text-sm ml-auto">check</span>
-                    </button>
-                  </div>
-                </div>
-              </Transition>
-            </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </div>
@@ -304,7 +271,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLocale } from '@/composables/useLocale'
 import { useModulesStore } from '@/stores/modules'
@@ -315,12 +282,13 @@ import YouTubePlayer from '@/components/features/programs/YouTubePlayer.vue'
 import ModulesList from '@/components/features/programs/ModulesList.vue'
 import GuestBlocker from '@/components/common/GuestBlocker.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import { isLocalhost, canAccessLocalhost } from '@/utils/localhost'
 
 const route = useRoute()
 const router = useRouter()
-const { locale: currentLocale, t, availableLocales, setLocale } = useLocale()
+const { locale: currentLocale, t } = useLocale()
 const modulesStore = useModulesStore()
 const programsStore = useProgramsStore()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
@@ -330,37 +298,11 @@ const loading = ref(true)
 const currentLessonId = ref<string>('')
 const activeTab = ref<'lessons' | 'about' | 'materials'>('about')
 
-const showLanguageMenu = ref(false)
-const languageMenuContainer = ref<HTMLElement | null>(null)
-
-function toggleLanguageMenu() {
-  showLanguageMenu.value = !showLanguageMenu.value
-}
-
-function handleLocaleChange(newLocale: string) {
-  setLocale(newLocale)
-  showLanguageMenu.value = false
-}
-
-const currentLocaleData = computed(() => {
-  return availableLocales.find(l => l.code === currentLocale.value) || availableLocales[0]
-})
-
 const completedLessons = computed(() => programsStore.completedLessons)
 
 const enrollmentProgress = computed(() => {
   const enrollment = programsStore.myEnrollments.find(e => e.program_id === route.params.id)
   return enrollment?.progress_percentage || 0
-})
-
-function handleClickOutside(event: MouseEvent) {
-  if (languageMenuContainer.value && !languageMenuContainer.value.contains(event.target as Node)) {
-    showLanguageMenu.value = false
-  }
-}
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
 })
 
 const modules = computed(() => modulesStore.getModulesByProgram(route.params.id as string))
