@@ -245,11 +245,32 @@ onMounted(() => {
     attempts++
     await checkPaymentStatus()
     
+    // Self-healing: Após 3 tentativas (6 segundos), força verificação no Stripe
     if (attempts === 3 && paymentStatus.value === 'pending') {
       const sessionId = route.query.session_id
-      supabase.functions.invoke('check-payment-status', { 
-        body: { session_id: sessionId } 
-      })
+      console.log('🔄 Triggering check-payment-status self-healing...')
+      
+      try {
+        const { data, error } = await supabase.functions.invoke('check-payment-status', { 
+          body: { session_id: sessionId } 
+        })
+        
+        if (error) {
+          console.error('❌ Error invoking check-payment-status:', error)
+        } else {
+          console.log('✅ check-payment-status response:', data)
+          
+          // Se foi confirmado no Stripe, força recarregar do banco
+          if (data?.status === 'completed') {
+            console.log('🎉 Payment confirmed by Stripe! Reloading from database...')
+            // Aguarda 1 segundo para garantir que o banco foi atualizado
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            await checkPaymentStatus()
+          }
+        }
+      } catch (err) {
+        console.error('❌ Failed to invoke check-payment-status:', err)
+      }
     }
 
     if (attempts >= MAX_ATTEMPTS) {

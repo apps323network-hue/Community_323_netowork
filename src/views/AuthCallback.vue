@@ -59,6 +59,7 @@ onMounted(async () => {
       
       console.log('[CALLBACK] Sessão OAuth detectada com sucesso.')
       console.log('[CALLBACK] Usuário:', session.user.email)
+      console.log('[CALLBACK] User ID:', session.user.id)
       console.log('[CALLBACK] Data de criação:', session.user.created_at)
       
       // Verificar se é um usuário novo (criado há menos de 10 segundos)
@@ -69,6 +70,53 @@ onMounted(async () => {
       
       console.log('[CALLBACK] Usuário criado há', secondsSinceCreation.toFixed(1), 'segundos')
       console.log('[CALLBACK] É novo usuário?', isNewUser ? 'Sim' : 'Não')
+      
+      // Se é um novo usuário via OAuth, registrar aceite automático dos termos
+      if (isNewUser) {
+        console.log('[CALLBACK] 🔥 INICIANDO registro automático de termos para novo usuário OAuth...')
+        console.log('[CALLBACK] 🔥 session.user disponível?', session.user ? 'SIM' : 'NÃO')
+        
+        try {
+          const { useTermsAcceptance } = await import('@/composables/useTermsAcceptance')
+          console.log('[CALLBACK] ✅ Composable useTermsAcceptance importado')
+          
+          const { getLatestActiveTerm, recordTermAcceptance } = useTermsAcceptance()
+          console.log('[CALLBACK] ✅ Funções extraídas do composable')
+          
+          // Buscar termos ativos
+          console.log('[CALLBACK] 🔍 Buscando Terms of Service...')
+          const termsOfService = await getLatestActiveTerm('terms_of_service')
+          console.log('[CALLBACK] Terms of Service encontrado?', termsOfService ? 'SIM (' + termsOfService.id + ')' : 'NÃO')
+          
+          console.log('[CALLBACK] 🔍 Buscando Privacy Policy...')
+          const privacyPolicy = await getLatestActiveTerm('privacy_policy')
+          console.log('[CALLBACK] Privacy Policy encontrado?', privacyPolicy ? 'SIM (' + privacyPolicy.id + ')' : 'NÃO')
+          
+          if (termsOfService) {
+            console.log('[CALLBACK] 📝 Registrando Terms of Service para user:', session.user.id)
+            await recordTermAcceptance(termsOfService.id, 'terms_of_service', session.user.id)
+            console.log('[CALLBACK] ✅ Terms of Service registrado com sucesso!')
+          } else {
+            console.warn('[CALLBACK] ⚠️ Terms of Service não encontrado - pulando')
+          }
+          
+          if (privacyPolicy) {
+            console.log('[CALLBACK] 📝 Registrando Privacy Policy para user:', session.user.id)
+            await recordTermAcceptance(privacyPolicy.id, 'privacy_policy', session.user.id)
+            console.log('[CALLBACK] ✅ Privacy Policy registrado com sucesso!')
+          } else {
+            console.warn('[CALLBACK] ⚠️ Privacy Policy não encontrado - pulando')
+          }
+          
+          console.log('[CALLBACK] 🎉 Aceite automático de termos CONCLUÍDO!')
+        } catch (termsError: any) {
+          // Não bloquear o login se falhar - apenas logar
+          console.error('[CALLBACK] 🚨 ERRO ao registrar termos:', termsError)
+          console.error('[CALLBACK] 🚨 Stack trace:', termsError.stack)
+        }
+      } else {
+        console.log('[CALLBACK] ℹ️ Usuário não é novo - pulando registro de termos')
+      }
       
       // Se veio do modo "login" mas é um usuário novo, redirecionar para registro
       if (mode === 'login' && isNewUser) {

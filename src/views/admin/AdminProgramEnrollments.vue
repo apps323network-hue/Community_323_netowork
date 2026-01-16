@@ -69,12 +69,52 @@
         </select>
       </div>
 
+      <!-- Bulk Actions -->
+      <div v-if="selectedEnrollments.length > 0" class="mb-4 p-4 bg-primary/5 dark:bg-primary/10 rounded-2xl border border-primary/20 flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/20 text-primary">
+            <span class="material-icons">fact_check</span>
+          </div>
+          <div>
+            <div class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
+              {{ selectedEnrollments.length }} {{ selectedEnrollments.length === 1 ? 'aluno selecionado' : 'alunos selecionados' }}
+            </div>
+            <button
+              @click="clearSelection"
+              class="text-xs font-bold text-slate-500 hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <span class="material-icons text-xs">close</span>
+              Limpar seleção
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            @click="exportSelected"
+            :disabled="exportingBulk"
+            class="flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-green-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span class="material-icons text-sm" :class="{ 'animate-pulse': exportingBulk }">download</span>
+            {{ exportingBulk ? 'Exportando...' : 'Exportar Selecionados' }}
+          </button>
+        </div>
+      </div>
+
       <!-- Table -->
       <div class="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden">
         <div class="overflow-x-auto">
+
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-slate-50/50 dark:bg-white/5 border-b border-slate-200 dark:border-white/5">
+                <th class="p-4 w-12">
+                  <input
+                    type="checkbox"
+                    :checked="isAllSelected"
+                    @change="toggleSelectAll"
+                    class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                  />
+                </th>
                 <th class="p-4 font-bold text-slate-500 dark:text-gray-400 text-xs uppercase tracking-wider">{{ t('programs.admin.tableStudent') }}</th>
                 <th class="p-4 font-bold text-slate-500 dark:text-gray-400 text-xs uppercase tracking-wider">{{ t('programs.admin.tableEnrollmentDate') }}</th>
                 <th class="p-4 font-bold text-slate-500 dark:text-gray-400 text-xs uppercase tracking-wider">{{ t('programs.admin.tableProgress') }}</th>
@@ -105,7 +145,15 @@
               </template>
 
               <template v-else>
-                <tr v-for="enrollment in filteredEnrollments" :key="enrollment.id" class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                <tr v-for="enrollment in paginatedEnrollments" :key="enrollment.id" class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
+                  <td class="p-4">
+                    <input
+                      type="checkbox"
+                      :checked="isEnrollmentSelected(enrollment.id)"
+                      @change="toggleEnrollmentSelection(enrollment.id)"
+                      class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                  </td>
                   <td class="p-4">
                     <div class="flex items-center gap-3">
                       <img v-if="enrollment.user?.avatar_url" :src="enrollment.user.avatar_url" class="w-10 h-10 rounded-full object-cover border-2 border-slate-100 dark:border-white/10" />
@@ -167,6 +215,25 @@
                   </td>
                   <td class="p-4 text-right">
                     <div class="flex items-center justify-end gap-1">
+                       <!-- Export enrollment data button -->
+                       <button
+                        @click="exportEnrollmentData(enrollment)"
+                        :disabled="exporting === enrollment.id"
+                        class="p-2 text-green-500 hover:text-green-600 rounded-lg hover:bg-green-50 dark:hover:bg-green-500/10 transition-all disabled:opacity-50"
+                        title="Exportar dados completos da matrícula"
+                      >
+                        <span class="material-icons text-sm" :class="{ 'animate-pulse': exporting === enrollment.id }">{{ exporting === enrollment.id ? 'download' : 'description' }}</span>
+                      </button>
+                       <!-- Sync with Stripe button -->
+                       <button
+                        v-if="enrollment.payment_id && enrollment.payment_status !== 'paid'"
+                        @click="syncPaymentFromStripe(enrollment)"
+                        :disabled="syncing === enrollment.id"
+                        class="p-2 text-blue-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-50"
+                        title="Sync payment status from Stripe"
+                      >
+                        <span class="material-icons text-sm" :class="{ 'animate-spin': syncing === enrollment.id }">{{ syncing === enrollment.id ? 'refresh' : 'sync' }}</span>
+                      </button>
                        <button
                         @click="openStatusModal(enrollment)"
                         class="p-2 text-slate-400 hover:text-primary dark:hover:text-secondary rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
@@ -197,6 +264,51 @@
             </tbody>
           </table>
         </div>
+        
+        <!-- Pagination -->
+        <div v-if="filteredEnrollments.length > 0" class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50/30 dark:bg-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex items-center gap-4">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-400">
+              Mostrando {{ ((currentPage - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage * itemsPerPage, filteredEnrollments.length) }} de {{ filteredEnrollments.length }} matrículas
+            </span>
+            <select v-model="itemsPerPage" @change="currentPage = 1" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-800 text-sm font-bold">
+              <option :value="10">10 por página</option>
+              <option :value="25">25 por página</option>
+              <option :value="50">50 por página</option>
+              <option :value="100">100 por página</option>
+            </select>
+          </div>
+
+          <div v-if="totalPages > 1" class="flex items-center gap-2">
+            <button 
+              @click="currentPage--" 
+              :disabled="currentPage === 1"
+              class="h-10 w-10 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-slate-500 disabled:opacity-30 enabled:hover:bg-primary/10 enabled:hover:text-primary transition-all"
+            >
+              <span class="material-icons">chevron_left</span>
+            </button>
+            
+            <div class="flex items-center gap-1">
+              <button 
+                v-for="page in Math.min(totalPages, 5)" 
+                :key="page"
+                @click="currentPage = page"
+                :class="currentPage === page ? 'bg-primary text-white scale-110' : 'bg-white dark:bg-slate-800 text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5'"
+                class="h-10 w-10 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-sm font-bold transition-all"
+              >
+                {{ page }}
+              </button>
+            </div>
+            
+            <button 
+              @click="currentPage++" 
+              :disabled="currentPage === totalPages"
+              class="h-10 w-10 flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-slate-500 disabled:opacity-30 enabled:hover:bg-primary/10 enabled:hover:text-primary transition-all"
+            >
+              <span class="material-icons">chevron_right</span>
+            </button>
+          </div>
+        </div>
       </div>
 
        <!-- Status Update Modal -->
@@ -223,7 +335,7 @@
 
                 <div class="space-y-4">
                    <div>
-                      <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-2">New Status</label>
+                      <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-2">Enrollment Status</label>
                       <select v-model="newStatus" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-primary transition-all">
                          <option value="pending">Pending</option>
                          <option value="active">Active</option>
@@ -231,13 +343,32 @@
                          <option value="cancelled">Cancelled</option>
                       </select>
                    </div>
+
+                   <div>
+                      <label class="block text-xs font-bold text-slate-500 dark:text-gray-400 uppercase mb-2">Payment Status</label>
+                      <select v-model="newPaymentStatus" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-gray-700 bg-white dark:bg-surface-dark text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-primary transition-all">
+                         <option value="pending">Pending</option>
+                         <option value="paid">Paid</option>
+                         <option value="failed">Failed</option>
+                         <option value="refunded">Refunded</option>
+                      </select>
+                   </div>
+
+                   <!-- Quick action button -->
+                   <button
+                      @click="markAsPaidAndActive"
+                      class="w-full px-4 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                   >
+                      <span class="material-icons text-sm">check_circle</span>
+                      Mark as Paid & Active
+                   </button>
                 </div>
 
-                <div class="mt-8 flex gap-3">
+                <div class="mt-6 flex gap-3">
                    <button @click="selectedEnrollment = null" class="flex-1 px-4 py-3 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
                       {{ t('programs.admin.cancel') }}
                    </button>
-                   <button @click="updateStatus" :disabled="updating" class="flex-1 px-4 py-3 bg-primary dark:bg-secondary text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                   <button @click="updateBothStatuses" :disabled="updating" class="flex-1 px-4 py-3 bg-primary dark:bg-secondary text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
                       <span v-if="updating" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                       {{ updating ? t('programs.admin.saving') : t('programs.admin.confirm') }}
                    </button>
@@ -257,7 +388,8 @@ import { useLocale } from '@/composables/useLocale'
 import AdminLayout from '@/components/layout/admin/AdminLayout.vue'
 import { useProgramsStore } from '@/stores/programs'
 import { toast } from 'vue-sonner'
-import type { Program, ProgramEnrollment, EnrollmentStatus } from '@/types/programs'
+import { supabase } from '@/lib/supabase'
+import type { Program, ProgramEnrollment, EnrollmentStatus, PaymentStatus } from '@/types/programs'
 
 const route = useRoute()
 const { locale: currentLocale, t } = useLocale()
@@ -268,12 +400,23 @@ const enrollments = ref<ProgramEnrollment[]>([])
 const loading = ref(true)
 const initialLoading = ref(true)
 const updating = ref(false)
+const syncing = ref<string | null>(null) // ID of enrollment being synced
+const exporting = ref<string | null>(null) // ID of enrollment being exported
+const exportingBulk = ref(false) // Bulk export in progress
 
 const search = ref('')
 const filterStatus = ref('all')
 
+// Pagination
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+// Multi-selection
+const selectedEnrollments = ref<string[]>([])
+
 const selectedEnrollment = ref<ProgramEnrollment | null>(null)
 const newStatus = ref<EnrollmentStatus>('active')
+const newPaymentStatus = ref<PaymentStatus>('pending')
 
 const filteredEnrollments = computed(() => {
   return enrollments.value.filter(e => {
@@ -283,6 +426,54 @@ const filteredEnrollments = computed(() => {
     return matchesSearch && matchesStatus
   })
 })
+
+// Paginação
+const totalPages = computed(() => Math.ceil(filteredEnrollments.value.length / itemsPerPage.value))
+
+const paginatedEnrollments = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredEnrollments.value.slice(start, end)
+})
+
+// Selection helpers
+const isAllSelected = computed(() => {
+  if (paginatedEnrollments.value.length === 0) return false
+  return paginatedEnrollments.value.every(e => selectedEnrollments.value.includes(e.id))
+})
+
+const isEnrollmentSelected = (id: string) => {
+  return selectedEnrollments.value.includes(id)
+}
+
+const toggleEnrollmentSelection = (id: string) => {
+  const index = selectedEnrollments.value.indexOf(id)
+  if (index > -1) {
+    selectedEnrollments.value.splice(index, 1)
+  } else {
+    selectedEnrollments.value.push(id)
+  }
+}
+
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    // Deselect all from current page
+    const pageIds = paginatedEnrollments.value.map(e => e.id)
+    selectedEnrollments.value = selectedEnrollments.value.filter(id => !pageIds.includes(id))
+  } else {
+    // Select all from current page
+    const pageIds = paginatedEnrollments.value.map(e => e.id)
+    pageIds.forEach(id => {
+      if (!selectedEnrollments.value.includes(id)) {
+        selectedEnrollments.value.push(id)
+      }
+    })
+  }
+}
+
+const clearSelection = () => {
+  selectedEnrollments.value = []
+}
 
 const activeCount = computed(() => enrollments.value.filter(e => e.status === 'active').length)
 const completedCount = computed(() => enrollments.value.filter(e => e.status === 'completed').length)
@@ -300,28 +491,133 @@ const formatStatus = (status: string) => {
 const openStatusModal = (enrollment: ProgramEnrollment) => {
   selectedEnrollment.value = enrollment
   newStatus.value = enrollment.status
+  newPaymentStatus.value = enrollment.payment_status || 'pending'
 }
 
-const updateStatus = async () => {
+const markAsPaidAndActive = () => {
+  newStatus.value = 'active'
+  newPaymentStatus.value = 'paid'
+}
+
+const updateBothStatuses = async () => {
   if (!selectedEnrollment.value) return
   
   updating.value = true
   try {
-    await programsStore.updateEnrollmentStatus(selectedEnrollment.value.id, newStatus.value)
-    toast.success('Enrollment status updated successfully!')
+    // Update both status and payment_status
+    const { error } = await supabase
+      .from('program_enrollments')
+      .update({
+        status: newStatus.value,
+        payment_status: newPaymentStatus.value,
+        paid_at: newPaymentStatus.value === 'paid' ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', selectedEnrollment.value.id)
+
+    if (error) throw error
+
+    toast.success('Enrollment updated successfully!')
     
-    // Refresh list locally
-    const idx = enrollments.value.findIndex(e => e.id === selectedEnrollment.value?.id)
-    if (idx !== -1) {
-      enrollments.value[idx].status = newStatus.value
-    }
+    // Refresh the list
+    const programId = route.params.id as string
+    const e = await programsStore.fetchProgramEnrollments(programId)
+    enrollments.value = e
     
     selectedEnrollment.value = null
   } catch (error: any) {
-    console.error('Error updating status:', error)
-    toast.error('An error occurred while updating the status: ' + (error.message || 'Unknown error'))
+    console.error('Error updating enrollment:', error)
+    toast.error('An error occurred: ' + (error.message || 'Unknown error'))
   } finally {
     updating.value = false
+  }
+}
+
+const syncPaymentFromStripe = async (enrollment: ProgramEnrollment) => {
+  if (!enrollment.payment_id) return
+
+  syncing.value = enrollment.id
+  
+  try {
+    // Detect if payment_id is from live mode (starts with cs_live_)
+    const isLivePayment = enrollment.payment_id.startsWith('cs_live_')
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    
+    // Force live mode if we're on localhost but checking a live payment
+    const forceLiveMode = isLocalhost && isLivePayment
+    
+    if (forceLiveMode) {
+      console.log('[Admin] Forcing LIVE mode for live payment from localhost')
+    }
+    
+    const { data, error } = await supabase.functions.invoke('check-payment-status', {
+      body: { 
+        session_id: enrollment.payment_id,
+        force_live_mode: forceLiveMode
+      }
+    })
+
+    if (error) throw error
+
+    if (data?.status === 'completed') {
+      toast.success('Payment confirmed! Enrollment activated.')
+      // Refresh the list
+      const programId = route.params.id as string
+      const e = await programsStore.fetchProgramEnrollments(programId)
+      enrollments.value = e
+    } else {
+      toast.warning(`Payment is still ${data?.stripe_status || 'pending'} on Stripe.`)
+    }
+  } catch (error: any) {
+    console.error('Error syncing payment:', error)
+    toast.error('Error syncing with Stripe: ' + (error.message || 'Unknown error'))
+  } finally {
+    syncing.value = null
+  }
+}
+
+const exportEnrollmentData = async (enrollment: ProgramEnrollment) => {
+  exporting.value = enrollment.id
+  
+  try {
+    const { useEnrollmentExport } = await import('@/composables/useEnrollmentExport')
+    const { exportEnrollmentPDF } = useEnrollmentExport()
+    
+    await exportEnrollmentPDF(enrollment.id)
+  } catch (error: any) {
+    console.error('Error exporting enrollment data:', error)
+    toast.error('Error exporting data: ' + (error.message || 'Unknown error'))
+  } finally {
+    exporting.value = null
+  }
+}
+
+const exportSelected = async () => {
+  if (selectedEnrollments.value.length === 0) {
+    toast.error('Selecione pelo menos um aluno para exportar')
+    return
+  }
+
+  exportingBulk.value = true
+  
+  try {
+    const { useEnrollmentExport } = await import('@/composables/useEnrollmentExport')
+    const { exportEnrollmentPDF } = useEnrollmentExport()
+    
+    // Export each selected enrollment
+    for (const enrollmentId of selectedEnrollments.value) {
+      await exportEnrollmentPDF(enrollmentId)
+      // Small delay between exports to avoid overwhelming the system
+      await new Promise(resolve => setTimeout(resolve, 500))
+    }
+    
+    toast.success(`${selectedEnrollments.value.length} matrículas exportadas com sucesso!`)
+    clearSelection()
+  } catch (error: any) {
+    console.error('Error exporting selected enrollments:', error)
+    toast.error('Error exporting data: ' + (error.message || 'Unknown error'))
+  } finally {
+    exportingBulk.value = false
   }
 }
 

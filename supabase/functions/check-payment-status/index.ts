@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) throw new Error('Missing auth header')
 
-        const { session_id } = await req.json()
+        const { session_id, force_live_mode } = await req.json()
         if (!session_id) throw new Error('session_id required')
 
         // 1. Setup Supabase
@@ -35,11 +35,16 @@ Deno.serve(async (req) => {
         const origin = req.headers.get('origin') || ''
         const isDevelopment = origin.includes('localhost') || origin.includes('127.0.0.1') || siteUrl.includes('localhost')
 
-        const stripeKey = isDevelopment
-            ? Deno.env.get('STRIPE_SECRET_KEY_TEST')
-            : Deno.env.get('STRIPE_SECRET_KEY')
+        // Allow forcing live mode via parameter (for testing real payments in localhost)
+        const useLiveMode = force_live_mode === true ? true : !isDevelopment
 
-        if (!stripeKey) throw new Error(`Stripe Secret Key não configurada para o ambiente: ${isDevelopment ? 'TEST' : 'PROD'}`)
+        const stripeKey = useLiveMode
+            ? Deno.env.get('STRIPE_SECRET_KEY')
+            : Deno.env.get('STRIPE_SECRET_KEY_TEST')
+
+        if (!stripeKey) throw new Error(`Stripe Secret Key não configurada para o ambiente: ${useLiveMode ? 'LIVE' : 'TEST'}`)
+
+        console.log(`[check-payment-status] Using ${useLiveMode ? 'LIVE' : 'TEST'} mode (force_live_mode: ${force_live_mode}, isDevelopment: ${isDevelopment})`)
 
         const stripe = new Stripe(stripeKey, {
             apiVersion: '2023-10-16',

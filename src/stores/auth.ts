@@ -438,8 +438,49 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Escutar mudanças de autenticação ANTES de checkSession para evitar race conditions
-  supabase.auth.onAuthStateChange(async (_event, session) => {
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    const previousUser = user.value
     user.value = session?.user ?? null
+    
+    // 🔥 NOVO: Detectar novo usuário e registrar termos automaticamente
+    if (event === 'SIGNED_IN' && session?.user && !previousUser) {
+      const userCreatedAt = new Date(session.user.created_at)
+      const now = new Date()
+      const secondsSinceCreation = (now.getTime() - userCreatedAt.getTime()) / 1000
+      const isNewUser = secondsSinceCreation < 10
+      
+      console.log(`[AUTH] 🔐 SIGNED_IN detectado para user: ${session.user.email}`)
+      console.log(`[AUTH] 📅 User criado há ${secondsSinceCreation.toFixed(1)}s`)
+      console.log(`[AUTH] 🆕 É novo usuário? ${isNewUser ? 'SIM' : 'NÃO'}`)
+      
+      if (isNewUser) {
+        console.log('[AUTH] 🔥 INICIANDO registro automático de termos...')
+        try {
+          const { useTermsAcceptance } = await import('@/composables/useTermsAcceptance')
+          const { getLatestActiveTerm, recordTermAcceptance } = useTermsAcceptance()
+          
+          const termsOfService = await getLatestActiveTerm('terms_of_service')
+          const privacyPolicy = await getLatestActiveTerm('privacy_policy')
+          
+          console.log(`[AUTH] 📄 ToS encontrado? ${termsOfService ? 'SIM (' + termsOfService.id + ')' : 'NÃO'}`)
+          console.log(`[AUTH] 📄 PP encontrado? ${privacyPolicy ? 'SIM (' + privacyPolicy.id + ')' : 'NÃO'}`)
+          
+          if (termsOfService) {
+            await recordTermAcceptance(termsOfService.id, 'terms_of_service', session.user.id)
+            console.log('[AUTH] ✅ Terms of Service registrado!')
+          }
+          
+          if (privacyPolicy) {
+            await recordTermAcceptance(privacyPolicy.id, 'privacy_policy', session.user.id)
+            console.log('[AUTH] ✅ Privacy Policy registrado!')
+          }
+          
+          console.log('[AUTH] 🎉 Aceite automático de termos CONCLUÍDO!')
+        } catch (err: any) {
+          console.error('[AUTH] 🚨 ERRO ao registrar termos:', err)
+        }
+      }
+    }
     
     // Buscar ou limpar profile quando estado de auth mudar (em background, não bloquear)
     const userStore = useUserStore()
