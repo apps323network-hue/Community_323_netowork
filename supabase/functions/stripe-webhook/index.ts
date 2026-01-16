@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
         async function getUserDisplay(userId: string) {
             const { data } = await supabase.from('profiles').select('nome').eq('id', userId).single();
             if (data?.nome) return data.nome;
-            
+
             const { data: authUser } = await supabase.auth.admin.getUserById(userId);
             return authUser?.user?.email || userId;
         }
@@ -216,30 +216,20 @@ Deno.serve(async (req) => {
                         }
                     })
 
-                    // 4. Trigger Google Classroom (se habilitado)
+                    // 4. Gerar e armazenar documento de matrícula (envia automaticamente para admin@323network.com)
                     try {
-                        const { data: program } = await supabase
-                            .from('programs')
-                            .select('classroom_enabled, classroom_course_id')
-                            .eq('id', programId)
-                            .single()
-
-                        if (program?.classroom_enabled && program?.classroom_course_id) {
-                            // Buscar e-mail do usuário para o convite
-                            const { data: { user: userData } } = await supabase.auth.admin.getUserById(userId)
-
-                            if (userData?.email) {
-                                console.log(`Triggering Classroom invite for ${userData.email} in course ${program.classroom_course_id}`)
-                                await supabase.functions.invoke('classroom_invite', {
-                                    body: {
-                                        courseId: program.classroom_course_id,
-                                        studentEmail: userData.email
-                                    }
-                                })
+                        console.log(`Generating enrollment contract for enrollment ${enrollmentId}`)
+                        await supabase.functions.invoke('generate-legal-pdf', {
+                            body: {
+                                type: 'enrollment_contract',
+                                enrollment_id: enrollmentId,
+                                user_id: userId
                             }
-                        }
-                    } catch (classroomErr) {
-                        console.error('Error triggering classroom invite from webhook:', classroomErr)
+                        })
+                        console.log(`Enrollment contract generated and stored successfully`)
+                    } catch (pdfErr) {
+                        console.error('Error generating enrollment contract from webhook:', pdfErr)
+                        // Don't throw - we still want the enrollment to be active even if PDF generation fails
                     }
 
                     console.log(`Program enrollment completed: ${enrollmentId}`)
@@ -313,7 +303,7 @@ Deno.serve(async (req) => {
                                     metadata: { enrollment_id: enrollmentId }
                                 })
                             }
-                            
+
                             console.log(`Program enrollment marked as failed: ${enrollmentId}`)
                         } else {
                             console.log(`Skipping failed update - enrollment ${enrollmentId} is already paid`)

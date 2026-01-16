@@ -67,10 +67,18 @@ const routes: RouteRecordRaw[] = [
     meta: { publicAccess: true },
   },
   {
+    path: '/terms',
+    redirect: '/termos',
+  },
+  {
     path: '/politica-privacidade',
     name: 'PrivacyPolicy',
     component: () => import('@/views/PrivacyPolicy.vue'),
     meta: { publicAccess: true },
+  },
+  {
+    path: '/privacy-policy',
+    redirect: '/politica-privacidade',
   },
   {
     path: '/auth/callback',

@@ -15,7 +15,7 @@ serve(async (req) => {
     try {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-        
+
         const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
         const body = await req.json()
@@ -40,11 +40,11 @@ serve(async (req) => {
         } else if (type === 'enrollment_contract') {
             // Generate enrollment contract PDF
             console.log('[generate-legal-pdf] 📄 Generating enrollment contract for:', enrollment_id)
-            
+
             if (!enrollment_id) {
                 throw new Error('enrollment_id is required for enrollment_contract type')
             }
-            
+
             try {
                 const result = await generateEnrollmentContractPDF(supabase, enrollment_id)
                 pdfData = result.pdfData
@@ -78,7 +78,7 @@ serve(async (req) => {
         }
 
         // Send email with PDF attachment
-       await sendEmailWithAttachment(supabase, pdfData, user_id, type)
+        await sendEmailWithAttachment(supabase, pdfData, user_id, type)
 
         return new Response(JSON.stringify({
             success: true,
@@ -130,7 +130,7 @@ async function generateTermsAcceptancePDF(
     // Find the latest for each type
     const tos = acceptances.find((a: any) => a.term.term_type === 'terms_of_service')
     const privacy = acceptances.find((a: any) => a.term.term_type === 'privacy_policy')
-    
+
     const relevantAcceptances = [tos, privacy].filter(Boolean)
     const primaryAcceptance = acceptances.find((a: any) => a.id === acceptanceId) || relevantAcceptances[0]
 
@@ -185,7 +185,7 @@ async function generateTermsAcceptancePDF(
 
     doc.setFontSize(10)
     doc.setFont('helvetica', 'normal')
-    
+
     relevantAcceptances.forEach((acc: any) => {
         const termTypeLabel = acc.term.term_type === 'terms_of_service' ? 'Terms of Service' : 'Privacy Policy'
         doc.text(`- ${termTypeLabel}: ${acc.term.title} (v${acc.term.version})`, margin, yPosition)
@@ -260,7 +260,7 @@ async function generateEnrollmentContractPDF(
     enrollmentId: string
 ): Promise<{ pdfData: { pdf: string; filename: string } }> {
     console.log('[generateEnrollmentContractPDF] Starting for enrollment:', enrollmentId)
-    
+
     // Fetch enrollment data with all relations
     const { data: enrollment, error: enrollError } = await supabase
         .from('program_enrollments')
@@ -280,28 +280,29 @@ async function generateEnrollmentContractPDF(
         .eq('id', enrollmentId)
         .single()
 
-    console.log('[generateEnrollmentContractPDF] Query result:', { 
-        hasData: !!enrollment, 
+    console.log('[generateEnrollmentContractPDF] Query result:', {
+        hasData: !!enrollment,
         hasError: !!enrollError,
-        errorDetails: enrollError 
+        errorDetails: enrollError
     })
 
     if (enrollError) {
         console.error('[generateEnrollmentContractPDF] Supabase error:', enrollError)
         throw new Error(`Failed to fetch enrollment: ${enrollError.message}`)
     }
-    
+
     if (!enrollment) {
         throw new Error('Enrollment not found')
     }
 
-    // Fetch user's accepted terms
+    // Fetch user's accepted terms with full content
     const { data: acceptedTerms } = await supabase
         .from('comprehensive_term_acceptance')
         .select(`
             *,
             term:term_id (
                 title,
+                content,
                 term_type,
                 version
             )
@@ -372,29 +373,29 @@ async function generateEnrollmentContractPDF(
 
     doc.setFontSize(10)
     doc.setFont('helvetica', 'normal')
-    
+
     const amountInCents = enrollment.payment_amount || enrollment.program.price_usd * 100
     const amountInDollars = amountInCents / 100
     const currency = enrollment.payment_currency || 'USD'
-    
+
     const formattedAmount = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currency
     }).format(amountInDollars)
-    
+
     doc.text(`Amount: ${formattedAmount}`, margin, yPosition)
     yPosition += 7
     doc.text(`Payment Status: ${enrollment.payment_status.toUpperCase()}`, margin, yPosition)
     yPosition += 7
     doc.text(`Payment ID (Stripe): ${enrollment.payment_id || 'N/A'}`, margin, yPosition)
     yPosition += 7
-    
-    const paymentMethod = enrollment.payment_method === 'card' ? 'Credit Card' : 
-                         enrollment.payment_method === 'pix' ? 'PIX' : 
-                         enrollment.payment_method || 'N/A'
+
+    const paymentMethod = enrollment.payment_method === 'card' ? 'Credit Card' :
+        enrollment.payment_method === 'pix' ? 'PIX' :
+            enrollment.payment_method || 'N/A'
     doc.text(`Payment Method: ${paymentMethod}`, margin, yPosition)
     yPosition += 7
-    
+
     if (enrollment.paid_at) {
         const paidDate = new Date(enrollment.paid_at).toLocaleString('en-US', {
             dateStyle: 'full',
@@ -414,7 +415,13 @@ async function generateEnrollmentContractPDF(
 
         doc.setFontSize(9)
         doc.setFont('helvetica', 'normal')
-        acceptedTerms.forEach((acceptance: any) => {
+
+        // Get unique terms (latest version of each type)
+        const tosAcceptance = acceptedTerms.find((a: any) => a.term.term_type === 'terms_of_service')
+        const privacyAcceptance = acceptedTerms.find((a: any) => a.term.term_type === 'privacy_policy')
+        const uniqueTerms = [tosAcceptance, privacyAcceptance].filter(Boolean)
+
+        uniqueTerms.forEach((acceptance: any) => {
             const termTypeLabel = acceptance.term.term_type === 'terms_of_service' ? 'Terms of Service' : 'Privacy Policy'
             const acceptDate = new Date(acceptance.accepted_at).toLocaleString('en-US')
             doc.text(`✓ ${termTypeLabel} (v${acceptance.term.version}) - Accepted on ${acceptDate}`, margin, yPosition)
@@ -441,8 +448,44 @@ async function generateEnrollmentContractPDF(
     doc.text(`Enrollment ID: ${enrollmentId}`, margin, yPosition)
     yPosition += 7
     doc.text(`Transaction Reference: ${enrollment.payment_id || 'N/A'}`, margin, yPosition)
+    yPosition += 15
 
-    // Footer
+    // Add full content of accepted terms
+    if (acceptedTerms && acceptedTerms.length > 0) {
+        const tosAcceptance = acceptedTerms.find((a: any) => a.term.term_type === 'terms_of_service')
+        const privacyAcceptance = acceptedTerms.find((a: any) => a.term.term_type === 'privacy_policy')
+        const uniqueTerms = [tosAcceptance, privacyAcceptance].filter(Boolean)
+
+        uniqueTerms.forEach((acceptance: any, index: number) => {
+            // Add new page for each term content
+            doc.addPage()
+            yPosition = 20
+
+            const termTypeLabel = acceptance.term.term_type === 'terms_of_service' ? 'TERMS OF SERVICE' : 'PRIVACY POLICY'
+            doc.setFontSize(14)
+            doc.setFont('helvetica', 'bold')
+            doc.text(termTypeLabel, pageWidth / 2, yPosition, { align: 'center' })
+            yPosition += 8
+
+            doc.setFontSize(10)
+            doc.setFont('helvetica', 'normal')
+            doc.text(`Version ${acceptance.term.version}`, pageWidth / 2, yPosition, { align: 'center' })
+            yPosition += 8
+
+            const acceptDate = new Date(acceptance.accepted_at).toLocaleString('en-US', {
+                dateStyle: 'full',
+                timeStyle: 'long'
+            })
+            doc.text(`Accepted on: ${acceptDate}`, pageWidth / 2, yPosition, { align: 'center' })
+            yPosition += 15
+
+            // Parse and add HTML content
+            const htmlParser = createHTMLParser(doc, margin, pageWidth, yPosition)
+            yPosition = htmlParser.parse(acceptance.term.content || '')
+        })
+    }
+
+    // Footer on last page
     doc.setFontSize(8)
     doc.setTextColor(128, 128, 128)
     const footerY = doc.internal.pageSize.getHeight() - 20
@@ -497,7 +540,7 @@ async function sendEmailWithAttachment(
         .single()
 
     const userName = user?.nome || 'Unknown User'
-    
+
     let subject: string
     let htmlBody: string
 
@@ -569,16 +612,16 @@ function createHTMLParser(doc: any, margin: number, pageWidth: number, startY: n
             // Remove script and style tags
             html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
             html = html.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-            
+
             // Split by tags
             const parts = html.split(/(<[^>]+>)/)
-            
+
             let currentFont: 'normal' | 'bold' = 'normal'
             let currentSize = 8
-            
+
             parts.forEach(part => {
                 if (!part.trim()) return
-                
+
                 // Handle tags
                 if (part.startsWith('<') && !part.startsWith('</')) {
                     const tag = part.match(/<(\w+)/)?.[1]?.toLowerCase()
@@ -610,7 +653,7 @@ function createHTMLParser(doc: any, margin: number, pageWidth: number, startY: n
                     }
                 }
             })
-            
+
             return yPosition
         }
     }

@@ -33,16 +33,16 @@ function extractTextContent(node: Node): string {
     // Normalizar espaços em branco (múltiplos espaços/quebras viram um espaço)
     return text.replace(/\s+/g, ' ').trim()
   }
-  
+
   if (node.nodeType === Node.ELEMENT_NODE) {
     const el = node as HTMLElement
     const tagName = el.tagName.toLowerCase()
-    
+
     // Para <br>, retornar quebra de linha (mas vamos tratar isso no parsing)
     if (tagName === 'br') {
       return ' '
     }
-    
+
     // Processar filhos recursivamente
     const parts: string[] = []
     Array.from(node.childNodes).forEach(child => {
@@ -51,14 +51,14 @@ function extractTextContent(node: Node): string {
         parts.push(childText.trim())
       }
     })
-    
+
     // Juntar partes com espaço único
     const text = parts.join(' ').trim()
-    
+
     // Normalizar espaços finais
     return text.replace(/\s+/g, ' ')
   }
-  
+
   return ''
 }
 
@@ -68,7 +68,7 @@ function extractTextContent(node: Node): string {
 function parseHTMLToStructured(html: string): StructuredElement[] {
   const tempDiv = document.createElement('div')
   tempDiv.innerHTML = html
-  
+
   function processNode(node: Node): StructuredElement | null {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent?.trim()
@@ -78,11 +78,11 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
         content: text,
       }
     }
-    
+
     if (node.nodeType === Node.ELEMENT_NODE) {
       const el = node as HTMLElement
       const tagName = el.tagName.toLowerCase()
-      
+
       // Processar headings
       if (tagName.match(/^h[1-6]$/)) {
         const level = parseInt(tagName.charAt(1))
@@ -95,7 +95,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
           }
         }
       }
-      
+
       // Processar parágrafos
       if (tagName === 'p') {
         // IGNORAR parágrafos que estão dentro de <li> - eles já são processados como parte do item da lista
@@ -103,7 +103,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
         if (parentTag === 'li') {
           return null // Não processar <p> dentro de <li>
         }
-        
+
         const content = extractTextContent(el).trim()
         // Filtrar parágrafos vazios (apenas espaços ou quebras de linha)
         if (content && content.replace(/\s+/g, '').length > 0) {
@@ -113,7 +113,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
           }
         }
       }
-      
+
       // Processar listas
       if (tagName === 'ul' || tagName === 'ol') {
         const listItems: StructuredElement[] = []
@@ -133,7 +133,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
             }
           }
         })
-        
+
         // Só retornar lista se tiver pelo menos um item válido
         if (listItems.length > 0) {
           return {
@@ -144,7 +144,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
           }
         }
       }
-      
+
       // Processar blockquotes
       if (tagName === 'blockquote') {
         const content = extractTextContent(el).trim()
@@ -155,7 +155,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
           }
         }
       }
-      
+
       // Para outros elementos (div, span, strong, em, etc.), processar filhos recursivamente
       // Mas não criar um elemento próprio, apenas processar os filhos
       // IMPORTANTE: Não processar <li> aqui - eles são processados apenas dentro de <ul>/<ol>
@@ -164,7 +164,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
         // Não processar como elemento separado aqui
         return null
       }
-      
+
       const children: StructuredElement[] = []
       Array.from(node.childNodes).forEach(child => {
         const processed = processNode(child)
@@ -178,7 +178,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
           }
         }
       })
-      
+
       // Se temos filhos válidos, retornar o primeiro elemento block ou combinar textos
       if (children.length > 0) {
         // Se todos são texto, combinar em um parágrafo
@@ -197,14 +197,14 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
         }
       }
     }
-    
+
     return null
   }
-  
+
   // Processar todos os nós filhos do div
   function processAllNodes(nodes: NodeList): StructuredElement[] {
     const result: StructuredElement[] = []
-    
+
     Array.from(nodes).forEach(node => {
       // Ignorar nós de texto soltos (fora de elementos)
       if (node.nodeType === Node.TEXT_NODE) {
@@ -218,7 +218,7 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
         }
         return
       }
-      
+
       const processed = processNode(node)
       if (processed) {
         // Validar antes de adicionar
@@ -234,10 +234,10 @@ function parseHTMLToStructured(html: string): StructuredElement[] {
         result.push(...childElements)
       }
     })
-    
+
     return result
   }
-  
+
   return processAllNodes(tempDiv.childNodes)
 }
 
@@ -280,6 +280,33 @@ function wrapText(
 
   // Renderizar última linha se houver conteúdo
   if (line.trim().length > 0) {
+    doc.text(line, x, currentY)
+    currentY += lineHeight
+  }
+
+  return currentY
+}
+
+/**
+ * Quebra texto longo (como User Agent) que pode não ter espaços suficientes
+ * Quebra caractere por caractere se necessário
+ */
+function wrapLongText(
+  doc: jsPDF,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number
+): number {
+  if (!text || text.trim().length === 0) {
+    return y
+  }
+
+  const lines = doc.splitTextToSize(text, maxWidth)
+  let currentY = y
+
+  for (const line of lines) {
     doc.text(line, x, currentY)
     currentY += lineHeight
   }
@@ -348,7 +375,7 @@ export async function generateTermAcceptancePDF(
   doc.setFontSize(10)
   currentY = wrapText(doc, `Name: ${data.student_name || 'N/A'}`, margin, currentY, contentWidth, 6)
   currentY = wrapText(doc, `Email: ${data.student_email || 'N/A'}`, margin, currentY, contentWidth, 6)
-  
+
   if (data.student_country) {
     currentY = wrapText(doc, `Country: ${data.student_country}`, margin, currentY, contentWidth, 6)
   }
@@ -395,21 +422,21 @@ export async function generateTermAcceptancePDF(
         return false
       }
     }
-    
+
     // Filtrar listas sem itens válidos
     if (element.type === 'list') {
       if (!element.children || element.children.length === 0) {
         return false
       }
       // Verificar se há pelo menos um item com conteúdo válido
-      const hasValidItems = element.children.some(item => 
+      const hasValidItems = element.children.some(item =>
         item.content && item.content.trim().replace(/\s+/g, '').length > 0
       )
       if (!hasValidItems) {
         return false
       }
     }
-    
+
     return true
   })
 
@@ -454,20 +481,20 @@ export async function generateTermAcceptancePDF(
         }
         if (element.children && element.children.length > 0) {
           // Filtrar itens vazios antes de renderizar
-          const validItems = element.children.filter(item => 
+          const validItems = element.children.filter(item =>
             item.content && item.content.trim().length > 0
           )
-          
+
           validItems.forEach((item, itemIndex) => {
             if (currentY > pageHeight - 30) {
               doc.addPage()
               currentY = margin
             }
-            
-            const prefix = element.isOrdered 
-              ? `${itemIndex + 1}. ` 
+
+            const prefix = element.isOrdered
+              ? `${itemIndex + 1}. `
               : '• '
-            
+
             // Renderizar item da lista com indentação
             const indent = 5
             const itemText = prefix + item.content.trim()
@@ -547,9 +574,9 @@ export async function generateTermAcceptancePDF(
   }
 
   if (data.user_agent) {
-    const userAgentLines = doc.splitTextToSize(`User Agent: ${data.user_agent}`, contentWidth)
-    doc.text(userAgentLines, margin, currentY)
-    currentY += userAgentLines.length * 6
+    doc.setFontSize(8) // Reduzir fonte para caber melhor
+    currentY = wrapLongText(doc, `User Agent: ${data.user_agent}`, margin, currentY, contentWidth, 5)
+    doc.setFontSize(10) // Voltar ao tamanho normal
   }
 
   currentY += 10
@@ -559,7 +586,7 @@ export async function generateTermAcceptancePDF(
     try {
       const img = new Image()
       img.crossOrigin = 'anonymous'
-      
+
       await new Promise((resolve, reject) => {
         img.onload = resolve
         img.onerror = reject
