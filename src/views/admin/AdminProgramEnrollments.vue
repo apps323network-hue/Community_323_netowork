@@ -77,14 +77,14 @@
           </div>
           <div>
             <div class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">
-              {{ selectedEnrollments.length }} {{ selectedEnrollments.length === 1 ? 'aluno selecionado' : 'alunos selecionados' }}
+              {{ selectedEnrollments.length }} {{ selectedEnrollments.length === 1 ? 'student selected' : 'students selected' }}
             </div>
             <button
               @click="clearSelection"
               class="text-xs font-bold text-slate-500 hover:text-primary transition-colors flex items-center gap-1"
             >
               <span class="material-icons text-xs">close</span>
-              Limpar seleção
+              Clear selection
             </button>
           </div>
         </div>
@@ -95,7 +95,7 @@
             class="flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span class="material-icons text-sm" :class="{ 'animate-pulse': storingBulk }">cloud_upload</span>
-            {{ storingBulk ? 'Armazenando...' : 'Armazenar Documentos' }}
+            {{ storingBulk ? 'Storing...' : 'Store Documents' }}
           </button>
           <button
             @click="exportSelected"
@@ -103,7 +103,7 @@
             class="flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-green-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span class="material-icons text-sm" :class="{ 'animate-pulse': exportingBulk }">download</span>
-            {{ exportingBulk ? 'Exportando...' : 'Exportar Selecionados' }}
+            {{ exportingBulk ? 'Exporting...' : 'Export Selected' }}
           </button>
         </div>
       </div>
@@ -228,7 +228,7 @@
                         @click="storeEnrollmentDocument(enrollment)"
                         :disabled="storing === enrollment.id"
                         class="p-2 text-blue-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all disabled:opacity-50"
-                        title="Armazenar documento de matrícula no bucket"
+                        title="Store enrollment document in bucket"
                       >
                         <span class="material-icons text-sm" :class="{ 'animate-pulse': storing === enrollment.id }">{{ storing === enrollment.id ? 'cloud_upload' : 'save' }}</span>
                       </button>
@@ -237,7 +237,7 @@
                         @click="exportEnrollmentData(enrollment)"
                         :disabled="exporting === enrollment.id"
                         class="p-2 text-green-500 hover:text-green-600 rounded-lg hover:bg-green-50 dark:hover:bg-green-500/10 transition-all disabled:opacity-50"
-                        title="Exportar dados completos da matrícula"
+                        title="Export complete enrollment data"
                       >
                         <span class="material-icons text-sm" :class="{ 'animate-pulse': exporting === enrollment.id }">{{ exporting === enrollment.id ? 'download' : 'description' }}</span>
                       </button>
@@ -286,13 +286,13 @@
         <div v-if="filteredEnrollments.length > 0" class="p-6 border-t border-slate-200 dark:border-white/5 bg-slate-50/30 dark:bg-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div class="flex items-center gap-4">
             <span class="text-sm font-bold text-slate-600 dark:text-slate-400">
-              Mostrando {{ ((currentPage - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage * itemsPerPage, filteredEnrollments.length) }} de {{ filteredEnrollments.length }} matrículas
+              Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} - {{ Math.min(currentPage * itemsPerPage, filteredEnrollments.length) }} of {{ filteredEnrollments.length }} enrollments
             </span>
             <select v-model="itemsPerPage" @change="currentPage = 1" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-800 text-sm font-bold">
-              <option :value="10">10 por página</option>
-              <option :value="25">25 por página</option>
-              <option :value="50">50 por página</option>
-              <option :value="100">100 por página</option>
+              <option :value="10">10 per page</option>
+              <option :value="25">25 per page</option>
+              <option :value="50">50 per page</option>
+              <option :value="100">100 per page</option>
             </select>
           </div>
 
@@ -613,7 +613,7 @@ const exportEnrollmentData = async (enrollment: ProgramEnrollment) => {
 
 const exportSelected = async () => {
   if (selectedEnrollments.value.length === 0) {
-    toast.error('Selecione pelo menos um aluno para exportar')
+    toast.error('Please select at least one student to export')
     return
   }
 
@@ -669,39 +669,39 @@ const exportSelected = async () => {
         ) || []
 
         const row: Record<string, string> = {
-          'Nome': userProfile?.nome || enrollment.user?.nome || 'N/A',
+          'Name': userProfile?.nome || enrollment.user?.nome || 'N/A',
           'Email': userProfile?.email || 'N/A',
-          'Data de Inscrição': enrollment.enrolled_at 
-            ? new Date(enrollment.enrolled_at).toLocaleString('pt-BR') 
+          'Enrollment Date': enrollment.enrolled_at 
+            ? new Date(enrollment.enrolled_at).toLocaleString('en-US') 
             : 'N/A',
-          'Valor do Pagamento': enrollment.payment_amount 
+          'Payment Amount': enrollment.payment_amount 
             ? `${enrollment.payment_currency || 'USD'} ${(enrollment.payment_amount / 100).toFixed(2)}`
             : 'N/A',
           'Payment ID': enrollment.payment_id || 'N/A',
-          'Tipo de Pagamento': enrollment.payment_method === 'card' ? 'Cartão de Crédito' 
+          'Payment Method': enrollment.payment_method === 'card' ? 'Credit Card' 
             : enrollment.payment_method === 'pix' ? 'PIX' 
             : enrollment.payment_method || 'N/A',
-          'Status de Pagamento': enrollment.payment_status === 'paid' ? 'Pago'
-            : enrollment.payment_status === 'pending' ? 'Pendente'
-            : enrollment.payment_status === 'failed' ? 'Falhou'
+          'Payment Status': enrollment.payment_status === 'paid' ? 'Paid'
+            : enrollment.payment_status === 'pending' ? 'Pending'
+            : enrollment.payment_status === 'failed' ? 'Failed'
             : enrollment.payment_status || 'N/A',
-          'Data do Pagamento': enrollment.paid_at
-            ? new Date(enrollment.paid_at).toLocaleString('pt-BR')
+          'Payment Date': enrollment.paid_at
+            ? new Date(enrollment.paid_at).toLocaleString('en-US')
             : enrollment.payment_status === 'paid' && enrollment.updated_at
-              ? new Date(enrollment.updated_at).toLocaleString('pt-BR')
+              ? new Date(enrollment.updated_at).toLocaleString('en-US')
               : 'N/A',
-          'Política de Privacidade': privacyAcceptance 
-            ? `Aceita (v${privacyAcceptance.term.version}) em ${new Date(privacyAcceptance.accepted_at).toLocaleString('pt-BR')}`
-            : 'Não aceita',
-          'Termos de Serviço': tosAcceptance
-            ? `Aceita (v${tosAcceptance.term.version}) em ${new Date(tosAcceptance.accepted_at).toLocaleString('pt-BR')}`
-            : 'Não aceita'
+          'Privacy Policy': privacyAcceptance 
+            ? `Accepted (v${privacyAcceptance.term.version}) on ${new Date(privacyAcceptance.accepted_at).toLocaleString('en-US')}`
+            : 'Not accepted',
+          'Terms of Service': tosAcceptance
+            ? `Accepted (v${tosAcceptance.term.version}) on ${new Date(tosAcceptance.accepted_at).toLocaleString('en-US')}`
+            : 'Not accepted'
         }
 
         // Adicionar termos específicos do programa (se houver)
         if (programTerms.length > 0) {
           programTerms.forEach((programTerm: any, index: number) => {
-            row[`Termo do Programa ${index + 1}`] = `${programTerm.term.title} (v${programTerm.term.version}) - Aceito em ${new Date(programTerm.accepted_at).toLocaleString('pt-BR')}`
+            row[`Program Term ${index + 1}`] = `${programTerm.term.title} (v${programTerm.term.version}) - Accepted on ${new Date(programTerm.accepted_at).toLocaleString('en-US')}`
           })
         }
 
@@ -712,7 +712,7 @@ const exportSelected = async () => {
     }
 
     if (exportData.length === 0) {
-      toast.error('Nenhum dado para exportar')
+      toast.error('No data to export')
       return
     }
 
@@ -742,11 +742,11 @@ const exportSelected = async () => {
     link.click()
     document.body.removeChild(link)
 
-    toast.success(`${exportData.length} matrícula(s) exportada(s) com sucesso!`)
+    toast.success(`${exportData.length} enrollment(s) exported successfully!`)
     clearSelection()
   } catch (error: any) {
     console.error('Error exporting enrollments:', error)
-    toast.error('Erro ao exportar: ' + (error.message || 'Unknown error'))
+    toast.error('Error exporting: ' + (error.message || 'Unknown error'))
   } finally {
     exportingBulk.value = false
   }
@@ -771,10 +771,10 @@ const storeEnrollmentDocument = async (enrollment: ProgramEnrollment) => {
 
     if (existingDoc) {
       const sentDate = existingDoc.email_sent_at 
-        ? new Date(existingDoc.email_sent_at).toLocaleString('pt-BR')
-        : 'data desconhecida'
+        ? new Date(existingDoc.email_sent_at).toLocaleString('en-US')
+        : 'unknown date'
       
-      toast.info(`Documento já foi gerado e enviado em ${sentDate}. Arquivo: ${existingDoc.filename}`)
+      toast.info(`Document already generated and sent on ${sentDate}. File: ${existingDoc.filename}`)
       storing.value = null
       return
     }
@@ -791,13 +791,13 @@ const storeEnrollmentDocument = async (enrollment: ProgramEnrollment) => {
     if (error) throw error
 
     if (data?.success) {
-      toast.success('Documento de matrícula armazenado e enviado com sucesso!')
+      toast.success('Enrollment document stored and sent successfully!')
     } else {
-      throw new Error('Falha ao armazenar documento')
+      throw new Error('Failed to store document')
     }
   } catch (error: any) {
     console.error('Error storing enrollment document:', error)
-    toast.error('Erro ao armazenar documento: ' + (error.message || 'Unknown error'))
+    toast.error('Error storing document: ' + (error.message || 'Unknown error'))
   } finally {
     storing.value = null
   }
@@ -805,7 +805,7 @@ const storeEnrollmentDocument = async (enrollment: ProgramEnrollment) => {
 
 const storeSelectedDocuments = async () => {
   if (selectedEnrollments.value.length === 0) {
-    toast.error('Selecione pelo menos um aluno para armazenar documentos')
+    toast.error('Please select at least one student to store documents')
     return
   }
 
@@ -868,13 +868,13 @@ const storeSelectedDocuments = async () => {
     // Mensagens de feedback
     const messages = []
     if (successCount > 0) {
-      messages.push(`${successCount} documento(s) armazenado(s) e enviado(s)`)
+      messages.push(`${successCount} document(s) stored and sent`)
     }
     if (skippedCount > 0) {
-      messages.push(`${skippedCount} já existia(m)`)
+      messages.push(`${skippedCount} already existed`)
     }
     if (errorCount > 0) {
-      messages.push(`${errorCount} falharam`)
+      messages.push(`${errorCount} failed`)
     }
     
     if (messages.length > 0) {
@@ -888,7 +888,7 @@ const storeSelectedDocuments = async () => {
     clearSelection()
   } catch (error: any) {
     console.error('Error storing selected documents:', error)
-    toast.error('Erro ao armazenar documentos: ' + (error.message || 'Unknown error'))
+    toast.error('Error storing documents: ' + (error.message || 'Unknown error'))
   } finally {
     storingBulk.value = false
   }
