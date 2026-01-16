@@ -214,46 +214,13 @@ export const useAdminTermsAcceptanceStore = defineStore('admin-terms-acceptance'
     error.value = null
     
     try {
-      const acceptance = acceptances.value.find((a) => a.id === acceptanceId)
-
-      if (!acceptance) {
-        throw new Error('Aceite não encontrado')
+      const { useProofGenerator } = await import('@/composables/useProofGenerator')
+      const { downloadTermAcceptanceProof } = useProofGenerator()
+      
+      const success = await downloadTermAcceptanceProof(acceptanceId)
+      if (!success) {
+        throw new Error('Erro ao gerar comprovante')
       }
-
-      if (!acceptance.term) {
-        throw new Error('Termo não encontrado')
-      }
-
-      // Buscar email do usuário de auth.users se não estiver disponível no profile
-      let userEmail = acceptance.user_email
-      if (!userEmail || userEmail === 'N/A') {
-        try {
-          const { data: emailData, error: emailError } = await supabase.rpc('get_user_email', {
-            user_id_param: acceptance.user_id,
-          })
-          if (!emailError && emailData) {
-            userEmail = emailData
-          }
-        } catch (err) {
-          console.warn('[ADMIN] Erro ao buscar email de auth.users:', err)
-        }
-      }
-
-      const userProfile = {
-        nome: acceptance.user_name || 'N/A',
-        email: userEmail || 'N/A',
-        pais: acceptance.user_country || undefined,
-        avatar_url: acceptance.user_avatar || undefined,
-      }
-
-      // Gerar PDF
-      await generatePDFFromAcceptance(
-        {
-          ...acceptance,
-          term: acceptance.term,
-        },
-        userProfile
-      )
     } catch (err: any) {
       console.error('[ADMIN] Erro ao gerar PDF:', err)
       error.value = err.message || 'Erro ao gerar PDF'

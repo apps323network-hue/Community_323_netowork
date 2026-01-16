@@ -1,13 +1,21 @@
 <template>
   <!-- Estado Inicial (Colapsado) - Inspirado no LinkedIn -->
-  <Card variant="white" class="p-4 dark:bg-surface-dark dark:border-gray-800 shadow-sm w-full">
-    <div class="flex gap-3 items-center">
+  <Card variant="white" class="p-4 md:p-5 dark:bg-surface-dark dark:border-gray-800 shadow-sm w-full rounded-2xl">
+    <!-- Header: Avatar, Nome e Cargo -->
+    <div class="flex items-center gap-3 md:gap-4 mb-3">
       <Avatar :src="userAvatar" :name="userName" size="md" class="flex-shrink-0" />
       
-      <!-- Campo clicável para abrir -->
+      <div class="flex flex-col">
+        <span class="font-bold text-sm text-gray-900 dark:text-gray-100 leading-tight">{{ userName }}</span>
+        <span class="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">{{ userRole }}</span>
+      </div>
+    </div>
+
+    <!-- Campo clicável indentado para alinhar com o nome -->
+    <div class="pl-[52px] md:pl-[60px]">
       <button
         @click="showPostModal = true"
-        class="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-full text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all"
+        class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-full text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all text-sm"
       >
         {{ t('posts.startPost') }}
       </button>
@@ -40,15 +48,16 @@
   </Card>
 
   <!-- Modal de Criação de Post - Estilo LinkedIn -->
-  <Modal v-model="showPostModal" size="lg" :closable="false">
+  <Modal v-model="showPostModal" size="lg">
     <template #default>
       <div class="relative">
         <!-- Header -->
-        <div class="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between pb-4">
           <div class="flex items-center gap-3">
             <Avatar :src="userAvatar" :name="userName" size="md" />
             <div>
-              <p class="font-semibold text-gray-900 dark:text-white">{{ userName }}</p>
+              <p class="font-semibold text-gray-900 dark:text-white leading-tight">{{ userName }}</p>
+              <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">{{ userRole }}</p>
             </div>
           </div>
           <button
@@ -60,13 +69,13 @@
         </div>
 
         <!-- Editor de Texto -->
-        <div class="py-4" style="min-height: 300px;">
+        <div class="py-4">
           <RichTextEditor
             v-model="content"
             :placeholder="t('posts.aboutWhat')"
             ref="editorRef"
             :minimal="true"
-            class="min-h-[280px]"
+            :maxHeight="400"
           />
         </div>
 
@@ -82,7 +91,7 @@
         </div>
 
         <!-- Barra de ferramentas inferior -->
-        <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between pt-4">
           <div class="flex gap-2">
             <label class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg cursor-pointer transition-colors group">
               <input
@@ -425,6 +434,10 @@ const dateTime = ref({
 
 const userName = computed(() => userStore.profile?.nome || authStore.user?.email?.split('@')[0] || t('common.user'))
 const userAvatar = computed(() => userStore.profile?.avatar_url || authStore.user?.user_metadata?.avatar_url || '')
+const userRole = computed(() => {
+  const area = userStore.profile?.area_atuacao
+  return area && area.trim() ? area : 'Membro'
+})
 
 const emit = defineEmits<{
   'post-created': [postId: string]

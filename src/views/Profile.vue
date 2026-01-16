@@ -7,8 +7,8 @@
 
     <template v-else>
       <!-- Background Neon Effects -->
-      <div class="fixed top-20 left-10 w-64 h-64 bg-secondary rounded-full filter blur-[120px] opacity-10 pointer-events-none z-0"></div>
-      <div class="fixed bottom-20 right-10 w-64 h-64 bg-primary rounded-full filter blur-[120px] opacity-10 pointer-events-none z-0"></div>
+      <div class="fixed top-20 left-10 w-64 h-64 bg-secondary rounded-full filter blur-[120px] opacity-[0.05] dark:opacity-10 pointer-events-none z-0"></div>
+      <div class="fixed bottom-20 right-10 w-64 h-64 bg-primary rounded-full filter blur-[120px] opacity-[0.05] dark:opacity-10 pointer-events-none z-0"></div>
 
       <!-- Status Message Toast (Simple implementation) -->
       <Transition name="fade">
@@ -25,14 +25,15 @@
       <!-- Page Header -->
       <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
         <div>
-          <h1 class="text-3xl font-bold text-white tracking-tight">{{ t('profile.previewTitle') }}</h1>
-          <p class="text-text-muted mt-1">{{ t('profile.previewSubtitle') }}</p>
+          <h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{{ t('profile.previewTitle') }}</h1>
+          <p class="text-slate-500 dark:text-text-muted mt-1 font-medium">{{ t('profile.previewSubtitle') }}</p>
         </div>
         <div class="flex gap-3">
           <button 
             @click="isPreviewMode = !isPreviewMode"
-            class="px-5 py-2.5 rounded-full border border-input-border text-white font-semibold text-sm hover:border-secondary hover:text-secondary hover:shadow-[0_0_10px_rgba(0,240,255,0.2)] transition-all"
+            class="px-5 py-2.5 rounded-full border border-slate-200 dark:border-input-border bg-white dark:bg-transparent text-slate-700 dark:text-white font-bold text-sm hover:border-secondary hover:text-secondary hover:shadow-[0_0_15px_rgba(0,240,255,0.15)] transition-all flex items-center gap-2"
           >
+            <span class="material-symbols-outlined text-[18px]">{{ isPreviewMode ? 'edit' : 'visibility' }}</span>
             {{ isPreviewMode ? t('profile.backToEdit') : t('profile.viewAsPublic') }}
           </button>
           <button
@@ -40,12 +41,14 @@
             @click="handleSave"
             :disabled="saving || !hasChanges"
             :class="[
-              'hidden md:block px-6 py-2.5 rounded-full font-bold text-sm transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+              'hidden md:flex items-center gap-2 px-6 py-2.5 rounded-full font-black text-sm transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
               hasChanges 
-                ? 'bg-gradient-to-r from-secondary to-primary text-white shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:shadow-[0_0_20px_rgba(255,0,153,0.5)]'
-                : 'bg-input-bg border border-input-border text-text-muted hover:text-white'
+                ? 'bg-gradient-to-r from-secondary to-primary text-white shadow-lg shadow-secondary/20 hover:shadow-primary/30'
+                : 'bg-slate-100 dark:bg-input-bg border border-slate-200 dark:border-input-border text-slate-400 dark:text-text-muted hover:text-slate-600 dark:hover:text-white'
             ]"
           >
+            <span v-if="!saving" class="material-symbols-outlined text-[18px]">save</span>
+            <div v-else class="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             {{ saving ? t('profile.saving') : t('profile.saveChanges') }}
           </button>
         </div>
@@ -69,6 +72,7 @@
             :connections="connectionsCount"
             :points="editableProfile.total_points || 0"
             :readonly="isPreviewMode"
+            :showEmail="editableProfile.show_email"
             @edit-avatar="handleEditAvatar"
           />
 

@@ -1,16 +1,16 @@
 <template>
-  <div class="relative z-30 rounded-[24px] p-6 bg-slate-900/50 backdrop-blur-sm border border-white/10 mb-8">
+  <div class="relative z-30 rounded-[24px] p-6 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-white/10 mb-8 shadow-sm">
     <div class="flex flex-col lg:flex-row gap-4">
       <!-- Search -->
       <div class="flex-1">
         <div class="relative">
-          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/40">search</span>
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/40">search</span>
           <input
             :value="modelValue.search"
             @input="handleSearchInput"
             type="text"
             placeholder="Search by name or email..."
-            class="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-[0_0_15px_rgba(244,37,244,0.3)] focus:outline-none transition-all"
+            class="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary focus:shadow-premium focus:outline-none transition-all font-medium"
           />
         </div>
       </div>
@@ -19,7 +19,7 @@
       <div class="relative" ref="roleDropdownRef">
         <button
           @click="toggleDropdown('role')"
-          class="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all min-w-[140px] justify-between"
+          class="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all min-w-[140px] justify-between font-bold"
         >
           <span class="flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">badge</span>
@@ -32,20 +32,20 @@
         
         <div 
           v-if="activeDropdown === 'role'"
-          class="absolute top-full right-0 mt-2 w-56 bg-slate-800 border border-white/10 rounded-xl shadow-xl z-20 py-2 max-h-64 overflow-y-auto"
+          class="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-20 py-2 max-h-64 overflow-y-auto"
         >
           <label
             v-for="role in roleOptions"
             :key="role.value"
-            class="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+            class="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors"
           >
             <input
               type="checkbox"
               :checked="isRoleSelected(role.value)"
               @change="toggleRole(role.value)"
-              class="w-4 h-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary focus:ring-offset-0"
+              class="w-4 h-4 rounded border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-primary focus:ring-primary focus:ring-offset-0"
             />
-            <span class="text-white/80 text-sm">{{ role.label }}</span>
+            <span class="text-slate-700 dark:text-white/80 text-sm font-medium">{{ role.label }}</span>
           </label>
         </div>
       </div>
@@ -54,7 +54,7 @@
       <div class="relative" ref="planDropdownRef">
         <button
           @click="toggleDropdown('plan')"
-          class="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all min-w-[140px] justify-between"
+          class="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all min-w-[140px] justify-between font-bold"
         >
           <span class="flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">workspace_premium</span>
@@ -67,20 +67,20 @@
         
         <div 
           v-if="activeDropdown === 'plan'"
-          class="absolute top-full right-0 mt-2 w-56 bg-slate-800 border border-white/10 rounded-xl shadow-xl z-20 py-2"
+          class="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-20 py-2"
         >
           <label
             v-for="plan in planOptions"
             :key="plan.value"
-            class="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+            class="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors"
           >
             <input
               type="checkbox"
               :checked="isPlanSelected(plan.value)"
               @change="togglePlan(plan.value)"
-              class="w-4 h-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary focus:ring-offset-0"
+              class="w-4 h-4 rounded border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-primary focus:ring-primary focus:ring-offset-0"
             />
-            <span class="text-white/80 text-sm">{{ plan.label }}</span>
+            <span class="text-slate-700 dark:text-white/80 text-sm font-medium">{{ plan.label }}</span>
           </label>
         </div>
       </div>
@@ -89,7 +89,7 @@
       <div class="relative" ref="statusDropdownRef">
         <button
           @click="toggleDropdown('status')"
-          class="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all min-w-[140px] justify-between"
+          class="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all min-w-[140px] justify-between font-bold"
         >
           <span class="flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">check_circle</span>
@@ -102,20 +102,20 @@
         
         <div 
           v-if="activeDropdown === 'status'"
-          class="absolute top-full right-0 mt-2 w-56 bg-slate-800 border border-white/10 rounded-xl shadow-xl z-20 py-2"
+          class="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-20 py-2"
         >
           <label
             v-for="status in statusOptions"
             :key="status.value"
-            class="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+            class="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer transition-colors"
           >
             <input
               type="checkbox"
               :checked="isStatusSelected(status.value)"
               @change="toggleStatus(status.value)"
-              class="w-4 h-4 rounded border-white/20 bg-white/5 text-primary focus:ring-primary focus:ring-offset-0"
+              class="w-4 h-4 rounded border-slate-300 dark:border-white/20 bg-slate-50 dark:bg-white/5 text-primary focus:ring-primary focus:ring-offset-0"
             />
-            <span class="text-white/80 text-sm">{{ status.label }}</span>
+            <span class="text-slate-700 dark:text-white/80 text-sm font-medium">{{ status.label }}</span>
           </label>
         </div>
       </div>
@@ -124,8 +124,8 @@
       <div class="relative" ref="dateDropdownRef">
         <button
           @click="toggleDropdown('date')"
-          class="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all min-w-[140px] justify-between"
-          :class="{ 'border-secondary shadow-[0_0_15px_rgba(0,243,255,0.3)]': modelValue.dateRange }"
+          class="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all min-w-[140px] justify-between font-bold"
+          :class="{ 'border-secondary shadow-premium ring-1 ring-secondary/20': modelValue.dateRange }"
         >
           <span class="flex items-center gap-2">
             <span class="material-symbols-outlined text-lg">calendar_today</span>
@@ -138,58 +138,58 @@
         
         <div 
           v-if="activeDropdown === 'date'"
-          class="absolute top-full right-0 mt-2 w-64 bg-slate-800 border border-white/10 rounded-xl shadow-xl z-20 py-2"
+          class="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl shadow-2xl z-20 py-2"
         >
           <!-- Quick Filters -->
-          <div class="px-3 py-2 border-b border-white/5">
-            <p class="text-white/40 text-xs font-bold uppercase tracking-wider mb-2">Quick Filters</p>
+          <div class="px-3 py-2 border-b border-slate-100 dark:border-white/5">
+            <p class="text-slate-400 dark:text-white/40 text-[10px] font-black uppercase tracking-wider mb-2">Quick Filters</p>
             <div class="space-y-1">
               <button
                 @click="setDateRange('today')"
-                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
-                :class="{ 'bg-secondary/10 border border-secondary/30': modelValue.dateRange === 'today' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-secondary/10 border border-secondary/20': modelValue.dateRange === 'today' }"
               >
                 <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'today' ? 'text-secondary' : 'text-white/60'">today</span>
-                  <span class="text-white/80 text-sm font-medium">Today</span>
+                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'today' ? 'text-secondary' : 'text-slate-400 dark:text-white/60'">today</span>
+                  <span class="text-slate-700 dark:text-white/80 text-sm font-bold">Today</span>
                 </span>
                 <span v-if="modelValue.dateRange === 'today'" class="material-symbols-outlined text-secondary text-sm">check</span>
               </button>
               
               <button
                 @click="setDateRange('week')"
-                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
-                :class="{ 'bg-secondary/10 border border-secondary/30': modelValue.dateRange === 'week' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-secondary/10 border border-secondary/20': modelValue.dateRange === 'week' }"
               >
                 <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'week' ? 'text-secondary' : 'text-white/60'">date_range</span>
-                  <span class="text-white/80 text-sm font-medium">This Week</span>
+                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'week' ? 'text-secondary' : 'text-slate-400 dark:text-white/60'">date_range</span>
+                  <span class="text-slate-700 dark:text-white/80 text-sm font-bold">This Week</span>
                 </span>
                 <span v-if="modelValue.dateRange === 'week'" class="material-symbols-outlined text-secondary text-sm">check</span>
               </button>
               
               <button
                 @click="setDateRange('month')"
-                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
-                :class="{ 'bg-secondary/10 border border-secondary/30': modelValue.dateRange === 'month' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-secondary/10 border border-secondary/20': modelValue.dateRange === 'month' }"
               >
                 <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'month' ? 'text-secondary' : 'text-white/60'">calendar_month</span>
-                  <span class="text-white/80 text-sm font-medium">This Month</span>
+                  <span class="material-symbols-outlined text-sm" :class="modelValue.dateRange === 'month' ? 'text-secondary' : 'text-slate-400 dark:text-white/60'">calendar_month</span>
+                  <span class="text-slate-700 dark:text-white/80 text-sm font-bold">This Month</span>
                 </span>
                 <span v-if="modelValue.dateRange === 'month'" class="material-symbols-outlined text-secondary text-sm">check</span>
               </button>
               
               <button
                 @click="setDateRange('all')"
-                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
-                :class="{ 'bg-white/5': !modelValue.dateRange || modelValue.dateRange === 'all' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+                :class="{ 'bg-slate-100 dark:bg-white/5': !modelValue.dateRange || modelValue.dateRange === 'all' }"
               >
                 <span class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm text-white/60">all_inclusive</span>
-                  <span class="text-white/80 text-sm font-medium">All Time</span>
+                  <span class="material-symbols-outlined text-sm text-slate-400 dark:text-white/60">all_inclusive</span>
+                  <span class="text-slate-700 dark:text-white/80 text-sm font-bold">All Time</span>
                 </span>
-                <span v-if="!modelValue.dateRange || modelValue.dateRange === 'all'" class="material-symbols-outlined text-white/40 text-sm">check</span>
+                <span v-if="!modelValue.dateRange || modelValue.dateRange === 'all'" class="material-symbols-outlined text-slate-400 text-sm">check</span>
               </button>
             </div>
           </div>
@@ -200,7 +200,7 @@
       <button
         v-if="hasActiveFilters"
         @click="clearFilters"
-        class="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-all flex items-center gap-2"
+        class="px-4 py-3 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-slate-400 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/10 transition-all flex items-center gap-2 font-bold shadow-sm"
       >
         <span class="material-symbols-outlined text-lg">clear_all</span>
         <span class="text-sm">Clear</span>

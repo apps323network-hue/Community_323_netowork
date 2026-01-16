@@ -37,24 +37,32 @@
     <div
       class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
     >
-      <nav class="flex justify-around items-center h-16 px-2">
+      <nav class="flex justify-around items-center h-20 px-2">
         <RouterLink
           v-for="item in mobileMenuItems"
           :key="item.path"
           :to="item.path"
-          class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group"
+          class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group gap-1"
           :class="isActive(item.path) 
             ? 'text-primary' 
             : 'text-slate-500 dark:text-white/60 hover:text-primary'"
         >
+          <!-- Container com altura fixa para os ícones -->
+          <div class="h-[22px] flex items-center justify-center">
+            <span 
+              class="material-symbols-outlined transition-all text-[22px]"
+              :class="isActive(item.path) ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]'"
+            >
+              {{ item.icon }}
+            </span>
+          </div>
+
+          <!-- Label do item -->
           <span 
-            class="material-symbols-outlined transition-all"
-            :class="[
-              isActive(item.path) ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]',
-              item.path === '/programs' ? 'text-[32px]' : 'text-[24px]'
-            ]"
+            class="text-[10px] font-medium transition-all leading-tight"
+            :class="isActive(item.path) ? 'font-bold' : ''"
           >
-            {{ item.icon }}
+            {{ item.label }}
           </span>
 
           <!-- Indicador ativo -->

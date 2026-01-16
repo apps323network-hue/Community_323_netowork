@@ -27,25 +27,28 @@
     <div
       class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-lg dark:shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
     >
-      <nav class="flex justify-around items-center h-16 px-2">
+      <nav class="flex justify-around items-center h-20 px-2">
         <RouterLink
           v-for="item in mobileMenuItems"
           :key="item.path"
           :to="item.path"
-          class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group"
+          class="flex flex-col items-center justify-center transition-all flex-1 rounded-lg py-2 relative group gap-1"
           :class="$route.path === item.path 
             ? 'text-primary' 
             : 'text-slate-700 dark:text-white/60 hover:text-primary'"
         >
-          <span 
-            class="material-symbols-outlined text-[24px] transition-all"
-            :class="$route.path === item.path 
-              ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' 
-              : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]'"
-          >
-            {{ item.icon }}
-          </span>
-          <span class="text-[10px] mt-0.5 font-medium text-slate-700 dark:text-white/60 group-hover:text-primary" :class="$route.path === item.path ? 'text-primary' : ''">
+          <!-- Container com altura fixa para os ícones -->
+          <div class="h-[22px] flex items-center justify-center">
+            <span 
+              class="material-symbols-outlined text-[22px] transition-all"
+              :class="$route.path === item.path 
+                ? 'drop-shadow-[0_0_8px_rgba(244,37,244,0.8)]' 
+                : 'group-hover:drop-shadow-[0_0_8px_rgba(244,37,244,0.4)]'"
+            >
+              {{ item.icon }}
+            </span>
+          </div>
+          <span class="text-[10px] font-medium transition-all leading-tight" :class="$route.path === item.path ? 'font-bold' : ''">
             {{ item.label }}
           </span>
           <!-- Badge para itens com notificações -->

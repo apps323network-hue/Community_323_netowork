@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'Home',
     component: () => import('@/views/Home.vue'),
-    meta: { publicAccess: true, limitedForGuests: true },
+    meta: { publicAccess: true, limitedForGuests: true, title: 'Home' },
   },
   {
     path: '/posts-salvos',
@@ -61,16 +61,24 @@ const routes: RouteRecordRaw[] = [
     // Não usar requiresGuest pois o Supabase cria uma sessão temporária durante recovery
   },
   {
-    path: '/terms-of-service',
+    path: '/termos',
     name: 'Terms',
     component: () => import('@/views/Terms.vue'),
     meta: { publicAccess: true },
   },
   {
-    path: '/privacy-policy',
+    path: '/terms',
+    redirect: '/termos',
+  },
+  {
+    path: '/politica-privacidade',
     name: 'PrivacyPolicy',
     component: () => import('@/views/PrivacyPolicy.vue'),
     meta: { publicAccess: true },
+  },
+  {
+    path: '/privacy-policy',
+    redirect: '/politica-privacidade',
   },
   {
     path: '/auth/callback',
@@ -82,6 +90,12 @@ const routes: RouteRecordRaw[] = [
     path: '/onboarding',
     name: 'Onboarding',
     component: () => import('@/views/Onboarding.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/termos-aceite',
+    name: 'TermsAcceptance',
+    component: () => import('@/views/TermsAcceptance.vue'),
     meta: { requiresAuth: true },
   },
   {
@@ -118,7 +132,7 @@ const routes: RouteRecordRaw[] = [
     path: '/eventos',
     name: 'Events',
     component: () => import('@/views/Events.vue'),
-    meta: { publicAccess: true },
+    meta: { publicAccess: true, title: 'Events' },
   },
   {
     path: '/eventos/:id',
@@ -142,7 +156,7 @@ const routes: RouteRecordRaw[] = [
     path: '/servicos',
     name: 'Services',
     component: () => import('@/views/Services.vue'),
-    meta: { publicAccess: true },
+    meta: { publicAccess: true, title: 'Services' },
   },
   {
     path: '/servicos/:id',
@@ -210,6 +224,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/PaymentCancel.vue'),
     meta: { requiresAuth: true },
   },
+
   {
     path: '/desafios',
     name: 'Challenges',
@@ -227,7 +242,7 @@ const routes: RouteRecordRaw[] = [
     path: '/programs',
     name: 'Programs',
     component: () => import('@/views/Programs.vue'),
-    meta: { publicAccess: true },
+    meta: { publicAccess: true, title: 'Programs' },
   },
   {
     path: '/programs/:id',
@@ -463,13 +478,8 @@ router.beforeEach(async (to, _from, next) => {    // O Supabase adiciona type=re
   }
 
   // Verificar se precisa de autenticação
-  if (requiresAuth && !authStore.user) {
-    next({ name: 'Login', query: { redirect: to.fullPath } })
-    return
-  }
-
-  // Verificar se usuário está banido e onboarding
-  if (requiresAuth && authStore.user) {
+  // Verificar aceite de termos e onboarding global para usuários logados
+  if (authStore.user) {
     const userStore = useUserStore()
 
     // Se profile não estiver carregado, buscar
@@ -477,30 +487,59 @@ router.beforeEach(async (to, _from, next) => {    // O Supabase adiciona type=re
       await userStore.fetchProfile(authStore.user.id)
     }
 
-    // Verificar onboarding
-    if (to.path === '/onboarding') {
-      // Se já completou onboarding, redirecionar para home
-      const { hasCompletedOnboarding } = await import('@/composables/useOnboarding')
-      if (hasCompletedOnboarding(userStore.profile)) {
-        next({ name: 'Home' })
-        return
-      }
-    } else {
-      // Se não completou onboarding e não está na página de onboarding, redirecionar
-      const { needsOnboarding } = await import('@/composables/useOnboarding')
-      if (needsOnboarding(userStore.profile)) {
-        next({ name: 'Onboarding' })
-        return
+    // 1. Verificar aceite de termos (prioridade máxima para qualquer usuário logado)
+    const publicLegalRoutes = [
+      '/termos',
+      '/politica-privacidade',
+      '/termos-aceite',
+      '/banned',
+      '/login',
+      '/register',
+      '/auth/callback',
+      '/reset-password',
+      '/forgot-password'
+    ]
+    const isPublicLegalRoute = publicLegalRoutes.includes(to.path)
+
+    if (!isPublicLegalRoute && authStore.termsAccepted === false) {
+      console.log('[ROUTER] Redirecionando para aceite de termos (Global)...')
+      next({ name: 'TermsAcceptance', query: { redirect: to.fullPath } })
+      return
+    }
+
+    // 2. Verificar onboarding (apenas se não for uma rota legal já tratada)
+    const isOnboarding = to.path === '/onboarding'
+    if (!isPublicLegalRoute) {
+      if (isOnboarding) {
+        // Se já completou onboarding, redirecionar para home
+        const { hasCompletedOnboarding } = await import('@/composables/useOnboarding')
+        if (hasCompletedOnboarding(userStore.profile)) {
+          next({ name: 'Home' })
+          return
+        }
+      } else {
+        // Se não completou onboarding e não está na página de onboarding, redirecionar
+        const { needsOnboarding } = await import('@/composables/useOnboarding')
+        if (needsOnboarding(userStore.profile)) {
+          next({ name: 'Onboarding' })
+          return
+        }
       }
     }
 
     // Redirecionar usuário banido para página de aviso
-    if (userStore.profile?.status === 'banned') {
+    if (userStore.profile?.status === 'banned' && !isPublicLegalRoute) {
       if (to.path !== '/banned') {
         next({ name: 'Banned' })
         return
       }
     }
+  }
+
+  // Verificar se precisa de autenticação (se não estiver logado)
+  if (requiresAuth && !authStore.user) {
+    next({ name: 'Login', query: { redirect: to.fullPath } })
+    return
   }
 
   // Verificar se precisa ser guest (não logado)
@@ -541,6 +580,13 @@ router.beforeEach(async (to, _from, next) => {    // O Supabase adiciona type=re
   }
 
   next()
+})
+
+// Título dinâmico
+router.afterEach((to) => {
+  const DEFAULT_TITLE = '323 Network - Connecting Brazilians in the USA'
+  const routeTitle = to.meta.title as string | undefined
+  document.title = routeTitle ? `${routeTitle} | 323 Network` : DEFAULT_TITLE
 })
 
 export default router

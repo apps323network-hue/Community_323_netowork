@@ -30,25 +30,25 @@
         <div class="flex items-center gap-0.5 px-1 border-r border-slate-200 dark:border-white/10 mr-1">
           <ToolbarButton 
             icon="format_bold" 
-            title="Negrito" 
+            title="Bold" 
             @click="editor.chain().focus().toggleBold().run()"
             :active="editor.isActive('bold')" 
           />
           <ToolbarButton 
             icon="format_italic" 
-            title="Itálico" 
+            title="Italic" 
             @click="editor.chain().focus().toggleItalic().run()"
             :active="editor.isActive('italic')" 
           />
           <ToolbarButton 
             icon="format_underlined" 
-            title="Sublinhado" 
+            title="Underline" 
             @click="editor.chain().focus().toggleUnderline().run()"
             :active="editor.isActive('underline')" 
           />
           <ToolbarButton 
             icon="format_strikethrough" 
-            title="Riscado" 
+            title="Strike" 
             @click="editor.chain().focus().toggleStrike().run()"
             :active="editor.isActive('strike')" 
           />
@@ -58,19 +58,19 @@
         <div class="flex items-center gap-0.5 px-1 border-r border-slate-200 dark:border-white/10 mr-1">
           <ToolbarButton 
             icon="border_color" 
-            title="Realce Amarelo" 
+            title="Yellow Highlight" 
             @click="editor.chain().focus().toggleHighlight({ color: '#fef08a' }).run()"
             :active="editor.isActive('highlight', { color: '#fef08a' })" 
           />
           <ToolbarButton 
             icon="format_color_text" 
-            title="Cor Primária" 
+            title="Primary Color" 
             @click="editor.chain().focus().setColor('#0090ff').run()"
             :active="editor.isActive('textStyle', { color: '#0090ff' })" 
           />
           <ToolbarButton 
             icon="format_clear" 
-            title="Limpar Formatação" 
+            title="Clear Formatting" 
             @click="editor.chain().focus().unsetAllMarks().clearNodes().run()"
           />
         </div>
@@ -79,19 +79,19 @@
         <div class="flex items-center gap-0.5 px-1 border-r border-slate-200 dark:border-white/10 mr-1">
           <ToolbarButton 
             icon="format_h1" 
-            title="Título 1" 
+            title="Heading 1" 
             @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
             :active="editor.isActive('heading', { level: 1 })" 
           />
           <ToolbarButton 
             icon="format_h2" 
-            title="Título 2" 
+            title="Heading 2" 
             @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
             :active="editor.isActive('heading', { level: 2 })" 
           />
           <ToolbarButton 
             icon="format_h3" 
-            title="Título 3" 
+            title="Heading 3" 
             @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
             :active="editor.isActive('heading', { level: 3 })" 
           />
@@ -101,25 +101,25 @@
         <div class="flex items-center gap-0.5 px-1 border-r border-slate-200 dark:border-white/10 mr-1">
           <ToolbarButton 
             icon="format_align_left" 
-            title="Alinhar Esquerda" 
+            title="Align Left" 
             @click="editor.chain().focus().setTextAlign('left').run()"
             :active="editor.isActive({ textAlign: 'left' })" 
           />
           <ToolbarButton 
             icon="format_align_center" 
-            title="Centralizar" 
+            title="Center" 
             @click="editor.chain().focus().setTextAlign('center').run()"
             :active="editor.isActive({ textAlign: 'center' })" 
           />
           <ToolbarButton 
             icon="format_align_right" 
-            title="Alinhar Direita" 
+            title="Align Right" 
             @click="editor.chain().focus().setTextAlign('right').run()"
             :active="editor.isActive({ textAlign: 'right' })" 
           />
           <ToolbarButton 
             icon="format_align_justify" 
-            title="Justificar" 
+            title="Justify" 
             @click="editor.chain().focus().setTextAlign('justify').run()"
             :active="editor.isActive({ textAlign: 'justify' })" 
           />
@@ -129,30 +129,30 @@
         <div class="flex items-center gap-0.5 px-1">
           <ToolbarButton 
             icon="format_list_bulleted" 
-            title="Lista com Marcadores" 
+            title="Bulleted List" 
             @click="editor.chain().focus().toggleBulletList().run()"
             :active="editor.isActive('bulletList')" 
           />
           <ToolbarButton 
             icon="format_list_numbered" 
-            title="Lista Numerada" 
+            title="Numbered List" 
             @click="editor.chain().focus().toggleOrderedList().run()"
             :active="editor.isActive('orderedList')" 
           />
           <ToolbarButton 
             icon="format_quote" 
-            title="Citação" 
+            title="Quote" 
             @click="editor.chain().focus().toggleBlockquote().run()"
             :active="editor.isActive('blockquote')" 
           />
           <ToolbarButton 
             icon="horizontal_rule" 
-            title="Linha Divisória" 
+            title="Horizontal Line" 
             @click="editor.chain().focus().setHorizontalRule().run()"
           />
           <ToolbarButton 
             icon="link" 
-            title="Adicionar Link" 
+            title="Add Link" 
             @click="setLink"
             :active="editor.isActive('link')" 
           />
@@ -162,13 +162,13 @@
         <div class="flex items-center gap-0.5 px-1 border-l border-slate-200 dark:border-white/10 ml-1">
           <ToolbarButton 
             icon="grid_on" 
-            title="Inserir Tabela" 
+            title="Insert Table" 
             @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()" 
           />
           <template v-if="editor.isActive('table')">
-            <ToolbarButton icon="add_row_above" title="Linha Acima" @click="editor.chain().focus().addRowBefore().run()" />
-            <ToolbarButton icon="add_row_below" title="Linha Abaixo" @click="editor.chain().focus().addRowAfter().run()" />
-            <ToolbarButton icon="delete_sweep" title="Remover Tabela" @click="editor.chain().focus().deleteTable().run()" />
+            <ToolbarButton icon="add_row_above" title="Row Above" @click="editor.chain().focus().addRowBefore().run()" />
+            <ToolbarButton icon="add_row_below" title="Row Below" @click="editor.chain().focus().addRowAfter().run()" />
+            <ToolbarButton icon="delete_sweep" title="Remove Table" @click="editor.chain().focus().deleteTable().run()" />
           </template>
         </div>
       </template>
@@ -177,13 +177,13 @@
       <div class="ml-auto flex items-center gap-1">
          <ToolbarButton 
           icon="undo" 
-          title="Desfazer" 
+          title="Undo" 
           @click="editor?.chain().focus().undo().run()" 
           :disabled="!editor?.can().undo()"
         />
         <ToolbarButton 
           icon="redo" 
-          title="Refazer" 
+          title="Redo" 
           @click="editor?.chain().focus().redo().run()" 
           :disabled="!editor?.can().redo()"
         />
@@ -198,7 +198,7 @@
         class="flex-1 bg-slate-100 dark:bg-slate-900"
       >
         <!-- Document Paper -->
-        <div class="max-w-[900px] mx-auto my-12 p-20 bg-white dark:bg-slate-950 border border-slate-200 dark:border-primary/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)] min-h-[1000px] relative">
+        <div class="max-w-[900px] mx-auto my-12 p-8 md:p-20 bg-white dark:bg-slate-950 border border-slate-200 dark:border-primary/30 shadow-[0_20px_50px_rgba(0,0,0,0.5)] min-h-[1000px] relative">
           <editor-content :editor="editor" class="legal-prose-editor" />
         </div>
       </div>
@@ -211,7 +211,7 @@
         <textarea
           v-model="rawHtml"
           class="flex-1 w-full p-8 bg-transparent text-cyan-400 font-mono text-sm border-none focus:ring-0 resize-none outline-none custom-scrollbar"
-          placeholder="Insira seu HTML legal aqui..."
+          placeholder="Enter your legal HTML here..."
           spellcheck="false"
         ></textarea>
       </div>
@@ -226,13 +226,13 @@
             :class="isTruncated ? 'bg-red-500 animate-pulse' : 'bg-green-500'"
           ></div>
           <span class="text-[10px] font-black uppercase tracking-widest" :class="isTruncated ? 'text-red-500' : 'text-slate-400'">
-            {{ isTruncated ? 'Aviso: Possível Truncamento' : 'Integridade: OK' }}
+            {{ isTruncated ? 'Warning: Possible Truncation' : 'Integrity: OK' }}
           </span>
         </div>
         
         <div class="flex items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-           <span>Tamanho: <span class="text-slate-600 dark:text-white">{{ currentLengthFormatted }} KB</span></span>
-           <span>Palavras: <span class="text-slate-600 dark:text-white">{{ wordCount }}</span></span>
+           <span>Size: <span class="text-slate-600 dark:text-white">{{ currentLengthFormatted }} KB</span></span>
+           <span>Words: <span class="text-slate-600 dark:text-white">{{ wordCount }}</span></span>
         </div>
       </div>
 
@@ -243,7 +243,7 @@
           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
         >
           <span class="material-symbols-outlined text-sm">history</span>
-          Restaurar Original
+          Restore Original
         </button>
         <div class="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-white/5 text-[10px] font-black text-slate-400 uppercase tracking-widest border border-slate-200 dark:border-white/5">
           Tiptap Document Core
@@ -409,20 +409,19 @@ watch(() => props.modelValue, (newVal) => {
 /* Global high-contrast overrides for Legal Editor in Dark Mode */
 .dark .legal-prose-editor .legal-editor-content,
 .dark .legal-prose-editor .tiptap,
-.dark .legal-prose-editor .ProseMirror {
+.dark .legal-prose-editor .ProseMirror,
+.dark .legal-prose-editor .ProseMirror * {
   color: #ffffff !important;
 }
 
 .dark .legal-prose-editor h1,
 .dark .legal-prose-editor h2,
 .dark .legal-prose-editor h3,
-.dark .legal-prose-editor h4 {
-  color: #ffffff !important;
-}
-
+.dark .legal-prose-editor h4,
 .dark .legal-prose-editor p,
-.dark .legal-prose-editor li {
-  color: #f1f5f9 !important;
+.dark .legal-prose-editor li,
+.dark .legal-prose-editor span {
+  color: #ffffff !important;
 }
 </style>
 

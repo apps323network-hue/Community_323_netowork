@@ -16,8 +16,8 @@
           </p>
         </div>
         <div 
-          class="w-full lg:w-auto flex-row gap-3 sm:gap-4"
-          :class="isAuthenticated ? 'flex' : 'hidden lg:flex'"
+          v-if="isAuthenticated"
+          class="w-full lg:w-auto flex flex-row gap-3 sm:gap-4"
         >
           <div class="relative group flex-1 lg:flex-initial lg:w-[300px]">
             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
@@ -46,168 +46,108 @@
         </div>
       </div>
 
-      <!-- Advanced Feed Search (localhost only) -->
-      <div v-if="isLocalhost" class="relative z-40">
-        <FeedSearch v-model="feedSearchQuery" @search="handleFeedSearch" />
-      </div>
-
-      <!-- Filters Panel (collapsible) -->
-      <div
-        v-if="showFilters"
-        class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-white/5 shadow-lg animate-fade-in-up"
-      >
-        <MemberFilters
-          v-model="filters"
-          :view-mode="viewMode"
-          @update:view-mode="viewMode = $event"
-        />
-      </div>
-
-      <!-- Mobile Guest Blocker (Full Block) -->
-      <div v-if="!isAuthenticated" class="lg:hidden mt-8 px-4">
-        <GuestBlocker
-          :show="true"
-          variant="inline"
-          :title="t('common.guestBlocker.title')"
-          :message="t('members.description')"
-        />
-      </div>
-
-      <!-- Main Content (Hidden on mobile if not authenticated) -->
-      <div :class="{ 'hidden lg:block': !isAuthenticated }">
-
-      <!-- Featured Section -->
-      <section>
-        <div class="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
-          <h2 class="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 sm:gap-3 text-slate-900 dark:text-white">
-            <span class="material-icons text-secondary text-base sm:text-lg md:text-xl">local_fire_department</span>
-            <span class="truncate">{{ t('members.featuredMembers') }}</span>
-          </h2>
-          <a
-            class="text-primary text-xs sm:text-sm font-semibold hover:text-slate-900 dark:hover:text-white hover:shadow-neon-blue transition-all px-2 sm:px-3 py-1 rounded-lg hover:bg-primary/20 cursor-pointer whitespace-nowrap flex-shrink-0"
-          >
-            {{ t('members.seeFullCommunity') }}
-          </a>
-        </div>
-
-        <!-- Loading State -->
-        <div v-if="loading" class="flex justify-center py-6 sm:py-8 lg:py-12">
-          <div
-            class="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-primary"
-          ></div>
-        </div>
-
-        <!-- Featured Members Grid -->
-        <div v-else-if="featuredMembers.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          <MemberCard
-            v-for="member in featuredMembers"
-            :key="member.id"
-            :member="member"
-            variant="featured"
-            @view-profile="handleViewProfile"
-            @bookmark-changed="handleBookmarkChanged"
-          />
-        </div>
-        <!-- Empty State for Featured -->
-        <div v-else class="text-center py-6 sm:py-8 lg:py-12">
-          <p class="text-gray-400 text-xs sm:text-sm">
-            {{ t('members.noMembersFoundDesc') }}
-          </p>
-        </div>
-      </section>
-
-      <!-- All Members Section -->
-      <section>
-        <div class="flex items-center justify-between mb-4 sm:mb-6 gap-2">
-          <h2 class="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white tracking-tight truncate">
-            {{ t('members.allMembers') }}
-          </h2>
-          <div class="flex gap-1 sm:gap-2 flex-shrink-0">
-            <button
-              :class="[
-                'p-2 rounded-lg transition-colors',
-                viewMode === 'grid'
-                  ? 'bg-primary text-white shadow-md'
-                  : 'text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-primary/20 hover:text-primary',
-              ]"
-              @click="viewMode = 'grid'"
-            >
-              <span class="material-icons text-sm">grid_view</span>
-            </button>
-            <button
-              :class="[
-                'p-2 rounded-lg transition-colors',
-                viewMode === 'list'
-                  ? 'bg-primary text-white shadow-md'
-                  : 'text-slate-400 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-primary/20 hover:text-primary',
-              ]"
-              @click="viewMode = 'list'"
-            >
-              <span class="material-icons text-sm">view_list</span>
-            </button>
+      <!-- Main Content Area -->
+      <div class="relative">
+        <!-- Guest Overlays (Visible only when not authenticated) -->
+        <div 
+          v-if="!isAuthenticated" 
+          class="absolute inset-0 z-20 flex flex-col items-center justify-start pt-12 sm:pt-20 lg:pt-32 px-4"
+        >
+          <!-- Gradient Fade to hide blurred content at the bottom -->
+          <!-- Gradient Fade to hide blurred content at the bottom -->
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent via-background-light/80 dark:via-background-dark/80 to-background-light dark:to-background-dark pointer-events-none"></div>
+          
+          <!-- Floating Blocker Card -->
+          <div class="relative z-30 w-full max-w-2xl">
+            <GuestBlocker
+              :show="true"
+              variant="inline"
+              :title="t('common.guestBlocker.title')"
+              :message="t('members.description')"
+            />
           </div>
         </div>
 
-        <!-- Members List/Grid -->
-        <div
-          v-if="viewMode === 'list'"
-          class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden relative"
-        >
-          <MemberCard
-            v-for="(member, index) in displayMembers"
-            :key="member.id"
-            :member="member"
-            variant="list"
-            :class="{ 'blur-[1px] opacity-60 pointer-events-none': !isAuthenticated && index >= guestLimit - 2 }"
-            @view-profile="handleViewProfile"
-            @bookmark-changed="handleBookmarkChanged"
-          />
-        </div>
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 relative">
-          <MemberCard
-            v-for="(member, index) in displayMembers"
-            :key="member.id"
-            :member="member"
-            variant="featured"
-            :class="{ 'blur-[1px] opacity-60 pointer-events-none': !isAuthenticated && index >= guestLimit - 3 }"
-            @view-profile="handleViewProfile"
-            @bookmark-changed="handleBookmarkChanged"
-          />
-        </div>
+        <!-- Content Structure (Blurred for guests) -->
+        <div :class="{ 'blur-sm opacity-40 pointer-events-none select-none': !isAuthenticated }">
+          
+          <!-- Advanced Feed Search (localhost only) -->
+          <div v-if="isAuthenticated && isLocalhost" class="relative z-40 mb-8">
+            <FeedSearch v-model="feedSearchQuery" @search="handleFeedSearch" />
+          </div>
 
-        <!-- Guest Blocker -->
-        <div 
-          v-if="!isAuthenticated && allMembers.length > guestLimit"
-          class="relative mt-8"
-        >
-          <div class="absolute -top-32 left-0 right-0 h-32 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent pointer-events-none z-10"></div>
-          <GuestBlocker
-            :show="true"
-            variant="inline"
-            title="Conecte-se com a Comunidade"
-            message="Cadastre-se para ver todos os membros, acessar perfis detalhados e fazer networking direto."
-            cta="Criar Conta Grátis"
-          />
-        </div>
-
-        <!-- Empty State -->
-        <EmptyState
-          v-if="!loading && allMembers.length === 0"
-          icon="people"
-          :title="t('members.noMembersFound')"
-          :description="t('members.noMembersFoundDesc')"
-        />
-
-        <!-- Load More Button -->
-        <div v-if="!loading && hasMore && (isAuthenticated || allMembers.length < guestLimit)" class="mt-6 sm:mt-8 flex justify-center">
-          <button
-            class="px-6 sm:px-8 py-3 sm:py-4 rounded-xl border border-white/10 text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5 hover:shadow-neon-blue transition-all duration-300 text-xs sm:text-sm font-bold tracking-wide uppercase"
-            @click="loadMore"
+          <!-- Filters Panel (collapsible) -->
+          <div
+            v-if="isAuthenticated && showFilters"
+            class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-white/5 shadow-lg animate-fade-in-up mb-8"
           >
-            {{ t('common.loadMore') }}
-          </button>
+            <MemberFilters
+              v-model="filters"
+            />
+          </div>
+
+          <!-- Featured Section -->
+          <section v-if="featuredMembers.length > 0">
+            <div class="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
+              <h2 class="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 sm:gap-3 text-slate-900 dark:text-white">
+                <span class="material-icons text-secondary text-base sm:text-lg md:text-xl">local_fire_department</span>
+                <span class="truncate">{{ t('members.featuredMembers') }}</span>
+              </h2>
+            </div>
+
+            <!-- Featured Members Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              <MemberCard
+                v-for="member in (isAuthenticated ? featuredMembers : featuredMembers.slice(0, 3))"
+                :key="member.id"
+                :member="member"
+                variant="featured"
+                @view-profile="handleViewProfile"
+                @bookmark-changed="handleBookmarkChanged"
+              />
+            </div>
+          </section>
+
+          <!-- All Members Section -->
+          <section :class="{ 'mt-8 sm:mt-12 lg:mt-16': featuredMembers.length > 0 }">
+            <div class="flex items-center justify-between mb-4 sm:mb-6 gap-2">
+              <h2 class="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white tracking-tight truncate">
+                {{ t('members.allMembers') }}
+              </h2>
+            </div>
+
+            <div
+              class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl shadow-sm border border-slate-200 dark:border-white/5 overflow-hidden relative divide-y divide-slate-200 dark:divide-white/5"
+            >
+              <MemberCard
+                v-for="member in displayMembers"
+                :key="member.id"
+                :member="member"
+                variant="list"
+                @view-profile="handleViewProfile"
+                @bookmark-changed="handleBookmarkChanged"
+              />
+            </div>
+
+            <!-- Empty State -->
+            <EmptyState
+              v-if="!loading && allMembers.length === 0"
+              icon="people"
+              :title="t('members.noMembersFound')"
+              :description="t('members.noMembersFoundDesc')"
+            />
+
+            <!-- Load More Button -->
+            <div v-if="isAuthenticated && !loading && hasMore" class="mt-6 sm:mt-8 flex justify-center">
+              <button
+                class="px-6 sm:px-8 py-3 sm:py-4 rounded-xl border border-white/10 text-gray-400 hover:border-primary hover:text-primary hover:bg-primary/5 hover:shadow-neon-blue transition-all duration-300 text-xs sm:text-sm font-bold tracking-wide uppercase"
+                @click="loadMore"
+              >
+                {{ t('common.loadMore') }}
+              </button>
+            </div>
+          </section>
         </div>
-      </section>
       </div>
     </div>
   </AppLayout>
@@ -248,7 +188,7 @@ function handleFeedSearch(query: string) {
   // Future: could redirect to a unified search results page
 }
 
-const viewMode = ref<'grid' | 'list'>('list')
+
 const filters = ref<MemberFiltersType>({})
 const searchQuery = ref('')
 const showFilters = ref(false)

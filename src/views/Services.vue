@@ -19,8 +19,8 @@
         <div class="relative z-10 flex flex-col gap-3 sm:gap-4 md:gap-6 px-3 sm:px-4 md:px-6 lg:px-12 py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 text-center md:text-left items-center md:items-start">
           <div class="flex flex-col gap-2 sm:gap-3 max-w-2xl w-full">
             <div class="inline-flex items-center gap-1 sm:gap-2 self-center md:self-start px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm shadow-[0_0_15px_rgba(0,243,255,0.1)]">
-              <span class="material-symbols-outlined text-secondary text-base sm:text-base md:text-[18px]">verified</span>
-              <span class="text-secondary text-[11px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
+              <span class="material-symbols-outlined text-slate-900 dark:text-secondary text-base sm:text-base md:text-[18px]">verified</span>
+              <span class="text-slate-900 dark:text-secondary text-[11px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
             </div>
             <h1 class="text-slate-900 dark:text-white text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight tracking-tight">
               {{ t('services.heroTitle1') }} <br class="hidden sm:block"/>
@@ -83,20 +83,10 @@
         </div>
       </div>
 
-      <!-- Testimonials -->
-      <div class="flex flex-col gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-3 sm:pt-4 md:pt-6 lg:pt-8">
-        <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2.5 sm:pb-3 md:pb-4 gap-2">
-          <h2 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight truncate">{{ t('services.whatMembersSay') }}</h2>
-          <a class="text-secondary text-[10px] sm:text-xs md:text-sm font-bold hover:underline hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer whitespace-nowrap flex-shrink-0">{{ t('common.seeAll') }}</a>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-          <TestimonialCard
-            v-for="testimonial in testimonials"
-            :key="testimonial.id"
-            :testimonial="testimonial"
-          />
-        </div>
-      </div>
+
+
+      <!-- Separator -->
+      <div class="border-t border-slate-200 dark:border-white/10 my-4 sm:my-6 md:my-8"></div>
 
       <!-- CTA Section -->
       <div class="bg-white dark:bg-[#0a040f] border border-slate-200 dark:border-white/10 rounded-lg sm:rounded-xl md:rounded-2xl py-4 sm:py-6 md:py-8 lg:py-12 px-3 sm:px-4 md:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 md:gap-6 lg:gap-8">
@@ -104,7 +94,7 @@
           <h2 class="text-slate-900 dark:text-white text-lg sm:text-xl md:text-2xl font-bold">{{ t('services.needSomethingCustom') }}</h2>
           <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm md:text-base">{{ t('services.conciergeDescription') }}</p>
         </div>
-        <button class="flex items-center gap-1.5 sm:gap-2 rounded-lg bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-black px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base font-bold transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.2)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)] w-full md:w-auto justify-center" @click="contactSupport">
+        <button class="flex items-center gap-1.5 sm:gap-2 rounded-lg bg-transparent border border-secondary text-slate-900 dark:text-secondary hover:bg-secondary hover:text-black px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base font-bold transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.2)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)] w-full md:w-auto justify-center" @click="contactSupport">
           <span class="material-symbols-outlined text-base sm:text-lg md:text-[20px]">chat</span>
           {{ t('services.talkToSupport') }}
         </button>
@@ -238,11 +228,8 @@
               {{ t('services.processing') }}
             </span>
           </template>
-          <template v-else-if="selectedService.preco">
-            {{ t('services.pay') }} {{ formatPrice(selectedService.preco, selectedService.moeda) }}
-          </template>
           <template v-else>
-            {{ t('services.confirmRequest') }}
+            {{ selectedService.preco ? t('services.confirmPayment') : t('services.confirmRequest') }}
           </template>
         </button>
 
@@ -370,9 +357,10 @@
     >
       <div class="p-2 space-y-4">
         <div class="prose dark:prose-invert max-w-none">
-          <div class="text-sm text-slate-700 dark:text-gray-300 whitespace-pre-line leading-relaxed h-[60vh] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
-            {{ currentLocale === 'pt-BR' ? (selectedService.terms_content_pt || selectedService.terms_content_en) : (selectedService.terms_content_en || selectedService.terms_content_pt) }}
-          </div>
+          <div 
+            class="text-sm text-slate-700 dark:text-gray-300 leading-relaxed h-[60vh] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent custom-legal-content"
+            v-html="sanitizedTerms"
+          ></div>
         </div>
         <div class="flex justify-end pt-4 border-t border-slate-100 dark:border-white/5">
           <button
@@ -395,13 +383,15 @@ import { useSupabase } from '@/composables/useSupabase'
 import { useSubscriptionsStore } from '@/stores/subscriptions'
 import { useAuthStore } from '@/stores/auth'
 import { useSSO } from '@/composables/useSSO'
+import DOMPurify from 'dompurify'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ServiceCard from '@/components/features/services/ServiceCard.vue'
-import TestimonialCard from '@/components/features/services/TestimonialCard.vue'
+
 import Modal from '@/components/ui/Modal.vue'
 import FlickeringGrid from '@/components/ui/FlickeringGrid.vue'
 import { toast } from 'vue-sonner'
 import { fetchExchangeRate, calculatePixAmount } from '@/lib/exchange'
+import { isLocalhost } from '@/utils/localhost'
 
 const router = useRouter()
 
@@ -453,32 +443,7 @@ const filters = computed(() => {
   return baseFilters
 })
 
-const testimonials = computed(() => [
-  {
-    id: 1,
-    name: 'Lucas Mendes',
-    role: t('services.roleLucas'),
-    text: t('services.testimonialLucas'),
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop',
-  },
-  {
-    id: 2,
-    name: 'Amanda Silva',
-    role: t('services.roleAmanda'),
-    text: t('services.testimonialAmanda'),
-    rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop',
-  },
-  {
-    id: 3,
-    name: 'Beatriz Costa',
-    role: t('services.roleBeatriz'),
-    text: t('services.testimonialBeatriz'),
-    rating: 4.5,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop',
-  },
-])
+
 
 function formatPrice(cents: number, currency: string = 'USD'): string {
   const amount = cents / 100
@@ -492,6 +457,19 @@ function formatPrice(cents: number, currency: string = 'USD'): string {
 const CARD_FEE_PERCENTAGE = 0.039 // 3.9%
 const CARD_FEE_FIXED = 30 // $0.30 em centavos
 
+
+const sanitizedTerms = computed(() => {
+  const content = currentLocale.value === 'pt-BR' 
+    ? (selectedService.value?.terms_content_pt || selectedService.value?.terms_content_en)
+    : (selectedService.value?.terms_content_en || selectedService.value?.terms_content_pt)
+  
+  if (!content) return ''
+  
+  return DOMPurify.sanitize(content, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_ATTR: ['href', 'target']
+  })
+})
 
 function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
   if (method === 'card') {
@@ -540,17 +518,21 @@ async function fetchServices() {
 
     if (fetchError) throw fetchError
     
-    // Filter out user-created "Tradução de Documentos" service in production (only show on localhost)
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    // Filter for production vs localhost
+    const isLocal = isLocalhost()
     
     services.value = (data || []).filter((service: any) => {
-      // Hide user-created translation service in production
-      // Check by name since it's a user-created service
+      // Se for localhost_only, só mostrar se estiver em localhost
+      if (service.localhost_only && !isLocal) {
+        return false
+      }
+
+      // Hide specific user-created translation service in production
       const isTranslationService = 
         service.nome_pt?.toLowerCase().includes('tradução de documentos') ||
         service.nome_en?.toLowerCase().includes('document translation')
       
-      if (isTranslationService && service.is_user_service && !isLocalhost) {
+      if (isTranslationService && service.is_user_service && !isLocal) {
         return false
       }
       return true
@@ -591,24 +573,37 @@ async function handleRequestService(service: any) {
     return
   }
 
-  // Comportamento padrão: abrir modal de solicitação
+  // Abrir modal para serviços com preço
+  if (service.preco) {
+    paymentMethod.value = null
+    acceptedTerms.value = false
+    selectedService.value = service
+    requestMessage.value = ''
+    showRequestModal.value = true
+    return
+  }
+
+  // Comportamento fallback para solicitações manuais (sem preço definido)
   selectedService.value = service
-  paymentMethod.value = null
   requestMessage.value = ''
-  acceptedTerms.value = false
   showRequestModal.value = true
 }
 
 async function handleCheckout() {
-  if (!selectedService.value || !paymentMethod.value) return
+  if (!selectedService.value) return
 
   try {
     submitting.value = true
     
-    const { data: { session } } = await supabase.auth.getSession()
-    
-    if (!session) {
-      toast.error(t('services.mustBeLoggedInToContract'))
+    // Check if user is logged in
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      toast.error(t('services.mustBeLoggedInToRequest'))
+      return
+    }
+
+    if (!paymentMethod.value) {
+      toast.error(t('services.selectPaymentMethod'))
       return
     }
 
@@ -617,7 +612,6 @@ async function handleCheckout() {
         service_id: selectedService.value.id,
         payment_method: paymentMethod.value,
         exchange_rate: exchangeRate.value,
-        mensagem: requestMessage.value,
         accepted_terms: acceptedTerms.value
       }
     })
@@ -627,11 +621,11 @@ async function handleCheckout() {
     if (data?.checkout_url) {
       window.location.href = data.checkout_url
     } else {
-      throw new Error('URL de checkout não retornada')
+      throw new Error('Erro ao gerar link de pagamento')
     }
-  } catch (error: any) {
-    console.error('Erro ao iniciar checkout:', error)
-    toast.error(error.message || t('services.checkoutError'))
+  } catch (err: any) {
+    console.error('Checkout error:', err)
+    toast.error(err.message || 'Erro ao iniciar pagamento')
   } finally {
     submitting.value = false
   }
@@ -817,8 +811,7 @@ async function submitNewService() {
 }
 
 function contactSupport() {
-  const message = encodeURIComponent('Olá! Sou membro da 323 Network e preciso de ajuda com um serviço personalizado.')
-  window.open(`https://wa.me/5511999999999?text=${message}`, '_blank')
+  router.push('/contact-us')
 }
 </script>
 
@@ -829,5 +822,37 @@ function contactSupport() {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.custom-legal-content :deep(h1),
+.custom-legal-content :deep(h2),
+.custom-legal-content :deep(h3) {
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: rgb(var(--primary-rgb));
+}
+
+.custom-legal-content :deep(p) {
+  margin-bottom: 1rem;
+}
+
+.custom-legal-content :deep(ul),
+.custom-legal-content :deep(ol) {
+  margin-bottom: 1rem;
+  margin-left: 1.5rem;
+}
+
+.custom-legal-content :deep(li) {
+  margin-bottom: 0.5rem;
+}
+
+.custom-legal-content :deep(strong) {
+  color: #000;
+}
+
+.dark .custom-legal-content :deep(strong) {
+  color: #fff;
 }
 </style>

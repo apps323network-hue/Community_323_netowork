@@ -2,7 +2,7 @@
   <!-- List View -->
   <div
     v-if="variant === 'list'"
-    class="group p-3 sm:p-4 md:p-6 border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-300 flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 cursor-pointer overflow-hidden"
+    class="group p-3 sm:p-4 md:p-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-300 flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 cursor-pointer overflow-hidden"
     @click="$emit('view-profile', member.id)"
   >
     <!-- Avatar -->
@@ -56,7 +56,7 @@
           ? 'border-green-500/40 text-green-500 bg-green-500/5 cursor-default'
           : connectionStatus === 'pending'
           ? 'border-yellow-500/40 text-yellow-500 bg-yellow-500/5 cursor-default'
-          : 'border-secondary/40 text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary'
+          : 'border-secondary/40 text-slate-900 dark:text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary'
         ]"
         @click.stop="handleConnect"
         :disabled="requesting || !!connectionStatus"

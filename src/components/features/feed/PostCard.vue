@@ -1,208 +1,203 @@
 <template>
-  <Card variant="white" class="p-0 overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-300 dark:bg-surface-dark dark:border-white/5 rounded-2xl">
+  <Card variant="white" class="p-4 md:p-5 overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-300 dark:bg-surface-dark dark:border-white/5 rounded-2xl">
     <!-- Pinned Badge -->
-    <div v-if="post.fixado" class="px-5 pt-4 pb-2">
-      <Badge variant="primary" size="sm">
-        <span class="material-icons-outlined text-[14px] mr-1">push_pin</span>
-        Fixado
-      </Badge>
+    <div v-if="post.fixado" class="mb-2 flex items-center gap-2 ml-12">
+      <span class="material-icons-outlined text-[14px] text-secondary">push_pin</span>
+      <span class="text-xs font-semibold text-secondary uppercase tracking-wider">Fixado</span>
     </div>
 
-    <!-- Post Header -->
-    <div class="p-6 dark:p-6 flex justify-between items-start border-b border-slate-200 dark:border-gray-800">
-      <div class="flex gap-3">
-
-        <RouterLink :to="`/comunidade/${post.user_id}`" class="relative group no-underline">
-          <div class="absolute -inset-0.5 bg-gradient-to-b from-primary to-purple-600 rounded-full blur opacity-20 dark:opacity-50 group-hover:opacity-100 transition-opacity"></div>
+    <!-- Layout em Grid: Avatar à esquerda, conteúdo à direita -->
+    <div class="grid grid-cols-[auto_1fr] gap-3 md:gap-4">
+      <!-- Coluna 1: Avatar -->
+      <div class="flex-shrink-0">
+        <RouterLink :to="`/comunidade/${post.user_id}`" class="relative group no-underline block">
+          <div class="absolute -inset-0.5 bg-gradient-to-b from-primary to-purple-600 rounded-full blur opacity-10 group-hover:opacity-40 transition-opacity"></div>
           <Avatar
             :src="authorAvatar"
             :name="authorName"
             size="md"
-            class="relative border-2 border-white"
+            class="relative border-2 border-white dark:border-gray-800"
           />
         </RouterLink>
-        <div>
-          <div class="flex items-center gap-2">
-            <RouterLink :to="`/comunidade/${post.user_id}`" class="author-link" style="text-decoration: none !important;">
-              <h4 class="font-bold text-base text-gray-900 dark:text-white hover:text-primary dark:hover:text-secondary transition-colors">
-                {{ authorName }}
-              </h4>
-            </RouterLink>
-            <!-- Badge de post pendente (apenas para o próprio usuário) -->
-            <Badge 
-              v-if="isPendingPost" 
-              variant="warning" 
-              size="sm"
-            >
-              <span class="material-icons-outlined text-[10px] mr-1">schedule</span>
-              Pendente
-            </Badge>
-            <!-- Badge de post editado -->
-            <Badge 
-              v-if="post.edited_at" 
-              variant="secondary" 
-              size="sm"
-            >
-              <span class="material-icons-outlined text-[10px] mr-1">edit</span>
-              {{ t('posts.edited') }}
-            </Badge>
+      </div>
+
+      <!-- Coluna 2: Todo o conteúdo (nome, meta, post) -->
+      <div class="min-w-0">
+        <!-- Header: Nome e Menu -->
+        <div class="flex justify-between items-start mb-2">
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-0">
+              <RouterLink :to="`/comunidade/${post.user_id}`" class="no-underline group/link">
+                <h4 class="font-bold text-[15px] md:text-base text-gray-900 dark:text-white group-hover/link:text-primary transition-colors">
+                  {{ authorName }}
+                </h4>
+              </RouterLink>
+              
+              <span class="text-gray-400 text-xs md:text-sm whitespace-nowrap">
+                • {{ formatTime(post.created_at) }}
+              </span>
+
+              <!-- Badges compactas -->
+              <div class="flex gap-1 items-center">
+                <Badge v-if="isPendingPost" variant="warning" size="sm" class="scale-75 origin-left -ml-1">
+                  Pendente
+                </Badge>
+                <Badge v-if="post.edited_at" variant="secondary" size="sm" class="scale-75 origin-left -ml-1">
+                  Editado
+                </Badge>
+              </div>
+            </div>
+            
+            <!-- Cargo / Área de atuação -->
+            <p class="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 leading-none mt-1 line-clamp-1">
+              {{ authorRole }}
+            </p>
           </div>
-          <p class="text-xs text-gray-400">
-            {{ authorRole }} • <span class="text-secondary">{{ formatTime(post.created_at) }}</span>
-          </p>
-        </div>
-      </div>
-      <div class="relative" ref="menuContainer">
-        <button 
-          class="text-gray-500 dark:text-gray-400 hover:text-white transition-colors"
-          @click.stop="showMenu = !showMenu"
-        >
-          <span class="material-icons-outlined">more_horiz</span>
-        </button>
-        <!-- Dropdown Menu -->
-        <Transition
-          enter-active-class="transition-all duration-200"
-          enter-from-class="opacity-0 scale-95 translate-y-2"
-          enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition-all duration-200"
-          leave-from-class="opacity-100 scale-100 translate-y-0"
-          leave-to-class="opacity-0 scale-95 translate-y-2"
-        >
-          <div
-            v-if="showMenu"
-            class="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
-            @click.stop
-          >
-            <!-- Botão Editar (apenas para posts próprios e dentro da janela de 5 minutos) -->
-            <button
-              v-if="isOwnPost && canEditPost"
-              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary dark:text-secondary hover:bg-primary/10 dark:hover:bg-secondary/10 transition-colors text-left"
-              @click="handleEdit"
+
+          <!-- Menu Dropdown -->
+          <div class="relative ml-2" ref="menuContainer">
+            <button 
+              class="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-full transition-all"
+              @click.stop="showMenu = !showMenu"
             >
-              <span class="material-icons-outlined text-[20px]">edit</span>
-              {{ t('posts.editPost') }}
+              <span class="material-icons-outlined text-xl">more_horiz</span>
             </button>
-            <!-- Botão Deletar (apenas para posts próprios) -->
-            <button
-              v-if="isOwnPost"
-              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left"
-              @click="handleDelete"
+            <Transition
+              enter-active-class="transition-all duration-200"
+              enter-from-class="opacity-0 scale-95 translate-y-2"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition-all duration-200"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-2"
             >
-              <span class="material-icons-outlined text-[20px]">delete</span>
-              {{ t('posts.deletePost') }}
-            </button>
-            <!-- Botão Reportar (apenas para posts de outros usuários) -->
-            <button
-              v-if="!isOwnPost"
-              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors text-left"
-              @click="handleReport"
-            >
-              <span class="material-icons-outlined text-[20px]">report</span>
-              {{ t('posts.report') }}
-            </button>
+              <div
+                v-if="showMenu"
+                class="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
+                @click.stop
+              >
+                <button v-if="isOwnPost && canEditPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary dark:text-secondary hover:bg-primary/5 transition-colors text-left" @click="handleEdit">
+                  <span class="material-icons-outlined text-[20px]">edit</span>
+                  {{ t('posts.editPost') }}
+                </button>
+                <button v-if="isOwnPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors text-left" @click="handleDelete">
+                  <span class="material-icons-outlined text-[20px]">delete</span>
+                  {{ t('posts.deletePost') }}
+                </button>
+                <button v-if="!isOwnPost" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors text-left" @click="handleReport">
+                  <span class="material-icons-outlined text-[20px]">report</span>
+                  {{ t('posts.report') }}
+                </button>
+              </div>
+            </Transition>
           </div>
-        </Transition>
-      </div>
-    </div>
-
-    <!-- Post Content -->
-    <div class="px-6 py-5 md:px-8 md:py-6">
-      <div 
-        class="text-base md:text-lg text-gray-900 dark:text-gray-300 leading-relaxed rich-text-content"
-        v-html="sanitizedContent"
-      ></div>
-      <div v-if="hashtags.length" class="mt-4 flex flex-wrap gap-2">
-        <span
-          v-for="tag in hashtags"
-          :key="tag"
-          class="text-secondary hover:text-primary transition-colors cursor-pointer font-medium text-sm md:text-base"
-        >
-          {{ tag }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Post Image -->
-    <div
-      v-if="post.image_url"
-      class="mt-2 relative bg-gray-900 group overflow-hidden rounded-xl cursor-pointer"
-      @click="showImageLightbox = true"
-    >
-      <img
-        :alt="'Imagem do post'"
-        :src="post.image_url"
-        class="w-full h-auto max-h-[600px] md:max-h-[700px] object-contain bg-gray-50 dark:bg-gray-900 transition-transform duration-500 group-hover:scale-[1.02]"
-      />
-      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none"></div>
-      <!-- Zoom Icon Overlay -->
-      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        <div class="bg-black/60 backdrop-blur-sm rounded-full p-4 shadow-xl">
-          <span class="material-symbols-outlined text-white text-3xl">zoom_in</span>
         </div>
-      </div>
-    </div>
 
-    <!-- Image Lightbox -->
-    <ImageLightbox
-      v-model="showImageLightbox"
-      :image-url="post.image_url"
-      :alt="`Imagem do post de ${authorName}`"
-    />
+        <!-- Conteúdo do Post (alinhado com o nome) -->
+        <div class="pr-1">
+      <div class="mt-1"> <!-- Espaçamento para respiro visual -->
+        <div 
+          class="text-sm md:text-[15px] text-gray-800 dark:text-gray-200 leading-normal rich-text-content"
+          :class="{ 'line-clamp-content': !isExpanded && isLongPost }"
+          v-html="sanitizedContent"
+        ></div>
 
-    <!-- Post Actions -->
-    <div class="px-6 py-4 border-t border-slate-200 dark:border-gray-800 flex justify-between items-center text-gray-400">
-      <div class="flex gap-6">
         <button
-          class="flex items-center gap-2 text-sm hover:text-primary dark:hover:text-secondary transition-all group"
-          :class="post.isLiked ? 'text-primary dark:text-secondary' : ''"
-          @click="handleToggleLike"
+          v-if="isLongPost"
+          @click="toggleExpanded"
+          class="mt-2 text-sm font-bold text-primary dark:text-secondary hover:underline transition-colors inline-flex items-center gap-0.5"
         >
-          <span class="material-icons-outlined group-hover:scale-110 transition-transform">
-            {{ post.isLiked ? 'favorite' : 'favorite_border' }}
-          </span>
-          <span class="font-medium">{{ post.likes_count || 0 }}</span>
-        </button>
-        <button
-          class="flex items-center gap-2 text-sm hover:text-secondary transition-all group"
-          @click="handleToggleComments"
-        >
-          <span class="material-icons-outlined group-hover:scale-110 transition-transform">chat_bubble_outline</span>
-          <span class="font-medium">{{ post.comments_count || 0 }}</span>
-        </button>
-      </div>
-      <div class="flex gap-3">
-        <button
-          class="flex items-center gap-1.5 text-sm transition-colors group"
-          :class="[
-            post.isBookmarked ? 'text-primary dark:text-secondary' : 'hover:text-white',
-            { 'bookmark-animate': bookmarkAnimating }
-          ]"
-          @click="handleToggleBookmark"
-        >
-          <span 
-            class="material-icons-outlined group-hover:scale-110 transition-transform"
-            :class="{ 'bookmark-icon-animate': bookmarkAnimating }"
-          >
-            {{ post.isBookmarked ? 'bookmark' : 'bookmark_border' }}
+          {{ isExpanded ? t('posts.showLess') : t('posts.showMore') }}
+          <span class="material-icons-outlined text-[16px]">
+            {{ isExpanded ? 'expand_less' : 'expand_more' }}
           </span>
         </button>
+        
+        <!-- Hashtags -->
+        <div v-if="hashtags.length" class="mt-3 flex flex-wrap gap-x-3 gap-y-1">
+          <span
+            v-for="tag in hashtags"
+            :key="tag"
+            class="text-primary hover:underline transition-colors cursor-pointer font-medium text-sm"
+          >
+            {{ tag }}
+          </span>
+        </div>
+
+        <!-- Imagem do Post -->
+        <div
+          v-if="post.image_url"
+          class="mt-3 relative bg-gray-100 dark:bg-gray-900 group overflow-hidden rounded-2xl cursor-pointer border dark:border-white/5"
+          @click="showImageLightbox = true"
+        >
+          <img
+            :alt="'Imagem do post'"
+            :src="post.image_url"
+            class="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.01]"
+          />
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none"></div>
+        </div>
+
+        <!-- Ações do Post -->
+        <!-- Ações do Post -->
+        <div class="mt-3 -ml-2 flex justify-between items-center">
+          <!-- Esquerda: Like e Comentários -->
+          <div class="flex gap-1 md:gap-4">
+            <!-- Like -->
+            <button
+              class="flex items-center gap-1.5 px-2 py-1.5 rounded-full text-sm transition-all group"
+              :class="post.isLiked ? 'text-rose-500' : 'text-gray-500 dark:text-gray-400 hover:text-rose-500 hover:bg-rose-500/10'"
+              @click="handleToggleLike"
+            >
+              <span class="material-icons-outlined text-[19px] group-hover:scale-110 transition-transform" :class="{ 'like-animate': post.isLiked }">
+                {{ post.isLiked ? 'favorite' : 'favorite_border' }}
+              </span>
+              <span class="font-medium text-xs">{{ post.likes_count || 0 }}</span>
+            </button>
+            
+            <!-- Comentários -->
+            <button
+              class="flex items-center gap-1.5 px-2 py-1.5 rounded-full text-sm text-gray-500 dark:text-gray-400 hover:text-blue-500 hover:bg-blue-500/10 transition-all group"
+              @click="handleToggleComments"
+            >
+              <span class="material-icons-outlined text-[19px] group-hover:scale-110 transition-transform">chat_bubble_outline</span>
+              <span class="font-medium text-xs">{{ post.comments_count || 0 }}</span>
+            </button>
+          </div>
+
+          <!-- Direita: Compartilhar e Salvar -->
+          <div class="flex gap-1 md:gap-2">
+            <!-- Compartilhar -->
+            <button
+              class="flex items-center px-2 py-1.5 rounded-full text-sm text-gray-500 dark:text-gray-400 hover:text-green-500 hover:bg-green-500/10 transition-all group"
+              @click="handleShare"
+            >
+              <span class="material-icons-outlined text-[19px] group-hover:scale-110 transition-transform">share</span>
+            </button>
+            
+            <!-- Salvar -->
+            <button
+              class="flex items-center px-2 py-1.5 rounded-full text-sm transition-all group"
+              :class="[
+                post.isBookmarked ? 'text-primary dark:text-secondary' : 'text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-secondary hover:bg-primary/10 dark:hover:bg-secondary/10',
+                { 'bookmark-animate': bookmarkAnimating }
+              ]"
+              @click="handleToggleBookmark"
+            >
+              <span class="material-icons-outlined text-[19px] group-hover:scale-110 transition-transform" :class="{ 'bookmark-icon-animate': bookmarkAnimating }">
+                {{ post.isBookmarked ? 'bookmark' : 'bookmark_border' }}
+              </span>
+            </button>
+          </div>
+        </div>
+        </div>
+        </div>
       </div>
     </div>
 
-    <!-- Report Modal -->
-    <ReportModal
-      v-model="showReportModal"
-      :item-type="'post'"
-      :item-id="post.id"
-      @reported="handleReportSubmitted"
-    />
-
-    <!-- Edit Post Modal -->
-    <EditPostModal
-      v-model="showEditModal"
-      :post="post"
-      @saved="handleEditSaved"
-    />
+    <!-- Modais -->
+    <ImageLightbox v-model="showImageLightbox" :image-url="post.image_url" :alt="`Imagem do post de ${authorName}`" />
+    <ReportModal v-model="showReportModal" :item-type="'post'" :item-id="post.id" @reported="handleReportSubmitted" />
+    <EditPostModal v-model="showEditModal" :post="post" @saved="handleEditSaved" />
 
     <!-- Comments Section -->
     <div v-if="showCommentsSection" class="border-t border-slate-200 dark:border-gray-800 bg-slate-50 dark:bg-surface-lighter">
@@ -266,6 +261,31 @@ const menuContainer = ref<HTMLElement | null>(null)
 const showImageLightbox = ref(false)
 const showReportModal = ref(false)
 const showEditModal = ref(false)
+
+// Estados para controle de "Mostrar mais"
+const isExpanded = ref(false)
+const MAX_CONTENT_LENGTH = 600 // Aumentado para evitar truncamento prematuro
+const MAX_NEWLINES = 6
+
+// Verifica se o post é longo (baseado no conteúdo e quebras de linha)
+const isLongPost = computed(() => {
+  // Texto puro sem tags
+  const textContent = props.post.conteudo.replace(/<[^>]*>/g, '').trim()
+  
+  // Contar quebras de linha (parágrafos fechados ou brs)
+  // Isso ajuda a detectar textos verticais que têm poucos caracteres mas muitas linhas
+  const newLinesHelpers = props.post.conteudo.match(/<\/p>|<br>|<br\s*\/>/gi) || []
+  const lineCount = newLinesHelpers.length
+
+  // Considerar longo se tiver muitos caracteres OU muitas linhas visuais
+  return textContent.length > MAX_CONTENT_LENGTH || lineCount > MAX_NEWLINES
+})
+
+// Função para alternar entre expandido/colapsado
+function toggleExpanded() {
+  isExpanded.value = !isExpanded.value
+}
+
 
 const isOwnPost = computed(() => {
   const userId = authStore.user?.id
@@ -432,7 +452,34 @@ function handleEditSaved() {
   // Post will be updated in store automatically
 }
 
-
+async function handleShare() {
+  const postUrl = `${window.location.origin}/post/${props.post.id}`
+  
+  // Tentar usar a Web Share API (funciona em mobile)
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: t('posts.shareText'),
+        text: authorName.value,
+        url: postUrl,
+      })
+    } catch (error) {
+      // Usuário cancelou ou erro - não precisa fazer nada
+      if ((error as Error).name !== 'AbortError') {
+        console.error('Error sharing:', error)
+      }
+    }
+  } else {
+    // Fallback: copiar link para a área de transferência
+    try {
+      await navigator.clipboard.writeText(postUrl)
+      toast.success(t('posts.linkCopied'))
+    } catch (error) {
+      console.error('Error copying link:', error)
+      toast.error(t('posts.copyError'))
+    }
+  }
+}
 function handleClickOutside(event: MouseEvent) {
   if (menuContainer.value && !menuContainer.value.contains(event.target as Node)) {
     showMenu.value = false
@@ -456,23 +503,36 @@ onUnmounted(() => {
 }
 
 :deep(.rich-text-content ul) {
-  @apply list-disc pl-5 my-2;
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 :deep(.rich-text-content ol) {
-  @apply list-decimal pl-5 my-2;
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 :deep(.rich-text-content p) {
-  @apply my-1 min-h-[1em];
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  min-height: 1em;
 }
 
 :deep(.rich-text-content strong) {
-  @apply font-bold text-gray-900 dark:text-white;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dark :deep(.rich-text-content strong) {
+  color: #ffffff;
 }
 
 :deep(.rich-text-content em) {
-  @apply italic;
+  font-style: italic;
 }
 
 /* Animação do bookmark */
@@ -496,5 +556,36 @@ onUnmounted(() => {
   transform: scale(0.95);
   transition: transform 0.1s ease-out;
 }
+
+/* Animação do like - estilo Instagram */
+@keyframes likeHeartPop {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.3);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.like-animate {
+  animation: likeHeartPop 0.45s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+}
+
+/* Truncamento de conteúdo longo */
+.line-clamp-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative;
+}
+
 </style>
 

@@ -219,6 +219,14 @@
                   <!-- Actions Section -->
                   <div class="flex items-center gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-white/5">
                     <button
+                      @click="previewItemTerm(item)"
+                      class="h-12 w-12 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-400 hover:text-primary transition-all flex items-center justify-center group/btn shrink-0"
+                      title="Preview"
+                    >
+                      <span class="material-symbols-outlined group-hover/btn:scale-110 transition-transform">visibility</span>
+                    </button>
+
+                    <button
                       @click="editItemTerm(item)"
                       class="h-12 px-5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white text-xs font-bold uppercase tracking-wider hover:bg-secondary/10 hover:border-secondary/30 transition-all flex items-center gap-2"
                     >
@@ -335,12 +343,46 @@
           :title="previewTermData?.title || ''"
           size="xl"
         >
-          <div class="p-4">
-            <div
-              v-if="previewTermData"
-              class="prose prose-slate dark:prose-invert max-w-none custom-preview"
-              v-html="sanitizedPreviewContent"
-            ></div>
+          <div class="bg-slate-100/50 dark:bg-black/40 p-2 sm:p-8 md:p-12 min-h-[60vh]">
+            <div class="max-w-4xl mx-auto bg-white dark:bg-slate-800 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] rounded-[1.5rem] sm:rounded-[2rem] border border-slate-200 dark:border-primary/20 overflow-hidden">
+               <!-- Header decorative bar -->
+               <div class="h-1.5 bg-gradient-to-r from-primary via-secondary to-primary animate-gradient-x opacity-80"></div>
+               
+               <div class="p-6 sm:p-12 md:p-20">
+                 <!-- Document Stamp/Logo placeholder -->
+                 <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-12">
+                   <div class="flex items-center gap-4">
+                     <div class="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-3xl text-primary font-bold">verified_user</span>
+                     </div>
+                     <div>
+                       <div class="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Official Document</div>
+                       <h2 class="text-2xl font-black text-slate-900 dark:text-white">{{ previewTermData?.title }}</h2>
+                     </div>
+                   </div>
+                   <div class="text-left sm:text-right">
+                     <div class="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Version: {{ previewTermData?.version || '1.0' }}</div>
+                     <div class="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">Status: {{ previewTermData?.is_active ? 'ACTIVE & PUBLISHED' : 'DRAFT' }}</div>
+                     <div class="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">Scope: {{ previewScope === 'platform' ? 'PLATFORM-WIDE' : 'ITEM-SPECIFIC' }}</div>
+                   </div>
+                 </div>
+
+                 <div
+                   v-if="previewTermData"
+                   class="max-w-none custom-preview"
+                   v-html="sanitizedPreviewContent"
+                 ></div>
+
+                 <!-- Footer decorative -->
+                 <div class="mt-20 pt-10 border-t border-slate-100 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-sm">info</span>
+                      Generated for Internal Review
+                    </div>
+                    <div>&copy; 2026 Community 323 Network</div>
+                 </div>
+               </div>
+            </div>
           </div>
         </Modal>
 
@@ -391,7 +433,7 @@
               </label>
               <select
                 v-model="itemTermForm.item_id"
-                class="w-full px-4 py-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all"
+                class="w-full px-4 py-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-secondary/50 transition-all"
               >
                 <option value="">-- Select --</option>
                 <template v-if="itemTermForm.item_type === 'program'">
@@ -474,6 +516,7 @@ const showPreviewModal = ref(false)
 const editingTerm = ref<ApplicationTerm | null>(null)
 const previewTermData = ref<ApplicationTerm | null>(null)
 const termScope = ref<'platform' | 'item'>('platform')
+const previewScope = ref<'platform' | 'item'>('platform')
 const showItemTermModal = ref(false)
 
 const itemTermForm = ref({
@@ -787,7 +830,22 @@ function editItemTerm(item: { id: string; name: string; type: 'program' | 'servi
 }
 
 function previewTerm(term: ApplicationTerm) {
+  previewScope.value = 'platform'
   previewTermData.value = term
+  showPreviewModal.value = true
+}
+
+function previewItemTerm(item: { name: string; type: 'program' | 'service'; terms_content_en: string }) {
+  previewScope.value = 'item'
+  previewTermData.value = {
+    id: 'preview',
+    title: item.name,
+    content: item.terms_content_en,
+    term_type: 'terms_of_service',
+    version: 1,
+    is_active: true,
+    created_at: new Date().toISOString()
+  } as ApplicationTerm
   showPreviewModal.value = true
 }
 
@@ -823,14 +881,16 @@ onMounted(() => {
 }
 
 /* Standard CSS replacement for @apply rules to fix linter errors */
-.prose {
+.custom-preview {
   color: #334155; /* text-slate-700 */
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: 0.95rem; /* Reduced from 1.15rem for better legal doc density */
+  line-height: 1.6;
 }
 
-.dark :deep(.prose) {
-  color: #cbd5e1; /* text-slate-300 */
+/* Force pure white on everything in dark mode for the preview */
+.dark .custom-preview,
+.dark .custom-preview :deep(*) {
+  color: #ffffff !important;
 }
 
 .custom-preview :deep(h1), 
@@ -849,7 +909,7 @@ onMounted(() => {
 .dark :deep(.custom-preview h2),
 .dark :deep(.custom-preview h3),
 .dark :deep(.custom-preview h4) {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .custom-preview :deep(h1) { font-size: 2.25rem; } /* text-4xl */
@@ -876,7 +936,8 @@ onMounted(() => {
 }
 
 .dark :deep(.custom-preview blockquote) {
-  color: #94a3b8; /* text-slate-400 */
+  color: #cbd5e1 !important; /* text-slate-300 */
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .custom-preview :deep(hr) {
@@ -887,7 +948,7 @@ onMounted(() => {
 }
 
 .dark :deep(.custom-preview hr) {
-  border-top-color: rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.2);
 }
 
 .custom-preview :deep(strong) {
@@ -898,7 +959,27 @@ onMounted(() => {
 }
 
 .dark :deep(.custom-preview strong) {
-  color: #ffffff;
+  color: #ffffff !important;
+}
+
+.custom-preview :deep(ul), 
+.custom-preview :deep(ol) {
+  margin-bottom: 1.5rem;
+  margin-left: 1.5rem;
+}
+
+.custom-preview :deep(li) {
+  margin-bottom: 0.5rem;
+}
+
+.dark :deep(.custom-preview li) {
+  color: #f1f5f9 !important;
+}
+
+.custom-preview :deep(a) {
+  color: rgb(var(--primary-rgb));
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 @keyframes gradient {
@@ -909,5 +990,17 @@ onMounted(() => {
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient 3s ease infinite;
+}
+
+/* Fix for Select dropdown options visibility in Dark Mode */
+.dark select option {
+  background-color: #1e293b; /* slate-800 */
+  color: #ffffff;
+}
+
+/* Ensure options are visible even if wrapper has transparency */
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
 }
 </style>

@@ -64,31 +64,7 @@
       <!-- Spacer -->
       <div class="flex-1"></div>
 
-      <!-- View Toggle -->
-      <div class="flex items-center gap-1 bg-slate-100 dark:bg-surface-lighter rounded-lg p-1">
-        <button
-          :class="[
-            'p-2 rounded-md transition-all',
-            viewMode === 'grid'
-              ? 'bg-white dark:bg-surface-dark text-primary shadow-sm'
-              : 'text-slate-400 dark:text-gray-400 hover:text-slate-600 dark:hover:text-gray-200',
-          ]"
-          @click="$emit('update:viewMode', 'grid')"
-        >
-          <span class="material-symbols-outlined text-[20px]">grid_view</span>
-        </button>
-        <button
-          :class="[
-            'p-2 rounded-md transition-all',
-            viewMode === 'list'
-              ? 'bg-white dark:bg-surface-dark text-primary shadow-sm'
-              : 'text-slate-400 dark:text-gray-400 hover:text-slate-600 dark:hover:text-gray-200',
-          ]"
-          @click="$emit('update:viewMode', 'list')"
-        >
-          <span class="material-symbols-outlined text-[20px]">view_list</span>
-        </button>
-      </div>
+
 
       <!-- Clear Filters -->
       <button
@@ -110,16 +86,12 @@ import type { MemberFilters } from '@/types/members'
 
 interface Props {
   modelValue: MemberFilters
-  viewMode?: 'grid' | 'list'
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  viewMode: 'grid',
-})
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:modelValue': [filters: MemberFilters]
-  'update:viewMode': [mode: 'grid' | 'list']
 }>()
 
 const { t } = useI18n()

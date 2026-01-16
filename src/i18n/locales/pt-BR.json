@@ -26,7 +26,10 @@
             "title": "Cadastre-se para Continuar",
             "message": "Junte-se a milhares de brasileiros conectados nos EUA",
             "cta": "Criar Conta Grátis",
-            "terms": "Ao se cadastrar, você concorda com nossos Termos de Uso e Política de Privacidade",
+            "termsPrefix": "Ao se cadastrar, você concorda com nossos",
+            "termsLabel": "Termos de Uso",
+            "privacyLabel": "Política de Privacidade",
+            "termsAnd": "e",
             "benefits": [
                 "Acesso completo a todos os recursos",
                 "Conecte-se com brasileiros na sua região",
@@ -55,6 +58,12 @@
         "seeAll": "Ver todos",
         "back": "Voltar",
         "description": "Descrição",
+        "editor": {
+            "bold": "Negrito",
+            "italic": "Itálico",
+            "bulletList": "Lista com marcadores",
+            "orderedList": "Lista numerada"
+        },
         "days": "Dias",
         "hours": "Horas",
         "minutesShort": "Min",
@@ -323,7 +332,7 @@
         "filterLifestyle": "Estilo de Vida",
         "filterEvents": "Eventos",
         "filterHealth": "Saúde",
-        "guestBlockerTitle": "Desbloqueie {count} benefícios exclusivos",
+        "guestBlockerTitle": "Desbloqueie benefícios exclusivos",
         "guestBlockerDesc": "Cadastre-se gratuitamente para ter acesso a todos os benefícios e descontos oferecidos por nossos parceiros.",
         "guestBlockerButton": "Cadastre-se Gratuitamente",
         "businessOwnerTitle": "É empresário e quer oferecer benefícios?",
@@ -413,11 +422,6 @@
         "selectProgram": "Selecione um programa...",
         "mustEnrollToCreateEvent": "Você precisa estar matriculado em um programa para criar eventos.",
         "eventLocationPlaceholder": "Ex: Miami, FL",
-        "day": "Dia",
-        "month": "Mês",
-        "year": "Ano",
-        "hour": "Hora",
-        "minute": "Minuto",
         "validation": {
             "fillTitle": "Por favor, preencha o título do evento",
             "selectProgram": "Por favor, selecione o programa do evento",
@@ -547,12 +551,7 @@
         "mustBeLoggedInToRequest": "Você precisa estar logado para solicitar um serviço.",
         "requestSuccess": "Solicitação enviada com sucesso! O parceiro entrará em contato em breve.",
         "requestError": "Erro ao enviar solicitação. Tente novamente mais tarde.",
-        "roleLucas": "Designer em Miami",
-        "testimonialLucas": "\"A assessoria para abrir minha LLC foi impecável. Em 2 semanas eu já estava operando legalmente na Flórida.\"",
-        "roleAmanda": "Empresária em NY",
-        "testimonialAmanda": "\"O networking VIP abriu portas que eu levaria anos para conseguir sozinho. Vale cada centavo.\"",
-        "roleBeatriz": "Arquiteta em Austin",
-        "testimonialBeatriz": "\"Consegui organizar minha estratégia de visto com a mentoria. Me senti muito mais segura para aplicar.\""
+        "noTestimonials": "Ainda não temos depoimentos para este serviço no momento."
     },
     "connections": {
         "title": "Minha Rede",
@@ -723,13 +722,15 @@
         "newPassword": "Nova Senha",
         "confirmPassword": "Confirmar Senha",
         "uploadPhoto": "Enviar Foto",
-        "removePhoto": "Remover Foto"
+        "removePhoto": "Remover Foto",
+        "premiumAccount": "Assinatura Premium Ativa",
+        "manageSubscription": "Gerencie sua assinatura e faturamento",
+        "manage": "Gerenciar"
     },
     "posts": {
         "aboutWhat": "Sobre o que você quer falar?",
         "publish": "Publicar",
         "whatsOnYourMind": "No que você está pensando?",
-        "aboutWhat": "Sobre o que você quer compartilhar?",
         "createPost": "Criar Post",
         "startPost": "Comece uma publicação",
         "photo": "Foto",
@@ -737,7 +738,6 @@
         "publishing": "Publicando...",
         "createEvent": "Criar Evento",
         "post": "Publicar",
-        "publish": "Publicar",
         "addPhoto": "Adicionar Foto",
         "addVideo": "Adicionar Vídeo",
         "like": "Curtir",
@@ -787,7 +787,9 @@
         "commentDeleted": "Comentário deletado",
         "postNotFound": "Post não encontrado",
         "postNotFoundDesc": "O post que você está procurando não existe ou foi removido.",
-        "loadPostError": "Erro ao carregar post"
+        "loadPostError": "Erro ao carregar post",
+        "showMore": "Mostrar mais",
+        "showLess": "Mostrar menos"
     },
     "notifications": {
         "notifications": "Notificações",
@@ -1238,8 +1240,6 @@
         "moduleLabel": "Módulo",
         "lessonLabel": "Aula",
         "completed": "concluído",
-        "modules": "módulos",
-        "lessons": "aulas",
         "previewLabel": "Preview",
         "noProgramsFound": "Nenhum programa encontrado",
         "noProgramsFoundDesc": "Não há programas disponíveis no momento.",
@@ -1256,13 +1256,46 @@
         "hoursLabel": "Horas",
         "hoursOfContent": "h de conteúdo",
         "bestOffer": "Melhor Oferta do Dia",
+        "oneTimePayment": "Único",
+        "programInstructor": "Instrutor do Programa",
+        "modules": "Módulos",
+        "lessons": "Aulas",
+        "students": "Alunos",
+        "spots": "Vagas",
+        "lastUpdate": "Última Atualização",
+        "language": "Idioma",
+        "languagePortuguese": "Português (Brasil)",
+        "supportQuestion": "Dúvidas sobre o conteúdo?",
+        "supportContact": "Fale com nosso suporte especializado",
+        "verifiedExpert": "Especialista Verificado",
+        "debugMode": "Modo Debug - Acesso Local",
+        "debugAccess": "🔧 Acessar (Debug)",
+        "enrolledUpper": "MATRICULADO",
+        "notFoundGalaxy": "Programa Perdido na Galáxia",
+        "notFoundDescription": "O programa que você procura não está mais nesta órbita. Verifique o link ou explore nossos novos programas.",
+        "exploreNewContent": "Explorar Novos Conteúdos",
+        "enrollmentModal": {
+            "title": "Matrícula",
+            "description": "Você está a um passo de transformar sua carreira. Inscreva-se em {program} e tenha acesso imediato aos conteúdos.",
+            "baseInvestment": "Investimento Base",
+            "fees": "Taxas",
+            "finalTotal": "Total Final",
+            "paymentMethod": "Método de Pagamento",
+            "card": "Cartão",
+            "pix": "PIX",
+            "termsAccept": "Eu li e concordo com os {link} específicos deste programa.",
+            "termsLink": "Termos e Condições",
+            "finalizeEnrollment": "Finalizar Inscrição",
+            "starting": "Iniciando...",
+            "close": "Fechar"
+        },
         "badges": {
             "new": "Novo",
             "newUpper": "NOVO",
             "featured": "DESTAQUE"
         },
         "categoryBadges": {
-            "curso": "Conteúdo Premium",
+            "curso": "Curso",
             "mentoria": "Mentoria Exclusiva",
             "workshop": "Workshop Intensivo",
             "evento_premium": "Evento Premium",
@@ -1270,7 +1303,8 @@
         },
         "actions": {
             "accessNow": "Acessar Agora",
-            "secureMySpot": "Assistir Agora"
+            "secureMySpot": "Assistir Agora",
+            "watch": "Assistir"
         },
         "admin": {
             "createProgram": "Criar Programa",
@@ -1588,6 +1622,11 @@
         }
     },
     "terms": {
+        "legalUpdate": "Atualização Legal",
+        "acceptanceTitle": "Termos e Condições",
+        "acceptanceSub": "Para continuar utilizando a plataforma, por favor revise e aceite nossos termos atualizados.",
+        "confirmRead": "Li e concordo com os termos acima.",
+        "success": "Termos aceitos com sucesso!",
         "title": "Termos de Uso",
         "version": "Versão",
         "effectiveDate": "Data de Vigência",
@@ -1824,6 +1863,17 @@
                     "noName": "Sem nome"
                 }
             }
+        },
+        "notifications": {
+            "title": "Notificações",
+            "new": "nova",
+            "newNotifications": "novas notificações",
+            "markAllRead": "Marcar todas como lidas",
+            "noNotifications": "Sem notificações",
+            "completeProfile": "Complete Seu Perfil",
+            "actionRequired": "Ação Necessária",
+            "profileIncompleteMessage": "Seu perfil está faltando algumas informações obrigatórias. Clique para completar.",
+            "profileIncompleteMobile": "Seu perfil está faltando algumas informações obrigatórias. Toque para completar."
         }
     }
 }

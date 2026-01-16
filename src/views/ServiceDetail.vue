@@ -285,7 +285,7 @@
     >
       <div class="p-2 space-y-4">
         <div class="prose dark:prose-invert max-w-none">
-          <div class="text-sm text-slate-700 dark:text-gray-300 leading-relaxed h-[60vh] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent" v-html="currentLocale === 'pt-BR' ? (service.terms_content_pt || service.terms_content_en) : (service.terms_content_en || service.terms_content_pt)">
+          <div class="text-sm text-slate-700 dark:text-gray-300 leading-relaxed h-[60vh] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent custom-legal-content" v-html="currentLocale === 'pt-BR' ? (service.terms_content_pt || service.terms_content_en) : (service.terms_content_en || service.terms_content_pt)">
           </div>
         </div>
         <div class="flex justify-end pt-4 border-t border-slate-100 dark:border-white/5">
@@ -468,5 +468,37 @@ onMounted(async () => {
 
 .animate-gradient-x {
   animation: gradient-x 3s ease infinite;
+}
+
+.custom-legal-content :deep(h1),
+.custom-legal-content :deep(h2),
+.custom-legal-content :deep(h3) {
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: rgb(var(--primary-rgb));
+}
+
+.custom-legal-content :deep(p) {
+  margin-bottom: 1rem;
+}
+
+.custom-legal-content :deep(ul),
+.custom-legal-content :deep(ol) {
+  margin-bottom: 1rem;
+  margin-left: 1.5rem;
+}
+
+.custom-legal-content :deep(li) {
+  margin-bottom: 0.5rem;
+}
+
+.custom-legal-content :deep(strong) {
+  color: #000;
+}
+
+.dark .custom-legal-content :deep(strong) {
+  color: #fff;
 }
 </style>

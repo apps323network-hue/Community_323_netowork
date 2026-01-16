@@ -22,8 +22,8 @@
         <div class="relative z-10 flex flex-col gap-6 p-8 md:p-12 lg:p-16 max-w-2xl">
           <!-- Badge -->
           <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/30 w-fit backdrop-blur-sm">
-            <span class="material-symbols-outlined text-secondary text-[16px]">verified</span>
-            <span class="text-[11px] font-bold text-secondary tracking-wider uppercase">{{ t('benefits.exclusiveForMembers') }}</span>
+            <span class="material-symbols-outlined text-slate-900 dark:text-secondary text-[16px]">verified</span>
+            <span class="text-[11px] font-bold text-slate-900 dark:text-secondary tracking-wider uppercase">{{ t('benefits.exclusiveForMembers') }}</span>
           </div>
           
           <!-- Título -->
@@ -114,7 +114,7 @@
             
             <!-- Guest Blocker Overlay -->
             <div 
-              v-if="!isAuthenticated && otherBenefits.length > guestLimit"
+              v-if="!isAuthenticated && otherBenefits.length >= guestLimit - 3"
               class="absolute inset-0 flex items-center justify-center pointer-events-none"
             >
               <div class="pointer-events-auto bg-white/95 dark:bg-surface-card/95 backdrop-blur-md border border-slate-200 dark:border-white/10 rounded-2xl p-8 max-w-md text-center shadow-2xl">
@@ -122,17 +122,17 @@
                   <span class="material-symbols-outlined text-5xl text-secondary">lock_open</span>
                 </div>
                 <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">
-                  {{ t('benefits.guestBlockerTitle', { count: benefits.length }) }}
+                  {{ t('benefits.guestBlockerTitle') }}
                 </h3>
-                <p class="text-slate-600 dark:text-gray-300 mb-6">
-                  {{ t('benefits.guestBlockerDesc') }}
-                </p>
-                <button 
-                  @click="showAuthModal('signup')"
-                  class="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white font-black rounded-lg hover:shadow-lg hover:scale-105 transition-all"
-                >
-                  {{ t('benefits.guestBlockerButton') }}
-                </button>
+
+                <div class="flex justify-center w-full">
+                  <button 
+                    @click="showAuthModal('login')"
+                    class="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white font-black rounded-lg hover:shadow-lg hover:scale-105 transition-all w-full sm:w-auto"
+                  >
+                    {{ t('auth.loginOrRegister') }}
+                  </button>
+                </div>
               </div>
             </div>
             
@@ -172,7 +172,10 @@
                 </li>
               </ul>
             </div>
-            <button class="shrink-0 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-gray-100 px-8 py-4 font-bold text-lg shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-2xl transition-all hover:scale-105">
+            <button 
+              @click="router.push('/contact-us')"
+              class="shrink-0 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-gray-100 px-8 py-4 font-bold text-lg shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-2xl transition-all hover:scale-105"
+            >
               {{ t('benefits.beAPartner') }}
             </button>
           </div>
@@ -185,6 +188,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import AppLayout from '@/components/layout/AppLayout.vue'
@@ -196,6 +200,7 @@ import { toast } from 'vue-sonner'
 const { benefits, loading, fetchBenefits, fetchUserBenefits, claimBenefit, isBenefitClaimed } = useBenefits()
 const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 const { t } = useI18n()
+const router = useRouter()
 const activeFilter = ref('all')
 const benefitsSection = ref<HTMLElement | null>(null)
 

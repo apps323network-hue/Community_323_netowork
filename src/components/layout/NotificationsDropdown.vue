@@ -6,7 +6,7 @@
     >
       <span class="material-icons-outlined">notifications</span>
       <span
-        v-if="unreadCount > 0"
+        v-if="unreadCount > 0 || !isProfileComplete"
         class="absolute top-2 right-2 block h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-white dark:ring-surface-dark animate-pulse"
       ></span>
     </button>
@@ -26,9 +26,9 @@
       >
         <div class="p-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-surface-lighter/30">
           <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            Notifications
-            <span v-if="unreadCount > 0" class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-black">
-              {{ unreadCount }} new
+            {{ t('notifications.title') }}
+            <span v-if="totalNotificationCount > 0" class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-black">
+              {{ totalNotificationCount }} {{ t('notifications.new') }}
             </span>
           </h3>
           <button 
@@ -36,11 +36,32 @@
             @click="handleMarkAllAsRead"
             class="text-xs text-primary hover:text-primary/80 font-bold transition-colors"
           >
-            Mark all as read
+            {{ t('notifications.markAllRead') }}
           </button>
         </div>
 
         <div class="max-h-[400px] overflow-y-auto no-scrollbar">
+          <!-- Persistent Profile Completion Notification -->
+          <div 
+            v-if="!isProfileComplete"
+            class="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-b-2 border-yellow-400 dark:border-yellow-600 cursor-pointer hover:from-yellow-100 hover:to-orange-100 dark:hover:from-yellow-900/30 dark:hover:to-orange-900/30 transition-all sticky top-0 z-10"
+            @click="router.push('/perfil')"
+          >
+            <div class="flex flex-col gap-1 flex-1">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-sm font-black text-yellow-900 dark:text-yellow-300">
+                    {{ t('notifications.completeProfile') }}
+                  </span>
+                  <span class="text-[10px] bg-yellow-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wide">
+                    {{ t('notifications.actionRequired') }}
+                  </span>
+                </div>
+                <p class="text-xs text-yellow-800 dark:text-yellow-400/90 leading-relaxed">
+                  {{ t('notifications.profileIncompleteMessage') }}
+                </p>
+              </div>
+          </div>
+
           <div v-if="loading && notifications.length === 0" class="p-8 text-center">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           </div>
@@ -49,7 +70,7 @@
             <div class="size-12 rounded-full bg-slate-50 dark:bg-surface-lighter flex items-center justify-center text-slate-400">
               <span class="material-icons-outlined">notifications_off</span>
             </div>
-            <p class="text-sm text-slate-500 dark:text-gray-400">No notifications</p>
+            <p class="text-sm text-slate-500 dark:text-gray-400">{{ t('notifications.noNotifications') }}</p>
           </div>
 
           <div v-else class="divide-y divide-slate-50 dark:divide-white/5">
@@ -103,6 +124,27 @@
       </div>
 
       <div class="max-h-[60vh] overflow-y-auto -mx-6 px-6">
+        <!-- Persistent Profile Completion Notification (Mobile) -->
+        <div 
+          v-if="!isProfileComplete"
+          class="p-4 mb-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-2 border-yellow-400 dark:border-yellow-600 rounded-xl cursor-pointer hover:from-yellow-100 hover:to-orange-100 dark:hover:from-yellow-900/30 dark:hover:to-orange-900/30 transition-all"
+          @click="router.push('/perfil'); isOpen = false"
+        >
+          <div class="flex flex-col gap-1 flex-1">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-sm font-black text-yellow-900 dark:text-yellow-300">
+                  {{ t('notifications.completeProfile') }}
+                </span>
+                <span class="text-[10px] bg-yellow-500 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-wide">
+                  {{ t('notifications.actionRequired') }}
+                </span>
+              </div>
+              <p class="text-xs text-yellow-800 dark:text-yellow-400/90 leading-relaxed">
+                {{ t('notifications.profileIncompleteMobile') }}
+              </p>
+            </div>
+        </div>
+
         <div v-if="loading && notifications.length === 0" class="p-8 text-center">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
         </div>
@@ -157,10 +199,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useNotifications } from '@/composables/useNotifications'
+import { useProfileCompletion } from '@/composables/useProfileCompletion'
 import Modal from '@/components/ui/Modal.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 const {
   notifications,
   loading,
@@ -172,9 +217,20 @@ const {
   unsubscribeFromNotifications
 } = useNotifications()
 
+const { isProfileComplete } = useProfileCompletion()
+
 const isOpen = ref(false)
 const dropdownContainer = ref<HTMLElement | null>(null)
 const isMobile = computed(() => window.innerWidth < 768)
+
+// Total notification count including profile completion
+const totalNotificationCount = computed(() => {
+  let count = unreadCount.value
+  if (!isProfileComplete.value) {
+    count += 1
+  }
+  return count
+})
 
 function toggleDropdown() {
   isOpen.value = !isOpen.value
@@ -212,6 +268,7 @@ function getIcon(type: string) {
     case 'event_reminder': return 'event'
     case 'service_update': return 'assignment'
     case 'youtube_upload': return 'play_circle'
+    case 'profile_incomplete': return 'person_alert'
     default: return 'notifications'
   }
 }
@@ -224,6 +281,7 @@ function getIconBg(type: string) {
     case 'event_reminder': return 'bg-yellow-500/10 text-yellow-500'
     case 'service_update': return 'bg-green-500/10 text-green-500'
     case 'youtube_upload': return 'bg-red-600/10 text-red-600'
+    case 'profile_incomplete': return 'bg-yellow-500/10 text-yellow-500'
     default: return 'bg-primary/10 text-primary'
   }
 }

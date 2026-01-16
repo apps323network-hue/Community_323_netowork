@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/lib/supabase'
+import { isLocalhost } from '@/utils/localhost'
 import type {
     Program,
     ProgramEnrollment,
@@ -30,8 +31,25 @@ export const useProgramsStore = defineStore('programs', {
     }),
 
     getters: {
-        publishedPrograms: (state) => state.programs.filter((p) => p.status === 'published'),
-        featuredPrograms: (state) => state.programs.filter((p) => p.featured && p.status === 'published'),
+        publishedPrograms: (state) => {
+            const isLocal = isLocalhost()
+            return state.programs.filter((p) => {
+                const isPublished = p.status === 'published'
+                if (!isPublished) return false
+                // Se for localhost_only, só mostrar se estiver em localhost
+                if (p.localhost_only && !isLocal) return false
+                return true
+            })
+        },
+        featuredPrograms: (state) => {
+            const isLocal = isLocalhost()
+            return state.programs.filter((p) => {
+                const isFeatured = p.featured && p.status === 'published'
+                if (!isFeatured) return false
+                if (p.localhost_only && !isLocal) return false
+                return true
+            })
+        },
         activeEnrollments: (state) => state.myEnrollments.filter((e) => e.status === 'active'),
         completedEnrollments: (state) => state.myEnrollments.filter((e) => e.status === 'completed'),
     },
@@ -59,23 +77,23 @@ export const useProgramsStore = defineStore('programs', {
 
                 // Check which programs have videos
                 const programIds = (data || []).map((p: any) => p.id)
-                
+
                 if (programIds.length > 0) {
                     // Buscar todas as aulas dos programas
                     const { data: lessonsData, error: lessonsError } = await supabase
                         .from('program_lessons')
                         .select('program_id, youtube_video_id')
                         .in('program_id', programIds)
-                    
+
                     if (lessonsError) {
                         console.warn('Error checking videos:', lessonsError)
                     }
-                    
+
                     // Filtrar programas que têm pelo menos uma aula com vídeo válido (não null e não vazio)
                     const programsWithVideos = new Set(
                         (lessonsData || [])
-                            .filter((lesson: any) => 
-                                lesson.youtube_video_id !== null && 
+                            .filter((lesson: any) =>
+                                lesson.youtube_video_id !== null &&
                                 lesson.youtube_video_id !== '' &&
                                 lesson.youtube_video_id.trim() !== ''
                             )
@@ -230,7 +248,7 @@ export const useProgramsStore = defineStore('programs', {
                 // Se payment_method for 'localhost', considerar como pago
                 const isLocalhostEnrollment = data.payment_method === 'localhost'
                 const paymentStatus = isLocalhostEnrollment ? 'paid' : (data.payment_id ? 'paid' : 'pending')
-                
+
                 const { data: enrollment, error } = await supabase
                     .from('program_enrollments')
                     .insert({
@@ -257,19 +275,19 @@ export const useProgramsStore = defineStore('programs', {
                         .select('terms_content_pt, terms_content_en')
                         .eq('id', data.program_id)
                         .single()
-                    
+
                     if (program && (program.terms_content_pt || program.terms_content_en)) {
-                       await supabase
-                        .from('item_terms_acceptance')
-                        .insert({
-                            user_id: user.id,
-                            item_type: 'program',
-                            item_id: data.program_id,
-                            terms_snapshot_pt: program.terms_content_pt,
-                            terms_snapshot_en: program.terms_content_en,
-                            ip_address: 'client-side', 
-                            user_agent: navigator.userAgent
-                        })
+                        await supabase
+                            .from('item_terms_acceptance')
+                            .insert({
+                                user_id: user.id,
+                                item_type: 'program',
+                                item_id: data.program_id,
+                                terms_snapshot_pt: program.terms_content_pt,
+                                terms_snapshot_en: program.terms_content_en,
+                                ip_address: 'client-side',
+                                user_agent: navigator.userAgent
+                            })
                     }
                 }
 

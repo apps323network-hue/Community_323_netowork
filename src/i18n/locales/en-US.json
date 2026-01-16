@@ -26,7 +26,10 @@
             "title": "Sign Up to Continue",
             "message": "Join thousands of Brazilians connected in the USA",
             "cta": "Create Free Account",
-            "terms": "By signing up, you agree to our Terms of Use and Privacy Policy",
+            "termsPrefix": "By signing up, you agree to our",
+            "termsLabel": "Terms of Use",
+            "privacyLabel": "Privacy Policy",
+            "termsAnd": "and",
             "benefits": [
                 "Full access to all features",
                 "Connect with Brazilians in your region",
@@ -55,6 +58,12 @@
         "seeAll": "See all",
         "back": "Back",
         "description": "Description",
+        "editor": {
+            "bold": "Bold",
+            "italic": "Italic",
+            "bulletList": "Bullet List",
+            "orderedList": "Ordered List"
+        },
         "days": "Days",
         "hours": "Hours",
         "minutesShort": "Min",
@@ -322,7 +331,7 @@
         "filterLifestyle": "Lifestyle",
         "filterEvents": "Events",
         "filterHealth": "Health",
-        "guestBlockerTitle": "Unlock {count} exclusive benefits",
+        "guestBlockerTitle": "Unlock exclusive benefits",
         "guestBlockerDesc": "Sign up for free to access all benefits and discounts offered by our partners.",
         "guestBlockerButton": "Sign Up for Free",
         "businessOwnerTitle": "Business owner and want to offer benefits?",
@@ -411,11 +420,6 @@
         "selectProgram": "Select a program...",
         "mustEnrollToCreateEvent": "You must be enrolled in a program to create events.",
         "eventLocationPlaceholder": "Ex: Miami, FL",
-        "day": "Day",
-        "month": "Month",
-        "year": "Year",
-        "hour": "Hour",
-        "minute": "Minute",
         "validation": {
             "fillTitle": "Please fill in the event title",
             "selectProgram": "Please select the event program",
@@ -544,12 +548,7 @@
         "mustBeLoggedInToRequest": "You must be logged in to request a service.",
         "requestSuccess": "Request sent successfully! The partner will contact you shortly.",
         "requestError": "Error sending request. Please try again later.",
-        "roleLucas": "Designer in Miami",
-        "testimonialLucas": "\"The assistance in opening my LLC was impeccable. In 2 weeks I was already operating legally in Florida.\"",
-        "roleAmanda": "Businesswoman in NY",
-        "testimonialAmanda": "\"The VIP networking opened doors that would have taken me years to achieve alone. Worth every penny.\"",
-        "roleBeatriz": "Architect in Austin",
-        "testimonialBeatriz": "\"I managed to organize my visa strategy with the mentoring. I felt much more secure to apply.\""
+        "noTestimonials": "We don't have any reviews for this service at the moment."
     },
     "connections": {
         "title": "My Network",
@@ -726,7 +725,6 @@
         "aboutWhat": "What do you want to talk about?",
         "publish": "Publish",
         "whatsOnYourMind": "What's on your mind?",
-        "aboutWhat": "What do you want to share?",
         "createPost": "Create Post",
         "startPost": "Start a post",
         "photo": "Photo",
@@ -734,7 +732,6 @@
         "publishing": "Publishing...",
         "createEvent": "Create Event",
         "post": "Post",
-        "publish": "Publish",
         "addPhoto": "Add Photo",
         "addVideo": "Add Video",
         "like": "Like",
@@ -784,7 +781,9 @@
         "commentDeleted": "Comment deleted",
         "postNotFound": "Post not found",
         "postNotFoundDesc": "The post you are looking for does not exist or has been removed.",
-        "loadPostError": "Error loading post"
+        "loadPostError": "Error loading post",
+        "showMore": "Show more",
+        "showLess": "Show less"
     },
     "notifications": {
         "notifications": "Notifications",
@@ -1235,8 +1234,6 @@
         "moduleLabel": "Module",
         "lessonLabel": "Lesson",
         "completed": "completed",
-        "modules": "modules",
-        "lessons": "lessons",
         "previewLabel": "Preview",
         "noProgramsFound": "No programs found",
         "noProgramsFoundDesc": "There are no programs available at the moment.",
@@ -1253,13 +1250,46 @@
         "hoursLabel": "Hours",
         "hoursOfContent": "h of content",
         "bestOffer": "Best Offer of the Day",
+        "oneTimePayment": "One-Time",
+        "programInstructor": "Program Instructor",
+        "modules": "Modules",
+        "lessons": "Lessons",
+        "students": "Students",
+        "spots": "Spots",
+        "lastUpdate": "Last Update",
+        "language": "Language",
+        "languagePortuguese": "Portuguese (Brazil)",
+        "supportQuestion": "Questions about the content?",
+        "supportContact": "Contact our specialized support",
+        "verifiedExpert": "Verified Expert",
+        "debugMode": "Debug Mode - Local Access",
+        "debugAccess": "🔧 Access (Debug)",
+        "enrolledUpper": "ENROLLED",
+        "notFoundGalaxy": "Program Lost in the Galaxy",
+        "notFoundDescription": "The program you're looking for is no longer in this orbit. Check the link or explore our new programs.",
+        "exploreNewContent": "Explore New Content",
+        "enrollmentModal": {
+            "title": "Enrollment",
+            "description": "You are one step away from transforming your career. Enroll in {program} and get immediate access to the content.",
+            "baseInvestment": "Base Investment",
+            "fees": "Fees",
+            "finalTotal": "Final Total",
+            "paymentMethod": "Payment Method",
+            "card": "Card",
+            "pix": "PIX",
+            "termsAccept": "I have read and agree to the {link} specific to this program.",
+            "termsLink": "Terms and Conditions",
+            "finalizeEnrollment": "Finalize Enrollment",
+            "starting": "Starting...",
+            "close": "Close"
+        },
         "badges": {
             "new": "New",
             "newUpper": "NEW",
             "featured": "FEATURED"
         },
         "categoryBadges": {
-            "curso": "Premium Course",
+            "curso": "Course",
             "mentoria": "Exclusive Mentoring",
             "workshop": "Intensive Workshop",
             "evento_premium": "Premium Event",
@@ -1267,7 +1297,8 @@
         },
         "actions": {
             "accessNow": "Access Now",
-            "secureMySpot": "Watch Now"
+            "secureMySpot": "Watch Now",
+            "watch": "Watch"
         },
         "admin": {
             "createProgram": "Create Program",
@@ -1506,6 +1537,11 @@
         }
     },
     "terms": {
+        "legalUpdate": "Legal Update",
+        "acceptanceTitle": "Terms and Conditions",
+        "acceptanceSub": "To continue using the platform, please review and accept our updated terms.",
+        "confirmRead": "I have read and agree to the terms above.",
+        "success": "Terms accepted successfully!",
         "title": "Terms of Service",
         "version": "Version",
         "effectiveDate": "Effective Date",
@@ -1822,5 +1858,16 @@
                 }
             }
         }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "new": "new",
+        "newNotifications": "new notifications",
+        "markAllRead": "Mark all as read",
+        "noNotifications": "No notifications",
+        "completeProfile": "Complete Your Profile",
+        "actionRequired": "Action Required",
+        "profileIncompleteMessage": "Your profile is missing some required information. Click to complete it.",
+        "profileIncompleteMobile": "Your profile is missing some required information. Tap to complete it."
     }
 }

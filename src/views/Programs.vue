@@ -21,33 +21,35 @@
         />
 
         <!-- Content Area -->
-        <main class="relative z-20 -mt-20 md:-mt-32 space-y-10 px-4 md:px-12 pb-20 w-full">
+        <main class="relative z-20 space-y-8 md:space-y-10 lg:space-y-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 pb-16 md:pb-20 lg:pb-24 w-full max-w-[2000px] mx-auto">
           <!-- Category Filters -->
-          <div class="flex gap-3 overflow-x-auto py-4 scrollbar-hide pr-4 items-center">
-            <span class="text-slate-900 dark:text-white font-bold mr-2 whitespace-nowrap hidden md:block">{{ t('programs.categories') }}:</span>
-            <button
-              v-for="category in categories"
-              :key="category.value || 'all'"
-              @click="selectedCategory = category.value"
-              :class="[
-                'whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all backdrop-blur-sm',
-                selectedCategory === category.value
-                  ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold hover:bg-slate-800 dark:hover:bg-white/90'
-                  : 'bg-white/80 dark:bg-black/40 border border-slate-300 dark:border-white/30 text-slate-700 dark:text-gray-200 hover:border-slate-900 dark:hover:border-white hover:text-slate-900 dark:hover:text-white'
-              ]"
-            >
-              {{ category.label }}
-            </button>
+          <div class="flex flex-wrap gap-2 md:gap-3 py-3 md:py-4 items-center">
+            <span class="text-slate-900 dark:text-white font-bold mr-1 md:mr-2 whitespace-nowrap hidden md:block text-sm lg:text-base">{{ t('programs.categories') }}:</span>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="category in categories"
+                :key="category.value || 'all'"
+                @click="selectedCategory = category.value"
+                :class="[
+                  'whitespace-nowrap px-3 md:px-4 lg:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm lg:text-base font-medium transition-all backdrop-blur-sm',
+                  selectedCategory === category.value
+                    ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold hover:bg-slate-800 dark:hover:bg-white/90 shadow-lg'
+                    : 'bg-white/80 dark:bg-black/40 border border-slate-300 dark:border-white/30 text-slate-700 dark:text-gray-200 hover:border-slate-900 dark:hover:border-white hover:text-slate-900 dark:hover:text-white'
+                ]"
+              >
+                {{ category.label }}
+              </button>
+            </div>
           </div>
 
           <!-- Search Bar (Compact) -->
-          <div class="hidden lg:flex h-9 items-center rounded-sm bg-white dark:bg-black/50 border border-slate-300 dark:border-white/20 focus-within:border-slate-900 dark:focus-within:border-white focus-within:bg-slate-50 dark:focus-within:bg-black transition-all w-64">
+          <div class="hidden lg:flex h-9 xl:h-10 items-center rounded-sm bg-white dark:bg-black/50 border border-slate-300 dark:border-white/20 focus-within:border-slate-900 dark:focus-within:border-white focus-within:bg-slate-50 dark:focus-within:bg-black transition-all w-64 xl:w-80 2xl:w-96">
             <div class="pl-2 pr-2 text-slate-600 dark:text-white">
               <span class="material-symbols-outlined text-[20px]">search</span>
             </div>
             <input
               v-model="searchQuery"
-              class="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted focus:ring-0 text-sm h-full"
+              class="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted focus:ring-0 text-sm xl:text-base h-full"
               :placeholder="t('programs.searchPlaceholder')"
             />
           </div>
@@ -108,21 +110,21 @@
           <!-- Empty State -->
           <div 
             v-if="!hasAnyPrograms" 
-            class="flex flex-col items-center justify-center py-32 text-center"
+            class="flex flex-col items-center justify-center py-20 md:py-28 lg:py-32 text-center"
           >
-            <div class="bg-secondary/10 p-8 rounded-full mb-6">
-              <span class="material-symbols-outlined text-7xl text-secondary">search_off</span>
+            <div class="bg-secondary/10 p-6 md:p-8 rounded-full mb-4 md:mb-6">
+              <span class="material-symbols-outlined text-5xl md:text-6xl lg:text-7xl text-secondary">search_off</span>
             </div>
-            <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">
+            <h3 class="text-xl md:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mb-2">
               {{ t('programs.noProgramsFound') }}
             </h3>
-            <p class="text-slate-600 dark:text-gray-400 max-w-md mx-auto font-medium">
+            <p class="text-sm md:text-base lg:text-lg text-slate-600 dark:text-gray-400 max-w-md mx-auto font-medium px-4">
               {{ t('programs.noProgramsFoundDesc') }}
             </p>
             <button
               v-if="searchQuery || selectedCategory"
               @click="clearFilters"
-              class="mt-8 px-8 py-3 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-black rounded-xl hover:bg-secondary hover:text-white dark:hover:text-black transition-all"
+              class="mt-6 md:mt-8 px-6 md:px-8 py-2.5 md:py-3 bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-black text-sm md:text-base rounded-xl hover:bg-secondary hover:text-white dark:hover:text-black transition-all"
             >
               {{ t('programs.clearFilters') }}
             </button>
