@@ -15,35 +15,7 @@
             {{ t('members.description') }}
           </p>
         </div>
-        <div 
-          v-if="isAuthenticated"
-          class="w-full lg:w-auto flex flex-row gap-3 sm:gap-4"
-        >
-          <div class="relative group flex-1 lg:flex-initial lg:w-[300px]">
-            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-              <span
-                class="material-icons text-secondary/70 text-lg sm:text-xl group-focus-within:text-secondary transition-colors"
-                >search</span
-              >
-            </div>
-            <input
-              v-model="searchQuery"
-              class="block w-full h-[46px] pl-10 sm:pl-11 pr-3 sm:pr-4 border border-slate-200 dark:border-secondary/50 rounded-lg sm:rounded-xl leading-5 bg-white dark:bg-[#0a040f] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-secondary focus:border-secondary focus:shadow-[0_0_15px_rgba(0,243,255,0.3)] transition-all duration-300"
-              :placeholder="t('members.searchPlaceholder')"
-              type="text"
-              @input="handleSearch"
-            />
-          </div>
-          <button
-            class="group flex items-center justify-center gap-2 px-4 sm:px-6 h-[46px] mt-0 border border-slate-200 dark:border-secondary/50 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-gray-200 bg-white dark:bg-[#0a040f] hover:bg-slate-50 dark:hover:bg-secondary/10 hover:border-secondary hover:shadow-[0_0_15px_rgba(244,37,244,0.3)] transition-all duration-300 whitespace-nowrap shrink-0"
-            @click="showFilters = !showFilters"
-          >
-            <span class="material-icons text-base sm:text-lg text-secondary group-hover:animate-pulse"
-              >tune</span
-            >
-            {{ t('common.filters') }}
-          </button>
-        </div>
+
       </div>
 
       <!-- Main Content Area -->
@@ -71,45 +43,17 @@
         <!-- Content Structure (Blurred for guests) -->
         <div :class="{ 'blur-sm opacity-40 pointer-events-none select-none': !isAuthenticated }">
           
-          <!-- Advanced Feed Search (localhost only) -->
-          <div v-if="isAuthenticated && isLocalhost" class="relative z-40 mb-8">
+          <!-- Advanced Feed Search - Now in Production -->
+          <div v-if="isAuthenticated" class="relative z-40 mb-8">
             <FeedSearch v-model="feedSearchQuery" @search="handleFeedSearch" />
           </div>
 
-          <!-- Filters Panel (collapsible) -->
-          <div
-            v-if="isAuthenticated && showFilters"
-            class="bg-white dark:bg-surface-card rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-white/5 shadow-lg animate-fade-in-up mb-8"
-          >
-            <MemberFilters
-              v-model="filters"
-            />
-          </div>
 
-          <!-- Featured Section -->
-          <section v-if="featuredMembers.length > 0">
-            <div class="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
-              <h2 class="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 sm:gap-3 text-slate-900 dark:text-white">
-                <span class="material-icons text-secondary text-base sm:text-lg md:text-xl">local_fire_department</span>
-                <span class="truncate">{{ t('members.featuredMembers') }}</span>
-              </h2>
-            </div>
 
-            <!-- Featured Members Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-              <MemberCard
-                v-for="member in (isAuthenticated ? featuredMembers : featuredMembers.slice(0, 3))"
-                :key="member.id"
-                :member="member"
-                variant="featured"
-                @view-profile="handleViewProfile"
-                @bookmark-changed="handleBookmarkChanged"
-              />
-            </div>
-          </section>
+
 
           <!-- All Members Section -->
-          <section :class="{ 'mt-8 sm:mt-12 lg:mt-16': featuredMembers.length > 0 }">
+          <section>
             <div class="flex items-center justify-between mb-4 sm:mb-6 gap-2">
               <h2 class="text-base sm:text-lg md:text-xl font-bold text-slate-900 dark:text-white tracking-tight truncate">
                 {{ t('members.allMembers') }}
@@ -171,63 +115,55 @@ import type { MemberFilters as MemberFiltersType, Member } from '@/types/members
 const router = useRouter()
 const { t } = useI18n()
 const { members, loading, pagination, totalPages, fetchMembers } = useMembers()
-const { fetchBookmarkedMembers, fetchBookmarks } = useBookmarks()
+const { fetchBookmarks } = useBookmarks()
 const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 
-// Localhost detection for FeedSearch
-const isLocalhost = computed(() => {
-  if (typeof window === 'undefined') return false
-  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-})
 
-// FeedSearch functionality
+
+// FeedSearch functionality - integrated with member filtering
 const feedSearchQuery = ref('')
 function handleFeedSearch(query: string) {
-  console.log('Feed search query:', query)
-  // For now, we can integrate this with member search or keep it separate
-  // Future: could redirect to a unified search results page
+  // Parse the search query for filters
+  // Examples: "designer em Miami", "#tech", "empreendedor premium"
+  const searchTerm = query.toLowerCase().trim()
+  
+  // Reset filters
+  filters.value = {}
+  
+  // Check for area keywords
+  const areaKeywords = ['designer', 'desenvolvedor', 'empreendedor', 'artista', 'investidor']
+  const foundArea = areaKeywords.find(area => searchTerm.includes(area))
+  if (foundArea) {
+    filters.value.area_atuacao = foundArea.charAt(0).toUpperCase() + foundArea.slice(1)
+  }
+  
+  // Check for city (common US cities)
+  const cityKeywords = ['miami', 'orlando', 'new york', 'los angeles', 'boston', 'chicago']
+  const foundCity = cityKeywords.find(city => searchTerm.includes(city))
+  if (foundCity) {
+    filters.value.cidade = foundCity.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  }
+  
+  // Check for plan
+  if (searchTerm.includes('premium')) {
+    filters.value.plano = 'Premium'
+  }
+  
+  // If no specific filters found, use as general search
+  if (!foundArea && !foundCity && !searchTerm.includes('premium')) {
+    filters.value.search = query
+  }
+  
+  // Trigger search
+  fetchMembers(filters.value, 1)
 }
 
-
 const filters = ref<MemberFiltersType>({})
-const searchQuery = ref('')
-const showFilters = ref(false)
-const featuredMembersList = ref<Member[]>([])
+
+
 const guestLimit = getContentLimit('community')
 
-// Featured members (membros com bookmark) com filtro aplicado
-const featuredMembers = computed(() => {
-  let list = featuredMembersList.value
-
-  // Filtrar por busca textual
-  if (filters.value.search) {
-    const term = filters.value.search.toLowerCase()
-    list = list.filter(m => 
-      m.nome.toLowerCase().includes(term) ||
-      (m.area_atuacao && m.area_atuacao.toLowerCase().includes(term)) ||
-      (m.cidade && m.cidade.toLowerCase().includes(term))
-    )
-  }
-
-  // Filtrar por Área
-  if (filters.value.area_atuacao) {
-     list = list.filter(m => m.area_atuacao === filters.value.area_atuacao)
-  }
-
-  // Filtrar por Cidade
-  if (filters.value.cidade) {
-     list = list.filter(m => m.cidade === filters.value.cidade)
-  }
-
-  // Filtrar por Objetivo
-  if (filters.value.objetivo) {
-     list = list.filter(m => m.objetivo === filters.value.objetivo)
-  }
-
-  return list
-})
-
-// Todos os membros (mostrar todos, incluindo os 3 primeiros)
+// All members
 const allMembers = computed(() => members.value)
 
 const displayMembers = computed(() => {
@@ -243,13 +179,9 @@ const hasMore = computed(() => pagination.value.page < totalPages.value)
 onMounted(async () => {
   await fetchMembers()
   await fetchBookmarks()
-  await loadFeaturedMembers()
 })
 
-async function loadFeaturedMembers() {
-  const bookmarked = await fetchBookmarkedMembers()
-  featuredMembersList.value = bookmarked as Member[]
-}
+
 
 // Watch for filter changes
 watch(
@@ -260,14 +192,7 @@ watch(
   { deep: true }
 )
 
-// Search with debounce
-let searchTimeout: ReturnType<typeof setTimeout> | null = null
-function handleSearch() {
-  if (searchTimeout) clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    filters.value.search = searchQuery.value
-  }, 300)
-}
+
 
 function handleViewProfile(memberId: string) {
   if (!isAuthenticated.value) {
@@ -283,8 +208,7 @@ function loadMore() {
 }
 
 async function handleBookmarkChanged(_memberId: string, _isBookmarked: boolean) {
-  // Recarregar membros em destaque quando um bookmark mudar
-  await loadFeaturedMembers()
+  // Bookmark changed - no action needed since we removed featured members
 }
 </script>
 

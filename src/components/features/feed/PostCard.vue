@@ -527,8 +527,14 @@ onUnmounted(() => {
   color: #111827;
 }
 
-.dark :deep(.rich-text-content strong) {
-  color: #ffffff;
+:deep(.rich-text-content b) {
+  font-weight: 700;
+  color: #111827;
+}
+
+.dark :deep(.rich-text-content strong),
+.dark :deep(.rich-text-content b) {
+  color: #ffffff !important;
 }
 
 :deep(.rich-text-content em) {

@@ -2,11 +2,11 @@
   <div class="relative w-full" v-click-outside="closeResults">
     <!-- Unified Container with dynamic border radius -->
     <div 
-      class="search-container relative bg-white dark:bg-surface-dark"
+      class="search-container relative"
       :class="[
         isFocused && (query || memberResults.length > 0 || tagResults.length > 0) 
-          ? 'rounded-t-2xl border-t border-x border-gray-200 dark:border-gray-800' 
-          : 'rounded-2xl border border-gray-200 dark:border-gray-800'
+          ? 'rounded-t-2xl border-t border-x border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-dark' 
+          : 'rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-surface-dark'
       ]"
     >
       <!-- Search Input style X (Twitter) -->
@@ -17,7 +17,7 @@
         <input
           v-model="query"
           type="text"
-          :placeholder="t('home.searchPlaceholder')"
+          :placeholder="t('members.searchPlaceholder')"
           @input="handleInput"
           @focus="handleFocus"
           class="block w-full pl-12 pr-10 py-2.5 bg-transparent border-none focus:ring-0 transition-all outline-none text-slate-900 dark:text-gray-100 sm:text-base h-11 cursor-pointer"
@@ -36,7 +36,7 @@
     <Transition name="fade-scale">
       <div 
         v-if="isFocused && (query || memberResults.length > 0 || tagResults.length > 0)"
-        class="bg-white dark:bg-[#12121a] border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-2xl overflow-hidden max-h-[80vh] flex flex-col"
+        class="absolute top-full left-0 right-0 bg-white dark:bg-[#12121a] border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-2xl overflow-hidden max-h-[80vh] flex flex-col z-50"
       >
         <div class="overflow-y-auto">
           <!-- Loading State -->

@@ -210,7 +210,6 @@ async function loadUpcomingEvents() {
   }
 }
 
-const { fetchBookmarkedMembers } = useBookmarks()
 const authStore = useAuthStore()
 const { sendConnectionRequest, getConnectionStatus } = useConnections()
 const requesting = ref<Set<string>>(new Set())
@@ -279,28 +278,10 @@ function handleEventClick(eventId: string) {
 }
 
 async function loadFeaturedMembers() {
-  try {
-    const members = await fetchBookmarkedMembers()
-    
-    featuredMembers.value = members.map(member => ({
-      id: member.id,
-      nome: member.nome,
-      area_atuacao: member.area_atuacao || 'Membro da Comunidade',
-      avatar_url: member.avatar_url,
-      isOnline: false
-    }))
-
-    // Batch check connection status
-    if (authStore.user) {
-        for (const member of featuredMembers.value) {
-            const status = await getConnectionStatus(authStore.user.id, member.id)
-            connectionStatuses.value[member.id] = status
-        }
-    }
-  } catch (error) {
-    console.error('Error loading featured members:', error)
-    featuredMembers.value = []
-  }
+  // Section disabled for now as requested. 
+  // This prevents bookmarked members from appearing as featured 
+  // and ensures connected users are also not shown.
+  featuredMembers.value = []
 }
 
 function handleBusinessClick() {
