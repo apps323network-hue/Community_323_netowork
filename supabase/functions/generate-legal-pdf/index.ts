@@ -209,8 +209,17 @@ async function generateTermsAcceptancePDF(
     yPosition += 7
     doc.text(`IP Address: ${primaryAcceptance.ip_address || 'N/A'}`, margin, yPosition)
     yPosition += 7
-    doc.text(`User Agent: ${primaryAcceptance.user_agent || 'N/A'}`, margin, yPosition)
-    yPosition += 15
+
+    // Use wrapping for User Agent
+    doc.text('User Agent:', margin, yPosition)
+    yPosition += 5
+    const uaLines = wrapLongText(doc, primaryAcceptance.user_agent || 'N/A', pageWidth - 2 * margin, 8)
+    uaLines.forEach((line: string) => {
+        doc.setFontSize(8)
+        doc.text(line, margin + 5, yPosition)
+        yPosition += 4
+    })
+    yPosition += 10
 
     // Term Content
     if (yPosition > 240) {
@@ -426,6 +435,23 @@ async function generateEnrollmentContractPDF(
             const acceptDate = new Date(acceptance.accepted_at).toLocaleString('en-US')
             doc.text(`✓ ${termTypeLabel} (v${acceptance.term.version}) - Accepted on ${acceptDate}`, margin, yPosition)
             yPosition += 6
+
+            // Add IP and User Agent for legal robustness
+            doc.setFontSize(8)
+            doc.setTextColor(100, 100, 100)
+            const ipUA = `IP: ${acceptance.ip_address || 'N/A'}`
+            doc.text(ipUA, margin + 5, yPosition)
+            yPosition += 4
+
+            const uaLines = wrapLongText(doc, `UA: ${acceptance.user_agent || 'N/A'}`, pageWidth - 2 * margin - 10, 7)
+            uaLines.forEach((line: string) => {
+                doc.text(line, margin + 5, yPosition)
+                yPosition += 3.5
+            })
+
+            doc.setTextColor(0, 0, 0)
+            doc.setFontSize(9)
+            yPosition += 6
         })
         yPosition += 10
     }
@@ -601,6 +627,44 @@ async function sendEmailWithAttachment(
             })
             .eq('storage_path', `${userId}/${type}/${pdfData.filename}`)
     }
+}
+
+// Helper to wrap long text without natural spaces (like User Agents)
+function wrapLongText(doc: any, text: string, maxWidth: number, fontSize: number): string[] {
+    doc.setFontSize(fontSize)
+
+    // First try standard word wrap
+    const lines = doc.splitTextToSize(text, maxWidth)
+
+    // If we only have one line, return it
+    if (lines.length === 1 && doc.getTextWidth(lines[0]) <= maxWidth) {
+        return lines
+    }
+
+    // If any line is still too wide (which happens with long non-space strings)
+    // We need to force break it
+    const finalLines: string[] = []
+
+    lines.forEach((line: string) => {
+        if (doc.getTextWidth(line) <= maxWidth) {
+            finalLines.push(line)
+        } else {
+            // Force character break
+            let currentLine = ""
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i]
+                if (doc.getTextWidth(currentLine + char) <= maxWidth) {
+                    currentLine += char
+                } else {
+                    finalLines.push(currentLine)
+                    currentLine = char
+                }
+            }
+            if (currentLine) finalLines.push(currentLine)
+        }
+    })
+
+    return finalLines
 }
 
 // HTML Parser helper - simplified version

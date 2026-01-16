@@ -93,6 +93,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/termos-aceite',
+    name: 'TermsAcceptance',
+    component: () => import('@/views/TermsAcceptance.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/parceiros',
     name: 'PartnersLanding',
     component: () => import('@/views/public/PartnersLanding.vue'),
@@ -471,13 +477,8 @@ router.beforeEach(async (to, _from, next) => {    // O Supabase adiciona type=re
   }
 
   // Verificar se precisa de autenticação
-  if (requiresAuth && !authStore.user) {
-    next({ name: 'Login', query: { redirect: to.fullPath } })
-    return
-  }
-
-  // Verificar se usuário está banido e onboarding
-  if (requiresAuth && authStore.user) {
+  // Verificar aceite de termos e onboarding global para usuários logados
+  if (authStore.user) {
     const userStore = useUserStore()
 
     // Se profile não estiver carregado, buscar
@@ -485,30 +486,59 @@ router.beforeEach(async (to, _from, next) => {    // O Supabase adiciona type=re
       await userStore.fetchProfile(authStore.user.id)
     }
 
-    // Verificar onboarding
-    if (to.path === '/onboarding') {
-      // Se já completou onboarding, redirecionar para home
-      const { hasCompletedOnboarding } = await import('@/composables/useOnboarding')
-      if (hasCompletedOnboarding(userStore.profile)) {
-        next({ name: 'Home' })
-        return
-      }
-    } else {
-      // Se não completou onboarding e não está na página de onboarding, redirecionar
-      const { needsOnboarding } = await import('@/composables/useOnboarding')
-      if (needsOnboarding(userStore.profile)) {
-        next({ name: 'Onboarding' })
-        return
+    // 1. Verificar aceite de termos (prioridade máxima para qualquer usuário logado)
+    const publicLegalRoutes = [
+      '/termos',
+      '/politica-privacidade',
+      '/termos-aceite',
+      '/banned',
+      '/login',
+      '/register',
+      '/auth/callback',
+      '/reset-password',
+      '/forgot-password'
+    ]
+    const isPublicLegalRoute = publicLegalRoutes.includes(to.path)
+
+    if (!isPublicLegalRoute && authStore.termsAccepted === false) {
+      console.log('[ROUTER] Redirecionando para aceite de termos (Global)...')
+      next({ name: 'TermsAcceptance', query: { redirect: to.fullPath } })
+      return
+    }
+
+    // 2. Verificar onboarding (apenas se não for uma rota legal já tratada)
+    const isOnboarding = to.path === '/onboarding'
+    if (!isPublicLegalRoute) {
+      if (isOnboarding) {
+        // Se já completou onboarding, redirecionar para home
+        const { hasCompletedOnboarding } = await import('@/composables/useOnboarding')
+        if (hasCompletedOnboarding(userStore.profile)) {
+          next({ name: 'Home' })
+          return
+        }
+      } else {
+        // Se não completou onboarding e não está na página de onboarding, redirecionar
+        const { needsOnboarding } = await import('@/composables/useOnboarding')
+        if (needsOnboarding(userStore.profile)) {
+          next({ name: 'Onboarding' })
+          return
+        }
       }
     }
 
     // Redirecionar usuário banido para página de aviso
-    if (userStore.profile?.status === 'banned') {
+    if (userStore.profile?.status === 'banned' && !isPublicLegalRoute) {
       if (to.path !== '/banned') {
         next({ name: 'Banned' })
         return
       }
     }
+  }
+
+  // Verificar se precisa de autenticação (se não estiver logado)
+  if (requiresAuth && !authStore.user) {
+    next({ name: 'Login', query: { redirect: to.fullPath } })
+    return
   }
 
   // Verificar se precisa ser guest (não logado)

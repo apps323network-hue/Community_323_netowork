@@ -1609,6 +1609,11 @@
         }
     },
     "terms": {
+        "legalUpdate": "Atualização Legal",
+        "acceptanceTitle": "Termos e Condições",
+        "acceptanceSub": "Para continuar utilizando a plataforma, por favor revise e aceite nossos termos atualizados.",
+        "confirmRead": "Li e concordo com os termos acima.",
+        "success": "Termos aceitos com sucesso!",
         "title": "Termos de Uso",
         "version": "Versão",
         "effectiveDate": "Data de Vigência",

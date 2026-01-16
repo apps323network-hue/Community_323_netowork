@@ -1527,6 +1527,11 @@
         }
     },
     "terms": {
+        "legalUpdate": "Legal Update",
+        "acceptanceTitle": "Terms and Conditions",
+        "acceptanceSub": "To continue using the platform, please review and accept our updated terms.",
+        "confirmRead": "I have read and agree to the terms above.",
+        "success": "Terms accepted successfully!",
         "title": "Terms of Service",
         "version": "Version",
         "effectiveDate": "Effective Date",
