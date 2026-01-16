@@ -39,9 +39,22 @@ serve(async (req) => {
             relatedId = acceptance_id
         } else if (type === 'enrollment_contract') {
             // Generate enrollment contract PDF
-            const result = await generateEnrollmentContractPDF(supabase, enrollment_id)
-            pdfData = result.pdfData
-            relatedId = enrollment_id
+            console.log('[generate-legal-pdf] 📄 Generating enrollment contract for:', enrollment_id)
+            
+            if (!enrollment_id) {
+                throw new Error('enrollment_id is required for enrollment_contract type')
+            }
+            
+            try {
+                const result = await generateEnrollmentContractPDF(supabase, enrollment_id)
+                pdfData = result.pdfData
+                relatedId = enrollment_id
+                console.log('[generate-legal-pdf] ✅ Enrollment contract generated successfully')
+            } catch (err: any) {
+                console.error('[generate-legal-pdf] 🚨 Error generating enrollment contract:', err.message)
+                console.error('[generate-legal-pdf] 🚨 Stack:', err.stack)
+                throw err
+            }
         } else {
             throw new Error('Invalid type. Use: terms_acceptance or enrollment_contract')
         }
@@ -246,6 +259,8 @@ async function generateEnrollmentContractPDF(
     supabase: any,
     enrollmentId: string
 ): Promise<{ pdfData: { pdf: string; filename: string } }> {
+    console.log('[generateEnrollmentContractPDF] Starting for enrollment:', enrollmentId)
+    
     // Fetch enrollment data with all relations
     const { data: enrollment, error: enrollError } = await supabase
         .from('program_enrollments')
@@ -255,7 +270,7 @@ async function generateEnrollmentContractPDF(
                 title_en,
                 title_pt,
                 price_usd,
-                duration_weeks
+                duration_hours
             ),
             user:user_id (
                 nome,
@@ -265,7 +280,20 @@ async function generateEnrollmentContractPDF(
         .eq('id', enrollmentId)
         .single()
 
-    if (enrollError || !enrollment) throw new Error('Enrollment not found')
+    console.log('[generateEnrollmentContractPDF] Query result:', { 
+        hasData: !!enrollment, 
+        hasError: !!enrollError,
+        errorDetails: enrollError 
+    })
+
+    if (enrollError) {
+        console.error('[generateEnrollmentContractPDF] Supabase error:', enrollError)
+        throw new Error(`Failed to fetch enrollment: ${enrollError.message}`)
+    }
+    
+    if (!enrollment) {
+        throw new Error('Enrollment not found')
+    }
 
     // Fetch user's accepted terms
     const { data: acceptedTerms } = await supabase
@@ -323,8 +351,8 @@ async function generateEnrollmentContractPDF(
     doc.setFont('helvetica', 'normal')
     doc.text(`Program: ${enrollment.program.title_en || enrollment.program.title_pt}`, margin, yPosition)
     yPosition += 7
-    if (enrollment.program.duration_weeks) {
-        doc.text(`Duration: ${enrollment.program.duration_weeks} weeks`, margin, yPosition)
+    if (enrollment.program.duration_hours) {
+        doc.text(`Duration: ${enrollment.program.duration_hours} hours`, margin, yPosition)
         yPosition += 7
     }
     const enrollDate = enrollment.enrolled_at ? new Date(enrollment.enrolled_at).toLocaleString('en-US', {
