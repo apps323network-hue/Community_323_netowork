@@ -1192,17 +1192,6 @@
             "enroll": "Confirm Enrollment",
             "processing": "Processing..."
         },
-        "sidebar": {
-            "bestOffer": "Best Offer of the Day",
-            "oneTimePayment": "One-Time Payment",
-            "students": "Students",
-            "spots": "Spots",
-            "lastUpdate": "Last Update",
-            "language": "Language",
-            "languageValue": "Portuguese (Brazil)",
-            "supportTitle": "Questions about the content?",
-            "supportDesc": "Talk to our specialized support"
-        },
         "enrollmentSuccess": "Enrollment successful!",
         "enrollmentError": "Error enrolling. Please try again.",
         "alreadyEnrolled": "You are already enrolled in this program.",

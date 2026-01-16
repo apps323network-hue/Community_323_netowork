@@ -1195,17 +1195,6 @@
             "enroll": "Confirmar Matrícula",
             "processing": "Processando..."
         },
-        "sidebar": {
-            "bestOffer": "Melhor Oferta do Dia",
-            "oneTimePayment": "Pagamento Único",
-            "students": "Alunos",
-            "spots": "Vagas",
-            "lastUpdate": "Última Atualização",
-            "language": "Idioma",
-            "languageValue": "Português (Brasil)",
-            "supportTitle": "Dúvidas sobre o conteúdo?",
-            "supportDesc": "Fale com nosso suporte especializado"
-        },
         "enrollmentSuccess": "Matrícula realizada com sucesso!",
         "enrollmentError": "Erro ao realizar matrícula. Tente novamente.",
         "alreadyEnrolled": "Você já está matriculado neste programa.",

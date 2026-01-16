@@ -464,9 +464,6 @@ async function fetchProgramAndLessons() {
 
 onMounted(() => {
   fetchProgramAndLessons()
-  setTimeout(() => {
-    document.addEventListener('click', handleClickOutside)
-  }, 0)
 })
 
 watch(() => route.query.aula, (newLessonId) => {
