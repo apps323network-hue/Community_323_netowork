@@ -36,7 +36,7 @@
     <div>
       <!-- Icon based on category or default -->
       <!-- Icon based on category or default (Only if no image) -->
-      <div v-if="!service.image_url" class="mb-2.5 sm:mb-3 md:mb-4 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 p-1.5 sm:p-2 md:p-3 text-secondary shadow-[0_0_10px_rgba(0,243,255,0.1)] group-hover:bg-secondary group-hover:text-black group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-300">
+      <div v-if="!service.image_url" class="mb-2.5 sm:mb-3 md:mb-4 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 p-1.5 sm:p-2 md:p-3 text-slate-900 dark:text-secondary shadow-[0_0_10px_rgba(0,243,255,0.1)] group-hover:bg-secondary group-hover:text-black group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-300">
         <span class="material-symbols-outlined text-xl sm:text-2xl md:text-[28px] lg:text-[32px]">{{ getIcon(service.categoria) }}</span>
       </div>
 
@@ -98,7 +98,7 @@
         class="flex-[2] rounded-lg py-2.5 text-center text-sm font-bold transition-all duration-300"
         :class="service.preco 
           ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-md hover:shadow-[0_0_20px_rgba(244,37,244,0.4)] hover:scale-[1.02] active:scale-95' 
-          : 'border border-secondary/50 bg-transparent text-secondary-dark dark:text-secondary hover:bg-secondary hover:text-white dark:hover:text-black hover:shadow-[0_0_15px_rgba(0,243,255,0.4)]'"
+          : 'border border-secondary/50 bg-transparent text-slate-900 dark:text-secondary hover:bg-secondary hover:text-white dark:hover:text-black hover:shadow-[0_0_15px_rgba(0,243,255,0.4)]'"
         @click="handleAction"
       >
         {{ getButtonText() }}

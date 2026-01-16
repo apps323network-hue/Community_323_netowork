@@ -63,7 +63,7 @@
           class="relative mt-4"
         >
           <!-- Fade out overlay on the last post area -->
-          <div class="absolute -top-64 left-0 right-0 h-64 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent pointer-events-none z-10"></div>
+          <div class="absolute -top-64 left-0 right-0 h-64 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light/80 dark:via-background-dark/80 to-transparent pointer-events-none z-10"></div>
           
           <GuestBlocker
             :show="true"

@@ -1,15 +1,15 @@
 <template>
-  <div class="space-y-3 group/row">
+  <div class="space-y-2 md:space-y-3 group/row">
     <!-- Row Title -->
     <h3 
-      class="text-xl md:text-2xl font-bold text-slate-900 dark:text-gray-100 hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-2 cursor-pointer group-hover/row:text-primary dark:group-hover/row:text-secondary"
+      class="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-slate-900 dark:text-gray-100 hover:text-primary dark:hover:text-secondary transition-colors flex items-center gap-2 cursor-pointer group-hover/row:text-primary dark:group-hover/row:text-secondary"
       @click="$emit('viewAll')"
     >
       {{ title }}
     </h3>
 
     <!-- Carousel Container -->
-    <div class="flex overflow-x-auto gap-6 md:gap-8 py-12 scrollbar-hide snap-x px-1">
+    <div class="flex overflow-x-auto gap-4 md:gap-6 lg:gap-8 py-8 md:py-10 lg:py-12 scrollbar-hide snap-x px-1">
       <ProgramCard
         v-for="program in programs"
         :key="program.id"
@@ -27,9 +27,9 @@
       <!-- Empty State -->
       <div 
         v-if="programs.length === 0"
-        class="flex-none w-72 md:w-80 aspect-video rounded-md bg-slate-100 dark:bg-gray-800/50 border border-slate-200 dark:border-white/5 flex items-center justify-center"
+        class="flex-none w-64 md:w-72 lg:w-80 xl:w-96 aspect-video rounded-md bg-slate-100 dark:bg-gray-800/50 border border-slate-200 dark:border-white/5 flex items-center justify-center"
       >
-        <span class="text-slate-500 dark:text-gray-500 text-sm">{{ t('programs.noPrograms') }}</span>
+        <span class="text-slate-500 dark:text-gray-500 text-xs md:text-sm">{{ t('programs.noPrograms') }}</span>
       </div>
     </div>
   </div>

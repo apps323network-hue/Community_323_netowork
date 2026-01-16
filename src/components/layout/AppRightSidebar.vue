@@ -1,7 +1,7 @@
 <template>
   <aside class="lg:sticky lg:top-24 h-fit space-y-8">
     <!-- Próximos Eventos Card -->
-    <div class="rounded-2xl p-5 shadow-premium dark:shadow-2xl relative overflow-hidden bg-white dark:bg-surface-dark border border-slate-200/60 dark:border-none neon-border-card">
+    <div class="rounded-2xl p-5 shadow-premium dark:shadow-2xl relative overflow-hidden bg-white dark:bg-surface-dark border border-slate-200 dark:border-none neon-border-card">
       <div class="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full blur-xl"></div>
       <h3 class="font-bold text-slate-900 dark:text-white mb-5 flex items-center text-sm uppercase tracking-widest">
         <span class="material-icons-outlined mr-2 text-secondary-dark dark:text-secondary animate-pulse">event_available</span>
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Membros em Destaque Card -->
-    <div class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-premium dark:shadow-2xl border border-slate-200/60 dark:border-white/5">
+    <div class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-premium dark:shadow-2xl border border-slate-200 dark:border-white/5">
       <h3 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-widest border-l-4 border-primary pl-3">
         {{ t('members.featuredMembers') }}
       </h3>
@@ -96,7 +96,7 @@
     </div>
 
     <!-- Seu Negócio Aqui Card -->
-    <div class="rounded-2xl p-0 overflow-hidden shadow-premium dark:shadow-2xl relative h-56 group border border-slate-200/60 dark:border-white/5 hover:border-primary/30 transition-all bg-white dark:bg-transparent">
+    <div class="rounded-2xl p-0 overflow-hidden shadow-premium dark:shadow-2xl relative h-56 group border border-slate-200 dark:border-white/5 hover:border-primary/30 transition-all bg-white dark:bg-transparent">
       <div class="w-full h-full bg-gradient-to-b from-white to-slate-50 dark:from-orange-900/20 dark:via-gray-900 dark:to-background-dark"></div>
       <div class="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent dark:from-background-dark dark:via-transparent dark:to-transparent"></div>
       <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">

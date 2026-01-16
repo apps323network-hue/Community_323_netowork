@@ -15,7 +15,7 @@
         :src="program.thumbnail_url || '/program_placeholder.png'"
         :alt="title"
         class="w-full h-full object-cover transition-opacity"
-        :class="aspectRatio === 'poster' ? '' : 'opacity-80 group-hover:opacity-40'"
+        :class="aspectRatio === 'poster' ? '' : 'group-hover:opacity-40'"
       />
 
       <!-- Lock Icon (if not enrolled) -->

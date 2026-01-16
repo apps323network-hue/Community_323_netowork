@@ -26,7 +26,10 @@
             "title": "Cadastre-se para Continuar",
             "message": "Junte-se a milhares de brasileiros conectados nos EUA",
             "cta": "Criar Conta Grátis",
-            "terms": "Ao se cadastrar, você concorda com nossos Termos de Uso e Política de Privacidade",
+            "termsPrefix": "Ao se cadastrar, você concorda com nossos",
+            "termsLabel": "Termos de Uso",
+            "privacyLabel": "Política de Privacidade",
+            "termsAnd": "e",
             "benefits": [
                 "Acesso completo a todos os recursos",
                 "Conecte-se com brasileiros na sua região",
@@ -55,6 +58,12 @@
         "seeAll": "Ver todos",
         "back": "Voltar",
         "description": "Descrição",
+        "editor": {
+            "bold": "Negrito",
+            "italic": "Itálico",
+            "bulletList": "Lista com marcadores",
+            "orderedList": "Lista numerada"
+        },
         "days": "Dias",
         "hours": "Horas",
         "minutesShort": "Min",
@@ -323,7 +332,7 @@
         "filterLifestyle": "Estilo de Vida",
         "filterEvents": "Eventos",
         "filterHealth": "Saúde",
-        "guestBlockerTitle": "Desbloqueie {count} benefícios exclusivos",
+        "guestBlockerTitle": "Desbloqueie benefícios exclusivos",
         "guestBlockerDesc": "Cadastre-se gratuitamente para ter acesso a todos os benefícios e descontos oferecidos por nossos parceiros.",
         "guestBlockerButton": "Cadastre-se Gratuitamente",
         "businessOwnerTitle": "É empresário e quer oferecer benefícios?",
@@ -713,7 +722,10 @@
         "newPassword": "Nova Senha",
         "confirmPassword": "Confirmar Senha",
         "uploadPhoto": "Enviar Foto",
-        "removePhoto": "Remover Foto"
+        "removePhoto": "Remover Foto",
+        "premiumAccount": "Assinatura Premium Ativa",
+        "manageSubscription": "Gerencie sua assinatura e faturamento",
+        "manage": "Gerenciar"
     },
     "posts": {
         "aboutWhat": "Sobre o que você quer falar?",
@@ -1291,7 +1303,8 @@
         },
         "actions": {
             "accessNow": "Acessar Agora",
-            "secureMySpot": "Assistir Agora"
+            "secureMySpot": "Assistir Agora",
+            "watch": "Assistir"
         },
         "admin": {
             "createProgram": "Criar Programa",
@@ -1845,6 +1858,17 @@
                     "noName": "Sem nome"
                 }
             }
+        },
+        "notifications": {
+            "title": "Notificações",
+            "new": "nova",
+            "newNotifications": "novas notificações",
+            "markAllRead": "Marcar todas como lidas",
+            "noNotifications": "Sem notificações",
+            "completeProfile": "Complete Seu Perfil",
+            "actionRequired": "Ação Necessária",
+            "profileIncompleteMessage": "Seu perfil está faltando algumas informações obrigatórias. Clique para completar.",
+            "profileIncompleteMobile": "Seu perfil está faltando algumas informações obrigatórias. Toque para completar."
         }
     }
 }

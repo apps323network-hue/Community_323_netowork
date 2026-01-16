@@ -19,8 +19,8 @@
         <div class="relative z-10 flex flex-col gap-3 sm:gap-4 md:gap-6 px-3 sm:px-4 md:px-6 lg:px-12 py-6 sm:py-8 md:py-12 lg:py-16 xl:py-20 text-center md:text-left items-center md:items-start">
           <div class="flex flex-col gap-2 sm:gap-3 max-w-2xl w-full">
             <div class="inline-flex items-center gap-1 sm:gap-2 self-center md:self-start px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm shadow-[0_0_15px_rgba(0,243,255,0.1)]">
-              <span class="material-symbols-outlined text-secondary text-base sm:text-base md:text-[18px]">verified</span>
-              <span class="text-secondary text-[11px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
+              <span class="material-symbols-outlined text-slate-900 dark:text-secondary text-base sm:text-base md:text-[18px]">verified</span>
+              <span class="text-slate-900 dark:text-secondary text-[11px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider">{{ t('services.exclusiveForMembers') }}</span>
             </div>
             <h1 class="text-slate-900 dark:text-white text-3xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight tracking-tight">
               {{ t('services.heroTitle1') }} <br class="hidden sm:block"/>
@@ -83,24 +83,10 @@
         </div>
       </div>
 
-      <!-- Testimonials -->
-      <div class="flex flex-col gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-3 sm:pt-4 md:pt-6 lg:pt-8">
-        <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2.5 sm:pb-3 md:pb-4 gap-2">
-          <h2 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight truncate">{{ t('services.whatMembersSay') }}</h2>
-          <a v-if="testimonials.length > 0" class="text-secondary text-[10px] sm:text-xs md:text-sm font-bold hover:underline hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer whitespace-nowrap flex-shrink-0">{{ t('common.seeAll') }}</a>
-        </div>
-        <div v-if="testimonials.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-          <TestimonialCard
-            v-for="testimonial in testimonials"
-            :key="testimonial.id"
-            :testimonial="testimonial"
-          />
-        </div>
-        <div v-else class="flex flex-col items-center justify-center py-10 bg-slate-50 dark:bg-white/5 rounded-2xl border border-dashed border-slate-200 dark:border-white/10">
-          <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-4xl mb-2">rate_review</span>
-          <p class="text-slate-500 dark:text-gray-400 text-sm font-medium">{{ t('services.noTestimonials') }}</p>
-        </div>
-      </div>
+
+
+      <!-- Separator -->
+      <div class="border-t border-slate-200 dark:border-white/10 my-4 sm:my-6 md:my-8"></div>
 
       <!-- CTA Section -->
       <div class="bg-white dark:bg-[#0a040f] border border-slate-200 dark:border-white/10 rounded-lg sm:rounded-xl md:rounded-2xl py-4 sm:py-6 md:py-8 lg:py-12 px-3 sm:px-4 md:px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-4 md:gap-6 lg:gap-8">
@@ -108,7 +94,7 @@
           <h2 class="text-slate-900 dark:text-white text-lg sm:text-xl md:text-2xl font-bold">{{ t('services.needSomethingCustom') }}</h2>
           <p class="text-slate-600 dark:text-gray-400 text-xs sm:text-sm md:text-base">{{ t('services.conciergeDescription') }}</p>
         </div>
-        <button class="flex items-center gap-1.5 sm:gap-2 rounded-lg bg-transparent border border-secondary text-secondary hover:bg-secondary hover:text-black px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base font-bold transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.2)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)] w-full md:w-auto justify-center" @click="contactSupport">
+        <button class="flex items-center gap-1.5 sm:gap-2 rounded-lg bg-transparent border border-secondary text-slate-900 dark:text-secondary hover:bg-secondary hover:text-black px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 text-xs sm:text-sm md:text-base font-bold transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.2)] hover:shadow-[0_0_25px_rgba(0,243,255,0.5)] w-full md:w-auto justify-center" @click="contactSupport">
           <span class="material-symbols-outlined text-base sm:text-lg md:text-[20px]">chat</span>
           {{ t('services.talkToSupport') }}
         </button>
@@ -401,7 +387,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useSSO } from '@/composables/useSSO'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ServiceCard from '@/components/features/services/ServiceCard.vue'
-import TestimonialCard from '@/components/features/services/TestimonialCard.vue'
+
 import Modal from '@/components/ui/Modal.vue'
 import FlickeringGrid from '@/components/ui/FlickeringGrid.vue'
 import { toast } from 'vue-sonner'
@@ -457,7 +443,7 @@ const filters = computed(() => {
   return baseFilters
 })
 
-const testimonials = computed<any[]>(() => [])
+
 
 function formatPrice(cents: number, currency: string = 'USD'): string {
   const amount = cents / 100
