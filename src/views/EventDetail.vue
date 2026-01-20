@@ -83,12 +83,10 @@
                   <ShareButton
                     v-if="event"
                     :options="{
-                      url: `/eventos/${event.id}`,
+                      url: `/events/${event.id}`,
                       title: translatedTitle,
                       description: translatedDescription?.substring(0, 160) || '',
-                      imageUrl: event.image_url,
-                      type: 'event',
-                      id: event.id
+                      imageUrl: event.image_url
                     }"
                     variant="icon"
                   />

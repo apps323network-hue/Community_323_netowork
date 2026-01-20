@@ -1890,8 +1890,8 @@
             "linkCopied": "Link copiado!",
             "copyFailed": "Erro ao copiar link",
             "shareFailed": "Erro ao compartilhar",
-            "instagramInstructions": "Link copiado!",
-            "instagramInstructionsDesc": "Cole o link na sua bio do Instagram ou em uma mensagem direta"
+            "instagramInstructions": "Link copiado! 📋",
+            "instagramInstructionsDesc": "Agora abra o Instagram e cole o link onde quiser (Stories, DM, Bio)"
         }
     }
 }

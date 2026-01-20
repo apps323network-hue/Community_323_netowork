@@ -1885,7 +1885,7 @@
         "linkCopied": "Link copied!",
         "copyFailed": "Failed to copy link",
         "shareFailed": "Failed to share",
-        "instagramInstructions": "Link copied!",
-        "instagramInstructionsDesc": "Paste the link in your Instagram bio or direct message"
+        "instagramInstructions": "Link copied! 📋",
+        "instagramInstructionsDesc": "Now open Instagram and paste the link wherever you want (Stories, DM, Bio)"
     }
 }

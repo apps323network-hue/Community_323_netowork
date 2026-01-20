@@ -42,16 +42,14 @@
                 {{ title }}
               </h1>
 
-              <div class="absolute top-6 right-6 z-30">
+              <div class="absolute top-3 right-4 z-30">
                 <ShareButton
                   v-if="program"
                   :options="{
-                    url: `/programas/${program.id}`,
+                    url: `/programs/${program.id}`,
                     title: title,
                     description: description?.substring(0, 160) || '',
-                    imageUrl: program.banner_url,
-                    type: 'program',
-                    id: program.id
+                    imageUrl: program.banner_url
                   }"
                   variant="icon"
                 />
