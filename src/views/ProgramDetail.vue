@@ -566,7 +566,38 @@
               <span class="material-icons text-3xl group-hover:scale-110 transition-transform">qr_code</span>
               <span class="text-sm font-black uppercase tracking-tight">PIX</span>
             </button>
+            <button
+              @click="paymentMethod = 'parcelow'"
+              class="flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all group relative overflow-hidden"
+              :class="paymentMethod === 'parcelow' 
+                ? 'border-primary bg-primary/10 text-slate-900 dark:text-white shadow-xl shadow-primary/20' 
+                : 'border-slate-200 dark:border-white/10 hover:border-primary/30 text-slate-600 dark:text-gray-400'"
+            >
+              <div class="absolute -top-1 -right-1 group-hover:rotate-12 transition-transform">
+                <span class="text-[8px] font-bold bg-primary text-black px-1.5 py-0.5 rounded-bl-lg">12x</span>
+              </div>
+              <span class="material-icons text-3xl group-hover:scale-110 transition-transform">payments</span>
+              <span class="text-sm font-black uppercase tracking-tight">Parcelar</span>
+            </button>
           </div>
+          
+          <!-- Alerta de CPF para Parcelow -->
+          <Transition name="fade">
+            <div v-if="isMissingCpf" class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs space-y-2">
+              <div class="flex items-center gap-2 font-bold uppercase tracking-wider">
+                <span class="material-icons text-sm">warning</span>
+                {{ t('payment.parcelow.cpfValidation.title') }}
+              </div>
+              <p>{{ t('payment.parcelow.cpfValidation.description') }}</p>
+              <button 
+                @click="router.push('/perfil')" 
+                class="flex items-center gap-1 font-black text-amber-700 dark:text-amber-300 hover:underline"
+              >
+                {{ t('payment.parcelow.cpfValidation.button') }}
+                <span class="material-icons text-xs">arrow_forward</span>
+              </button>
+            </div>
+          </Transition>
         </div>
 
         <!-- Botão de Ação -->
@@ -585,6 +616,46 @@
             <template v-else>
               Finalizar Inscrição
             </template>
+          </button>
+        </div>
+      </div>
+    </Modal>
+
+    <!-- Modal de Confirmação Parcelow -->
+    <Modal
+      v-model="showParcelowConfirm"
+      :title="t('payment.parcelow.confirmModal.title')"
+    >
+      <div v-if="parcelowData" class="flex flex-col gap-6 p-1">
+        <p class="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
+          {{ t('payment.parcelow.confirmModal.info') }}
+        </p>
+
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-slate-500 dark:text-gray-400">{{ t('payment.parcelow.confirmModal.priceUSD') }}</span>
+            <span class="text-slate-900 dark:text-white font-bold">{{ formatPrice(parcelowData.total_usd, 'USD') }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-900 dark:text-white font-black uppercase text-xs tracking-widest">{{ t('payment.parcelow.confirmModal.priceBRL') }}</span>
+            <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+              {{ formatPrice(parcelowData.total_brl, 'BRL') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <button
+            @click="confirmParcelow"
+            class="w-full rounded-2xl bg-gradient-to-r from-primary to-secondary py-5 text-sm font-black text-black shadow-xl hover:scale-[1.02] transition-all uppercase tracking-widest"
+          >
+            {{ t('payment.parcelow.confirmModal.confirm') }}
+          </button>
+          <button
+            @click="cancelParcelow"
+            class="w-full py-4 text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors"
+          >
+            {{ t('payment.parcelow.confirmModal.cancel') }}
           </button>
         </div>
       </div>
@@ -625,6 +696,7 @@ import { useLocale } from '@/composables/useLocale'
 import { useProgramsStore } from '@/stores/programs'
 import DOMPurify from 'dompurify'
 import { useModulesStore } from '@/stores/modules'
+import { useUserStore } from '@/stores/user'
 import { useSupabase } from '@/composables/useSupabase'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import { useCoupons } from '@/composables/useCoupons'
@@ -636,6 +708,8 @@ import { useDynamicMeta } from '@/composables/useDynamicMeta'
 import { watch } from 'vue'
 import { fetchExchangeRate, calculatePixAmount } from '@/lib/exchange'
 import { isLocalhost } from '@/utils/localhost'
+import { useParcelowCheckout } from '@/composables/useParcelowCheckout'
+import ParcelowService from '@/lib/parcelowService'
 import type { Coupon } from '@/composables/useCoupons'
 
 const route = useRoute()
@@ -644,16 +718,33 @@ const { t, locale: currentLocale } = useLocale()
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
 const modulesStore = useModulesStore()
+const userStore = useUserStore()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 const programId = computed(() => route.params.id as string)
 const program = computed(() => programsStore.currentProgram)
 const showCheckoutModal = ref(false)
 const submitting = ref(false)
-const paymentMethod = ref<'card' | 'pix' | null>(null)
+const paymentMethod = ref<'card' | 'pix' | 'parcelow' | null>(null)
 const exchangeRate = ref(5.95) // Taxa USD -> BRL
 const acceptedTerms = ref(false)
 const showTermsModal = ref(false)
+
+// Parcelow integration
+const { 
+  createCheckout: startParcelowCheckout, 
+  confirmAndRedirect: confirmParcelow,
+  cancelCheckout: cancelParcelow,
+  showConfirmationModal: showParcelowConfirm,
+  checkoutData: parcelowData,
+  isCreatingCheckout: parcelowLoading,
+  error: parcelowError
+} = useParcelowCheckout()
+
+// CPF validation for Parcelow
+const isMissingCpf = computed(() => {
+  return paymentMethod.value === 'parcelow' && !userStore.profile?.document_number
+})
 
 // Coupon state
 const { validateCoupon, calculateDiscount, recordCouponUse } = useCoupons()
@@ -733,7 +824,8 @@ function formatPrice(cents: number, currency: string = 'USD'): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
 }
 
-function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
+function calculateFee(basePriceCents: number, method: 'card' | 'pix' | 'parcelow'): number {
+  if (method === 'parcelow') return 0 // Fee is calculated by Parcelow
   if (method === 'card') {
     return Math.round((basePriceCents * CARD_FEE_PERCENTAGE) + CARD_FEE_FIXED)
   } else {
@@ -745,7 +837,8 @@ function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
   }
 }
 
-function calculateTotal(basePriceCents: number, method: 'card' | 'pix'): number {
+function calculateTotal(basePriceCents: number, method: 'card' | 'pix' | 'parcelow'): number {
+  if (method === 'parcelow') return basePriceCents // Return base, conversion is shown in Parcelow modal
   if (method === 'card') {
     return basePriceCents + calculateFee(basePriceCents, method)
   } else {
@@ -867,9 +960,48 @@ const handleCheckout = async () => {
       return
     }
 
-    // Fluxo normal de pagamento sempre (permite testar Stripe em localhost)
     if (!paymentMethod.value) {
       toast.error('Selecione um método de pagamento')
+      return
+    }
+
+    // Se for Parcelow, temos um fluxo diferente
+    if (paymentMethod.value === 'parcelow') {
+      // Validar CPF antes de prosseguir
+      if (isMissingCpf.value) {
+        toast.error(t('payment.parcelow.cpfValidation.toastError'))
+        router.push('/perfil')
+        return
+      }
+
+      // 1. Criar registro de service_payment
+      const basePriceCents = program.value.price_usd * 100
+      const amount = Math.max(0, basePriceCents - discountAmount.value)
+
+      const { data: payment, error: pError } = await supabase
+        .from('service_payments')
+        .insert({
+          user_id: session.user.id,
+          program_id: program.value.id, // Para programas usamos o ID do programa
+          amount: amount,
+          currency: 'USD',
+          payment_method: 'parcelow',
+          status: 'pending',
+          metadata: {
+            item_type: 'program',
+            program_id: program.value.id,
+            coupon_id: appliedCoupon.value?.id || null,
+            discount_amount: discountAmount.value || 0
+          }
+        })
+        .select()
+        .single()
+
+      if (pError) throw pError
+
+      // 2. Iniciar checkout Parcelow
+      await startParcelowCheckout(payment.id)
+      showCheckoutModal.value = false
       return
     }
 

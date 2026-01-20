@@ -161,7 +161,7 @@
         <!-- Método de Pagamento (apenas para serviços pagos) -->
         <div v-if="selectedService.preco" class="space-y-3">
           <label class="text-sm font-bold text-slate-700 dark:text-gray-300">{{ t('services.paymentMethod') }}</label>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <button
               @click="paymentMethod = 'card'"
               class="flex flex-col items-center gap-2 p-4 rounded-lg border transition-all"
@@ -184,7 +184,36 @@
               <span class="text-sm font-bold">{{ t('services.pix') }}</span>
               <span class="text-[10px] text-slate-500 dark:text-gray-500">{{ t('services.instantPayment') }}</span>
             </button>
+            <button
+              @click="paymentMethod = 'parcelow'"
+              class="flex flex-col items-center gap-2 p-4 rounded-lg border transition-all"
+              :class="paymentMethod === 'parcelow' 
+                ? 'border-primary bg-primary/10 text-slate-900 dark:text-white' 
+                : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/30 text-slate-600 dark:text-gray-400'"
+            >
+              <span class="material-symbols-outlined text-2xl">payments</span>
+              <span class="text-sm font-bold">{{ t('payment.parcelow.buttonLabel') }}</span>
+              <span class="text-[10px] text-slate-500 dark:text-gray-500">{{ t('payment.parcelow.title') }}</span>
+            </button>
           </div>
+          
+          <!-- Alerta de CPF para Parcelow -->
+          <Transition name="fade">
+            <div v-if="isMissingCpf" class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs space-y-2">
+              <div class="flex items-center gap-2 font-bold uppercase tracking-wider">
+                <span class="material-symbols-outlined text-sm font-bold">warning</span>
+                {{ t('payment.parcelow.cpfValidation.title') }}
+              </div>
+              <p class="font-bold opacity-80">{{ t('payment.parcelow.cpfValidation.description') }}</p>
+              <button 
+                @click="router.push('/perfil')" 
+                class="flex items-center gap-1 font-black text-amber-700 dark:text-amber-300 hover:underline"
+              >
+                {{ t('payment.parcelow.cpfValidation.button') }}
+                <span class="material-symbols-outlined text-[10px] font-bold">arrow_forward</span>
+              </button>
+            </div>
+          </Transition>
         </div>
         <!-- Mensagem (para serviços gratuitos) -->
         <div v-if="!selectedService.preco" class="flex flex-col gap-1.5">
@@ -238,6 +267,46 @@
           <span class="material-symbols-outlined text-[14px]">lock</span>
           {{ t('services.securePayment') }}
         </p>
+      </div>
+    </Modal>
+
+    <!-- Modal de Confirmação Parcelow -->
+    <Modal
+      v-model="showParcelowConfirm"
+      :title="t('payment.parcelow.confirmModal.title')"
+    >
+      <div v-if="parcelowData" class="flex flex-col gap-6 p-1">
+        <p class="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
+          {{ t('payment.parcelow.confirmModal.info') }}
+        </p>
+
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-3">
+          <div class="flex justify-between items-center text-sm">
+            <span class="text-slate-500 dark:text-gray-400">{{ t('payment.parcelow.confirmModal.priceUSD') }}</span>
+            <span class="text-slate-900 dark:text-white font-bold">{{ formatPrice(parcelowData.total_usd, 'USD') }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-900 dark:text-white font-black uppercase text-xs tracking-widest">{{ t('payment.parcelow.confirmModal.priceBRL') }}</span>
+            <span class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+              {{ formatPrice(parcelowData.total_brl, 'BRL') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <button
+            @click="confirmParcelow"
+            class="w-full rounded-2xl bg-gradient-to-r from-primary to-secondary py-5 text-sm font-black text-black shadow-xl hover:scale-[1.02] transition-all uppercase tracking-widest"
+          >
+            {{ t('payment.parcelow.confirmModal.confirm') }}
+          </button>
+          <button
+            @click="cancelParcelow"
+            class="w-full py-4 text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white transition-colors"
+          >
+            {{ t('payment.parcelow.confirmModal.cancel') }}
+          </button>
+        </div>
       </div>
     </Modal>
 
@@ -392,13 +461,17 @@ import FlickeringGrid from '@/components/ui/FlickeringGrid.vue'
 import { toast } from 'vue-sonner'
 import { fetchExchangeRate, calculatePixAmount } from '@/lib/exchange'
 import { isLocalhost } from '@/utils/localhost'
+import { useParcelowCheckout } from '@/composables/useParcelowCheckout'
+import ParcelowService from '@/lib/parcelowService'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 
 const { supabase } = useSupabase()
-const { t } = useI18n()
 const subscriptionsStore = useSubscriptionsStore()
 const authStore = useAuthStore()
+const userStore = useUserStore()
+const { t } = useI18n()
 
 const loading = ref(true)
 const services = ref<any[]>([])
@@ -411,10 +484,27 @@ const requestMessage = ref('')
 const submitting = ref(false)
 const creatingService = ref(false)
 const editingServiceId = ref<string | null>(null)
-const paymentMethod = ref<'card' | 'pix' | null>(null)
+const paymentMethod = ref<'card' | 'pix' | 'parcelow' | null>(null)
 const exchangeRate = ref(5.90)
 const acceptedTerms = ref(false)
 const showTermsModal = ref(false)
+
+// Parcelow integration
+const { 
+  createCheckout: startParcelowCheckout, 
+  confirmAndRedirect: confirmParcelow,
+  cancelCheckout: cancelParcelow,
+  showConfirmationModal: showParcelowConfirm,
+  checkoutData: parcelowData,
+  isCreatingCheckout: parcelowLoading,
+  error: parcelowError
+} = useParcelowCheckout()
+
+// CPF validation for Parcelow
+const isMissingCpf = computed(() => {
+  return paymentMethod.value === 'parcelow' && !userStore.profile?.document_number
+})
+
 const { locale: currentLocale } = useI18n()
 
 const newService = ref({
@@ -471,7 +561,8 @@ const sanitizedTerms = computed(() => {
   })
 })
 
-function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
+function calculateFee(basePriceCents: number, method: 'card' | 'pix' | 'parcelow'): number {
+  if (method === 'parcelow') return 0
   if (method === 'card') {
     // Taxa cartão: 3.9% + $0.30
     return Math.round((basePriceCents * CARD_FEE_PERCENTAGE) + CARD_FEE_FIXED)
@@ -485,7 +576,8 @@ function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
   }
 }
 
-function calculateTotal(basePriceCents: number, method: 'card' | 'pix'): number {
+function calculateTotal(basePriceCents: number, method: 'card' | 'pix' | 'parcelow'): number {
+  if (method === 'parcelow') return basePriceCents
   if (method === 'card') {
     // Total em USD
     return basePriceCents + calculateFee(basePriceCents, method)
@@ -604,6 +696,38 @@ async function handleCheckout() {
 
     if (!paymentMethod.value) {
       toast.error(t('services.selectPaymentMethod'))
+      return
+    }
+
+    // Fluxo Parcelow
+    if (paymentMethod.value === 'parcelow') {
+      // Validar CPF antes de prosseguir
+      if (isMissingCpf.value) {
+        toast.error(t('payment.parcelow.cpfValidation.toastError'))
+        router.push('/perfil')
+        return
+      }
+
+      const { data: payment, error: pError } = await supabase
+        .from('service_payments')
+        .insert({
+          user_id: user.id,
+          service_id: selectedService.value.id,
+          amount: selectedService.value.preco,
+          currency: 'USD',
+          payment_method: 'parcelow',
+          status: 'pending',
+          metadata: {
+            item_type: 'service',
+            service_id: selectedService.value.id
+          }
+        })
+        .select()
+        .single()
+
+      if (pError) throw pError
+
+      await startParcelowCheckout(payment.id)
       return
     }
 
