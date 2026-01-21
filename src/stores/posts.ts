@@ -798,6 +798,25 @@ export const usePostStore = defineStore('posts', () => {
 
         if (error) throw error
 
+        // Enviar notificação para o autor do post
+        if (post.user_id !== currentUserId.value) {
+          try {
+            await supabase.from('notifications').insert({
+              user_id: post.user_id,
+              type: 'post_like',
+              title: 'New Like',
+              content: `${authStore.user?.user_metadata?.nome || 'Someone'} liked your post`,
+              metadata: {
+                post_id: postId,
+                actor_id: currentUserId.value,
+                actor_name: authStore.user?.user_metadata?.nome || 'Someone'
+              }
+            })
+          } catch (notifErr) {
+            console.error('Error sending like notification:', notifErr)
+          }
+        }
+
         // Log da ação
         logAdminAction(currentUserId.value, {
           action: 'user_like_post',
@@ -939,6 +958,26 @@ export const usePostStore = defineStore('posts', () => {
         }
         post.comments.push(newComment)
         post.comments_count = (post.comments_count || 0) + 1
+
+        // Enviar notificação para o autor do post
+        if (post.user_id !== currentUserId.value) {
+          try {
+            await supabase.from('notifications').insert({
+              user_id: post.user_id,
+              type: 'post_comment',
+              title: 'New Comment',
+              content: `${authStore.user?.user_metadata?.nome || 'Someone'} commented on your post`,
+              metadata: {
+                post_id: post.id,
+                actor_id: currentUserId.value,
+                actor_name: authStore.user?.user_metadata?.nome || 'Someone',
+                comment_id: data.id
+              }
+            })
+          } catch (notifErr) {
+            console.error('Error sending comment notification:', notifErr)
+          }
+        }
       }
 
       // Log da ação

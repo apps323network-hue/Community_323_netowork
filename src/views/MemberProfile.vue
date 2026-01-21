@@ -403,7 +403,10 @@ async function handleConnect() {
         type: 'connection_request',
         title: 'Nova solicitação de conexão',
         content: `${authStore.user.user_metadata?.nome || 'Um membro'} quer se conectar com você.`,
-        metadata: { requester_id: authStore.user.id }
+        metadata: { 
+          requester_id: authStore.user.id,
+          actor_name: authStore.user.user_metadata?.nome || 'Um membro'
+        }
       })
 
       // 2. Notificação Email

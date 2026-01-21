@@ -171,13 +171,6 @@
                     >
                       <span class="material-icons text-sm">edit</span>
                     </RouterLink>
-                      <button
-                      @click="deleteProgram(program)"
-                      class="p-2 text-slate-500 hover:text-red-500 bg-slate-100 dark:bg-white/5 rounded-lg hover:bg-white dark:hover:bg-white/10 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
-                      :title="'Delete program'"
-                    >
-                      <span class="material-icons text-sm">delete</span>
-                    </button>
                   </div>
                 </td>
               </tr>
@@ -190,37 +183,6 @@
               </template>
             </tbody>
           </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Custom Delete Confirmation Modal -->
-    <div v-if="programToDelete" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-      <div class="bg-white dark:bg-surface-dark w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden">
-        <div class="p-6">
-          <div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span class="material-icons text-3xl">delete_forever</span>
-          </div>
-          
-          <h3 class="text-xl font-black text-slate-900 dark:text-white text-center uppercase tracking-tight mb-2">Delete Program?</h3>
-          <p class="text-slate-500 dark:text-gray-400 text-center text-sm mb-8 leading-relaxed">
-            You are about to permanently delete the program <span class="font-bold text-slate-900 dark:text-white">"{{ currentLocale === 'pt-BR' ? programToDelete.title_pt : programToDelete.title_en }}"</span>. This action cannot be undone.
-          </p>
-
-          <div class="flex gap-3">
-            <button 
-              @click="programToDelete = null" 
-              class="flex-1 px-4 py-3 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
-            >
-              Cancel
-            </button>
-            <button 
-              @click="confirmDelete" 
-              class="flex-1 px-4 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
-            >
-              Delete Now
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -240,7 +202,6 @@ const search = ref('')
 const filterStatus = ref('all')
 const filterCategory = ref('all')
 const initialLoading = ref(true)
-const programToDelete = ref<any>(null)
 
 const filteredPrograms = computed(() => {
   return programsStore.programs.filter(program => {
@@ -259,17 +220,6 @@ const filteredPrograms = computed(() => {
     return matchesSearch && matchesStatus && matchesCategory
   })
 })
-
-const deleteProgram = (program: any) => {
-  programToDelete.value = program
-}
-
-const confirmDelete = async () => {
-  if (programToDelete.value) {
-    await programsStore.deleteProgram(programToDelete.value.id)
-    programToDelete.value = null
-  }
-}
 
 onMounted(async () => {
   initialLoading.value = true

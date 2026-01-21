@@ -161,17 +161,17 @@
             <div class="sticky top-6">
               <div v-if="!isPastEvent" class="rounded-[32px] p-6 bg-slate-800/50 backdrop-blur-md border border-white/10 shadow-xl">
                  <div class="text-center mb-6">
-                    <p class="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">Status da Inscrição</p>
+                    <p class="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">{{ t('events.registrationStatus') }}</p>
                     <div v-if="isUserConfirmed" class="flex flex-col items-center gap-2">
                        <div class="text-green-400 font-black text-xl flex items-center gap-2">
                           <span class="material-symbols-outlined">check_circle</span>
-                          Confirmado
+                          {{ t('events.confirmed') }}
                        </div>
-                       <p class="text-white/40 text-xs text-center px-4">Sua presença está garantida. Traremos mais detalhes em breve.</p>
+                       <p class="text-white/40 text-xs text-center px-4">{{ t('events.confirmedMessage') }}</p>
                     </div>
                      <div v-else class="flex flex-col items-center gap-2">
-                       <div class="text-white font-bold text-xl">Não inscrito</div>
-                       <p class="text-white/40 text-xs text-center px-4">Confirme sua presença para participar deste evento exclusivo.</p>
+                       <div class="text-white font-bold text-xl">{{ t('events.notRegistered') }}</div>
+                       <p class="text-white/40 text-xs text-center px-4">{{ t('events.notRegisteredMessage') }}</p>
                     </div>
                  </div>
 
@@ -257,7 +257,7 @@
 
               <!-- Past Event Recording Card -->
               <div v-else-if="event.link_gravacao" class="rounded-[32px] p-6 bg-slate-800/50 backdrop-blur-md border border-white/10 shadow-xl">
-                  <h3 class="text-white font-black uppercase tracking-wide text-center mb-4">Perdeu o evento?</h3>
+                  <h3 class="text-white font-black uppercase tracking-wide text-center mb-4">{{ t('events.missedEvent') }}</h3>
                   <a
                     :href="event.link_gravacao"
                     target="_blank"
@@ -271,7 +271,7 @@
 
               <!-- Organizer Card Optional -->
               <div class="mt-6 rounded-[32px] p-6 bg-slate-900/30 border border-white/5">
-                 <h4 class="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">Organização</h4>
+                 <h4 class="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">{{ t('events.organization') }}</h4>
                  <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-white/10">
                        <span class="font-black text-white text-lg">3N</span>

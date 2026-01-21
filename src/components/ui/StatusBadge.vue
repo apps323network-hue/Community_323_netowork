@@ -20,9 +20,9 @@ const props = defineProps<Props>()
 
 const label = computed(() => {
   const labels: Record<EventStatus, string> = {
-    pending: 'Pendente',
-    approved: 'Aprovado',
-    rejected: 'Rejeitado',
+    pending: 'Pending',
+    approved: 'Approved',
+    rejected: 'Rejected',
   }
   return labels[props.status]
 })

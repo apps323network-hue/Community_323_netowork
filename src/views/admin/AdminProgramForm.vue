@@ -440,6 +440,54 @@
 
         </form>
       </div>
+
+      <!-- Delete Program Section (Only in Edit Mode) -->
+      <div v-if="isEditMode" class="flex justify-end">
+        <button
+          @click="showDeleteModal = true"
+          type="button"
+          class="flex items-center gap-2 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 rounded-xl font-bold transition-all"
+        >
+          <span class="material-icons text-sm">delete_forever</span>
+          Delete Program
+        </button>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+      <div class="bg-white dark:bg-surface-dark w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden">
+        <div class="p-6">
+          <div class="w-16 h-16 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="material-icons text-3xl">delete_forever</span>
+          </div>
+          
+          <h3 class="text-xl font-black text-slate-900 dark:text-white text-center uppercase tracking-tight mb-2">Delete Program?</h3>
+          <p class="text-slate-500 dark:text-gray-400 text-center text-sm mb-8 leading-relaxed">
+            You are about to permanently delete the program <span class="font-bold text-slate-900 dark:text-white">"{{ form.title_pt }}"</span>. This action cannot be undone.
+          </p>
+
+          <div class="flex gap-3">
+            <button 
+              @click="showDeleteModal = false" 
+              class="flex-1 px-4 py-3 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+            >
+              Cancel
+            </button>
+            <button 
+              @click="handleDeleteProgram" 
+              :disabled="deleting"
+              class="flex-1 px-4 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 disabled:opacity-50"
+            >
+              <span v-if="deleting" class="flex items-center justify-center gap-2">
+                <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                Deleting...
+              </span>
+              <span v-else>Delete Now</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </AdminLayout>
 </template>
@@ -487,6 +535,8 @@ const isEditMode = computed(() => !!route.params.id)
 const saving = ref(false)
 const testingInvite = ref(false)
 const currentTab = ref('basic')
+const showDeleteModal = ref(false)
+const deleting = ref(false)
 
 // Image Upload
 const imageFile = ref<File | null>(null)
@@ -753,6 +803,23 @@ const handleSubmit = async () => {
     toast.error(error.message || 'Error saving program. Check console.')
   } finally {
     saving.value = false
+  }
+}
+
+const handleDeleteProgram = async () => {
+  if (!route.params.id) return
+  
+  try {
+    deleting.value = true
+    await programsStore.deleteProgram(route.params.id as string)
+    toast.success('Program deleted successfully!')
+    router.push('/admin/programs')
+  } catch (error: any) {
+    console.error('Error deleting program:', error)
+    toast.error('Error deleting program: ' + (error.message || 'Unknown error'))
+  } finally {
+    deleting.value = false
+    showDeleteModal.value = false
   }
 }
 

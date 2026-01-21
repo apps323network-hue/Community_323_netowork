@@ -124,7 +124,7 @@ const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 const feedSearchQuery = ref('')
 function handleFeedSearch(query: string) {
   // Parse the search query for filters
-  // Examples: "designer em Miami", "#tech", "empreendedor premium"
+  // Examples: "designer em Miami", "#tech", "empreendedor premium", "Brasil"
   const searchTerm = query.toLowerCase().trim()
   
   // Reset filters
@@ -144,13 +144,28 @@ function handleFeedSearch(query: string) {
     filters.value.cidade = foundCity.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
   }
   
+  // Check for country keywords
+  const countryKeywords = ['brasil', 'brazil', 'usa', 'united states', 'portugal', 'espanha', 'spain', 'argentina', 'méxico', 'mexico', 'canadá', 'canada']
+  const foundCountry = countryKeywords.find(country => searchTerm.includes(country))
+  if (foundCountry) {
+    // Normalize country names
+    let normalizedCountry = foundCountry
+    if (foundCountry === 'brazil') normalizedCountry = 'brasil'
+    if (foundCountry === 'united states') normalizedCountry = 'usa'
+    if (foundCountry === 'spain') normalizedCountry = 'espanha'
+    if (foundCountry === 'mexico') normalizedCountry = 'méxico'
+    if (foundCountry === 'canada') normalizedCountry = 'canadá'
+    
+    filters.value.search = normalizedCountry.charAt(0).toUpperCase() + normalizedCountry.slice(1)
+  }
+  
   // Check for plan
   if (searchTerm.includes('premium')) {
     filters.value.plano = 'Premium'
   }
   
   // If no specific filters found, use as general search
-  if (!foundArea && !foundCity && !searchTerm.includes('premium')) {
+  if (!foundArea && !foundCity && !foundCountry && !searchTerm.includes('premium')) {
     filters.value.search = query
   }
   

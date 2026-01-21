@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { supabase } from '@/lib/supabase'
 import { logAdminAction } from '@/lib/auditLog'
 import { useAdminBaseStore } from './base'
+import i18n from '@/i18n'
 import type { AdminEvent, EventStats, EventApprovalAction } from '@/types/admin'
 import type { EventStatus } from '@/types/events'
 
@@ -134,7 +135,24 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
         })
       }
 
-      // Combinar eventos com profiles
+      // Buscar contagem de confirmações para cada evento
+      const eventIds = eventsData.map((e: any) => e.id)
+      let confirmationsMap = new Map<string, number>()
+
+      if (eventIds.length > 0) {
+        const { data: confirmationsData } = await supabase
+          .from('event_confirmations')
+          .select('event_id')
+          .in('event_id', eventIds)
+
+        // Contar confirmações por evento
+        confirmationsData?.forEach((conf: any) => {
+          const count = confirmationsMap.get(conf.event_id) || 0
+          confirmationsMap.set(conf.event_id, count + 1)
+        })
+      }
+
+      // Combinar eventos com profiles e contagem de confirmações
       allEvents.value = eventsData.map((event: any) => {
         const creator = event.created_by ? creatorsMap.get(event.created_by) : null
         return {
@@ -142,6 +160,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
           creator_name: creator?.nome || 'Usuário',
           partner_name: event.partner?.nome,
           program_name: event.programs?.title_pt,
+          confirmations_count: confirmationsMap.get(event.id) || 0,
         }
       })
     } catch (err: any) {
@@ -193,6 +212,20 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
         details: { titulo_pt: data.titulo_pt }
       })
 
+      // Enviar notificação para o criador do evento
+      if (data.created_by) {
+        await supabase.from('notifications').insert({
+          user_id: data.created_by,
+          type: 'event_approved',
+          title: i18n.global.t('notifications.eventApprovedTitle'),
+          content: i18n.global.t('notifications.eventApprovedContent', { title: data.titulo_pt }),
+          metadata: {
+            event_id: eventId,
+            event_title: data.titulo_pt
+          }
+        })
+      }
+
       return data
     } catch (err: any) {
       error.value = err.message
@@ -243,6 +276,24 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
         targetType: 'event',
         details: { reason }
       })
+
+      // Enviar notificação para o criador do evento
+      if (data.created_by) {
+        await supabase.from('notifications').insert({
+          user_id: data.created_by,
+          type: 'event_rejected',
+          title: i18n.global.t('notifications.eventRejectedTitle'),
+          content: i18n.global.t('notifications.eventRejectedContent', {
+            title: data.titulo_pt,
+            reason: reason || i18n.global.t('common.noReasonProvided')
+          }),
+          metadata: {
+            event_id: eventId,
+            event_title: data.titulo_pt,
+            reason: reason
+          }
+        })
+      }
 
       return data
     } catch (err: any) {
@@ -429,6 +480,55 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
     }
   }
 
+  // Buscar participantes confirmados de um evento
+  async function fetchEventAttendees(eventId: string) {
+    try {
+      // Buscar confirmações do evento
+      const { data: confirmations, error: confError } = await supabase
+        .from('event_confirmations')
+        .select('user_id, created_at')
+        .eq('event_id', eventId)
+        .order('created_at', { ascending: false })
+
+      if (confError) throw confError
+
+      if (!confirmations || confirmations.length === 0) {
+        return []
+      }
+
+      // Buscar perfis dos usuários confirmados
+      const userIds = confirmations.map((c: any) => c.user_id)
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, nome, email, avatar_url, plano')
+        .in('id', userIds)
+
+      if (profilesError) throw profilesError
+
+      // Montar mapa de perfis
+      const profilesMap = new Map<string, any>()
+      profiles?.forEach((p: any) => {
+        profilesMap.set(p.id, p)
+      })
+
+      // Combinar confirmações com perfis
+      return confirmations.map((conf: any) => {
+        const profile = profilesMap.get(conf.user_id)
+        return {
+          user_id: conf.user_id,
+          nome: profile?.nome || 'Usuário',
+          email: profile?.email || '',
+          avatar_url: profile?.avatar_url || '',
+          plano: profile?.plano || 'Free',
+          confirmed_at: conf.created_at,
+        }
+      })
+    } catch (err: any) {
+      console.error('Error fetching event attendees:', err)
+      throw err
+    }
+  }
+
   return {
     pendingEvents,
     allEvents,
@@ -442,6 +542,7 @@ export const useAdminEventsStore = defineStore('admin-events', () => {
     deleteEvent,
     fetchEventStats,
     handleEventApproval,
+    fetchEventAttendees,
   }
 })
 

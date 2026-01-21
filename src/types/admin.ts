@@ -15,6 +15,17 @@ export interface AdminEvent extends Event {
   creator_email?: string
   partner_name?: string
   program_name?: string
+  // Confirmations count
+  confirmations_count?: number
+}
+
+export interface EventAttendee {
+  user_id: string
+  nome: string
+  email?: string
+  avatar_url?: string
+  plano?: string
+  confirmed_at: string
 }
 
 export interface EventApprovalAction {

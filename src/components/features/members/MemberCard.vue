@@ -258,7 +258,10 @@ async function handleConnect() {
         type: 'connection_request',
         title: t('members.newConnectionRequest'),
         content: `${authStore.user.user_metadata?.nome || t('members.someMember')} ${t('members.wantsToConnect')}`,
-        metadata: { requester_id: authStore.user.id }
+        metadata: { 
+          requester_id: authStore.user.id,
+          actor_name: authStore.user.user_metadata?.nome || t('members.someMember')
+        }
       })
 
       // 2. Notificação Email
