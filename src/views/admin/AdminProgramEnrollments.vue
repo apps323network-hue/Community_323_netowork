@@ -67,6 +67,20 @@
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
         </select>
+
+        <div class="flex gap-2">
+          <select
+            v-model="filterTimeRange"
+            class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-primary transition-all"
+          >
+            <option value="all">All Time</option>
+            <option value="24h">Last 24 Hours</option>
+            <option value="7d">Last 7 Days</option>
+            <option value="30d">Last 30 Days</option>
+            <option value="month">This Month</option>
+            <option value="last_month">Last Month</option>
+          </select>
+        </div>
       </div>
 
       <!-- Bulk Actions -->
@@ -423,6 +437,7 @@ const exportingBulk = ref(false) // Bulk export in progress
 const storing = ref<string | null>(null) // ID of enrollment being stored
 const storingBulk = ref(false) // Bulk store in progress
 
+const filterTimeRange = ref('all')
 const search = ref('')
 const filterStatus = ref('all')
 
@@ -438,11 +453,37 @@ const newStatus = ref<EnrollmentStatus>('active')
 const newPaymentStatus = ref<PaymentStatus>('pending')
 
 const filteredEnrollments = computed(() => {
+  const now = new Date()
+  
   return enrollments.value.filter(e => {
     const searchLower = search.value.toLowerCase()
     const matchesSearch = e.user?.nome?.toLowerCase().includes(searchLower) || false
     const matchesStatus = filterStatus.value === 'all' || e.status === filterStatus.value
-    return matchesSearch && matchesStatus
+    
+    // Time Filtering
+    if (filterTimeRange.value === 'all') return matchesSearch && matchesStatus
+    
+    const enrollDate = new Date(e.enrolled_at)
+    let matchesTime = true
+    
+    if (filterTimeRange.value === '24h') {
+      const dayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000))
+      matchesTime = enrollDate >= dayAgo
+    } else if (filterTimeRange.value === '7d') {
+      const weekAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000))
+      matchesTime = enrollDate >= weekAgo
+    } else if (filterTimeRange.value === '30d') {
+      const monthAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000))
+      matchesTime = enrollDate >= monthAgo
+    } else if (filterTimeRange.value === 'month') {
+      matchesTime = enrollDate.getMonth() === now.getMonth() && enrollDate.getFullYear() === now.getFullYear()
+    } else if (filterTimeRange.value === 'last_month') {
+      const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1
+      const year = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()
+      matchesTime = enrollDate.getMonth() === lastMonth && enrollDate.getFullYear() === year
+    }
+    
+    return matchesSearch && matchesStatus && matchesTime
   })
 })
 
@@ -611,6 +652,23 @@ const exportEnrollmentData = async (enrollment: ProgramEnrollment) => {
   }
 }
 
+const exportFilteredToCSV = async () => {
+  if (filteredEnrollments.value.length === 0) {
+    toast.error('No data to export')
+    return
+  }
+  
+  exportingBulk.value = true
+  try {
+    await processAndDownloadCSV(filteredEnrollments.value)
+  } catch (error: any) {
+    console.error('Error exporting filtered enrollments:', error)
+    toast.error('Error exporting: ' + (error.message || 'Unknown error'))
+  } finally {
+    exportingBulk.value = false
+  }
+}
+
 const exportSelected = async () => {
   if (selectedEnrollments.value.length === 0) {
     toast.error('Please select at least one student to export')
@@ -620,129 +678,10 @@ const exportSelected = async () => {
   exportingBulk.value = true
   
   try {
-    // Get full enrollment data for selected IDs
     const selectedEnrollmentData = enrollments.value.filter(e => 
       selectedEnrollments.value.includes(e.id)
     )
-
-    // Fetch term acceptances for all selected users
-    const exportData: Record<string, any>[] = []
-    
-    for (const enrollment of selectedEnrollmentData) {
-      try {
-        // Buscar dados completos do perfil do usuário (incluindo email)
-        const { data: userProfile, error: profileError } = await supabase
-          .from('profiles')
-          .select('nome, email')
-          .eq('id', enrollment.user_id)
-          .single()
-
-        if (profileError) {
-          console.error('Error fetching user profile:', profileError)
-        }
-
-        // Buscar aceites de termos do usuário
-        const { data: termAcceptances, error: termsError } = await supabase
-          .from('comprehensive_term_acceptance')
-          .select(`
-            *,
-            term:term_id (
-              title,
-              term_type,
-              version
-            )
-          `)
-          .eq('user_id', enrollment.user_id)
-          .order('accepted_at', { ascending: false })
-
-        if (termsError) {
-          console.error('Error fetching term acceptances:', termsError)
-        }
-
-        // Organizar aceites de termos
-        const privacyAcceptance = termAcceptances?.find((a: any) => a.term.term_type === 'privacy_policy')
-        const tosAcceptance = termAcceptances?.find((a: any) => a.term.term_type === 'terms_of_service')
-        
-        // Buscar termos específicos do programa (se houver)
-        const programTerms = termAcceptances?.filter((a: any) => 
-          a.term.term_type !== 'privacy_policy' && a.term.term_type !== 'terms_of_service'
-        ) || []
-
-        const row: Record<string, string> = {
-          'Name': userProfile?.nome || enrollment.user?.nome || 'N/A',
-          'Email': userProfile?.email || 'N/A',
-          'Enrollment Date': enrollment.enrolled_at 
-            ? new Date(enrollment.enrolled_at).toLocaleString('en-US') 
-            : 'N/A',
-          'Payment Amount': enrollment.payment_amount 
-            ? `${enrollment.payment_currency || 'USD'} ${(enrollment.payment_amount / 100).toFixed(2)}`
-            : 'N/A',
-          'Payment ID': enrollment.payment_id || 'N/A',
-          'Payment Method': enrollment.payment_method === 'card' ? 'Credit Card' 
-            : enrollment.payment_method === 'pix' ? 'PIX' 
-            : enrollment.payment_method || 'N/A',
-          'Payment Status': enrollment.payment_status === 'paid' ? 'Paid'
-            : enrollment.payment_status === 'pending' ? 'Pending'
-            : enrollment.payment_status === 'failed' ? 'Failed'
-            : enrollment.payment_status || 'N/A',
-          'Payment Date': enrollment.paid_at
-            ? new Date(enrollment.paid_at).toLocaleString('en-US')
-            : enrollment.payment_status === 'paid' && enrollment.updated_at
-              ? new Date(enrollment.updated_at).toLocaleString('en-US')
-              : 'N/A',
-          'Privacy Policy': privacyAcceptance 
-            ? `Accepted (v${privacyAcceptance.term.version}) on ${new Date(privacyAcceptance.accepted_at).toLocaleString('en-US')}`
-            : 'Not accepted',
-          'Terms of Service': tosAcceptance
-            ? `Accepted (v${tosAcceptance.term.version}) on ${new Date(tosAcceptance.accepted_at).toLocaleString('en-US')}`
-            : 'Not accepted'
-        }
-
-        // Adicionar termos específicos do programa (se houver)
-        if (programTerms.length > 0) {
-          programTerms.forEach((programTerm: any, index: number) => {
-            row[`Program Term ${index + 1}`] = `${programTerm.term.title} (v${programTerm.term.version}) - Accepted on ${new Date(programTerm.accepted_at).toLocaleString('en-US')}`
-          })
-        }
-
-        exportData.push(row)
-      } catch (err) {
-        console.error('Error processing enrollment:', enrollment.id, err)
-      }
-    }
-
-    if (exportData.length === 0) {
-      toast.error('No data to export')
-      return
-    }
-
-    // Convert to CSV
-    const headers = Object.keys(exportData[0])
-    const csvContent = [
-      headers.join(','), // Header row
-      ...exportData.map(row => 
-        headers.map(header => {
-          const value = row[header] || ''
-          // Escape commas and quotes in values
-          const escaped = String(value).replace(/"/g, '""')
-          return `"${escaped}"`
-        }).join(',')
-      )
-    ].join('\n')
-
-    // Create and download CSV file
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    
-    link.setAttribute('href', url)
-    link.setAttribute('download', `matriculas_${new Date().toISOString().split('T')[0]}.csv`)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
-    toast.success(`${exportData.length} enrollment(s) exported successfully!`)
+    await processAndDownloadCSV(selectedEnrollmentData)
     clearSelection()
   } catch (error: any) {
     console.error('Error exporting enrollments:', error)
@@ -750,6 +689,98 @@ const exportSelected = async () => {
   } finally {
     exportingBulk.value = false
   }
+}
+
+const processAndDownloadCSV = async (enrollmentData: ProgramEnrollment[]) => {
+  const exportData: Record<string, any>[] = []
+  
+  for (const enrollment of enrollmentData) {
+    try {
+      const { data: userProfile } = await supabase
+        .from('profiles')
+        .select('nome, email')
+        .eq('id', enrollment.user_id)
+        .single()
+
+      const { data: termAcceptances } = await supabase
+        .from('comprehensive_term_acceptance')
+        .select(`
+          *,
+          term:term_id (
+            title,
+            term_type,
+            version
+          )
+        `)
+        .eq('user_id', enrollment.user_id)
+        .order('accepted_at', { ascending: false })
+
+      const privacyAcceptance = termAcceptances?.find((a: any) => a.term.term_type === 'privacy_policy')
+      const tosAcceptance = termAcceptances?.find((a: any) => a.term.term_type === 'terms_of_service')
+      const programTerms = termAcceptances?.filter((a: any) => 
+        a.term.term_type !== 'privacy_policy' && a.term.term_type !== 'terms_of_service'
+      ) || []
+
+      const row: Record<string, string> = {
+        'Name': userProfile?.nome || enrollment.user?.nome || 'N/A',
+        'Email': userProfile?.email || 'N/A',
+        'Status': enrollment.status || 'N/A',
+        'Enrollment Date': enrollment.enrolled_at 
+          ? new Date(enrollment.enrolled_at).toLocaleString('en-US') 
+          : 'N/A',
+        'Payment Amount': enrollment.payment_amount 
+          ? `${enrollment.payment_currency || 'USD'} ${(enrollment.payment_amount / 100).toFixed(2)}`
+          : 'N/A',
+        'Payment ID': enrollment.payment_id || 'N/A',
+        'Payment Method': enrollment.payment_method === 'card' ? 'Credit Card' 
+          : enrollment.payment_method === 'pix' ? 'PIX' 
+          : enrollment.payment_method || 'N/A',
+        'Payment Status': enrollment.payment_status || 'N/A',
+        'Privacy Policy': privacyAcceptance 
+          ? `Accepted (v${privacyAcceptance.term.version}) on ${new Date(privacyAcceptance.accepted_at).toLocaleString('en-US')}`
+          : 'Not accepted',
+        'Terms of Service': tosAcceptance
+          ? `Accepted (v${tosAcceptance.term.version}) on ${new Date(tosAcceptance.accepted_at).toLocaleString('en-US')}`
+          : 'Not accepted'
+      }
+
+      if (programTerms.length > 0) {
+        programTerms.forEach((programTerm: any, index: number) => {
+          row[`Program Term ${index + 1}`] = `${programTerm.term.title} (v${programTerm.term.version}) - Accepted on ${new Date(programTerm.accepted_at).toLocaleString('en-US')}`
+        })
+      }
+
+      exportData.push(row)
+    } catch (err) {
+      console.error('Error processing enrollment for CSV:', enrollment.id, err)
+    }
+  }
+
+  if (exportData.length === 0) return
+
+  const headers = Object.keys(exportData[0])
+  const csvContent = [
+    headers.join(','),
+    ...exportData.map(row => 
+      headers.map(header => {
+        const value = row[header] || ''
+        const escaped = String(value).replace(/"/g, '""')
+        return `"${escaped}"`
+      }).join(',')
+    )
+  ].join('\n')
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  
+  link.setAttribute('href', url)
+  link.setAttribute('download', `enrollments_${program.value?.title_en || 'program'}_${new Date().toISOString().split('T')[0]}.csv`)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  toast.success(`${exportData.length} enrollment(s) exported successfully!`)
 }
 
 const storeEnrollmentDocument = async (enrollment: ProgramEnrollment) => {

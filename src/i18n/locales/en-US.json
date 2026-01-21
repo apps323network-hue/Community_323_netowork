@@ -1923,25 +1923,24 @@
     },
     "payment": {
         "parcelow": {
-            "title": "Pay in up to 12 installments",
-            "buttonLabel": "Installments (Parcelow)",
+            "title": "Parcelow up to 21x",
+            "buttonLabel": "Parcelow",
             "confirmModal": {
-                "title": "Confirm Installment Payment",
-                "priceUSD": "Amount in USD",
-                "priceBRL": "Amount in BRL",
-                "info": "You will be redirected to choose the number of installments",
-                "confirm": "Confirm",
+                "title": "Payment via Parcelow",
+                "total": "Investment Amount (USD)",
+                "info": "By proceeding, you will be redirected to Parcelow's secure environment. There, the amount will be converted to BRL at the real-time exchange rate and you can pay in up to 21 installments.",
+                "confirm": "Go to Payment",
                 "cancel": "Cancel"
             },
             "errors": {
-                "cpfRequired": "CPF is required for installment payment",
-                "createFailed": "Error creating checkout"
+                "cpfRequired": "CPF is required for Parcelow payment",
+                "createFailed": "Error creating Parcelow checkout"
             },
             "cpfValidation": {
-                "title": "CPF REQUIRED",
-                "description": "Installments via Parcelow require your CPF to be registered in the system.",
-                "button": "CONFIGURE CPF IN MY PROFILE",
-                "toastError": "CPF required for installments. Please update your profile."
+                "title": "CPF REQUIRED FOR PARCELOW",
+                "description": "Installment payment via Parcelow requires your CPF to be registered in the system for credit authorization.",
+                "button": "REGISTER MY CPF NOW",
+                "toastError": "CPF is required to use Parcelow. Please update your profile."
             }
         }
     }
