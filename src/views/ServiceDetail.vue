@@ -430,13 +430,13 @@ async function fetchService() {
     if (serviceData.created_by) {
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, avatar_url, bio')
+        .select('id, nome, avatar_url, bio')
         .eq('id', serviceData.created_by)
         .single()
       
       if (profileData) {
         creator = {
-          name: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim(),
+          name: profileData.nome || 'Usuário',
           avatar_url: profileData.avatar_url,
           bio: profileData.bio
         }
