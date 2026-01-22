@@ -59,13 +59,10 @@
               <div class="flex-1 flex flex-col gap-1.5 sm:gap-2 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
                   <h3 class="text-white text-sm sm:text-base md:text-lg font-bold truncate">{{ item.service?.nome_pt }}</h3>
-                  <span v-if="item.payment?.source === 'american_dream'" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" title="Pagamento do American Dream">
-                    American Dream
+                  <span v-if="item.source === 'american_dream'" :class="item.payments.length >= 2 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-500'" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+                    {{ item.payments.length >= 2 ? t('myServices.americanDream.fullPaymentStatus') : t('myServices.americanDream.partialPaymentStatus', { current: item.payments.length }) }}
                   </span>
-                  <span :class="getStatusClasses(item.request?.status)">
-                    {{ getStatusLabel(item.request?.status) }}
-                  </span>
-                  <span v-if="item.payment?.status === 'completed'" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500">
+                  <span v-else-if="item.payment?.status === 'completed'" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500">
                     {{ t('myServices.paid') }}
                   </span>
                 </div>
@@ -93,8 +90,16 @@
                 <span class="material-symbols-outlined text-base sm:text-lg">visibility</span>
                 {{ t('myServices.viewDetails') }}
               </button>
+              <button 
+                v-if="item.source === 'american_dream'"
+                @click="authStore.navigateToAmericanDream()"
+                class="flex items-center gap-1.5 sm:gap-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors ml-auto"
+              >
+                <span class="material-symbols-outlined text-base sm:text-lg">rocket_launch</span>
+                {{ t('myServices.americanDream.accessPortal') }}
+              </button>
               <a 
-                v-if="item.request?.status === 'pendente' || item.request?.status === 'em_andamento'"
+                v-else-if="item.request?.status === 'pendente' || item.request?.status === 'em_andamento'"
                 :href="getWhatsAppLink(item)"
                 target="_blank"
                 class="flex items-center gap-1.5 sm:gap-2 rounded-lg bg-green-500/10 hover:bg-green-500/20 border border-green-500/20 hover:border-green-500/40 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-green-400 hover:text-green-300 transition-colors"
@@ -148,13 +153,10 @@
             <span class="text-base sm:text-lg font-bold text-white">{{ selectedService.service?.nome_pt }}</span>
           </div>
           <div class="flex gap-2 flex-wrap">
-            <span v-if="selectedService.payment?.source === 'american_dream'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" title="Pagamento do American Dream">
-              American Dream
+            <span v-if="selectedService.source === 'american_dream'" :class="selectedService.payments.length >= 2 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-500'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+              {{ selectedService.payments.length >= 2 ? t('myServices.americanDream.fullPaymentStatus') : t('myServices.americanDream.partialPaymentStatus', { current: selectedService.payments.length }) }}
             </span>
-            <span :class="getStatusClasses(selectedService.request?.status)">
-              {{ getStatusLabel(selectedService.request?.status) }}
-            </span>
-            <span v-if="selectedService.payment?.status === 'completed'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500">
+            <span v-else-if="selectedService.payment?.status === 'completed'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500">
               {{ t('myServices.paid') }}
             </span>
           </div>
@@ -178,10 +180,16 @@
 
         <div v-if="selectedService.payment" class="p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10 space-y-2">
           <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.paymentInfo') }}</span>
-          <div class="flex justify-between items-center text-sm">
+          
+          <div v-if="selectedService.source === 'american_dream'" class="flex justify-between items-center text-sm">
+            <span class="text-gray-400">{{ t('myServices.americanDream.accumulatedAmount') }}</span>
+            <span class="text-white font-medium">{{ formatPrice(selectedService.totalAmount, selectedService.payment.currency) }}</span>
+          </div>
+          <div v-else class="flex justify-between items-center text-sm">
             <span class="text-gray-400">{{ t('myServices.labels.amountPaid') }}</span>
             <span class="text-white font-medium">{{ formatPrice(selectedService.payment.amount, selectedService.payment.currency) }}</span>
           </div>
+
           <div class="flex justify-between items-center text-sm">
             <span class="text-gray-400">{{ t('myServices.labels.method') }}</span>
             <span class="text-white font-medium capitalize">
@@ -189,9 +197,11 @@
               <span v-if="selectedService.payment.payment_method === 'zelle'" class="ml-1 text-xs text-gray-400">(Zelle)</span>
             </span>
           </div>
-          <div v-if="selectedService.payment.source === 'american_dream'" class="flex justify-between items-center text-sm">
-            <span class="text-gray-400">Origem</span>
-            <span class="text-blue-400 font-medium">American Dream</span>
+          <div v-if="selectedService.source === 'american_dream'" class="flex justify-between items-center text-sm pt-2 border-t border-white/5 mt-2">
+            <span class="text-gray-400">{{ t('myServices.americanDream.installmentProgress') }}</span>
+            <span :class="selectedService.payments.length >= 2 ? 'text-green-400' : 'text-orange-400'" class="font-bold">
+              {{ t('myServices.americanDream.installmentStatus', { current: selectedService.payments.length }) }}
+            </span>
           </div>
           <div class="flex justify-between items-center text-sm">
             <span class="text-gray-400">{{ t('myServices.labels.paymentStatus') }}</span>
@@ -223,6 +233,16 @@
             </p>
           </div>
         </div>
+
+        <!-- Botão de acesso ao portal se for American Dream -->
+        <button
+          v-if="selectedService.source === 'american_dream'"
+          @click="authStore.navigateToAmericanDream()"
+          class="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-500 hover:bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-all shadow-lg shadow-blue-500/20"
+        >
+          <span class="material-symbols-outlined">rocket_launch</span>
+          {{ t('myServices.americanDream.accessPortal') }}
+        </button>
       </div>
     </Modal>
 
@@ -360,12 +380,14 @@ import AppLayout from '@/components/layout/AppLayout.vue'
 import Modal from '@/components/ui/Modal.vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useSubscriptionsStore } from '@/stores/subscriptions'
+import { useAuthStore } from '@/stores/auth'
 import ServiceCard from '@/components/features/services/ServiceCard.vue'
 import { toast } from 'vue-sonner'
 
 const { t, locale } = useI18n()
 const router = useRouter()
 const subscriptionsStore = useSubscriptionsStore()
+const authStore = useAuthStore()
 
 const { supabase } = useSupabase()
 const loading = ref(true)
@@ -405,6 +427,7 @@ async function fetchHiredServices() {
         status,
         source,
         external_payment_id,
+        external_lead_id,
         created_at,
         service_id,
         service_request_id,
@@ -428,26 +451,55 @@ async function fetchHiredServices() {
     
     if (error) throw error
     
-    hiredServices.value = (data || []).map((payment: any) => {
+    const servicesMap = new Map<string, any>()
+    
+    ;(data || []).forEach((payment: any) => {
       const service = Array.isArray(payment.services) ? payment.services[0] : payment.services
       const request = Array.isArray(payment.service_requests) ? payment.service_requests[0] : payment.service_requests
       
-      return {
-        id: payment.id,
-        payment: {
-          id: payment.id,
-          amount: payment.amount,
-          currency: payment.currency,
-          payment_method: payment.payment_method,
-          status: payment.status,
-          source: payment.source || '323_network',
-          external_payment_id: payment.external_payment_id,
-          created_at: payment.created_at
-        },
-        service: service || null,
-        request: request || null
+      // Chave única para agrupamento: se for american_dream, agrupa por lead_id
+      const groupKey = payment.source === 'american_dream' && payment.external_lead_id 
+        ? `ad_${payment.external_lead_id}`
+        : payment.id
+
+      if (!servicesMap.has(groupKey)) {
+        servicesMap.set(groupKey, {
+          id: groupKey,
+          payment: {
+            id: payment.id,
+            amount: payment.amount,
+            currency: payment.currency,
+            payment_method: payment.payment_method,
+            status: payment.status,
+            source: payment.source || '323_network',
+            external_payment_id: payment.external_payment_id,
+            external_lead_id: payment.external_lead_id,
+            created_at: payment.created_at
+          },
+          service: service || null,
+          request: request || null,
+          payments: [payment],
+          totalAmount: payment.amount,
+          source: payment.source
+        })
+      } else {
+        const existing = servicesMap.get(groupKey)
+        existing.payments.push(payment)
+        existing.totalAmount += payment.amount
+        // Manter o request mais recente
+        if (new Date(payment.created_at) > new Date(existing.payment.created_at)) {
+          existing.payment = {
+            ...existing.payment,
+            id: payment.id,
+            amount: payment.amount,
+            created_at: payment.created_at
+          }
+          existing.request = request || existing.request
+        }
       }
     })
+
+    hiredServices.value = Array.from(servicesMap.values())
   } catch (error) {
     console.error('Erro ao buscar serviços contratados:', error)
   }

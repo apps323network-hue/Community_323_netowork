@@ -22,36 +22,40 @@
 
         <!-- Content Area -->
         <main class="relative z-20 space-y-8 md:space-y-10 lg:space-y-12 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 pb-16 md:pb-20 lg:pb-24 w-full max-w-[2000px] mx-auto">
-          <!-- Category Filters -->
-          <div class="flex flex-wrap gap-2 md:gap-3 py-3 md:py-4 items-center">
-            <span class="text-slate-900 dark:text-white font-bold mr-1 md:mr-2 whitespace-nowrap hidden md:block text-sm lg:text-base">{{ t('programs.categories') }}:</span>
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="category in categories"
-                :key="category.value || 'all'"
-                @click="selectedCategory = category.value"
-                :class="[
-                  'whitespace-nowrap px-3 md:px-4 lg:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm lg:text-base font-medium transition-all backdrop-blur-sm',
-                  selectedCategory === category.value
-                    ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold hover:bg-slate-800 dark:hover:bg-white/90 shadow-lg'
-                    : 'bg-white/80 dark:bg-black/40 border border-slate-300 dark:border-white/30 text-slate-700 dark:text-gray-200 hover:border-slate-900 dark:hover:border-white hover:text-slate-900 dark:hover:text-white'
-                ]"
-              >
-                {{ category.label }}
-              </button>
+          <!-- Filters & Search Header -->
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 py-2 relative z-30">
+            <!-- Category Filters -->
+            <div class="flex flex-wrap gap-2 md:gap-3 items-center">
+              <span class="text-slate-900 dark:text-white font-bold mr-1 md:mr-2 whitespace-nowrap hidden sm:block text-sm lg:text-base">{{ t('programs.categories') }}:</span>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="category in categories"
+                  :key="category.value || 'all'"
+                  @click="selectedCategory = category.value"
+                  :class="[
+                    'whitespace-nowrap px-3 md:px-4 lg:px-5 py-1.5 md:py-2 rounded-full text-xs md:text-sm lg:text-base font-medium transition-all backdrop-blur-sm',
+                    selectedCategory === category.value
+                      ? 'bg-slate-900 dark:bg-white text-white dark:text-black font-bold hover:bg-slate-800 dark:hover:bg-white/90 shadow-lg'
+                      : 'bg-white/80 dark:bg-black/40 border border-slate-300 dark:border-white/30 text-slate-700 dark:text-gray-200 hover:border-slate-900 dark:hover:border-white hover:text-slate-900 dark:hover:text-white'
+                  ]"
+                >
+                  {{ category.label }}
+                </button>
+              </div>
             </div>
-          </div>
 
-          <!-- Search Bar (Compact) -->
-          <div class="hidden lg:flex h-9 xl:h-10 items-center rounded-sm bg-white dark:bg-black/50 border border-slate-300 dark:border-white/20 focus-within:border-slate-900 dark:focus-within:border-white focus-within:bg-slate-50 dark:focus-within:bg-black transition-all w-64 xl:w-80 2xl:w-96">
-            <div class="pl-2 pr-2 text-slate-600 dark:text-white">
-              <span class="material-symbols-outlined text-[20px]">search</span>
+            <!-- Search Bar -->
+            <div class="relative group w-full lg:w-72 xl:w-80 2xl:w-96">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <span class="material-symbols-outlined text-[20px] text-slate-500 dark:text-gray-400 group-focus-within:text-primary dark:group-focus-within:text-white transition-colors">search</span>
+              </div>
+              <input
+                v-model="searchQuery"
+                type="text"
+                class="w-full pl-11 pr-4 h-11 bg-white dark:bg-black/40 border border-slate-400 dark:border-white/20 rounded-full text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm md:text-base shadow-sm"
+                :placeholder="t('programs.searchPlaceholder')"
+              />
             </div>
-            <input
-              v-model="searchQuery"
-              class="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted focus:ring-0 text-sm xl:text-base h-full"
-              :placeholder="t('programs.searchPlaceholder')"
-            />
           </div>
 
           <!-- Continue Watching (If enrolled in any) -->

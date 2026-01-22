@@ -130,6 +130,22 @@
         </div>
       </label>
 
+      <!-- Document Number (CPF) -->
+      <label class="block space-y-2 group">
+        <span class="text-sm font-bold text-slate-500 dark:text-text-muted group-hover:text-secondary transition-colors">CPF / Identidade (Obrigatório para Parcelar)</span>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-text-muted text-lg">badge</span>
+          <input
+            :value="documentNumber"
+            @input="handleDocumentInput"
+            type="text"
+            :disabled="readonly"
+            placeholder="000.000.000-00"
+            class="form-input w-full pl-11 pr-4 rounded-xl bg-slate-50 dark:bg-input-bg border border-slate-300 dark:border-input-border text-slate-900 dark:text-white focus:bg-white dark:focus:bg-input-bg focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm font-medium"
+          />
+        </div>
+      </label>
+
       <!-- Bio -->
       <label class="block space-y-2 md:col-span-2 group">
         <span class="text-sm font-bold text-slate-500 dark:text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.bioPlaceholder') }}</span>
@@ -161,6 +177,7 @@ const props = defineProps<{
   state: string
   nationality?: string
   email?: string
+  documentNumber?: string
   bio: string | null
   readonly?: boolean
 }>()
@@ -173,6 +190,7 @@ const emit = defineEmits<{
   (e: 'update:state', value: string): void
   (e: 'update:nationality', value: string): void
   (e: 'update:email', value: string): void
+  (e: 'update:documentNumber', value: string): void
   (e: 'update:bio', value: string): void
 }>()
 
@@ -226,6 +244,28 @@ function handleStateChange(event: Event) {
   const value = (event.target as HTMLSelectElement).value
   emit('update:state', value)
   emit('update:city', '')
+}
+
+function handleDocumentInput(event: Event) {
+  const input = event.target as HTMLInputElement
+  let value = input.value.replace(/\D/g, '') // Remove non-digits
+  
+  // Apply CPF mask 000.000.000-00
+  if (value.length > 11) value = value.slice(0, 11)
+  
+  if (value.length > 9) {
+    value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4')
+  } else if (value.length > 6) {
+    value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3')
+  } else if (value.length > 3) {
+    value = value.replace(/(\d{3})(\d{1,3})/, '$1.$2')
+  }
+  
+  // Special case: if user deletes a character and it's a dot or hyphen, we don't want it stuck
+  // But with this logic, it will re-format instantly.
+  
+  input.value = value
+  emit('update:documentNumber', value)
 }
 
 // Watch for state changes to trigger city loading

@@ -1,6 +1,7 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from 'vue-i18n'
 
 export interface Notification {
     id: string
@@ -13,26 +14,196 @@ export interface Notification {
     created_at: string
 }
 
+export interface GroupedNotification extends Notification {
+    ids: string[]
+    actor_names: string[]
+    count: number
+}
+
 export function useNotifications() {
     const notifications = ref<Notification[]>([])
     const loading = ref(false)
     const unreadCount = ref(0)
+    const hasMore = ref(true)
     const authStore = useAuthStore()
+    const { t } = useI18n()
+    const PAGE_SIZE = 15
 
-    async function fetchNotifications() {
+    const groupedNotifications = computed(() => {
+        const groups: GroupedNotification[] = []
+
+        // Sort notifications by date descending first
+        const sortedNotifications = [...notifications.value].sort((a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+
+        sortedNotifications.forEach(notif => {
+            const isLike = notif.type === 'post_like'
+            const isComment = notif.type === 'post_comment'
+
+            const targetId = notif.metadata?.post_id
+
+            const isConnection = notif.type === 'connection_request'
+
+            if ((isLike || isComment) && targetId) {
+                const existingGroup = groups.find(g =>
+                    g.type === notif.type &&
+                    g.metadata?.post_id === targetId &&
+                    g.read === notif.read
+                )
+
+                if (existingGroup) {
+                    existingGroup.ids.push(notif.id)
+                    const actorName = notif.metadata?.actor_name || t('notifications.someone')
+                    if (!existingGroup.actor_names.includes(actorName)) {
+                        existingGroup.actor_names.push(actorName)
+                    }
+                    existingGroup.count++
+                    return
+                }
+            } else if (isConnection) {
+                const existingGroup = groups.find(g =>
+                    g.type === 'connection_request' &&
+                    g.read === notif.read
+                )
+
+                if (existingGroup) {
+                    existingGroup.ids.push(notif.id)
+                    const actorName = notif.metadata?.actor_name || t('notifications.someone')
+                    if (!existingGroup.actor_names.includes(actorName)) {
+                        existingGroup.actor_names.push(actorName)
+                    }
+                    existingGroup.count++
+                    return
+                }
+            } else if (notif.type === 'event_confirmation' && notif.metadata?.event_id) {
+                const existingGroup = groups.find(g =>
+                    g.type === 'event_confirmation' &&
+                    g.metadata?.event_id === notif.metadata?.event_id &&
+                    g.read === notif.read
+                )
+
+                if (existingGroup) {
+                    existingGroup.ids.push(notif.id)
+                    const actorName = notif.metadata?.actor_name || t('notifications.someone')
+                    if (!existingGroup.actor_names.includes(actorName)) {
+                        existingGroup.actor_names.push(actorName)
+                    }
+                    existingGroup.count++
+                    return
+                }
+            }
+
+            groups.push({
+                ...notif,
+                ids: [notif.id],
+                actor_names: notif.metadata?.actor_name ? [notif.metadata.actor_name] : [],
+                count: 1
+            })
+        })
+
+        return groups.map(group => {
+            if (group.count > 1) {
+                const othersCount = group.count - 1
+                const firstActor = group.actor_names[0] || 'Someone'
+
+                if (group.type === 'post_like') {
+                    group.content = othersCount === 1
+                        ? t('notifications.groupLikeOne', { actor: firstActor })
+                        : t('notifications.groupLikeMany', { actor: firstActor, count: othersCount })
+                } else if (group.type === 'post_comment') {
+                    group.content = othersCount === 1
+                        ? t('notifications.groupCommentOne', { actor: firstActor })
+                        : t('notifications.groupCommentMany', { actor: firstActor, count: othersCount })
+                } else if (group.type === 'connection_request') {
+                    group.content = othersCount === 1
+                        ? t('notifications.groupConnectionOne', { actor: firstActor })
+                        : t('notifications.groupConnectionMany', { actor: firstActor, count: othersCount })
+                } else if (group.type === 'event_confirmation') {
+                    group.content = othersCount === 1
+                        ? t('notifications.groupEventConfirmationOne', { actor: firstActor, title: group.metadata?.event_title })
+                        : t('notifications.groupEventConfirmationMany', { actor: firstActor, count: othersCount, title: group.metadata?.event_title })
+                }
+            } else {
+                // Translate single notifications based on type
+                switch (group.type) {
+                    case 'new_lesson':
+                        group.title = t('notifications.newLessonTitle')
+                        group.content = t('notifications.newLessonContent', {
+                            lessonTitle: group.metadata?.lesson_title,
+                            programTitle: group.metadata?.program_title
+                        })
+                        break
+                    case 'program_starting':
+                        group.title = t('notifications.programStartingTitle')
+                        group.content = t('notifications.programStartingContent', {
+                            programTitle: group.metadata?.program_title,
+                            days: group.metadata?.days
+                        })
+                        break
+                    case 'program_expiring':
+                        group.title = t('notifications.programExpiringTitle')
+                        group.content = t('notifications.programExpiringContent', {
+                            programTitle: group.metadata?.program_title,
+                            days: group.metadata?.days
+                        })
+                        break
+                    case 'enrollment_confirmed':
+                        group.title = t('notifications.enrollmentConfirmedTitle')
+                        group.content = t('notifications.enrollmentConfirmedContent', {
+                            programTitle: group.metadata?.program_title
+                        })
+                        break
+                    case 'program_completed':
+                        group.title = t('notifications.programCompletedTitle')
+                        group.content = t('notifications.programCompletedContent', {
+                            programTitle: group.metadata?.program_title
+                        })
+                        break
+                    case 'certificate_issued':
+                        group.title = t('notifications.certificateIssuedTitle')
+                        group.content = t('notifications.certificateIssuedContent', {
+                            programTitle: group.metadata?.program_title
+                        })
+                        break
+                    case 'progress_milestone':
+                        group.title = t('notifications.progressMilestoneTitle')
+                        group.content = t('notifications.progressMilestoneContent', {
+                            programTitle: group.metadata?.program_title,
+                            percentage: group.metadata?.percentage
+                        })
+                        break
+                }
+            }
+            return group
+        })
+    })
+
+    async function fetchNotifications(append = false) {
         if (!authStore.user) return
 
         try {
             loading.value = true
+
+            const from = append ? notifications.value.length : 0
+            const to = from + PAGE_SIZE - 1
+
             const { data, error } = await supabase
                 .from('notifications')
                 .select('*')
                 .eq('user_id', authStore.user.id)
                 .order('created_at', { ascending: false })
-                .limit(20)
+                .range(from, to)
 
             if (error) throw error
-            notifications.value = data || []
+
+            if (append) {
+                notifications.value = [...notifications.value, ...(data || [])]
+            } else {
+                notifications.value = data || []
+            }
+
+            hasMore.value = (data?.length || 0) === PAGE_SIZE
             updateUnreadCount()
         } catch (error) {
             console.error('Error fetching notifications:', error)
@@ -41,22 +212,42 @@ export function useNotifications() {
         }
     }
 
-    async function markAsRead(notificationId: string) {
+    async function markAsRead(ids: string | string[]) {
+        const idList = Array.isArray(ids) ? ids : [ids]
         try {
             const { error } = await supabase
                 .from('notifications')
                 .update({ read: true })
-                .eq('id', notificationId)
+                .in('id', idList)
 
             if (error) throw error
 
-            const notification = notifications.value.find(n => n.id === notificationId)
-            if (notification) {
-                notification.read = true
-                updateUnreadCount()
-            }
+            idList.forEach(id => {
+                const notification = notifications.value.find(n => n.id === id)
+                if (notification) {
+                    notification.read = true
+                }
+            })
+            updateUnreadCount()
         } catch (error) {
-            console.error('Error marking notification as read:', error)
+            console.error('Error marking as read:', error)
+        }
+    }
+
+    async function deleteNotification(ids: string | string[]) {
+        const idList = Array.isArray(ids) ? ids : [ids]
+        try {
+            const { error } = await supabase
+                .from('notifications')
+                .delete()
+                .in('id', idList)
+
+            if (error) throw error
+
+            notifications.value = notifications.value.filter(n => !idList.includes(n.id))
+            updateUnreadCount()
+        } catch (error) {
+            console.error('Error deleting:', error)
         }
     }
 
@@ -115,10 +306,13 @@ export function useNotifications() {
 
     return {
         notifications,
+        groupedNotifications,
         loading,
         unreadCount,
+        hasMore,
         fetchNotifications,
         markAsRead,
+        deleteNotification,
         markAllAsRead,
         subscribeToNotifications,
         unsubscribeFromNotifications

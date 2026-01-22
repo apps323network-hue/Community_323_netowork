@@ -75,7 +75,7 @@
 
           <div v-else class="divide-y divide-slate-50 dark:divide-white/5">
             <div
-              v-for="notification in notifications"
+              v-for="notification in groupedNotifications"
               :key="notification.id"
               class="p-4 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors cursor-pointer relative group"
               :class="[!notification.read ? 'bg-primary/5 dark:bg-primary/5' : '']"
@@ -98,10 +98,30 @@
                     {{ notification.content }}
                   </p>
                 </div>
-                <div v-if="!notification.read" class="absolute right-4 top-1/2 -translate-y-1/2">
-                  <div class="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,37,244,0.6)]"></div>
+                <!-- Action Buttons (Delete) -->
+                <div class="flex flex-col gap-1 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    @click.stop="handleDeleteNotification(notification.ids)"
+                    class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-all"
+                    :title="t('notifications.delete')"
+                  >
+                    <span class="material-icons-outlined text-sm">delete</span>
+                  </button>
+                  <div v-if="!notification.read" class="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,37,244,0.6)]"></div>
                 </div>
               </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div v-if="hasMore" class="p-4 border-t border-slate-50 dark:divide-white/5 flex justify-center">
+              <button 
+                @click.stop="handleLoadMore"
+                :disabled="loading"
+                class="text-xs font-bold text-slate-600 dark:text-gray-400 hover:text-primary transition-colors flex items-center gap-2"
+              >
+                <span v-if="loading" class="animate-spin material-icons-outlined text-sm">refresh</span>
+                {{ loading ? t('common.loading') : t('notifications.loadMore') }}
+              </button>
             </div>
           </div>
         </div>
@@ -158,7 +178,7 @@
 
         <div v-else class="space-y-2">
           <div
-            v-for="notification in notifications"
+            v-for="notification in groupedNotifications"
             :key="notification.id"
             class="p-4 hover:bg-slate-50 dark:hover:bg-surface-lighter transition-colors cursor-pointer relative rounded-xl border"
             :class="[
@@ -185,11 +205,29 @@
                   {{ notification.content }}
                 </p>
               </div>
-              <div v-if="!notification.read" class="absolute right-4 top-1/2 -translate-y-1/2">
-                <div class="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,37,244,0.6)]"></div>
+              
+              <div class="flex flex-col gap-2 items-center justify-center">
+                  <button 
+                    @click.stop="handleDeleteNotification(notification.ids)"
+                    class="p-2 text-slate-400 hover:text-red-500 rounded-lg transition-all"
+                  >
+                    <span class="material-icons-outlined text-base">delete</span>
+                  </button>
+                  <div v-if="!notification.read" class="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(244,37,244,0.6)]"></div>
               </div>
             </div>
           </div>
+
+          <!-- Mobile Load More -->
+          <button 
+            v-if="hasMore"
+            @click.stop="handleLoadMore"
+            :disabled="loading"
+            class="w-full py-4 text-sm font-bold text-slate-600 dark:text-gray-400 flex items-center justify-center gap-2 border border-dashed rounded-xl"
+          >
+            <span v-if="loading" class="animate-spin material-icons-outlined text-sm">refresh</span>
+            {{ loading ? t('common.loading') : t('notifications.loadMore') }}
+          </button>
         </div>
       </div>
     </Modal>
@@ -208,10 +246,13 @@ const router = useRouter()
 const { t } = useI18n()
 const {
   notifications,
+  groupedNotifications,
   loading,
   unreadCount,
+  hasMore,
   fetchNotifications,
   markAsRead,
+  deleteNotification,
   markAllAsRead,
   subscribeToNotifications,
   unsubscribeFromNotifications
@@ -245,7 +286,7 @@ async function handleMarkAllAsRead() {
 
 async function handleNotificationClick(notification: any) {
   if (!notification.read) {
-    await markAsRead(notification.id)
+    await markAsRead(notification.ids)
   }
   
   isOpen.value = false
@@ -253,11 +294,23 @@ async function handleNotificationClick(notification: any) {
   // Redirecionar baseado no tipo de notificação
   if (notification.type === 'connection_request') {
     router.push('/comunidade')
-  } else if (notification.type === 'post_like' && notification.metadata?.post_id) {
+  } else if ((notification.type === 'post_like' || notification.type === 'post_comment') && notification.metadata?.post_id) {
     router.push(`/?post=${notification.metadata.post_id}`)
   } else if (notification.type === 'youtube_upload' && notification.metadata?.program_id) {
     router.push(`/professor/programa/${notification.metadata.program_id}`)
+  } else if ((notification.type === 'event_approved' || notification.type === 'event_confirmation' || notification.type === 'event_rejected') && notification.metadata?.event_id) {
+    router.push(`/eventos/${notification.metadata.event_id}`)
+  } else if ((notification.type === 'new_lesson' || notification.type === 'program_starting' || notification.type === 'program_expiring' || notification.type === 'enrollment_confirmed' || notification.type === 'program_completed' || notification.type === 'certificate_issued' || notification.type === 'progress_milestone') && notification.metadata?.program_id) {
+    router.push(`/programas/${notification.metadata.program_id}`)
   }
+}
+
+async function handleDeleteNotification(ids: string[]) {
+  await deleteNotification(ids)
+}
+
+async function handleLoadMore() {
+  await fetchNotifications(true)
 }
 
 function getIcon(type: string) {
@@ -265,9 +318,19 @@ function getIcon(type: string) {
     case 'connection_request': return 'person_add'
     case 'post_like': return 'favorite'
     case 'post_comment': return 'chat_bubble'
-    case 'event_reminder': return 'event'
+    case 'event_reminder': 
+    case 'event_confirmation':
+    case 'event_approved':
+    case 'event_rejected': return 'event'
     case 'service_update': return 'assignment'
-    case 'youtube_upload': return 'play_circle'
+    case 'youtube_upload':
+    case 'new_lesson': return 'play_circle'
+    case 'program_starting':
+    case 'program_expiring': return 'school'
+    case 'enrollment_confirmed': return 'check_circle'
+    case 'program_completed': return 'workspace_premium'
+    case 'certificate_issued': return 'card_membership'
+    case 'progress_milestone': return 'trending_up'
     case 'profile_incomplete': return 'person_alert'
     default: return 'notifications'
   }
@@ -281,6 +344,13 @@ function getIconBg(type: string) {
     case 'event_reminder': return 'bg-yellow-500/10 text-yellow-500'
     case 'service_update': return 'bg-green-500/10 text-green-500'
     case 'youtube_upload': return 'bg-red-600/10 text-red-600'
+    case 'new_lesson': return 'bg-blue-500/10 text-blue-500'
+    case 'program_starting': return 'bg-green-500/10 text-green-500'
+    case 'program_expiring': return 'bg-orange-500/10 text-orange-500'
+    case 'enrollment_confirmed': return 'bg-emerald-500/10 text-emerald-500'
+    case 'program_completed': return 'bg-purple-500/10 text-purple-500'
+    case 'certificate_issued': return 'bg-indigo-500/10 text-indigo-500'
+    case 'progress_milestone': return 'bg-cyan-500/10 text-cyan-500'
     case 'profile_incomplete': return 'bg-yellow-500/10 text-yellow-500'
     default: return 'bg-primary/10 text-primary'
   }

@@ -54,6 +54,24 @@
           <span class="material-symbols-outlined text-secondary text-base">school</span>
           <span class="font-medium text-primary">{{ event.program_name }}</span>
         </div>
+        <!-- Attendees Count -->
+        <div class="flex items-center justify-between gap-2 pt-2 mt-2 border-t border-white/10">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary text-base">groups</span>
+            <span class="text-white/70 text-sm">
+              <span class="font-bold text-white">{{ event.confirmations_count || 0 }}</span>
+              {{ (event.confirmations_count || 0) === 1 ? 'attendee' : 'attendees' }}
+            </span>
+          </div>
+          <button
+            v-if="(event.confirmations_count || 0) > 0"
+            @click="$emit('view-attendees')"
+            class="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-secondary hover:text-white hover:bg-secondary/20 rounded-lg transition-all"
+          >
+            <span class="material-symbols-outlined text-sm">visibility</span>
+            View List
+          </button>
+        </div>
       </div>
 
       <!-- Actions -->
@@ -126,6 +144,7 @@ defineEmits<{
   approve: []
   reject: []
   'view-details': []
+  'view-attendees': []
   'toggle-destaque': []
   delete: []
 }>()
@@ -153,6 +172,7 @@ const formattedTime = computed(() => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

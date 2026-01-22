@@ -95,7 +95,7 @@
                       <span v-if="member.plano === 'Premium'" class="material-icons text-secondary text-[14px]">verified</span>
                     </div>
                     <p class="text-xs text-slate-500 dark:text-gray-400 truncate">
-                      {{ member.area_atuacao }} {{ member.cidade ? `• ${member.cidade}` : '' }}
+                      {{ member.area_atuacao }}{{ (member.cidade || member.pais) ? ' • ' : '' }}{{ [member.cidade, member.pais].filter(Boolean).join(', ') }}
                     </p>
                   </div>
                   <span class="material-icons text-slate-300 dark:text-gray-600 group-hover:translate-x-1 transition-transform">chevron_right</span>
@@ -198,8 +198,8 @@ async function performSearch() {
     // 1. Search Members
     const { data: members, error } = await supabase
       .from('profiles')
-      .select('id, nome, area_atuacao, cidade, avatar_url, plano')
-      .or(`nome.ilike.%${searchTerm}%,area_atuacao.ilike.%${searchTerm}%,cidade.ilike.%${searchTerm}%`)
+      .select('id, nome, area_atuacao, cidade, pais, avatar_url, plano')
+      .or(`nome.ilike.%${searchTerm}%,area_atuacao.ilike.%${searchTerm}%,cidade.ilike.%${searchTerm}%,pais.ilike.%${searchTerm}%`)
       .limit(5)
     
     if (error) throw error
@@ -222,7 +222,7 @@ async function fetchRecommendations() {
     // Fetch some premium members or just random members as people to follow
     const { data: members, error } = await supabase
       .from('profiles')
-      .select('id, nome, area_atuacao, cidade, avatar_url, plano')
+      .select('id, nome, area_atuacao, cidade, pais, avatar_url, plano')
       .order('plano', { ascending: false })
       .limit(5)
 

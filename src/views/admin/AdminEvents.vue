@@ -38,6 +38,7 @@
         @approve="handleApprove"
         @reject="handleReject"
         @view-details="handleViewDetails"
+        @view-attendees="handleViewAttendees"
         @toggle-destaque="handleToggleDestaque"
         @delete="handleDelete"
       />
@@ -65,6 +66,13 @@
         @cancel="handleCreateCancel"
         @validation-error="(message) => toast.error(message)"
       />
+
+      <!-- Attendees Modal -->
+      <EventAttendeesModal
+        v-model="showAttendeesModal"
+        :event-id="selectedEventForAttendees?.id || ''"
+        :event-title="selectedEventForAttendees?.titulo_pt || ''"
+      />
     </div>
   </AdminLayout>
 </template>
@@ -82,6 +90,7 @@ import EventApprovalModal from '@/components/admin/EventApprovalModal.vue'
 import EventFilters from '@/components/admin/EventFilters.vue'
 import DeleteEventModal from '@/components/admin/DeleteEventModal.vue'
 import CreateEventModal from '@/components/admin/CreateEventModal.vue'
+import EventAttendeesModal from '@/components/admin/EventAttendeesModal.vue'
 import type { AdminEvent } from '@/types/admin'
 import type { EventStatus } from '@/types/events'
 import { toast } from 'vue-sonner'
@@ -109,9 +118,11 @@ const initialLoading = ref(true)
 const showApprovalModal = ref(false)
 const showCreateModal = ref(false)
 const showDeleteModal = ref(false)
+const showAttendeesModal = ref(false)
 const submitting = ref(false)
 const selectedEvent = ref<AdminEvent | null>(null)
 const eventToDelete = ref<AdminEvent | null>(null)
+const selectedEventForAttendees = ref<AdminEvent | null>(null)
 
 const displayedEvents = computed(() => {
   if (activeFilter.value === 'all') {
@@ -178,6 +189,11 @@ async function handleModalReject(eventId: string, reason: string) {
 
 function handleViewDetails(eventId: string) {
   router.push(`/eventos/${eventId}`)
+}
+
+function handleViewAttendees(event: AdminEvent) {
+  selectedEventForAttendees.value = event
+  showAttendeesModal.value = true
 }
 
 async function handleToggleDestaque(eventId: string) {

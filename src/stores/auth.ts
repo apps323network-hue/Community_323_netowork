@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useUserStore } from './user'
 import type { User } from '@supabase/supabase-js'
+import { toast } from 'vue-sonner'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -115,7 +116,81 @@ export const useAuthStore = defineStore('auth', () => {
           throw new Error('Falha ao obter token de sessão')
         }
 
+
         console.log('[SSO] ✅ Token obtido, redirecionando para American Dream...')
+
+        // 🔥 IMPORTANTE: Registrar aceite de termos ANTES de redirecionar
+        // Se redirecionar antes, o código nunca executa!
+        try {
+          console.log('[SSO] Registrando aceite de termos antes do redirecionamento...')
+
+          // Buscar termos ativos
+          const { data: tosData } = await supabase
+            .from('application_terms')
+            .select('id')
+            .eq('term_type', 'terms_of_service')
+            .eq('is_active', true)
+            .order('version', { ascending: false })
+            .limit(1)
+            .single()
+
+          const { data: privacyData } = await supabase
+            .from('application_terms')
+            .select('id')
+            .eq('term_type', 'privacy_policy')
+            .eq('is_active', true)
+            .order('version', { ascending: false })
+            .limit(1)
+            .single()
+
+          // Obter IP do usuário
+          let ipAddress: string | null = null
+          try {
+            const ipResponse = await fetch('https://api.ipify.org?format=json')
+            const ipData = await ipResponse.json()
+            ipAddress = ipData.ip || null
+          } catch {
+            console.warn('[SSO] Não foi possível obter IP')
+          }
+
+          const userAgent = navigator.userAgent
+
+          // Registrar aceites
+          const acceptances = []
+          if (tosData?.id) {
+            acceptances.push({
+              user_id: user.value!.id,
+              term_id: tosData.id,
+              term_type: 'terms_of_service',
+              ip_address: ipAddress,
+              user_agent: userAgent
+            })
+          }
+          if (privacyData?.id) {
+            acceptances.push({
+              user_id: user.value!.id,
+              term_id: privacyData.id,
+              term_type: 'privacy_policy',
+              ip_address: ipAddress,
+              user_agent: userAgent
+            })
+          }
+
+          if (acceptances.length > 0) {
+            const { error: acceptError } = await supabase
+              .from('comprehensive_term_acceptance')
+              .insert(acceptances)
+
+            if (acceptError) {
+              console.error('[SSO] ❌ Erro ao registrar aceites:', acceptError)
+            } else {
+              console.log('[SSO] ✅ Termos registrados com sucesso!')
+            }
+          }
+        } catch (termsError) {
+          console.error('[SSO] ⚠️ Erro ao registrar termos (não crítico):', termsError)
+          // Não bloquear o redirecionamento por causa disso
+        }
 
         // Se tiver returnTo, redirecionar com token
         if (userData?.returnTo && accessToken) {
@@ -296,15 +371,22 @@ export const useAuthStore = defineStore('auth', () => {
             console.log('[SSO] ✅ Profile encontrado:', { status: profileData.status, id: data.user!.id })
 
             if (profileData.status === 'pending') {
-              console.log('[SSO] Profile com status pending, notificando admins...')
-              const { notifyAdminsNewUser } = await import('@/lib/emails')
-              await notifyAdminsNewUser(
-                data.user!.id,
-                userName,
-                userArea || undefined,
-                profileData.created_at || new Date().toISOString()
-              )
-              console.log('[SSO] ✅ Admins notificados com sucesso')
+              // Não notificar admins se o email for @uorak (contas internas de teste)
+              const isUorakEmail = email.toLowerCase().endsWith('@uorak')
+
+              if (isUorakEmail) {
+                console.log('[SSO] ⏭️ Email @uorak detectado - pulando notificação de admins')
+              } else {
+                console.log('[SSO] Profile com status pending, notificando admins...')
+                const { notifyAdminsNewUser } = await import('@/lib/emails')
+                await notifyAdminsNewUser(
+                  data.user!.id,
+                  userName,
+                  userArea || undefined,
+                  profileData.created_at || new Date().toISOString()
+                )
+                console.log('[SSO] ✅ Admins notificados com sucesso')
+              }
             } else {
               console.log('[SSO] Profile encontrado com status:', profileData.status, '- não é necessário notificar')
             }
@@ -528,6 +610,62 @@ export const useAuthStore = defineStore('auth', () => {
   // Isso evita que checkSession seja chamado múltiplas vezes durante o login
   checkSession()
 
+  async function navigateToAmericanDream(returnTo: string = '/client/dashboard') {
+    if (!user.value) return
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const accessToken = session?.access_token
+
+      if (!accessToken) {
+        throw new Error('Não foi possível obter token de sessão')
+      }
+
+      // Buscar perfil para obter nome e telefone
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.value.id)
+        .single()
+
+      // Decodificar returnTo se estiver URL-encoded
+      let decodedReturnTo = returnTo
+      try {
+        decodedReturnTo = decodeURIComponent(returnTo)
+      } catch {
+        decodedReturnTo = returnTo
+      }
+
+      // Construir URL de redirecionamento
+      let returnUrl: URL
+      if (decodedReturnTo.startsWith('http://') || decodedReturnTo.startsWith('https://')) {
+        returnUrl = new URL(decodedReturnTo)
+      } else {
+        // Detectar ambiente automaticamente
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        const baseUrl = isLocalhost
+          ? 'http://localhost:8080'
+          : 'https://americandream.323network.com'
+
+        returnUrl = new URL(decodedReturnTo.startsWith('/') ? decodedReturnTo : `/${decodedReturnTo}`, baseUrl)
+      }
+
+      // Adicionar parâmetros de SSO
+      returnUrl.searchParams.set('token', accessToken)
+      returnUrl.searchParams.set('email', user.value.email || '')
+      returnUrl.searchParams.set('name', profile?.nome || user.value.email?.split('@')[0] || '')
+
+      if (profile?.phone) returnUrl.searchParams.set('phone', profile.phone)
+      if (profile?.phoneCountryCode) returnUrl.searchParams.set('phoneCountryCode', profile.phoneCountryCode)
+
+      console.log('[SSO] Redirecionando logado para:', returnUrl.toString())
+      window.location.href = returnUrl.toString()
+    } catch (err) {
+      console.error('[SSO] Erro ao redirecionar para American Dream:', err)
+      toast.error('Erro ao redirecionar para o portal')
+    }
+  }
+
   return {
     user,
     loading,
@@ -543,6 +681,7 @@ export const useAuthStore = defineStore('auth', () => {
     fetchUser,
     signInWithGoogle,
     termsAccepted,
+    navigateToAmericanDream,
   }
 })
 

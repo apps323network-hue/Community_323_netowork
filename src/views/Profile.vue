@@ -95,6 +95,7 @@
             v-model:state="editableProfile.estado"
             v-model:nationality="editableProfile.nacionalidade"
             v-model:email="editableProfile.email"
+            v-model:documentNumber="editableProfile.document_number"
             v-model:bio="editableProfile.bio"
             :readonly="isPreviewMode"
           />
@@ -326,7 +327,8 @@ const editableProfile = reactive<any>({
   show_email: false,
   nacionalidade: '',
   estado: '',
-  avatar_url: ''
+  avatar_url: '',
+  document_number: ''
 })
 
 // Store a copy of original data for comparison
@@ -355,6 +357,7 @@ function initEditableState() {
         nacionalidade: userStore.profile.nacionalidade || '',
         estado: userStore.profile.estado || '',
         email: userStore.profile.email || '',
+        document_number: userStore.profile.document_number || '',
         // Ensure linkedin and instagram are strings, not objects or invalid formats
         linkedin: typeof userStore.profile.linkedin === 'string' ? userStore.profile.linkedin : (userStore.profile.linkedin || ''),
         instagram: typeof userStore.profile.instagram === 'string' ? userStore.profile.instagram : (userStore.profile.instagram || '')
@@ -385,7 +388,8 @@ function initEditableState() {
         nacionalidade: '',
         estado: '',
         email: '',
-        avatar_url: userStore.profile.avatar_url || ''
+        avatar_url: userStore.profile.avatar_url || '',
+        document_number: userStore.profile.document_number || ''
       })
       originalData.value = JSON.stringify(editableProfile)
       hasChanges.value = false

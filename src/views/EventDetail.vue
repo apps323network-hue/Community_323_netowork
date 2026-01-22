@@ -77,13 +77,29 @@
                     {{ isPastEvent ? t('events.eventFinished') : t('events.upcomingEvent') }}
                   </span>
                 </div>
+
+                <!-- Share Button -->
+                <div class="absolute top-20 right-6 z-30">
+                  <ShareButton
+                    v-if="event"
+                    :options="{
+                      url: `/events/${event.id}`,
+                      title: translatedTitle,
+                      description: translatedDescription?.substring(0, 160) || '',
+                      imageUrl: event.image_url
+                    }"
+                    variant="icon"
+                  />
+                </div>
               </div>
 
               <!-- Title & Desc -->
               <div class="relative -mt-20 p-8 sm:p-10 z-20">
-                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter mb-6 drop-shadow-lg">
-                  {{ translatedTitle }}
-                </h1>
+                <div class="flex items-start justify-between gap-4 mb-6">
+                  <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-lg flex-1">
+                    {{ translatedTitle }}
+                  </h1>
+                </div>
                 
                 <div class="flex flex-wrap gap-4 mb-8">
                    <!-- Details Chips -->
@@ -143,17 +159,17 @@
             <div class="sticky top-6">
               <div v-if="!isPastEvent" class="rounded-[32px] p-6 bg-slate-800/50 backdrop-blur-md border border-white/10 shadow-xl">
                  <div class="text-center mb-6">
-                    <p class="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">Status da Inscrição</p>
+                    <p class="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">{{ t('events.registrationStatus') }}</p>
                     <div v-if="isUserConfirmed" class="flex flex-col items-center gap-2">
                        <div class="text-green-400 font-black text-xl flex items-center gap-2">
                           <span class="material-symbols-outlined">check_circle</span>
-                          Confirmado
+                          {{ t('events.confirmed') }}
                        </div>
-                       <p class="text-white/40 text-xs text-center px-4">Sua presença está garantida. Traremos mais detalhes em breve.</p>
+                       <p class="text-white/40 text-xs text-center px-4">{{ t('events.confirmedMessage') }}</p>
                     </div>
                      <div v-else class="flex flex-col items-center gap-2">
-                       <div class="text-white font-bold text-xl">Não inscrito</div>
-                       <p class="text-white/40 text-xs text-center px-4">Confirme sua presença para participar deste evento exclusivo.</p>
+                       <div class="text-white font-bold text-xl">{{ t('events.notRegistered') }}</div>
+                       <p class="text-white/40 text-xs text-center px-4">{{ t('events.notRegisteredMessage') }}</p>
                     </div>
                  </div>
 
@@ -239,7 +255,7 @@
 
               <!-- Past Event Recording Card -->
               <div v-else-if="event.link_gravacao" class="rounded-[32px] p-6 bg-slate-800/50 backdrop-blur-md border border-white/10 shadow-xl">
-                  <h3 class="text-white font-black uppercase tracking-wide text-center mb-4">Perdeu o evento?</h3>
+                  <h3 class="text-white font-black uppercase tracking-wide text-center mb-4">{{ t('events.missedEvent') }}</h3>
                   <a
                     :href="event.link_gravacao"
                     target="_blank"
@@ -253,7 +269,7 @@
 
               <!-- Organizer Card Optional -->
               <div class="mt-6 rounded-[32px] p-6 bg-slate-900/30 border border-white/5">
-                 <h4 class="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">Organização</h4>
+                 <h4 class="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">{{ t('events.organization') }}</h4>
                  <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-white/10">
                        <span class="font-black text-white text-lg">3N</span>
@@ -281,7 +297,10 @@ import { useI18n } from 'vue-i18n'
 import { useEvents } from '@/composables/useEvents'
 import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import ShareButton from '@/components/ui/ShareButton.vue'
 import { toast } from 'vue-sonner'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
+import { watch } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -379,6 +398,19 @@ async function handleCancel() {
     alert(t('errors.genericError'))
   }
 }
+
+// Set dynamic meta tags for social sharing
+watch(() => event.value, (newEvent) => {
+  if (newEvent) {
+    useDynamicMeta({
+      title: `${translatedTitle.value} - 323 Network`,
+      description: translatedDescription.value?.substring(0, 160) || '',
+      image: newEvent.image_url,
+      url: `/eventos/${newEvent.id}`,
+      type: 'event'
+    })
+  }
+}, { immediate: true })
 
 onMounted(async () => {
   if (eventId.value) {

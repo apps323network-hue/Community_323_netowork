@@ -456,7 +456,14 @@
         "journey": "Jornada",
         "postEventMessage": "O evento terminou, mas sua jornada continua! Explore nossos serviços exclusivos para membros e acelere seu crescimento nos EUA.",
         "exploreServices": "Explorar Serviços",
-        "viewUpcoming": "Ver Próximos Eventos"
+        "viewUpcoming": "Ver Próximos Eventos",
+        "registrationStatus": "Status da Inscrição",
+        "confirmed": "Confirmado",
+        "confirmedMessage": "Sua presença está garantida. Traremos mais detalhes em breve.",
+        "notRegistered": "Não inscrito",
+        "notRegisteredMessage": "Confirme sua presença para participar deste evento exclusivo.",
+        "missedEvent": "Perdeu o evento?",
+        "organization": "Organização"
     },
     "services": {
         "notFound": "Serviço não encontrado",
@@ -608,7 +615,15 @@
             "em_andamento": "Seu serviço está sendo atendido. O parceiro pode entrar em contato a qualquer momento para atualizações.",
             "concluido": "Seu serviço foi concluído. Se precisar de suporte adicional, entre em contato conosco."
         },
-        "whatsappMessage": "Olá! Contratei o serviço \"{name}\" e gostaria de acompanhar o status."
+        "whatsappMessage": "Olá! Contratei o serviço \"{name}\" e gostaria de acompanhar o status.",
+        "americanDream": {
+            "installmentStatus": "{current}/2 Parcelas Recebidas",
+            "fullPaymentStatus": "Pago Integral (2/2)",
+            "partialPaymentStatus": "Parcela {current}/2 Paga",
+            "accessPortal": "Acessar Portal AD",
+            "accumulatedAmount": "Total Pago Acumulado",
+            "installmentProgress": "Status das Parcelas"
+        }
     },
     "myRequests": {
         "title": "Meus Pedidos",
@@ -797,7 +812,41 @@
         "noNotifications": "Nenhuma notificação",
         "noNotificationsDesc": "Você está em dia! Sem notificações no momento.",
         "new": "NOVAS",
-        "newNotifications": "novas notificações"
+        "newNotifications": "novas notificações",
+        "completeProfile": "Complete seu Perfil",
+        "actionRequired": "Ação Necessária",
+        "profileIncompleteMessage": "Seu perfil está incompleto. Clique para completar.",
+        "profileIncompleteMobile": "Seu perfil está incompleto. Toque para completar.",
+        "delete": "Excluir",
+        "loadMore": "Carregar mais",
+        "someone": "Alguém",
+        "groupLikeOne": "{actor} e mais uma pessoa curtiram seu post",
+        "groupLikeMany": "{actor} e mais {count} pessoas curtiram seu post",
+        "groupCommentOne": "{actor} e mais uma pessoa comentaram seu post",
+        "groupCommentMany": "{actor} e mais {count} pessoas comentaram seu post",
+        "groupConnectionOne": "{actor} e mais uma pessoa querem se conectar",
+        "groupConnectionMany": "{actor} e mais {count} pessoas querem se conectar",
+        "groupEventConfirmationOne": "{actor} confirmou presença no seu evento: {title}",
+        "groupEventConfirmationMany": "{actor} e mais {count} pessoas confirmaram presença no seu evento: {title}",
+        "eventApprovedTitle": "Evento aprovado",
+        "eventApprovedContent": "Seu evento \"{title}\" foi aprovado e já está visível.",
+        "eventRejectedTitle": "Evento rejeitado",
+        "eventRejectedContent": "Seu evento \"{title}\" foi rejeitado. Motivo: {reason}",
+        "eventConfirmationTitle": "Nova confirmação de evento",
+        "newLessonTitle": "Nova Aula Disponível",
+        "newLessonContent": "Nova aula \"{lessonTitle}\" disponível em {programTitle}",
+        "programStartingTitle": "Programa Iniciando em Breve",
+        "programStartingContent": "{programTitle} começa em {days} dias. Prepare-se!",
+        "programExpiringTitle": "Programa Expirando em Breve",
+        "programExpiringContent": "Seu acesso a {programTitle} expira em {days} dias",
+        "enrollmentConfirmedTitle": "Inscrição Confirmada",
+        "enrollmentConfirmedContent": "Sua inscrição em {programTitle} foi confirmada. Bem-vindo!",
+        "programCompletedTitle": "Programa Concluído! 🎉",
+        "programCompletedContent": "Parabéns! Você concluiu o programa {programTitle}.",
+        "certificateIssuedTitle": "Certificado Disponível",
+        "certificateIssuedContent": "Seu certificado para {programTitle} já está disponível para download.",
+        "progressMilestoneTitle": "Grande Progresso!",
+        "progressMilestoneContent": "Você já completou {percentage}% de {programTitle}. Continue assim!"
     },
     "sidebar": {
         "yourBusinessHere": "Seu Negócio Aqui",
@@ -1874,6 +1923,39 @@
             "actionRequired": "Ação Necessária",
             "profileIncompleteMessage": "Seu perfil está faltando algumas informações obrigatórias. Clique para completar.",
             "profileIncompleteMobile": "Seu perfil está faltando algumas informações obrigatórias. Toque para completar."
+        },
+        "share": {
+            "shareButton": "Compartilhar",
+            "copyLink": "Copiar Link",
+            "moreOptions": "Mais Opções",
+            "linkCopied": "Link copiado!",
+            "copyFailed": "Erro ao copiar link",
+            "shareFailed": "Erro ao compartilhar",
+            "instagramInstructions": "Link copiado! 📋",
+            "instagramInstructionsDesc": "Agora abra o Instagram e cole o link onde quiser (Stories, DM, Bio)"
+        },
+        "payment": {
+            "parcelow": {
+                "title": "Parcelow em até 21x",
+                "buttonLabel": "Parcelow",
+                "confirmModal": {
+                    "title": "Pagamento via Parcelow",
+                    "total": "Valor do Investimento (USD)",
+                    "info": "Ao avançar, você será redirecionado para o ambiente seguro da Parcelow. Lá, o valor será convertido para BRL com a cotação em tempo real e você poderá parcelar em até 21x.",
+                    "confirm": "Ir para Pagamento",
+                    "cancel": "Cancelar"
+                },
+                "errors": {
+                    "cpfRequired": "CPF é obrigatório para pagamento via Parcelow",
+                    "createFailed": "Erro ao criar checkout Parcelow"
+                },
+                "cpfValidation": {
+                    "title": "CPF OBRIGATÓRIO PARA PARCELOW",
+                    "description": "O pagamento parcelado via Parcelow exige que seu CPF esteja cadastrado no sistema para autorização do crédito.",
+                    "button": "CADASTRAR MEU CPF AGORA",
+                    "toastError": "O CPF é obrigatório para utilizar a Parcelow. Por favor, atualize seu perfil."
+                }
+            }
         }
     }
 }

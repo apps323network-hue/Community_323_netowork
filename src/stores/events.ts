@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from './auth'
 import { checkBannedWords } from '@/lib/bannedWords'
+import i18n from '@/i18n'
 import type { Event, EventFilters, EventCreateInput } from '@/types/events'
 
 export const useEventStore = defineStore('events', () => {
@@ -621,6 +622,25 @@ export const useEventStore = defineStore('events', () => {
         await supabase.rpc('add_user_points', {
           p_user_id: currentUserId.value,
           p_points: 20
+        })
+      }
+
+      // Enviar notificação para o criador do evento
+      if (fullEvent.created_by && fullEvent.created_by !== currentUserId.value) {
+        await supabase.from('notifications').insert({
+          user_id: fullEvent.created_by,
+          type: 'event_confirmation',
+          title: i18n.global.t('notifications.eventConfirmationTitle'),
+          content: i18n.global.t('notifications.groupEventConfirmationOne', {
+            actor: authStore.user?.user_metadata?.nome || authStore.user?.user_metadata?.name || i18n.global.t('notifications.someone'),
+            title: fullEvent.titulo_pt
+          }),
+          metadata: {
+            event_id: eventId,
+            event_title: fullEvent.titulo_pt,
+            actor_id: currentUserId.value,
+            actor_name: authStore.user?.user_metadata?.nome || authStore.user?.user_metadata?.name || i18n.global.t('notifications.someone')
+          }
         })
       }
     } catch (err: any) {

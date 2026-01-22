@@ -39,10 +39,10 @@ Deno.serve(async (req: Request) => {
 
         // 2. Setup Supabase Admin
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-        const supabase = createClient(supabaseUrl, supabaseKey)
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+        const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-        // 3. Validar Usuário (Manually)
+        // 3. Validar Usuário manualmente
         if (!authHeader) {
             throw new Error('Token de autenticação não fornecido')
         }
@@ -153,7 +153,7 @@ Deno.serve(async (req: Request) => {
                 metadata: {
                     base_amount: service.preco,
                     exchange_rate: payment_method === 'pix' ? exchange_rate : null,
-                    service_name: service.nome
+                    service_name: service.nome_pt || service.nome_en
                 }
             })
             .select()
@@ -186,6 +186,10 @@ Deno.serve(async (req: Request) => {
             .eq('id', serviceRequest.id)
 
         // 9. Criar Sessão Stripe
+        // Usar nome e descrição em português como padrão, com fallback para inglês
+        const serviceName = service.nome_pt || service.nome_en || 'Professional Service'
+        const serviceDescription = service.descricao_pt || service.descricao_en || `Professional Service: ${serviceName}`
+
         const sessionConfig: Stripe.Checkout.SessionCreateParams = {
             // Adicionamos 'card' junto com 'pix' para evitar erro 500 se o PIX não estiver ativado no Dashboard
             payment_method_types: payment_method === 'pix' ? ['card', 'pix'] : ['card'],
@@ -193,8 +197,8 @@ Deno.serve(async (req: Request) => {
                 price_data: {
                     currency: currency,
                     product_data: {
-                        name: service.nome,
-                        description: service.descricao || `Professional Service: ${service.nome}`,
+                        name: serviceName,
+                        description: serviceDescription,
                     },
                     unit_amount: finalAmount,
                 },

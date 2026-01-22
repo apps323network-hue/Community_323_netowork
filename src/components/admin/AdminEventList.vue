@@ -20,6 +20,7 @@
         @approve="handleApprove(event.id)"
         @reject="handleReject(event.id)"
         @view-details="handleViewDetails(event.id)"
+        @view-attendees="handleViewAttendees(event)"
         @toggle-destaque="handleToggleDestaque(event.id)"
         @delete="handleDelete(event.id)"
       />
@@ -41,6 +42,7 @@ const emit = defineEmits<{
   approve: [eventId: string]
   reject: [eventId: string]
   'view-details': [eventId: string]
+  'view-attendees': [event: AdminEvent]
   'toggle-destaque': [eventId: string]
   delete: [eventId: string]
 }>()
@@ -55,6 +57,10 @@ function handleReject(eventId: string) {
 
 function handleViewDetails(eventId: string) {
   emit('view-details', eventId)
+}
+
+function handleViewAttendees(event: AdminEvent) {
+  emit('view-attendees', event)
 }
 
 function handleToggleDestaque(eventId: string) {

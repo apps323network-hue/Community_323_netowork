@@ -454,7 +454,15 @@
         "journey": "Journey",
         "postEventMessage": "The event has ended, but your journey continues! Explore our exclusive member services and accelerate your growth in the USA.",
         "exploreServices": "Explore Services",
-        "viewUpcoming": "View Upcoming Events"
+        "viewUpcoming": "View Upcoming Events",
+        "registrationStatus": "Registration Status",
+        "confirmed": "Confirmed",
+        "confirmedMessage": "Your attendance is guaranteed. We'll bring more details soon.",
+        "notRegistered": "Not Registered",
+        "notRegisteredMessage": "Confirm your attendance to participate in this exclusive event.",
+        "missedEvent": "Missed the event?",
+        "organization": "Organization",
+        "beTheFirstToConfirm": "Be the first to confirm!"
     },
     "services": {
         "notFound": "Service not found",
@@ -605,7 +613,15 @@
             "em_andamento": "Your service is being handled. The partner may contact you at any time for updates.",
             "concluido": "Your service has been completed. If you need additional support, please contact us."
         },
-        "whatsappMessage": "Hello! I hired the service \"{name}\" and would like to track the status."
+        "whatsappMessage": "Hello! I hired the service \"{name}\" and would like to track the status.",
+        "americanDream": {
+            "installmentStatus": "{current}/2 Installments Received",
+            "fullPaymentStatus": "Full Payment (2/2)",
+            "partialPaymentStatus": "Installment {current}/2 Paid",
+            "accessPortal": "Access AD Portal",
+            "accumulatedAmount": "Total Paid Accumulated",
+            "installmentProgress": "Installment Status"
+        }
     },
     "myRequests": {
         "title": "My Orders",
@@ -787,11 +803,47 @@
     },
     "notifications": {
         "notifications": "Notifications",
+        "title": "Notifications",
         "markAllAsRead": "Mark all as read",
+        "markAllRead": "Mark all as read",
         "noNotifications": "No notifications",
         "noNotificationsDesc": "You're all caught up! No notifications at the moment.",
         "new": "NEW",
-        "newNotifications": "new notifications"
+        "newNotifications": "new notifications",
+        "completeProfile": "Complete Your Profile",
+        "actionRequired": "Action Required",
+        "profileIncompleteMessage": "Your profile is missing some required information. Click to complete it.",
+        "profileIncompleteMobile": "Your profile is missing some required information. Tap to complete it.",
+        "delete": "Delete",
+        "loadMore": "Load more",
+        "someone": "Someone",
+        "groupLikeOne": "{actor} and 1 other liked your post",
+        "groupLikeMany": "{actor} and {count} others liked your post",
+        "groupCommentOne": "{actor} and 1 other commented on your post",
+        "groupCommentMany": "{actor} and {count} others commented on your post",
+        "groupConnectionOne": "{actor} and 1 other want to connect",
+        "groupConnectionMany": "{actor} and {count} others want to connect",
+        "groupEventConfirmationOne": "{actor} confirmed attendance at your event: {title}",
+        "groupEventConfirmationMany": "{actor} and {count} others confirmed attendance at your event: {title}",
+        "eventApprovedTitle": "Event Approved",
+        "eventApprovedContent": "Your event \"{title}\" was approved and is now visible.",
+        "eventRejectedTitle": "Event Rejected",
+        "eventRejectedContent": "Your event \"{title}\" was rejected. Reason: {reason}",
+        "eventConfirmationTitle": "New event confirmation",
+        "newLessonTitle": "New Lesson Available",
+        "newLessonContent": "New lesson \"{lessonTitle}\" available in {programTitle}",
+        "programStartingTitle": "Program Starting Soon",
+        "programStartingContent": "{programTitle} starts in {days} days. Get ready!",
+        "programExpiringTitle": "Program Expiring Soon",
+        "programExpiringContent": "Your access to {programTitle} expires in {days} days",
+        "enrollmentConfirmedTitle": "Enrollment Confirmed",
+        "enrollmentConfirmedContent": "Your enrollment in {programTitle} has been confirmed. Welcome!",
+        "programCompletedTitle": "Program Completed! 🎉",
+        "programCompletedContent": "Congratulations! You have completed the {programTitle} program.",
+        "certificateIssuedTitle": "Certificate Available",
+        "certificateIssuedContent": "Your certificate for {programTitle} is now available for download.",
+        "progressMilestoneTitle": "Great Progress!",
+        "progressMilestoneContent": "You've already completed {percentage}% of {programTitle}. Keep going!"
     },
     "sidebar": {
         "yourBusinessHere": "Your Business Here",
@@ -1859,15 +1911,37 @@
             }
         }
     },
-    "notifications": {
-        "title": "Notifications",
-        "new": "new",
-        "newNotifications": "new notifications",
-        "markAllRead": "Mark all as read",
-        "noNotifications": "No notifications",
-        "completeProfile": "Complete Your Profile",
-        "actionRequired": "Action Required",
-        "profileIncompleteMessage": "Your profile is missing some required information. Click to complete it.",
-        "profileIncompleteMobile": "Your profile is missing some required information. Tap to complete it."
+    "share": {
+        "shareButton": "Share",
+        "copyLink": "Copy Link",
+        "moreOptions": "More Options",
+        "linkCopied": "Link copied!",
+        "copyFailed": "Failed to copy link",
+        "shareFailed": "Failed to share",
+        "instagramInstructions": "Link copied! 📋",
+        "instagramInstructionsDesc": "Now open Instagram and paste the link wherever you want (Stories, DM, Bio)"
+    },
+    "payment": {
+        "parcelow": {
+            "title": "Parcelow up to 21x",
+            "buttonLabel": "Parcelow",
+            "confirmModal": {
+                "title": "Payment via Parcelow",
+                "total": "Investment Amount (USD)",
+                "info": "By proceeding, you will be redirected to Parcelow's secure environment. There, the amount will be converted to BRL at the real-time exchange rate and you can pay in up to 21 installments.",
+                "confirm": "Go to Payment",
+                "cancel": "Cancel"
+            },
+            "errors": {
+                "cpfRequired": "CPF is required for Parcelow payment",
+                "createFailed": "Error creating Parcelow checkout"
+            },
+            "cpfValidation": {
+                "title": "CPF REQUIRED FOR PARCELOW",
+                "description": "Installment payment via Parcelow requires your CPF to be registered in the system for credit authorization.",
+                "button": "REGISTER MY CPF NOW",
+                "toastError": "CPF is required to use Parcelow. Please update your profile."
+            }
+        }
     }
 }
