@@ -72,7 +72,7 @@ class ParcelowClient {
         client_email: string
         client_cpf: string
         reference: string
-        redirect_url: string
+        redirectUrls: { success: string; failed: string }
     }) {
         const accessToken = await this.getAccessToken()
 
@@ -100,8 +100,9 @@ class ParcelowClient {
         client_email: string
         client_cpf: string
         reference: string
-        redirect_url: string
+        redirectUrls: { success: string; failed: string }
     }) {
+        const notifyUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/parcelow-webhook`
         const response = await fetch(`${this.baseUrl}/api/orders`, {
             method: 'POST',
             headers: {
@@ -124,8 +125,10 @@ class ParcelowClient {
                     email: params.client_email,
                     cpf: params.client_cpf
                 },
-                redirect_url: params.redirect_url,
-                webhook_url: `${Deno.env.get('SUPABASE_URL')}/functions/v1/parcelow-webhook`
+                redirectUrls: params.redirectUrls,
+                // Passando ambos para garantir compatibilidade
+                notify_url: notifyUrl,
+                webhook_url: notifyUrl
             })
         })
 
@@ -161,10 +164,33 @@ Deno.serve(async (req) => {
     }
 
     try {
-        const { payment_id, currency = 'USD' } = await req.json()
+        const method = req.method
+        const body = method !== 'GET' && method !== 'HEAD' ? await req.json().catch(() => ({})) : {}
+        const { payment_id, currency = 'USD' } = body
 
+        // Se faltar payment_id, pode ser um webhook chamando a função errada
         if (!payment_id) {
-            throw new Error('payment_id is required')
+            // Verificar se o corpo parece um webhook da Parcelow (tem o campo 'order' ou 'event')
+            if (body.event || body.order) {
+                console.error(`[Parcelow Checkout] ⚠️ REDIRECIONAMENTO DE WEBHOOK DETECTADO!`)
+                console.error(`A Parcelow está chamando a função de CHECKOUT em vez da função de WEBHOOK.`)
+                console.error(`Evento recebido: ${body.event}. Order ID: ${body.order?.id}`)
+
+                return new Response(JSON.stringify({
+                    success: false,
+                    error: "Wrong endpoint. Please use the /parcelow-webhook endpoint for notifications.",
+                    received_event: body.event
+                }), {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 200 // Retornamos 200 para a Parcelow parar de tentar este endpoint
+                })
+            }
+
+            console.error(`[Parcelow Checkout] ❌ Missing payment_id!`)
+            console.error(`Method: ${method}`)
+            console.error(`Headers:`, JSON.stringify(Object.fromEntries(req.headers.entries())))
+            console.error(`Body:`, JSON.stringify(body))
+            throw new Error('payment_id is required for checkout creation')
         }
 
         console.log(`[Parcelow Checkout] Creating checkout for payment: ${payment_id}`)
@@ -286,7 +312,10 @@ Deno.serve(async (req) => {
             client_email: profile.email || user.email,
             client_cpf: cleanCpf,
             reference: payment.id,
-            redirect_url: `${siteUrl}/pagamento/sucesso`
+            redirectUrls: {
+                success: `${siteUrl}/pagamento/sucesso?payment_id=${payment.id}&type=${payment.program_id ? 'program' : 'service'}`,
+                failed: `${siteUrl}/pagamento/cancelado?payment_id=${payment.id}&type=${payment.program_id ? 'program' : 'service'}`
+            }
         })
 
         console.log(`[Parcelow Checkout] ✅ Order created. Parcelow ID: ${orderData.data.order_id}`)

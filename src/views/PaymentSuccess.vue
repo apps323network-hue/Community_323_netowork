@@ -177,9 +177,10 @@ function handleScroll() {
 }
 
 async function checkPaymentStatus() {
-  const sessionId = route.query.session_id as string
+  const sessionId = (route.query.session_id || route.query.order_id) as string
+  const paymentId = route.query.payment_id as string
   
-  if (!sessionId) {
+  if (!sessionId && !paymentId) {
     loading.value = false
     paymentStatus.value = 'error'
     return
@@ -194,8 +195,14 @@ async function checkPaymentStatus() {
           *,
           programs:program_id (title_pt)
         `)
-        .eq('payment_id', sessionId)
-        .single()
+      
+      if (paymentId) {
+        query = query.eq('payment_id', paymentId)
+      } else {
+        query = query.eq('payment_id', sessionId)
+      }
+      
+      query = query.single()
     } else {
       query = supabase
         .from('service_payments')
@@ -203,8 +210,15 @@ async function checkPaymentStatus() {
           *,
           services:service_id (nome)
         `)
-        .eq('stripe_session_id', sessionId)
-        .single()
+      
+      if (paymentId) {
+        query = query.eq('id', paymentId)
+      } else {
+        // Here we could also search by parcelow_order_id if sessionId is coming from Parcelow's order_id query param
+        query = query.or(`stripe_session_id.eq.${sessionId},parcelow_order_id.eq.${sessionId}`)
+      }
+      
+      query = query.single()
     }
 
     const { data: payment, error } = await query
@@ -247,7 +261,7 @@ onMounted(() => {
     
     // Self-healing: Após 3 tentativas (6 segundos), força verificação no Stripe
     if (attempts === 3 && paymentStatus.value === 'pending') {
-      const sessionId = route.query.session_id
+      const sessionId = route.query.session_id || route.query.order_id || route.query.payment_id
       console.log('🔄 Triggering check-payment-status self-healing...')
       
       try {

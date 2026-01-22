@@ -567,6 +567,7 @@
               <span class="text-sm font-black uppercase tracking-tight">PIX</span>
             </button>
             <button
+              v-if="showParcelow"
               @click="paymentMethod = 'parcelow'"
               class="flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all group relative overflow-hidden"
               :class="paymentMethod === 'parcelow' 
@@ -697,6 +698,8 @@ const {
   isCreatingCheckout: parcelowLoading,
   error: parcelowError
 } = useParcelowCheckout()
+
+const showParcelow = computed(() => isLocalhost())
 
 // CPF validation for Parcelow
 const isMissingCpf = computed(() => {

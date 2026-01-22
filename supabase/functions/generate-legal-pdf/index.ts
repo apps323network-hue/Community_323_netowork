@@ -570,7 +570,6 @@ async function sendEmailWithAttachment(
     const userEmail = user?.email || ''
 
     const isLocalhost = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1')
-
     if (isLocalhost) {
         console.log(`[generate-legal-pdf] 🏠 Running on localhost. Skipping email for: ${userEmail}`)
         return

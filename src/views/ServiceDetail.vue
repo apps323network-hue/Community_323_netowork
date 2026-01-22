@@ -186,6 +186,7 @@
                       <span class="text-[10px] font-black uppercase tracking-tight">{{ t('services.pix') }}</span>
                     </button>
                     <button
+                      v-if="showParcelow"
                       @click="paymentMethod = 'parcelow'"
                       class="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all group relative"
                       :class="paymentMethod === 'parcelow' 
@@ -348,6 +349,8 @@ import ParcelowService from '@/lib/parcelowService'
 import { useUserStore } from '@/stores/user'
 import { computed } from 'vue'
 
+import { isLocalhost } from '@/utils/localhost'
+
 const route = useRoute()
 const router = useRouter()
 const { t, locale: currentLocale } = useI18n()
@@ -367,6 +370,8 @@ const {
   isCreatingCheckout: parcelowLoading,
   error: parcelowError
 } = useParcelowCheckout()
+
+const showParcelow = computed(() => isLocalhost())
 
 // CPF validation for Parcelow
 const isMissingCpf = computed(() => {
