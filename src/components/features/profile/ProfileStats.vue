@@ -6,7 +6,7 @@
     >
       <span class="text-text-muted flex items-center gap-2 group-hover/stat:text-secondary transition-colors">
         <span class="material-symbols-outlined text-[18px]">visibility</span>
-        Perfil
+        {{ t('navigation.profile') }}
       </span>
       <span class="text-white font-medium">{{ formatNumber(stats.profileViews) }} views</span>
     </div>
@@ -16,7 +16,7 @@
     >
       <span class="text-text-muted flex items-center gap-2 group-hover/stat:text-primary transition-colors">
         <span class="material-symbols-outlined text-[18px]">group</span>
-        Conexões
+        {{ t('profile.connections') }}
       </span>
       <span class="text-white font-medium">{{ formatNumber(stats.connections) }}</span>
     </div>
@@ -26,7 +26,7 @@
     >
       <span class="text-text-muted flex items-center gap-2 group-hover/stat:text-secondary transition-colors">
         <span class="material-symbols-outlined text-[18px]">article</span>
-        Posts
+        {{ t('profile.posts') }}
       </span>
       <span class="text-white font-medium">{{ formatNumber(stats.posts) }}</span>
     </div>
@@ -36,7 +36,7 @@
     >
       <span class="text-text-muted flex items-center gap-2 group-hover/stat:text-primary transition-colors">
         <span class="material-symbols-outlined text-[18px]">event</span>
-        Eventos
+        {{ t('navigation.events') }}
       </span>
       <span class="text-white font-medium">{{ formatNumber(stats.events) }}</span>
     </div>
@@ -44,6 +44,9 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 interface Stats {
   profileViews?: number
   connections?: number

@@ -1,18 +1,11 @@
 <template>
-  <Modal v-model="isOpen" title="Reportar Conteúdo" size="md">
+  <Modal v-model="isOpen" :title="t('report.title')" size="md">
     <div class="space-y-4 sm:space-y-6">
-      <!-- Informação do item reportado -->
-      <div class="bg-surface-card rounded-lg p-3 sm:p-4 border border-white/5">
-        <p class="text-white/60 text-xs sm:text-sm mb-1.5 sm:mb-2">Você está reportando:</p>
-        <p class="text-white font-semibold text-sm sm:text-base">
-          {{ itemType === 'post' ? 'Post' : itemType === 'comment' ? 'Comentário' : 'Usuário' }}
-        </p>
-      </div>
 
       <!-- Motivo do Report -->
       <div>
-        <label class="block text-white/80 text-xs sm:text-sm font-semibold mb-2 sm:mb-3">
-          Motivo do Report <span class="text-red-400">*</span>
+        <label class="block text-slate-700 dark:text-white/80 text-xs sm:text-sm font-semibold mb-2 sm:mb-3">
+          {{ t('report.reasonLabel') }} <span class="text-red-500 dark:text-red-400">*</span>
         </label>
         <div class="space-y-2">
           <label
@@ -21,8 +14,8 @@
             :class="[
               'flex items-start sm:items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border cursor-pointer transition-all',
               formData.reason === reason.value
-                ? 'bg-primary/20 border-primary text-white'
-                : 'bg-surface-card border-white/10 text-white/60 hover:border-primary/30'
+                ? 'bg-primary/10 dark:bg-primary/20 border-primary text-slate-900 dark:text-white'
+                : 'bg-white dark:bg-surface-card border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:border-primary/50 dark:hover:border-primary/30'
             ]"
           >
             <input
@@ -33,7 +26,7 @@
             />
             <div class="flex-1 min-w-0">
               <div class="font-medium text-xs sm:text-sm">{{ reason.label }}</div>
-              <div class="text-[10px] sm:text-xs text-white/40 mt-0.5">{{ reason.description }}</div>
+              <div class="text-[10px] sm:text-xs text-slate-500 dark:text-white/40 mt-0.5">{{ reason.description }}</div>
             </div>
           </label>
         </div>
@@ -41,20 +34,20 @@
 
       <!-- Descrição Opcional -->
       <div>
-        <label class="block text-white/80 text-xs sm:text-sm font-semibold mb-2">
-          Descrição (opcional)
+        <label class="block text-slate-700 dark:text-white/80 text-xs sm:text-sm font-semibold mb-2">
+          {{ t('report.descriptionLabel') }}
         </label>
         <textarea
           v-model="formData.description"
           rows="3"
-          class="w-full rounded-lg border border-white/10 bg-surface-dark p-2.5 sm:p-3 text-xs sm:text-sm text-white placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
-          placeholder="Adicione mais detalhes sobre o problema..."
+          class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-2.5 sm:p-3 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+          :placeholder="t('report.descriptionPlaceholder')"
         />
       </div>
 
       <!-- Erro -->
-      <div v-if="error" class="bg-red-500/20 border border-red-500/30 rounded-lg p-2.5 sm:p-3">
-        <p class="text-red-400 text-xs sm:text-sm">{{ error }}</p>
+      <div v-if="error" class="bg-red-50 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30 rounded-lg p-2.5 sm:p-3">
+        <p class="text-red-600 dark:text-red-400 text-xs sm:text-sm">{{ error }}</p>
       </div>
 
       <!-- Botões -->
@@ -65,14 +58,14 @@
           :disabled="!formData.reason || submitting"
           class="flex-1 px-4 py-2.5 sm:py-2 bg-gradient-to-r from-primary to-secondary text-black font-bold rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm min-h-[44px] sm:min-h-0"
         >
-          {{ submitting ? 'Enviando...' : 'Enviar Report' }}
+          {{ submitting ? t('report.submitting') : t('report.submit') }}
         </button>
         <button
           type="button"
           @click="isOpen = false"
-          class="px-4 py-2.5 sm:py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white font-medium transition-all text-xs sm:text-sm min-h-[44px] sm:min-h-0"
+          class="px-4 py-2.5 sm:py-2 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg text-slate-700 dark:text-white font-medium transition-all text-xs sm:text-sm min-h-[44px] sm:min-h-0"
         >
-          Cancelar
+          {{ t('report.cancel') }}
         </button>
       </div>
     </div>
@@ -80,7 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAdminStore } from '@/stores/admin'
 import Modal from '@/components/ui/Modal.vue'
 import { toast } from 'vue-sonner'
@@ -98,6 +92,7 @@ const emit = defineEmits<{
   'reported': []
 }>()
 
+const { t } = useI18n()
 const adminStore = useAdminStore()
 
 const isOpen = ref(props.modelValue)
@@ -112,33 +107,33 @@ const formData = ref<{
   description: '',
 })
 
-const reasons: Array<{ value: ReportReason; label: string; description: string }> = [
+const reasons = computed<Array<{ value: ReportReason; label: string; description: string }>>(() => [
   {
     value: 'spam',
-    label: 'Spam',
-    description: 'Conteúdo promocional ou repetitivo',
+    label: t('report.reasons.spam'),
+    description: t('report.reasons.spamDesc'),
   },
   {
     value: 'inappropriate',
-    label: 'Conteúdo Inapropriado',
-    description: 'Conteúdo ofensivo ou inadequado',
+    label: t('report.reasons.inappropriate'),
+    description: t('report.reasons.inappropriateDesc'),
   },
   {
     value: 'harassment',
-    label: 'Assédio',
-    description: 'Bullying, assédio ou comportamento abusivo',
+    label: t('report.reasons.harassment'),
+    description: t('report.reasons.harassmentDesc'),
   },
   {
     value: 'fake_news',
-    label: 'Informação Falsa',
-    description: 'Notícias falsas ou informações enganosas',
+    label: t('report.reasons.fake_news'),
+    description: t('report.reasons.fake_newsDesc'),
   },
   {
     value: 'other',
-    label: 'Outro',
-    description: 'Outro motivo não listado',
+    label: t('report.reasons.other'),
+    description: t('report.reasons.otherDesc'),
   },
-]
+])
 
 watch(() => props.modelValue, (newVal) => {
   isOpen.value = newVal
@@ -158,7 +153,7 @@ watch(isOpen, (newVal) => {
 
 async function handleSubmit() {
   if (!formData.value.reason) {
-    error.value = 'Por favor, selecione um motivo'
+    error.value = t('report.selectReasonError')
     return
   }
 
@@ -173,14 +168,14 @@ async function handleSubmit() {
       description: formData.value.description || undefined,
     })
 
-    toast.success('Report enviado com sucesso!', {
-      description: 'Nossa equipe irá analisar o conteúdo reportado.',
+    toast.success(t('report.success'), {
+      description: t('report.successDesc'),
     })
 
     isOpen.value = false
     emit('reported')
   } catch (err: any) {
-    error.value = err.message || 'Erro ao enviar report. Tente novamente.'
+    error.value = err.message || t('report.error')
     console.error('Error creating report:', err)
   } finally {
     submitting.value = false

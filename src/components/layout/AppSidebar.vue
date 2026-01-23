@@ -26,13 +26,13 @@
     <div v-else class="bg-gradient-to-br from-indigo-900 via-slate-900 to-black rounded-xl p-6 relative overflow-hidden shadow-2xl border border-white/10 group">
       <div class="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 blur-3xl rounded-full group-hover:bg-secondary/30 transition-all"></div>
       <div class="relative z-10">
-        <h2 class="text-xl font-black text-white mb-2 leading-tight">Faça parte da Rede 323</h2>
-        <p class="text-sm text-gray-300 mb-6">Conecte-se, aprenda e cresça com brasileiros nos EUA.</p>
+        <h2 class="text-xl font-black text-white mb-2 leading-tight">{{ t('sidebar.joinTitle') }}</h2>
+        <p class="text-sm text-gray-300 mb-6">{{ t('sidebar.joinDescription') }}</p>
         <button
           class="w-full bg-gradient-to-r from-secondary to-primary text-white font-black py-3 px-4 rounded-lg transition-all shadow-lg hover:shadow-secondary/40 hover:scale-[1.02]"
           @click="showAuthModal('signup')"
         >
-          Criar Conta Grátis
+          {{ t('common.guestBlocker.cta') }}
         </button>
       </div>
     </div>

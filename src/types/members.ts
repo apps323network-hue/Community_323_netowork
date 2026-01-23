@@ -82,3 +82,24 @@ export const INTEREST_TAGS = [
   'Liderança',
   'Carreira'
 ] as const
+
+export const TAG_KEYS: Record<string, string> = {
+  'Tecnologia': 'technology',
+  'Marketing': 'marketing',
+  'Vendas': 'sales',
+  'Design': 'design',
+  'Empreendedorismo': 'entrepreneurship',
+  'Investimentos': 'investments',
+  'Networking': 'networking',
+  'Educação': 'education',
+  'Saúde': 'health',
+  'Arte': 'art',
+  'Música': 'music',
+  'Esportes': 'sports',
+  'Viagens': 'travel',
+  'Gastronomia': 'gastronomy',
+  'Sustentabilidade': 'sustainability',
+  'Inovação': 'innovation',
+  'Liderança': 'leadership',
+  'Carreira': 'career'
+}

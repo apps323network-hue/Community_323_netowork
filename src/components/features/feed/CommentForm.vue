@@ -1,13 +1,13 @@
 <template>
   <div class="px-6 py-4 border-t border-slate-200 dark:border-gray-800 bg-white dark:bg-surface-lighter">
-    <div class="flex gap-3">
-      <Avatar :src="userAvatar" :name="userName" size="sm" :border="false" class="flex-shrink-0" />
+    <div class="flex items-end gap-3">
+      <Avatar :src="userAvatar" :name="userName" size="sm" :border="false" class="flex-shrink-0 self-start mt-1" />
       <div class="flex-1">
         <MentionAutocomplete
           v-model="content"
-          placeholder="Escreva um comentário..."
+          :placeholder="t('posts.writeComment')"
           :rows="1"
-          input-classes="w-full bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-gray-700/50 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all resize-none"
+          input-classes="w-full block bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-gray-700/50 rounded-2xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all resize-none"
         />
       </div>
       <Button
@@ -15,9 +15,10 @@
         size="sm"
         :disabled="!content.trim() || loading"
         :loading="loading"
+        class="h-[40px]"
         @click="handleSubmit"
       >
-        Enviar
+        {{ t('posts.send') }}
       </Button>
     </div>
     <div v-if="error" class="mt-2 text-xs text-red-500">{{ error }}</div>
@@ -26,6 +27,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { usePosts } from '@/composables/usePosts'
@@ -46,6 +48,7 @@ const emit = defineEmits<{
   'comment-added': []
 }>()
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const { addComment } = usePosts()
@@ -95,7 +98,7 @@ async function handleSubmit() {
     content.value = ''
     emit('comment-added')
   } catch (err: any) {
-    error.value = err.message || 'Erro ao adicionar comentário. Tente novamente.'
+    error.value = err.message || t('posts.addCommentError')
     console.error('Error adding comment:', err)
   } finally {
     loading.value = false

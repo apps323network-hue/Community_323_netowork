@@ -2,23 +2,23 @@
   <AppLayout>
     <div class="space-y-3 sm:space-y-4 md:space-y-6 lg:space-8 w-full overflow-x-hidden max-w-full">
       <header class="flex flex-col gap-2 sm:gap-3">
-        <h1 class="text-white text-xl sm:text-2xl md:text-3xl font-bold">{{ t('myServices.title') }}</h1>
-        <p class="text-gray-400 text-xs sm:text-sm md:text-base">{{ t('myServices.subtitle') }}</p>
+        <h1 class="text-slate-900 dark:text-white text-xl sm:text-2xl md:text-3xl font-bold">{{ t('myServices.title') }}</h1>
+        <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm md:text-base">{{ t('myServices.subtitle') }}</p>
       </header>
 
       <!-- Tabs -->
-      <div v-if="subscriptionsStore.hasActiveSubscription || createdServices.length > 0" class="flex gap-2 p-1 bg-surface-dark/30 rounded-lg w-max border border-white/5">
+      <div v-if="subscriptionsStore.hasActiveSubscription || createdServices.length > 0" class="flex gap-2 p-1 bg-white dark:bg-surface-dark/30 rounded-lg w-max border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
         <button 
           @click="activeTab = 'hired'"
           class="px-4 py-2 rounded-md text-sm font-bold transition-all"
-          :class="activeTab === 'hired' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'"
+          :class="activeTab === 'hired' ? 'bg-primary text-white shadow-lg' : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'"
         >
           Contratados
         </button>
         <button 
           @click="activeTab = 'created'"
           class="px-4 py-2 rounded-md text-sm font-bold transition-all"
-          :class="activeTab === 'created' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'"
+          :class="activeTab === 'created' ? 'bg-primary text-white shadow-lg' : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'"
         >
           Meus Anúncios
         </button>
@@ -30,13 +30,13 @@
 
       <!-- Tab Contratados -->
       <div v-else-if="activeTab === 'hired'">
-        <div v-if="hiredServices.length === 0" class="bg-surface-dark/50 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10 backdrop-blur-sm px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20 text-center flex flex-col items-center gap-3 sm:gap-4">
-          <div class="size-12 sm:size-16 rounded-full bg-white/5 flex items-center justify-center">
-            <span class="material-symbols-outlined text-gray-500 text-3xl sm:text-4xl md:text-5xl">shopping_bag</span>
+        <div v-if="hiredServices.length === 0" class="bg-white dark:bg-surface-dark/50 rounded-lg sm:rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/10 backdrop-blur-sm px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20 text-center flex flex-col items-center gap-3 sm:gap-4 shadow-sm dark:shadow-none">
+          <div class="size-12 sm:size-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+            <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-3xl sm:text-4xl md:text-5xl">shopping_bag</span>
           </div>
           <div>
-            <h3 class="text-white text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">{{ t('myServices.emptyTitle') }}</h3>
-            <p class="text-gray-400 text-xs sm:text-sm md:text-base">{{ t('myServices.emptyDesc') }}</p>
+            <h3 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">{{ t('myServices.emptyTitle') }}</h3>
+            <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm md:text-base">{{ t('myServices.emptyDesc') }}</p>
           </div>
           <RouterLink to="/servicos">
             <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-4 sm:px-6 bg-gradient-to-r from-primary to-secondary text-black text-xs sm:text-sm md:text-base font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)] hover:shadow-[0_0_40px_rgba(0,243,255,0.5)] hover:scale-105">
@@ -49,7 +49,7 @@
           <div 
             v-for="item in hiredServices" 
             :key="item.id"
-            class="bg-surface-dark/50 border border-white/10 rounded-lg sm:rounded-xl p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 hover:border-primary/30 transition-all group"
+            class="bg-white dark:bg-surface-dark/50 border border-slate-200 dark:border-white/10 rounded-lg sm:rounded-xl p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 hover:border-primary/50 dark:hover:border-primary/30 transition-all group shadow-sm dark:shadow-none hover:shadow-md"
           >
             <!-- (Mantendo o layout existente do card de serviço contratado) -->
             <div class="flex items-start gap-3 sm:gap-4">
@@ -58,7 +58,7 @@
               </div>
               <div class="flex-1 flex flex-col gap-1.5 sm:gap-2 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="text-white text-sm sm:text-base md:text-lg font-bold truncate">{{ item.service?.nome_pt }}</h3>
+                  <h3 class="text-slate-900 dark:text-white text-sm sm:text-base md:text-lg font-bold truncate">{{ item.service?.nome_pt }}</h3>
                   <span v-if="item.source === 'american_dream'" :class="item.payments.length >= 2 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-500'" class="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
                     {{ item.payments.length >= 2 ? t('myServices.americanDream.fullPaymentStatus') : t('myServices.americanDream.partialPaymentStatus', { current: item.payments.length }) }}
                   </span>
@@ -66,15 +66,15 @@
                     {{ t('myServices.paid') }}
                   </span>
                 </div>
-                <p v-if="item.service?.descricao_pt" class="text-gray-400 text-xs sm:text-sm line-clamp-2">
+                <p v-if="item.service?.descricao_pt" class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm line-clamp-2">
                   {{ item.service.descricao_pt }}
                 </p>
                 <div class="flex flex-wrap items-center gap-3 sm:gap-4 mt-1">
-                  <div class="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400">
+                  <div class="flex items-center gap-1.5 text-xs sm:text-sm text-slate-500 dark:text-gray-400">
                     <span class="material-symbols-outlined text-base">calendar_today</span>
                     <span>{{ t('myServices.hiredOn', { date: formatDate(item.payment?.created_at || item.request?.created_at) }) }}</span>
                   </div>
-                  <div v-if="item.payment" class="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400">
+                  <div v-if="item.payment" class="flex items-center gap-1.5 text-xs sm:text-sm text-slate-500 dark:text-gray-400">
                     <span class="material-symbols-outlined text-base">payments</span>
                     <span>{{ formatPrice(item.payment.amount, item.payment.currency) }}</span>
                   </div>
@@ -82,10 +82,10 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 sm:gap-3 pt-2 sm:pt-3 border-t border-white/10">
+            <div class="flex items-center gap-2 sm:gap-3 pt-2 sm:pt-3 border-t border-slate-100 dark:border-white/10">
               <button 
                 @click="viewDetails(item)"
-                class="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-white/10 hover:border-primary/50 hover:bg-white/5 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                class="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-slate-200 dark:border-white/10 hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-white/5 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
               >
                 <span class="material-symbols-outlined text-base sm:text-lg">visibility</span>
                 {{ t('myServices.viewDetails') }}
@@ -114,13 +114,13 @@
 
       <!-- Tab Meus Serviços Criados -->
       <div v-if="activeTab === 'created'">
-        <div v-if="createdServices.length === 0" class="bg-surface-dark/50 rounded-lg sm:rounded-xl md:rounded-2xl border border-white/10 backdrop-blur-sm px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20 text-center flex flex-col items-center gap-3 sm:gap-4">
-          <div class="size-12 sm:size-16 rounded-full bg-white/5 flex items-center justify-center">
-            <span class="material-symbols-outlined text-gray-500 text-3xl sm:text-4xl md:text-5xl">post_add</span>
+        <div v-if="createdServices.length === 0" class="bg-white dark:bg-surface-dark/50 rounded-lg sm:rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/10 backdrop-blur-sm px-3 sm:px-4 md:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20 text-center flex flex-col items-center gap-3 sm:gap-4 shadow-sm dark:shadow-none">
+          <div class="size-12 sm:size-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center">
+            <span class="material-symbols-outlined text-slate-400 dark:text-gray-500 text-3xl sm:text-4xl md:text-5xl">post_add</span>
           </div>
           <div>
-            <h3 class="text-white text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">Você ainda não anunciou nenhum serviço</h3>
-            <p class="text-gray-400 text-xs sm:text-sm md:text-base">Anuncie seus serviços aqui para que outros membros possam contratá-los.</p>
+            <h3 class="text-slate-900 dark:text-white text-base sm:text-lg md:text-xl font-bold mb-1 sm:mb-2">Você ainda não anunciou nenhum serviço</h3>
+            <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm md:text-base">Anuncie seus serviços aqui para que outros membros possam contratá-los.</p>
           </div>
           <RouterLink to="/servicos">
             <button class="flex items-center justify-center rounded-lg h-9 sm:h-10 md:h-12 px-4 sm:px-6 bg-gradient-to-r from-primary to-secondary text-black text-xs sm:text-sm md:text-base font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)] hover:shadow-[0_0_40px_rgba(0,243,255,0.5)] hover:scale-105">
@@ -149,8 +149,8 @@
       <div class="flex flex-col gap-4 sm:gap-6">
         <div class="flex items-center justify-between flex-wrap gap-3">
           <div class="flex flex-col">
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.service') }}</span>
-            <span class="text-base sm:text-lg font-bold text-white">{{ selectedService.service?.nome_pt }}</span>
+            <span class="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.service') }}</span>
+            <span class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{{ selectedService.service?.nome_pt }}</span>
           </div>
           <div class="flex gap-2 flex-wrap">
             <span v-if="selectedService.source === 'american_dream'" :class="selectedService.payments.length >= 2 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-500' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-500'" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -163,55 +163,55 @@
         </div>
 
         <div v-if="selectedService.service?.descricao_pt" class="flex flex-col gap-1.5">
-          <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.description') }}</span>
-          <p class="text-sm text-gray-300 leading-relaxed">{{ selectedService.service.descricao_pt }}</p>
+          <span class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.description') }}</span>
+          <p class="text-sm text-slate-600 dark:text-gray-300 leading-relaxed">{{ selectedService.service.descricao_pt }}</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <div class="flex flex-col p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10">
-            <span class="text-[10px] font-bold text-gray-400 uppercase mb-1">{{ t('myServices.labels.hiringDate') }}</span>
-            <span class="text-sm font-medium text-white">{{ formatDate(selectedService.payment?.created_at || selectedService.request?.created_at) }}</span>
+          <div class="flex flex-col p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+            <span class="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1">{{ t('myServices.labels.hiringDate') }}</span>
+            <span class="text-sm font-medium text-slate-900 dark:text-white">{{ formatDate(selectedService.payment?.created_at || selectedService.request?.created_at) }}</span>
           </div>
-          <div v-if="selectedService.request?.updated_at" class="flex flex-col p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10">
-            <span class="text-[10px] font-bold text-gray-400 uppercase mb-1">{{ t('myServices.labels.lastUpdate') }}</span>
-            <span class="text-sm font-medium text-white">{{ formatDate(selectedService.request.updated_at) }}</span>
+          <div v-if="selectedService.request?.updated_at" class="flex flex-col p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+            <span class="text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase mb-1">{{ t('myServices.labels.lastUpdate') }}</span>
+            <span class="text-sm font-medium text-slate-900 dark:text-white">{{ formatDate(selectedService.request.updated_at) }}</span>
           </div>
         </div>
 
-        <div v-if="selectedService.payment" class="p-3 sm:p-4 rounded-lg bg-white/5 border border-white/10 space-y-2">
-          <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.paymentInfo') }}</span>
+        <div v-if="selectedService.payment" class="p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-2">
+          <span class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.paymentInfo') }}</span>
           
           <div v-if="selectedService.source === 'american_dream'" class="flex justify-between items-center text-sm">
-            <span class="text-gray-400">{{ t('myServices.americanDream.accumulatedAmount') }}</span>
-            <span class="text-white font-medium">{{ formatPrice(selectedService.totalAmount, selectedService.payment.currency) }}</span>
+            <span class="text-slate-500 dark:text-gray-400">{{ t('myServices.americanDream.accumulatedAmount') }}</span>
+            <span class="text-slate-900 dark:text-white font-medium">{{ formatPrice(selectedService.totalAmount, selectedService.payment.currency) }}</span>
           </div>
           <div v-else class="flex justify-between items-center text-sm">
-            <span class="text-gray-400">{{ t('myServices.labels.amountPaid') }}</span>
-            <span class="text-white font-medium">{{ formatPrice(selectedService.payment.amount, selectedService.payment.currency) }}</span>
+            <span class="text-slate-500 dark:text-gray-400">{{ t('myServices.labels.amountPaid') }}</span>
+            <span class="text-slate-900 dark:text-white font-medium">{{ formatPrice(selectedService.payment.amount, selectedService.payment.currency) }}</span>
           </div>
 
           <div class="flex justify-between items-center text-sm">
-            <span class="text-gray-400">{{ t('myServices.labels.method') }}</span>
-            <span class="text-white font-medium capitalize">
+            <span class="text-slate-500 dark:text-gray-400">{{ t('myServices.labels.method') }}</span>
+            <span class="text-slate-900 dark:text-white font-medium capitalize">
               {{ selectedService.payment.payment_method === 'card' ? t('myServices.paymentMethods.card') : selectedService.payment.payment_method?.toUpperCase() }}
-              <span v-if="selectedService.payment.payment_method === 'zelle'" class="ml-1 text-xs text-gray-400">(Zelle)</span>
+              <span v-if="selectedService.payment.payment_method === 'zelle'" class="ml-1 text-xs text-slate-500 dark:text-gray-400">(Zelle)</span>
             </span>
           </div>
-          <div v-if="selectedService.source === 'american_dream'" class="flex justify-between items-center text-sm pt-2 border-t border-white/5 mt-2">
-            <span class="text-gray-400">{{ t('myServices.americanDream.installmentProgress') }}</span>
-            <span :class="selectedService.payments.length >= 2 ? 'text-green-400' : 'text-orange-400'" class="font-bold">
+          <div v-if="selectedService.source === 'american_dream'" class="flex justify-between items-center text-sm pt-2 border-t border-slate-200 dark:border-white/5 mt-2">
+            <span class="text-slate-500 dark:text-gray-400">{{ t('myServices.americanDream.installmentProgress') }}</span>
+            <span :class="selectedService.payments.length >= 2 ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'" class="font-bold">
               {{ t('myServices.americanDream.installmentStatus', { current: selectedService.payments.length }) }}
             </span>
           </div>
           <div class="flex justify-between items-center text-sm">
-            <span class="text-gray-400">{{ t('myServices.labels.paymentStatus') }}</span>
-            <span class="text-green-400 font-medium">{{ t('myServices.status.concluido') }}</span>
+            <span class="text-slate-500 dark:text-gray-400">{{ t('myServices.labels.paymentStatus') }}</span>
+            <span class="text-green-600 dark:text-green-400 font-medium">{{ t('myServices.status.concluido') }}</span>
           </div>
         </div>
 
         <div v-if="selectedService.request?.mensagem" class="flex flex-col gap-1.5">
-          <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.yourMessage') }}</span>
-          <div class="p-3 sm:p-4 rounded-lg bg-white/5 border-l-4 border-primary text-sm text-gray-300 italic">
+          <span class="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-widest">{{ t('myServices.labels.yourMessage') }}</span>
+          <div class="p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-white/5 border-l-4 border-primary text-sm text-slate-600 dark:text-gray-300 italic">
             "{{ selectedService.request.mensagem }}"
           </div>
         </div>
@@ -219,8 +219,8 @@
         <div class="p-3 sm:p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-start gap-3 sm:gap-4">
           <span class="material-symbols-outlined text-primary text-lg sm:text-xl">info</span>
           <div class="flex flex-col gap-1">
-            <h4 class="text-sm font-bold text-white">{{ t('myServices.nextSteps.title') }}</h4>
-            <p class="text-xs text-gray-400 leading-relaxed">
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">{{ t('myServices.nextSteps.title') }}</h4>
+            <p class="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
               <template v-if="selectedService.request?.status === 'pendente'">
                 {{ t('myServices.nextSteps.pendente') }}
               </template>

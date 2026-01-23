@@ -71,6 +71,9 @@ export const useGamificationStore = defineStore('gamification', () => {
     // 2. Arquivo da migração: supabase/migrations/047_disable_challenge_points_award.sql
     //
     async function awardPoints(points: number, origin: PointsOrigin, originId?: string, description?: string, unique: boolean = false, uniquePerId: boolean = false) {
+        // FUNCIONALIDADE DESATIVADA GLOBALMENTE
+        return
+
         if (!userId.value) return
         try {
             // DESATIVADO: Quando origin = 'challenge', o trigger no banco de dados impede a inserção
@@ -91,15 +94,12 @@ export const useGamificationStore = defineStore('gamification', () => {
 
                 if (fetchErr) throw fetchErr
 
-                if (existingPoints && existingPoints.length > 0) {
+                const points = existingPoints || []
+                if (points.length > 0) {
                     if (uniquePerId && originId) {
-                        // Check if any point matches the specific originId
-                        // We also check for null originId to be safe against legacy data, though we can't be sure
-                        // Ideally we only match exact ID.
-                        const alreadyAwarded = existingPoints.some(p => p.origem_id === originId)
+                        const alreadyAwarded = points.some(p => p.origem_id === originId)
                         if (alreadyAwarded) return
                     } else {
-                        // Global uniqueness for this origin type
                         return
                     }
                 }

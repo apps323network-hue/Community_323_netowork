@@ -5,8 +5,8 @@
       v-model="localValue"
       :rows="rows"
       :placeholder="placeholder"
-      :class="[inputClasses, rows === 1 ? 'overflow-hidden' : '']"
-      :style="rows === 1 ? { height: 'auto', minHeight: '2.5rem', maxHeight: '2.5rem' } : {}"
+      :class="[inputClasses, rows === 1 ? 'overflow-y-auto transition-all duration-300 ease-in-out' : '']"
+      :style="rows === 1 ? { height: (isFocused || localValue) ? '120px' : '40px', minHeight: 'auto' } : {}"
       @input="handleInput"
       @keydown="handleKeydown"
       @focus="handleFocus"
@@ -98,6 +98,7 @@ const showDropdown = ref(false)
 const filteredUsers = ref<any[]>([])
 const selectedIndex = ref(0)
 const currentMention = ref<{ start: number; query: string } | null>(null)
+const isFocused = ref(false)
 
 // Debounced search function
 const debouncedSearch = debounce(async (query: string) => {
@@ -111,9 +112,13 @@ const debouncedSearch = debounce(async (query: string) => {
   selectedIndex.value = 0
 }, 300)
 
-watch(() => props.modelValue, (newVal) => {
-  localValue.value = newVal
-})
+function adjustHeight() {
+  if (props.rows === 1 && textareaRef.value) {
+    textareaRef.value.style.height = 'auto'
+    const newHeight = Math.min(textareaRef.value.scrollHeight, 150) // Max height of 150px
+    textareaRef.value.style.height = `${newHeight}px`
+  }
+}
 
 watch(localValue, (newVal) => {
   emit('update:modelValue', newVal)
@@ -144,7 +149,6 @@ function handleInput(event: Event) {
   }
 }
 
-
 function handleKeydown(event: KeyboardEvent) {
   if (!showDropdown.value || filteredUsers.value.length === 0) return
 
@@ -167,7 +171,7 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 function handleFocus() {
-  // Check if there's a mention at cursor position
+  isFocused.value = true
   if (textareaRef.value) {
     const cursorPosition = textareaRef.value.selectionStart
     const textBeforeCursor = localValue.value.substring(0, cursorPosition)
@@ -186,9 +190,9 @@ function handleFocus() {
 }
 
 function handleBlur() {
-  // Delay hiding dropdown to allow click on user item
   setTimeout(() => {
     showDropdown.value = false
+    isFocused.value = false
   }, 200)
 }
 
@@ -200,7 +204,6 @@ function selectUser(user: any) {
   const start = currentMention.value.start
   const end = textarea.selectionStart
 
-  // Replace @query with @username
   const newValue = 
     value.substring(0, start) + 
     `@${user.nome} ` + 
@@ -213,9 +216,8 @@ function selectUser(user: any) {
   currentMention.value = null
   filteredUsers.value = []
 
-  // Set cursor position after the mention
   nextTick(() => {
-    const newCursorPos = start + user.nome.length + 2 // @ + name + space
+    const newCursorPos = start + user.nome.length + 2
     textarea.setSelectionRange(newCursorPos, newCursorPos)
     textarea.focus()
   })
@@ -223,6 +225,10 @@ function selectUser(user: any) {
 
 onMounted(() => {
   localValue.value = props.modelValue
+})
+
+watch(() => props.modelValue, (newVal) => {
+  localValue.value = newVal
 })
 </script>
 

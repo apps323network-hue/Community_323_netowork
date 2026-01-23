@@ -54,17 +54,17 @@
             <!-- Tags Section -->
             <div v-if="tagResults.length > 0" class="p-2">
               <h3 class="px-3 py-2 text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">
-                {{ query ? 'Tags' : 'Tags Sugeridas' }}
+                {{ query ? t('search.tags') : t('search.suggestedTags') }}
               </h3>
               <div class="flex flex-wrap gap-2 p-2">
                 <button
                   v-for="tag in tagResults"
                   :key="tag"
                   @click="selectTag(tag)"
-                  class="px-3 py-1.5 rounded-full bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors text-xs font-bold flex items-center gap-1 border border-secondary/20"
+                  class="px-3 py-1.5 rounded-full bg-secondary/10 text-secondary-dark dark:text-secondary hover:bg-secondary/20 transition-colors text-xs font-bold flex items-center gap-1 border border-secondary-dark/20 dark:border-secondary/20"
                 >
-                  <span class="text-secondary opacity-70">#</span>
-                  {{ tag }}
+                  <span class="text-secondary-dark dark:text-secondary opacity-70">#</span>
+                  {{ getTagLabel(tag) }}
                 </button>
               </div>
             </div>
@@ -72,7 +72,7 @@
             <!-- People Section -->
             <div v-if="memberResults.length > 0" class="p-2">
               <h3 class="px-3 py-2 text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">
-                {{ query ? t('members.title') : 'Membros Recomendados' }}
+                {{ query ? t('members.title') : t('search.recommendedMembers') }}
               </h3>
               <div class="space-y-1">
                 <button
@@ -106,7 +106,7 @@
             <!-- Recent Searches / Suggestions (If empty query) -->
             <div v-if="!query && memberResults.length === 0" class="p-4 text-center">
               <p class="text-sm text-slate-500 dark:text-gray-400">
-                Explore a comunidade por nome ou área de atuação
+                {{ t('search.explorePrompt') }}
               </p>
             </div>
           </div>
@@ -119,7 +119,7 @@
             class="w-full py-2 text-sm font-bold text-secondary hover:underline flex items-center justify-center gap-2"
           >
             <span class="material-icons text-sm">search</span>
-            Pesquisar por "{{ query }}" no feed
+            {{ t('search.searchForInFeed', { query }) }}
           </button>
         </div>
       </div>
@@ -132,7 +132,7 @@ import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
-import { INTEREST_TAGS } from '@/types/members'
+import { INTEREST_TAGS, TAG_KEYS } from '@/types/members'
 import type { Member } from '@/types/members'
 import Avatar from '@/components/ui/Avatar.vue'
 
@@ -285,6 +285,11 @@ onMounted(() => {
     }
   })
 })
+
+function getTagLabel(tag: string) {
+  const key = TAG_KEYS[tag]
+  return key ? t(`interests.${key}`) : tag
+}
 </script>
 
 <style scoped>
