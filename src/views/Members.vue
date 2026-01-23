@@ -117,6 +117,14 @@ const { t } = useI18n()
 const { members, loading, pagination, totalPages, fetchMembers } = useMembers()
 const { fetchBookmarks } = useBookmarks()
 const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
+
+// SEO
+useDynamicMeta(() => ({
+  title: t('members.title'),
+  description: t('members.description'),
+  url: '/comunidade'
+}))
 
 
 

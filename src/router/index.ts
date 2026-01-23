@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
     path: '/feed/:postId',
     name: 'PostDetail',
     component: () => import('@/views/PostDetail.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true, limitedForGuests: true },
   },
   {
     path: '/login',
@@ -126,7 +126,7 @@ const routes: RouteRecordRaw[] = [
     path: '/comunidade/:id',
     name: 'MemberProfile',
     component: () => import('@/views/MemberProfile.vue'),
-    meta: { requiresAuth: true },
+    meta: { publicAccess: true, limitedForGuests: true },
   },
   {
     path: '/eventos',

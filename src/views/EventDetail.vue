@@ -83,12 +83,10 @@
                   <ShareButton
                     v-if="event"
                     :options="{
-                      url: `/eventos/${event.id}`,
+                      url: `/events/${event.id}`,
                       title: translatedTitle,
                       description: translatedDescription?.substring(0, 160) || '',
-                      imageUrl: event.image_url,
-                      type: 'event',
-                      id: event.id
+                      imageUrl: event.image_url
                     }"
                     variant="icon"
                   />
@@ -402,17 +400,13 @@ async function handleCancel() {
 }
 
 // Set dynamic meta tags for social sharing
-watch(() => event.value, (newEvent) => {
-  if (newEvent) {
-    useDynamicMeta({
-      title: `${translatedTitle.value} - 323 Network`,
-      description: translatedDescription.value?.substring(0, 160) || '',
-      image: newEvent.image_url,
-      url: `/eventos/${newEvent.id}`,
-      type: 'event'
-    })
-  }
-}, { immediate: true })
+useDynamicMeta(() => ({
+  title: `${translatedTitle.value}`,
+  description: translatedDescription.value?.substring(0, 160) || '',
+  image: event.value?.image_url,
+  url: `/eventos/${event.value?.id}`,
+  type: 'event'
+}))
 
 onMounted(async () => {
   if (eventId.value) {

@@ -1910,8 +1910,31 @@
             "linkCopied": "Link copiado!",
             "copyFailed": "Erro ao copiar link",
             "shareFailed": "Erro ao compartilhar",
-            "instagramInstructions": "Link copiado!",
-            "instagramInstructionsDesc": "Cole o link na sua bio do Instagram ou em uma mensagem direta"
+            "instagramInstructions": "Link copiado! 📋",
+            "instagramInstructionsDesc": "Agora abra o Instagram e cole o link onde quiser (Stories, DM, Bio)"
+        },
+        "payment": {
+            "parcelow": {
+                "title": "Parcelow em até 21x",
+                "buttonLabel": "Parcelow",
+                "confirmModal": {
+                    "title": "Pagamento via Parcelow",
+                    "total": "Valor do Investimento (USD)",
+                    "info": "Ao avançar, você será redirecionado para o ambiente seguro da Parcelow. Lá, o valor será convertido para BRL com a cotação em tempo real e você poderá parcelar em até 21x.",
+                    "confirm": "Ir para Pagamento",
+                    "cancel": "Cancelar"
+                },
+                "errors": {
+                    "cpfRequired": "CPF é obrigatório para pagamento via Parcelow",
+                    "createFailed": "Erro ao criar checkout Parcelow"
+                },
+                "cpfValidation": {
+                    "title": "CPF OBRIGATÓRIO PARA PARCELOW",
+                    "description": "O pagamento parcelado via Parcelow exige que seu CPF esteja cadastrado no sistema para autorização do crédito.",
+                    "button": "CADASTRAR MEU CPF AGORA",
+                    "toastError": "O CPF é obrigatório para utilizar a Parcelow. Por favor, atualize seu perfil."
+                }
+            }
         }
     },
     "events": {

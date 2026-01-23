@@ -21,6 +21,7 @@ export interface Member {
   goals?: string[]
   bio?: string
   instagram?: string
+  username?: string
   total_points?: number
 }
 

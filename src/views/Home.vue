@@ -107,6 +107,7 @@ import Button from '@/components/ui/Button.vue'
 import GuestBlocker from '@/components/common/GuestBlocker.vue'
 import { toast } from 'vue-sonner'
 import type { PostFilters as PostFiltersType } from '@/types/posts'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
 
 const {
   posts,
@@ -122,6 +123,14 @@ const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 
 const router = useRouter()
 const { t } = useI18n()
+
+// SEO
+useDynamicMeta(() => ({
+  title: t('navigation.home'),
+  description: t('home.guestBannerDescription'),
+  url: '/'
+}))
+
 const expandedComments = ref(new Set<string>())
 const loadMoreRef = ref<HTMLElement | null>(null)
 const filters = ref<PostFiltersType>({ sortBy: 'recent' })

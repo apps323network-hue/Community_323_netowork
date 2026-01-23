@@ -92,37 +92,6 @@
           </button>
         </div>
       </section>
-
-      <!-- Newsletter Section (Optional) -->
-      <section class="mt-8 rounded-xl bg-white dark:bg-surface-card border border-slate-200 dark:border-white/5 p-4 sm:p-6 md:p-8 lg:p-12 text-center relative overflow-hidden group">
-        <div class="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-primary/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-primary/30 transition-colors duration-500"></div>
-        <div class="absolute bottom-0 left-0 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-secondary/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-secondary/30 transition-colors duration-500"></div>
-        <div class="relative z-10 flex flex-col items-center gap-3 sm:gap-4">
-          <div class="size-12 sm:size-14 md:size-16 rounded-full bg-slate-100 dark:bg-surface-dark border border-slate-200 dark:border-white/10 flex items-center justify-center mb-1 sm:mb-2 shadow-neon-mixed">
-            <span class="material-symbols-outlined text-slate-700 dark:text-white text-2xl sm:text-2xl md:text-3xl">mail</span>
-          </div>
-          <h3 class="text-slate-900 dark:text-white text-xl sm:text-2xl md:text-2xl lg:text-3xl font-black tracking-tight px-2">
-            {{ t('events.newsletterTitlePrefix') }} <span class="text-primary">{{ t('events.newsletterTitleHighlight1') }}</span><span class="text-secondary">{{ t('events.newsletterTitleHighlight2') }}</span>
-          </h3>
-          <p class="text-slate-600 dark:text-white/60 max-w-lg mx-auto mb-4 sm:mb-6 text-sm sm:text-base md:text-lg px-4">
-            {{ t('events.newsletterDesc') }}
-          </p>
-          <form class="flex w-full max-w-md flex-col sm:flex-row gap-2 sm:gap-3 px-4 sm:px-0" @submit.prevent="handleNewsletterSubmit">
-            <input
-              v-model="newsletterEmail"
-              class="flex-1 rounded-lg bg-white dark:bg-[#0a040f] border border-slate-200 dark:border-white/10 px-3 sm:px-4 py-2.5 sm:py-3 text-slate-900 dark:text-white text-sm sm:text-base placeholder:text-slate-400 dark:placeholder:text-white/30 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none transition-all"
-              :placeholder="t('events.emailPlaceholder')"
-              type="email"
-            />
-            <button
-              class="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-black font-black py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg text-sm sm:text-base transition-all shadow-[0_0_20px_rgba(244,37,244,0.3)] hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transform hover:-translate-y-1 whitespace-nowrap"
-              type="submit"
-            >
-              {{ t('events.subscribe') }}
-            </button>
-          </form>
-        </div>
-      </section>
     </div>
   </AppLayout>
 </template>
@@ -132,6 +101,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useEvents } from '@/composables/useEvents'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import EventHero from '@/components/features/events/EventHero.vue'
 import EventListCard from '@/components/features/events/EventListCard.vue'
@@ -155,6 +125,13 @@ const {
 const activeFilter = ref<string>('all')
 const searchQuery = ref('')
 const { t } = useI18n()
+
+// SEO
+useDynamicMeta(() => ({
+  title: t('events.title'),
+  description: t('events.noEventsFoundDesc'),
+  url: '/eventos'
+}))
 const newsletterEmail = ref('')
 
 const currentFilters = ref<EventFiltersType>({

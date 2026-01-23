@@ -1,5 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /perfil
+Disallow: /settings
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /checkout
+Disallow: /auth/
+Disallow: /api/
 
 # Sitemap
 Sitemap: https://323network.com/sitemap.xml

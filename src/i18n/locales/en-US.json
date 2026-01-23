@@ -1897,8 +1897,31 @@
         "linkCopied": "Link copied!",
         "copyFailed": "Failed to copy link",
         "shareFailed": "Failed to share",
-        "instagramInstructions": "Link copied!",
-        "instagramInstructionsDesc": "Paste the link in your Instagram bio or direct message"
+        "instagramInstructions": "Link copied! 📋",
+        "instagramInstructionsDesc": "Now open Instagram and paste the link wherever you want (Stories, DM, Bio)"
+    },
+    "payment": {
+        "parcelow": {
+            "title": "Parcelow up to 21x",
+            "buttonLabel": "Parcelow",
+            "confirmModal": {
+                "title": "Payment via Parcelow",
+                "total": "Investment Amount (USD)",
+                "info": "By proceeding, you will be redirected to Parcelow's secure environment. There, the amount will be converted to BRL at the real-time exchange rate and you can pay in up to 21 installments.",
+                "confirm": "Go to Payment",
+                "cancel": "Cancel"
+            },
+            "errors": {
+                "cpfRequired": "CPF is required for Parcelow payment",
+                "createFailed": "Error creating Parcelow checkout"
+            },
+            "cpfValidation": {
+                "title": "CPF REQUIRED FOR PARCELOW",
+                "description": "Installment payment via Parcelow requires your CPF to be registered in the system for credit authorization.",
+                "button": "REGISTER MY CPF NOW",
+                "toastError": "CPF is required to use Parcelow. Please update your profile."
+            }
+        }
     },
     "events": {
         "createEvent": "Create Event",

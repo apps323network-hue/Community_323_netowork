@@ -148,11 +148,19 @@ import { useAuthStore } from '@/stores/auth'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ProgramHero from '@/components/features/programs/ProgramHero.vue'
 import ProgramCarousel from '@/components/features/programs/ProgramCarousel.vue'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const { t, locale: currentLocale } = useLocale()
 const programsStore = useProgramsStore()
+
+// SEO
+useDynamicMeta(() => ({
+  title: t('programs.title'),
+  description: t('programs.noProgramsFoundDesc'),
+  url: '/programs'
+}))
 
 const searchQuery = ref('')
 const selectedCategory = ref<string | null>(null)

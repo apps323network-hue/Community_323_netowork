@@ -14,6 +14,21 @@ serve(async (req) => {
         const body = await req.json()
         const { to, subject, html, fromName, attachments } = body
 
+        // Bloqueio de segurança para localhost
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
+        const isLocalhost = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1')
+
+        if (isLocalhost) {
+            console.log(`[send-email] 🏠 Localhost detected. Skipping real SMTP send to: ${to}`)
+            return new Response(JSON.stringify({
+                success: true,
+                message: 'Localhost mode: Email skiped (simulated success)'
+            }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 200,
+            })
+        }
+
         const smtpHost = Deno.env.get('SMTP_HOST')
         const smtpPortStr = Deno.env.get('SMTP_PORT')
         const smtpUser = Deno.env.get('SMTP_USER')
@@ -35,7 +50,7 @@ serve(async (req) => {
 
         console.log(`[send-email] Sending to: ${to}`)
         console.log(`[send-email] SMTP: ${smtpHost}:${smtpPort}`)
-        
+
         if (attachments && attachments.length > 0) {
             console.log(`[send-email] Attachments: ${attachments.length}`)
         }
@@ -43,10 +58,10 @@ serve(async (req) => {
         // Use native fetch to call a working SMTP service or use nodemailer
         // Since denomailer has compatibility issues, let's use a simpler approach
         // We'll use the native SMTP protocol with proper STARTTLS support
-        
+
         // For now, let's use port 465 (SSL/TLS) which works reliably
         const nodemailer = await import('npm:nodemailer@6.9.7')
-        
+
         const transporter = nodemailer.default.createTransport({
             host: smtpHost,
             port: smtpPort,
@@ -76,7 +91,7 @@ serve(async (req) => {
         }
 
         await transporter.sendMail(emailConfig)
-        
+
         console.log('[send-email] Email sent successfully')
 
         return new Response(JSON.stringify({ success: true }), {

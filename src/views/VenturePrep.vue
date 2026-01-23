@@ -87,6 +87,15 @@ import Session1Section from '@/components/venture-prep/Session1Section.vue'
 import Session2Section from '@/components/venture-prep/Session2Section.vue'
 import Session3Section from '@/components/venture-prep/Session3Section.vue'
 import AssetsSection from '@/components/venture-prep/AssetsSection.vue'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
+
+// SEO
+useDynamicMeta(() => ({
+  title: 'US Venture Prep | 323 Network',
+  description: 'Transform your ideas into real projects in the USA. A comprehensive course by Ceme Suaiden Neto to navigate the American university system and business market.',
+  keywords: 'venture prep, university usa, business usa, 323 network, ceme suaiden, american dream',
+  url: '/venture-prep'
+}))
 </script>
 
 <style scoped>

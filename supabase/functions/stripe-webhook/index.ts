@@ -216,21 +216,12 @@ Deno.serve(async (req) => {
                         }
                     })
 
-                    // 4. Gerar e armazenar documento de matrícula (envia automaticamente para admin@323network.com)
-                    try {
-                        console.log(`Generating enrollment contract for enrollment ${enrollmentId}`)
-                        await supabase.functions.invoke('generate-legal-pdf', {
-                            body: {
-                                type: 'enrollment_contract',
-                                enrollment_id: enrollmentId,
-                                user_id: userId
-                            }
-                        })
-                        console.log(`Enrollment contract generated and stored successfully`)
-                    } catch (pdfErr) {
-                        console.error('Error generating enrollment contract from webhook:', pdfErr)
-                        // Don't throw - we still want the enrollment to be active even if PDF generation fails
-                    }
+                    // 4. Enrollment contract is handled automatically by the database trigger 'trigger_enrollment_contract_pdf'
+                    // on the 'program_enrollments' table when payment_status changes to 'paid'.
+                    // No need to call it manually here to avoid duplicates.
+
+                    console.log(`Program enrollment completed: ${enrollmentId}`)
+
 
                     console.log(`Program enrollment completed: ${enrollmentId}`)
                 }

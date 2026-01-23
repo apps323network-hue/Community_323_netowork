@@ -42,16 +42,14 @@
                 {{ title }}
               </h1>
 
-              <div class="absolute top-6 right-6 z-30">
+              <div class="absolute top-3 right-4 z-30">
                 <ShareButton
                   v-if="program"
                   :options="{
-                    url: `/programas/${program.id}`,
+                    url: `/programs/${program.id}`,
                     title: title,
                     description: description?.substring(0, 160) || '',
-                    imageUrl: program.banner_url,
-                    type: 'program',
-                    id: program.id
+                    imageUrl: program.banner_url
                   }"
                   variant="icon"
                 />
@@ -146,7 +144,7 @@
                               {{ t('programs.debugAccess') }}
                             </template>
                             <template v-else>
-                              {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
+                              {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.watch')) }}
                               <span class="material-icons text-sm font-bold group-hover:translate-x-1 transition-transform">play_arrow</span>
                             </template>
                           </template>
@@ -356,7 +354,7 @@
                           {{ t('programs.paymentModal.processing') }}
                         </template>
                         <template v-else>
-                          {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.secureMySpot')) }}
+                          {{ isSoldOut ? t('programs.programFull') : (isAuthenticated ? t('programs.paymentModal.enroll') : t('programs.actions.watch')) }}
                           <span class="material-icons font-bold group-hover:translate-x-1 transition-transform">play_arrow</span>
                         </template>
                       </span>
@@ -568,7 +566,39 @@
               <span class="material-icons text-3xl group-hover:scale-110 transition-transform">qr_code</span>
               <span class="text-sm font-black uppercase tracking-tight">PIX</span>
             </button>
+            <button
+              v-if="showParcelow"
+              @click="paymentMethod = 'parcelow'"
+              class="flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all group relative overflow-hidden"
+              :class="paymentMethod === 'parcelow' 
+                ? 'border-primary bg-primary/10 text-slate-900 dark:text-white shadow-xl shadow-primary/20' 
+                : 'border-slate-200 dark:border-white/10 hover:border-primary/30 text-slate-600 dark:text-gray-400'"
+            >
+              <div class="absolute -top-1 -right-1 group-hover:rotate-12 transition-transform">
+                <span class="text-[8px] font-bold bg-primary text-black px-1.5 py-0.5 rounded-bl-lg">21x</span>
+              </div>
+              <span class="material-icons text-3xl group-hover:scale-110 transition-transform">payments</span>
+              <span class="text-sm font-black uppercase tracking-tight">Parcelow</span>
+            </button>
           </div>
+          
+          <!-- Alerta de CPF para Parcelow -->
+          <Transition name="fade">
+            <div v-if="isMissingCpf" class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs space-y-2">
+              <div class="flex items-center gap-2 font-bold uppercase tracking-wider">
+                <span class="material-icons text-sm">warning</span>
+                {{ t('payment.parcelow.cpfValidation.title') }}
+              </div>
+              <p>{{ t('payment.parcelow.cpfValidation.description') }}</p>
+              <button 
+                @click="router.push('/perfil')" 
+                class="flex items-center gap-1 font-black text-amber-700 dark:text-amber-300 hover:underline"
+              >
+                {{ t('payment.parcelow.cpfValidation.button') }}
+                <span class="material-icons text-xs">arrow_forward</span>
+              </button>
+            </div>
+          </Transition>
         </div>
 
         <!-- Botão de Ação -->
@@ -581,7 +611,7 @@
             <template v-if="submitting">
               <span class="flex items-center justify-center gap-3">
                 <span class="w-5 h-5 border-4 border-black border-t-transparent rounded-full animate-spin"></span>
-                Iniciando...
+                {{ paymentMethod === 'parcelow' ? 'Redirecionando para Parcelow...' : 'Iniciando...' }}
               </span>
             </template>
             <template v-else>
@@ -591,6 +621,7 @@
         </div>
       </div>
     </Modal>
+
 
 
     <!-- Modal de Termos -->
@@ -627,6 +658,7 @@ import { useLocale } from '@/composables/useLocale'
 import { useProgramsStore } from '@/stores/programs'
 import DOMPurify from 'dompurify'
 import { useModulesStore } from '@/stores/modules'
+import { useUserStore } from '@/stores/user'
 import { useSupabase } from '@/composables/useSupabase'
 import { usePublicAccess } from '@/composables/usePublicAccess'
 import { useCoupons } from '@/composables/useCoupons'
@@ -638,6 +670,8 @@ import { useDynamicMeta } from '@/composables/useDynamicMeta'
 import { watch } from 'vue'
 import { fetchExchangeRate, calculatePixAmount } from '@/lib/exchange'
 import { isLocalhost } from '@/utils/localhost'
+import { useParcelowCheckout } from '@/composables/useParcelowCheckout'
+import ParcelowService from '@/lib/parcelowService'
 import type { Coupon } from '@/composables/useCoupons'
 
 const route = useRoute()
@@ -646,16 +680,31 @@ const { t, locale: currentLocale } = useLocale()
 const { supabase } = useSupabase()
 const programsStore = useProgramsStore()
 const modulesStore = useModulesStore()
+const userStore = useUserStore()
 const { isAuthenticated, showAuthModal } = usePublicAccess()
 
 const programId = computed(() => route.params.id as string)
 const program = computed(() => programsStore.currentProgram)
 const showCheckoutModal = ref(false)
 const submitting = ref(false)
-const paymentMethod = ref<'card' | 'pix' | null>(null)
+const paymentMethod = ref<'card' | 'pix' | 'parcelow' | null>(null)
 const exchangeRate = ref(5.95) // Taxa USD -> BRL
 const acceptedTerms = ref(false)
 const showTermsModal = ref(false)
+
+// Parcelow integration
+const { 
+  createCheckout: startParcelowCheckout,
+  isCreatingCheckout: parcelowLoading,
+  error: parcelowError
+} = useParcelowCheckout()
+
+const showParcelow = computed(() => isLocalhost())
+
+// CPF validation for Parcelow
+const isMissingCpf = computed(() => {
+  return paymentMethod.value === 'parcelow' && !userStore.profile?.document_number
+})
 
 // Coupon state
 const { validateCoupon, calculateDiscount, recordCouponUse } = useCoupons()
@@ -735,7 +784,8 @@ function formatPrice(cents: number, currency: string = 'USD'): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
 }
 
-function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
+function calculateFee(basePriceCents: number, method: 'card' | 'pix' | 'parcelow'): number {
+  if (method === 'parcelow') return 0 // Fee is calculated by Parcelow
   if (method === 'card') {
     return Math.round((basePriceCents * CARD_FEE_PERCENTAGE) + CARD_FEE_FIXED)
   } else {
@@ -747,7 +797,8 @@ function calculateFee(basePriceCents: number, method: 'card' | 'pix'): number {
   }
 }
 
-function calculateTotal(basePriceCents: number, method: 'card' | 'pix'): number {
+function calculateTotal(basePriceCents: number, method: 'card' | 'pix' | 'parcelow'): number {
+  if (method === 'parcelow') return basePriceCents // Return base, conversion is shown in Parcelow modal
   if (method === 'card') {
     return basePriceCents + calculateFee(basePriceCents, method)
   } else {
@@ -820,17 +871,13 @@ function handleRemoveCoupon() {
 }
 
 // Set dynamic meta tags for social sharing
-watch(() => program.value, (newProgram) => {
-  if (newProgram) {
-    useDynamicMeta({
-      title: `${title.value} - 323 Network`,
-      description: description.value?.substring(0, 160) || '',
-      image: newProgram.banner_url,
-      url: `/programas/${newProgram.id}`,
-      type: 'article'
-    })
-  }
-}, { immediate: true })
+useDynamicMeta(() => ({
+  title: `${title.value}`,
+  description: description.value?.substring(0, 160) || '',
+  image: program.value?.banner_url,
+  url: `/programs/${program.value?.id}`,
+  type: 'article'
+}))
 
 function calculateCurrentFee(): number {
   if (!program.value || !paymentMethod.value) return 0
@@ -869,9 +916,48 @@ const handleCheckout = async () => {
       return
     }
 
-    // Fluxo normal de pagamento sempre (permite testar Stripe em localhost)
     if (!paymentMethod.value) {
       toast.error('Selecione um método de pagamento')
+      return
+    }
+
+    // Se for Parcelow, temos um fluxo diferente
+    if (paymentMethod.value === 'parcelow') {
+      // Validar CPF antes de prosseguir
+      if (isMissingCpf.value) {
+        toast.error(t('payment.parcelow.cpfValidation.toastError'))
+        router.push('/perfil')
+        return
+      }
+
+      // 1. Criar registro de service_payment
+      const basePriceCents = program.value.price_usd * 100
+      const amount = Math.max(0, basePriceCents - discountAmount.value)
+
+      const { data: payment, error: pError } = await supabase
+        .from('service_payments')
+        .insert({
+          user_id: session.user.id,
+          program_id: program.value.id, // Para programas usamos o ID do programa
+          amount: amount,
+          currency: 'USD',
+          payment_method: 'parcelow',
+          status: 'pending',
+          metadata: {
+            item_type: 'program',
+            program_id: program.value.id,
+            coupon_id: appliedCoupon.value?.id || null,
+            discount_amount: discountAmount.value || 0
+          }
+        })
+        .select()
+        .single()
+
+      if (pError) throw pError
+
+      // 2. Iniciar checkout Parcelow (mantém loading até redirecionar)
+      await startParcelowCheckout(payment.id)
+      // Nota: submitting.value permanece true até o redirecionamento acontecer
       return
     }
 

@@ -59,6 +59,7 @@ import CommentForm from '@/components/features/feed/CommentForm.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import { toast } from 'vue-sonner'
 import type { Post } from '@/types/posts'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
 
 const route = useRoute()
 const router = useRouter()
@@ -66,6 +67,15 @@ const { t } = useI18n()
 const { getPostById, loadComments, removeComment } = usePosts()
 
 const post = ref<Post | null>(null)
+
+// SEO
+useDynamicMeta(() => ({
+  title: post.value?.conteudo?.substring(0, 50) || t('navigation.home'),
+  description: post.value?.conteudo?.substring(0, 160) || '',
+  image: post.value?.image_url,
+  url: `/feed/${post.value?.id}`,
+  type: 'article'
+}))
 const loading = ref(false)
 const error = ref<string | null>(null)
 

@@ -78,7 +78,7 @@ serve(async (req) => {
         }
 
         // Send email with PDF attachment
-        await sendEmailWithAttachment(supabase, pdfData, user_id, type)
+        await sendEmailWithAttachment(supabase, pdfData, user_id, type, supabaseUrl)
 
         return new Response(JSON.stringify({
             success: true,
@@ -556,7 +556,8 @@ async function sendEmailWithAttachment(
     supabase: any,
     pdfData: { pdf: string; filename: string },
     userId: string,
-    type: string
+    type: string,
+    supabaseUrl: string
 ): Promise<void> {
     // Fetch user name for email subject
     const { data: user } = await supabase
@@ -567,6 +568,12 @@ async function sendEmailWithAttachment(
 
     const userName = user?.nome || 'Unknown User'
     const userEmail = user?.email || ''
+
+    const isLocalhost = supabaseUrl.includes('localhost') || supabaseUrl.includes('127.0.0.1')
+    if (isLocalhost) {
+        console.log(`[generate-legal-pdf] 🏠 Running on localhost. Skipping email for: ${userEmail}`)
+        return
+    }
 
     // Skip sending email for @uorak users (internal test accounts)
     if (userEmail.toLowerCase().endsWith('@uorak')) {

@@ -75,6 +75,14 @@ import PartnersPlans from '@/components/public/PartnersPlans.vue'
 import PartnersNamingRights from '@/components/public/PartnersNamingRights.vue'
 import PartnersCTA from '@/components/public/PartnersCTA.vue'
 import PartnersContactForm from '@/components/public/PartnersContactForm.vue'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
+
+// SEO
+useDynamicMeta(() => ({
+  title: 'Parceiros 323 Network | Oportunidades de Negócio',
+  description: 'Seja um parceiro da 323 Network e conecte sua marca com a maior comunidade brasileira nos EUA. Planos de patrocínio e naming rights.',
+  url: '/parceiros'
+}))
 </script>
 
 <style scoped>

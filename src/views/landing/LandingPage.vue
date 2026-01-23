@@ -48,6 +48,17 @@ import BenefitsSection from '@/components/landing/BenefitsSection.vue'
 import TestimonialsSection from '@/components/landing/TestimonialsSection.vue'
 import FinalCTASection from '@/components/landing/FinalCTASection.vue'
 import LandingFooter from '@/components/landing/LandingFooter.vue'
+import { useDynamicMeta } from '@/composables/useDynamicMeta'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+// SEO
+useDynamicMeta(() => ({
+  title: 'Comunidade 323 Network | Conectando brasileiros nos EUA',
+  description: 'A maior rede de networking e negócios para brasileiros morando ou vindo para os Estados Unidos. Mentoria, eventos e comunidade.',
+  url: '/brasileiro-nos-eua'
+}))
 </script>
 
 <style scoped>
