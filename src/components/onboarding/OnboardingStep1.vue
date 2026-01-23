@@ -11,19 +11,19 @@
         @click="triggerFileInput"
         class="relative group cursor-pointer"
       >
-        <div class="size-24 sm:size-28 md:size-32 rounded-full border-2 sm:border-4 border-input-border/50 bg-surface-dark flex items-center justify-center overflow-hidden transition-all hover:border-text-muted/50 active:scale-95">
+        <div class="size-24 sm:size-28 md:size-32 rounded-full border-2 sm:border-4 border-slate-200 dark:border-input-border/50 bg-slate-100 dark:bg-surface-dark flex items-center justify-center overflow-hidden transition-all hover:border-primary/50 dark:hover:border-text-muted/50 active:scale-95">
           <img 
             v-if="avatarUrl" 
             :src="avatarUrl" 
             alt="Avatar" 
             class="w-full h-full object-cover"
           />
-          <span v-else class="material-symbols-outlined text-4xl sm:text-5xl md:text-6xl text-text-muted group-hover:text-text-muted/80 transition-colors">
+          <span v-else class="material-symbols-outlined text-4xl sm:text-5xl md:text-6xl text-slate-400 dark:text-text-muted group-hover:text-primary transition-colors">
             account_circle
           </span>
         </div>
-        <div class="absolute bottom-0 right-0 bg-surface-dark/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow-md transition-all">
-          <span class="material-symbols-outlined text-text-muted/70 group-hover:text-text-muted text-base sm:text-lg">camera_alt</span>
+        <div class="absolute bottom-0 right-0 bg-white dark:bg-surface-dark/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 shadow-md border border-slate-200 dark:border-transparent transition-all">
+          <span class="material-symbols-outlined text-slate-500 dark:text-text-muted/70 group-hover:text-primary text-base sm:text-lg">camera_alt</span>
         </div>
         <input 
           type="file" 
@@ -52,8 +52,8 @@
           @input="$emit('update:name', ($event.target as HTMLInputElement).value)"
           type="text"
           :class="[
-            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border text-sm sm:text-base text-white placeholder-text-muted/50 transition-all',
-            nameError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
+            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted/50 transition-all',
+            nameError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 dark:border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
             'focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]'
           ]"
           :placeholder="t('onboarding.step1.namePlaceholder')"
@@ -72,8 +72,8 @@
           @input="$emit('update:profession', ($event.target as HTMLInputElement).value)"
           type="text"
           :class="[
-            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border text-sm sm:text-base text-white placeholder-text-muted/50 transition-all',
-            professionError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
+            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted/50 transition-all',
+            professionError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 dark:border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
             'focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]'
           ]"
           :placeholder="t('onboarding.step1.professionPlaceholder')"
@@ -90,7 +90,7 @@
         <select
           :value="nationality"
           @change="$emit('update:nationality', ($event.target as HTMLSelectElement).value)"
-          class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border border-input-border text-sm sm:text-base text-white focus:border-secondary focus:ring-1 focus:ring-secondary transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] appearance-none cursor-pointer"
+          class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border border-slate-200 dark:border-input-border text-sm sm:text-base text-slate-900 dark:text-white focus:border-secondary focus:ring-1 focus:ring-secondary transition-all shadow-sm focus:shadow-[0_0_10px_rgba(0,240,255,0.2)] appearance-none cursor-pointer"
         >
           <option value="">{{ t('profile.selectNationality') }}</option>
           <option v-for="nat in nationalities" :key="nat" :value="nat">{{ nat }}</option>
@@ -175,14 +175,23 @@ async function handleFileUpload(event: Event) {
 
 <style scoped>
 select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff80' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
 }
 
+.dark select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff80' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
 select option {
+  background-color: white;
+  color: #1e293b;
+}
+
+.dark select option {
   background-color: #1a151a;
   color: white;
 }

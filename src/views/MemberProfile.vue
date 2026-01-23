@@ -13,7 +13,7 @@
         <span class="material-icons text-[20px] group-hover:-translate-x-1 transition-transform"
           >arrow_back</span
         >
-        Voltar para comunidade
+        {{ t('profile.backToCommunity') }}
       </button>
 
       <!-- Loading State -->
@@ -34,7 +34,7 @@
           <span class="material-icons text-6xl text-red-500">error</span>
         </div>
         <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-          Erro ao carregar perfil
+          {{ t('common.error') }}
         </h2>
         <p class="text-gray-400">{{ error }}</p>
       </div>
@@ -77,7 +77,7 @@
                 <div v-if="requesting" class="w-5 h-5 border-2 border-secondary border-t-transparent rounded-full animate-spin"></div>
                 <template v-else>
                   <span class="material-symbols-outlined">{{ connectionStatus === 'accepted' ? 'check_circle' : connectionStatus === 'pending' ? 'schedule' : 'person_add' }}</span>
-                  {{ connectionStatus === 'accepted' ? 'Conectado' : connectionStatus === 'pending' ? 'Pendente' : 'Conectar' }}
+                  {{ connectionStatus === 'accepted' ? t('profile.connected') : connectionStatus === 'pending' ? t('profile.pending') : t('profile.connect') }}
                 </template>
               </button>
 
@@ -94,7 +94,7 @@
                 <span class="material-symbols-outlined text-lg">
                   {{ isBookmarked ? 'bookmark_added' : 'bookmark_add' }}
                 </span>
-                {{ isBookmarked ? 'Salvo' : 'Salvar Perfil' }}
+                {{ isBookmarked ? t('profile.saved') : t('profile.saveProfile') }}
               </button>
             </div>
 
@@ -106,7 +106,7 @@
 
             <!-- Quick Contacts (Email/WhatsApp) -->
             <div v-if="(member.show_whatsapp && member.whatsapp) || ((member.show_email || isAdmin) && member.email)" class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 rounded-2xl p-5 space-y-4 shadow-xl shadow-slate-200/50 dark:shadow-none">
-              <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest">Contatos Diretos</h4>
+              <h4 class="text-xs font-black text-gray-500 uppercase tracking-widest">{{ t('profile.directContacts') }}</h4>
               
               <a v-if="member.show_whatsapp && member.whatsapp" :href="whatsappLink" target="_blank" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-green-500/10 border border-slate-300 dark:border-transparent hover:border-green-500/30 transition-all group">
                 <span class="material-symbols-outlined text-green-400">chat</span>
@@ -114,7 +114,7 @@
               </a>
               
               <div v-if="isAdmin && member.email && !member.show_email" class="px-3 py-1 bg-secondary/10 border border-secondary/20 rounded-lg mb-2">
-                <span class="text-[10px] text-secondary font-bold uppercase tracking-wider">Visível apenas para Admin</span>
+                <span class="text-[10px] text-secondary font-bold uppercase tracking-wider">{{ t('profile.visibleOnlyAdmin') }}</span>
               </div>
 
               <a v-if="(member.show_email || isAdmin) && member.email" :href="`mailto:${member.email}`" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-secondary/10 border border-slate-300 dark:border-transparent hover:border-secondary/30 transition-all group">
@@ -178,21 +178,21 @@
               <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                   <span class="material-symbols-outlined text-secondary">interests</span>
-                  Interesses
+                  {{ t('profile.interestsTitle') }}
                 </h3>
                 <div v-if="member.tags?.length" class="flex flex-wrap gap-2">
-                  <span v-for="tag in member.tags" :key="tag" class="px-3 py-1.5 rounded-lg bg-secondary/10 border border-secondary/20 text-secondary text-xs font-bold">
-                    #{{ tag }}
+                  <span v-for="tag in member.tags" :key="tag" class="px-3 py-1.5 rounded-lg bg-secondary/10 border border-secondary-dark/20 dark:border-secondary/20 text-secondary-dark dark:text-secondary text-xs font-bold">
+                    #{{ getTagLabel(tag) }}
                   </span>
                 </div>
-                <p v-else class="text-gray-500 text-sm italic">Nenhum interesse listado.</p>
+                <p v-else class="text-gray-500 text-sm italic">{{ t('profile.noInterests') }}</p>
               </div>
 
               <!-- Goals -->
               <div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/5 rounded-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                   <span class="material-symbols-outlined text-secondary">rocket_launch</span>
-                  Metas
+                  {{ t('profile.goalsTitle') }}
                 </h3>
                 <div v-if="member.goals?.length" class="space-y-3">
                   <div v-for="goal in member.goals" :key="goal" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-300 dark:border-white/5">
@@ -200,7 +200,7 @@
                     <span class="text-slate-600 dark:text-gray-300 text-sm font-medium">{{ goal }}</span>
                   </div>
                 </div>
-                <p v-else class="text-gray-500 text-sm italic">Nenhuma meta definida.</p>
+                <p v-else class="text-gray-500 text-sm italic">{{ t('profile.noGoals') }}</p>
               </div>
             </div>
 
@@ -210,7 +210,7 @@
                 <div class="p-2 rounded-lg bg-secondary/10 border border-secondary/20">
                   <span class="material-symbols-outlined text-secondary font-bold">feed</span>
                 </div>
-                Publicações Recentes
+                {{ t('profile.recentPosts') }}
               </h3>
 
           <!-- Loading Posts -->
@@ -242,7 +242,7 @@
                 class="px-6 py-3 rounded-xl border border-secondary/40 text-secondary bg-secondary/5 hover:bg-secondary/10 hover:border-secondary transition-all shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-neon-blue font-bold"
                 @click="handleLoadMorePosts"
               >
-                Carregar mais posts
+                {{ t('profile.loadMorePosts') }}
               </button>
             </div>
           </div>
@@ -299,6 +299,7 @@ import { supabase } from '@/lib/supabase'
 import { toast } from 'vue-sonner'
 import { sendConnectionRequestEmail } from '@/lib/emails'
 import type { Member } from '@/types/members'
+import { TAG_KEYS } from '@/types/members'
 
 const route = useRoute()
 const router = useRouter()
@@ -384,7 +385,7 @@ async function handleToggleBookmark() {
 
 async function handleConnect() {
   if (!authStore.user || !member.value) {
-    toast.error('Você precisa estar logado para conectar.')
+    toast.error(t('profile.mustBeLoggedInToConnect'))
     return
   }
   
@@ -401,11 +402,11 @@ async function handleConnect() {
       await supabase.from('notifications').insert({
         user_id: member.value.id,
         type: 'connection_request',
-        title: 'Nova solicitação de conexão',
-        content: `${authStore.user.user_metadata?.nome || 'Um membro'} quer se conectar com você.`,
+        title: t('profile.newConnectionRequest'),
+        content: `${authStore.user.user_metadata?.nome || t('members.someMember')} ${t('profile.wantsToConnect')}`,
         metadata: { 
           requester_id: authStore.user.id,
-          actor_name: authStore.user.user_metadata?.nome || 'Um membro'
+          actor_name: authStore.user.user_metadata?.nome || t('members.someMember')
         }
       })
 
@@ -419,23 +420,23 @@ async function handleConnect() {
       if (profile?.email) {
         await sendConnectionRequestEmail(
           profile.email,
-          profile.nome || 'Membro',
-          authStore.user.user_metadata?.nome || 'Um membro'
+          profile.nome || t('members.member'),
+          authStore.user.user_metadata?.nome || t('members.someMember')
         )
       }
 
-      toast.success('Solicitação de conexão enviada!')
+      toast.success(t('profile.connectionRequestSent'))
     } else {
       if (error === 'Request already exists') {
         connectionStatus.value = 'pending'
-        toast.info('Solicitação já enviada anteriormente.')
+        toast.info(t('profile.alreadySent'))
       } else {
-        toast.error('Erro ao conectar. Tente novamente.')
+        toast.error(t('profile.errorConnecting'))
       }
     }
   } catch (err) {
     console.error(err)
-    toast.error('Erro ao processar solicitação.')
+    toast.error(t('profile.errorProcessing'))
   } finally {
     requesting.value = false
   }
@@ -491,5 +492,10 @@ function getIconForType(type: string) {
     other: 'extension'
   }
   return icons[type] || 'emoji_events'
+}
+
+function getTagLabel(tag: string) {
+  const key = TAG_KEYS[tag]
+  return key ? t(`interests.${key}`) : tag
 }
 </script>

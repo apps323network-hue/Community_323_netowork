@@ -50,7 +50,7 @@
       </div>
 
       <!-- Filtros -->
-      <div ref="benefitsSection" class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200 dark:border-white/10 pb-6">
+      <div v-if="isAuthenticated" ref="benefitsSection" class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200 dark:border-white/10 pb-6">
         <div class="flex gap-3 overflow-x-auto pb-2 md:pb-0 max-w-full no-scrollbar">
           <button 
             v-for="filter in filters" 
@@ -82,6 +82,9 @@
           {{ t('benefits.showingBenefits', { count: filteredBenefits.length }) }}
         </div>
       </div>
+      
+      <!-- Spacer for non-authenticated users to maintain scroll anchor -->
+      <div v-else ref="benefitsSection" class="h-4"></div>
 
       <!-- Loading -->
       <div v-if="loading" class="flex justify-center py-20">
@@ -94,9 +97,40 @@
         <section>
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{{ t('benefits.allBenefits') }}</h3>
-            <div class="hidden md:flex items-center gap-2 text-sm text-slate-600 dark:text-gray-400 cursor-pointer hover:text-slate-900 dark:hover:text-white transition-colors">
-              <span>{{ t('benefits.sortBy') }} <span class="text-secondary font-medium">{{ t('benefits.latest') }}</span></span>
-              <span class="material-symbols-outlined text-secondary">expand_more</span>
+            <div v-if="isAuthenticated" class="relative hidden md:block">
+              <button
+                @click="showSortMenu = !showSortMenu"
+                class="flex items-center gap-2 text-sm text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
+              >
+                <span>{{ t('benefits.sortBy') }} <span class="text-secondary font-medium">{{ currentSortLabel }}</span></span>
+                <span class="material-symbols-outlined text-secondary">expand_more</span>
+              </button>
+              
+              <Transition
+                enter-active-class="transition-all duration-200"
+                enter-from-class="opacity-0 scale-95 translate-y-2"
+                enter-to-class="opacity-100 scale-100 translate-y-0"
+                leave-active-class="transition-all duration-200"
+                leave-from-class="opacity-100 scale-100 translate-y-0"
+                leave-to-class="opacity-0 scale-95 translate-y-2"
+              >
+                <div
+                  v-if="showSortMenu"
+                  class="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
+                  @click.stop
+                >
+                  <button
+                    v-for="option in sortOptions"
+                    :key="option.value"
+                    @click="selectSort(option.value)"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left"
+                    :class="sortBy === option.value ? 'text-primary dark:text-secondary bg-primary/5 dark:bg-secondary/5' : 'text-slate-700 dark:text-gray-300'"
+                  >
+                    <span class="material-icons-outlined text-[20px]">{{ option.icon }}</span>
+                    {{ option.label }}
+                  </button>
+                </div>
+              </Transition>
             </div>
           </div>
           
@@ -150,7 +184,7 @@
         </section>
 
         <!-- CTA Parceria -->
-        <section class="mt-8 mb-10 w-full rounded-2xl bg-white dark:bg-surface-card p-8 md:p-12 border border-slate-200 dark:border-white/5 relative overflow-hidden shadow-xl dark:shadow-2xl">
+        <section style="margin-top: 6rem !important;" class="mb-10 w-full rounded-2xl bg-white dark:bg-surface-card p-8 md:p-12 border border-slate-200 dark:border-white/5 relative overflow-hidden shadow-xl dark:shadow-2xl">
           <!-- Glow effects adaptativos -->
           <div class="absolute -top-32 -right-32 w-80 h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
           <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-secondary/10 dark:bg-secondary/20 rounded-full blur-[80px] pointer-events-none"></div>
@@ -203,6 +237,8 @@ const { t } = useI18n()
 const router = useRouter()
 const activeFilter = ref('all')
 const benefitsSection = ref<HTMLElement | null>(null)
+const showSortMenu = ref(false)
+const sortBy = ref<'latest' | 'oldest' | 'alphabetical'>('latest')
 
 const guestLimit = getContentLimit('benefits')
 
@@ -228,10 +264,38 @@ const filteredBenefits = computed(() => {
   return benefits.value.filter(b => b.tipo === activeFilter.value)
 })
 
+const sortOptions = computed(() => [
+  { value: 'latest' as const, label: t('benefits.latest'), icon: 'schedule' },
+  { value: 'oldest' as const, label: 'Mais Antigos', icon: 'history' },
+  { value: 'alphabetical' as const, label: 'A-Z', icon: 'sort_by_alpha' }
+])
+
+const currentSortLabel = computed(() => {
+  const option = sortOptions.value.find(o => o.value === sortBy.value)
+  return option?.label || t('benefits.latest')
+})
+
+function selectSort(value: 'latest' | 'oldest' | 'alphabetical') {
+  sortBy.value = value
+  showSortMenu.value = false
+}
+
 
 
 const otherBenefits = computed(() => {
-  return filteredBenefits.value.filter(b => !b.destaque_mes)
+  const filtered = filteredBenefits.value.filter(b => !b.destaque_mes)
+  
+  // Apply sorting
+  const sorted = [...filtered]
+  if (sortBy.value === 'latest') {
+    sorted.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+  } else if (sortBy.value === 'oldest') {
+    sorted.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime())
+  } else if (sortBy.value === 'alphabetical') {
+    sorted.sort((a, b) => (a.nome_pt || '').localeCompare(b.nome_pt || ''))
+  }
+  
+  return sorted
 })
 
 const displayedOtherBenefits = computed(() => {

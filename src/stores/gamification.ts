@@ -71,6 +71,9 @@ export const useGamificationStore = defineStore('gamification', () => {
     // 2. Arquivo da migração: supabase/migrations/047_disable_challenge_points_award.sql
     //
     async function awardPoints(points: number, origin: PointsOrigin, originId?: string, description?: string, unique: boolean = false, uniquePerId: boolean = false) {
+        // FUNCIONALIDADE DESATIVADA GLOBALMENTE
+        return
+
         if (!userId.value) return
         try {
             // DESATIVADO: Quando origin = 'challenge', o trigger no banco de dados impede a inserção

@@ -342,7 +342,7 @@
             to="/login"
             class="px-3 h-10 flex items-center justify-center text-sm font-bold bg-gradient-to-r from-secondary to-primary text-white rounded-lg hover:shadow-lg hover:scale-105 transition-all"
           >
-            Entrar/Cadastrar
+            {{ t('auth.loginOrRegister') }}
           </RouterLink>
           
           <!-- User Menu (only when logged in) -->

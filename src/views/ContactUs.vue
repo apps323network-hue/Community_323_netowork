@@ -69,6 +69,7 @@
                   v-model="form.phone"
                   type="tel"
                   required
+                  @input="form.phone = form.phone.replace(/\D/g, '')"
                   class="block w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0a040f] text-slate-900 dark:text-white placeholder-slate-400 focus:border-secondary focus:ring-1 focus:ring-secondary transition-all"
                   :placeholder="t('contact.phonePlaceholder')"
                 />
@@ -136,7 +137,7 @@
     <Transition name="fade">
       <div v-if="notification.show" :class="[
         'fixed top-24 left-1/2 -translate-x-1/2 px-6 py-4 rounded-xl shadow-2xl backdrop-blur-md border font-bold flex items-center gap-3 z-50',
-        notification.type === 'success' ? 'bg-secondary/20 border-secondary text-secondary' : 'bg-red-500/20 border-red-500 text-red-500'
+        notification.type === 'success' ? 'bg-secondary/10 dark:bg-secondary/20 border-secondary/30 dark:border-secondary text-slate-900 dark:text-secondary' : 'bg-red-50 dark:bg-red-500/20 border-red-200 dark:border-red-500 text-red-600 dark:text-red-500'
       ]">
         <span class="material-symbols-outlined text-2xl">
           {{ notification.type === 'success' ? 'check_circle' : 'error' }}

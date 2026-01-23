@@ -14,7 +14,7 @@
         <textarea
           :value="bio"
           @input="$emit('update:bio', ($event.target as HTMLTextAreaElement).value)"
-          class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border border-input-border text-sm sm:text-base text-white placeholder-text-muted/50 resize-none transition-all focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+          class="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border border-slate-200 dark:border-input-border text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted/50 resize-none transition-all focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
           rows="4"
           maxlength="500"
           :placeholder="t('onboarding.step3.bioPlaceholder')"
@@ -40,7 +40,7 @@
               :value="linkedin"
               @input="$emit('update:linkedin', ($event.target as HTMLInputElement).value)"
               type="text"
-              class="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border border-input-border text-sm sm:text-base text-white placeholder-text-muted/50 transition-all focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+              class="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border border-slate-200 dark:border-input-border text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted/50 transition-all focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
               :placeholder="t('profile.linkedinPlaceholder')"
             />
           </div>
@@ -57,7 +57,7 @@
               :value="instagram"
               @input="$emit('update:instagram', ($event.target as HTMLInputElement).value)"
               type="text"
-              class="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border border-input-border text-sm sm:text-base text-white placeholder-text-muted/50 transition-all focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+              class="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border border-slate-200 dark:border-input-border text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted/50 transition-all focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]"
               :placeholder="t('profile.instagramPlaceholder')"
             />
           </div>
@@ -65,7 +65,7 @@
       </div>
 
       <!-- Tags/Interesses (Opcional) -->
-      <div class="border-t border-input-border pt-4 sm:pt-6">
+      <div class="border-t border-slate-200 dark:border-input-border pt-4 sm:pt-6">
         <div class="flex items-center justify-between mb-3 sm:mb-4">
           <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <span class="material-symbols-outlined text-primary text-lg sm:text-xl">interests</span>
@@ -88,7 +88,7 @@
               :key="index"
               class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-primary/10 border border-primary/40 text-primary text-xs sm:text-sm font-medium"
             >
-              #{{ tag }}
+              #{{ getTagLabel(tag) }}
               <button @click="handleRemoveTag(index)" class="hover:text-white ml-0.5 sm:ml-1 active:scale-90">
                 <span class="material-symbols-outlined text-[14px] sm:text-[16px]">close</span>
               </button>
@@ -105,17 +105,17 @@
               :class="[
                 tags.includes(tag)
                   ? 'bg-primary/20 border-primary text-primary'
-                  : 'bg-input-bg border-input-border text-gray-400 hover:border-gray-500 hover:text-white'
+                  : 'bg-slate-50 dark:bg-input-bg border-slate-200 dark:border-input-border text-slate-500 dark:text-gray-400 hover:border-primary dark:hover:border-gray-500 dark:hover:text-white'
               ]"
             >
-              {{ tag }}
+              {{ getTagLabel(tag) }}
             </button>
           </div>
         </div>
       </div>
 
       <!-- Objetivos (Opcional) -->
-      <div class="border-t border-input-border pt-4 sm:pt-6">
+      <div class="border-t border-slate-200 dark:border-input-border pt-4 sm:pt-6">
         <div class="flex items-center justify-between mb-3 sm:mb-4">
           <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
             <span class="material-symbols-outlined text-secondary text-lg sm:text-xl">flag</span>
@@ -136,7 +136,7 @@
             <div
               v-for="(goal, index) in goals"
               :key="index"
-              class="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-input-bg/50 border border-transparent"
+              class="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-input-bg/50 border border-slate-100 dark:border-transparent"
             >
               <div class="mt-0.5 size-4 sm:size-5 rounded border border-secondary/50 flex items-center justify-center bg-secondary/10 flex-shrink-0">
                 <span class="material-symbols-outlined text-[12px] sm:text-[14px] text-secondary">check</span>
@@ -154,7 +154,7 @@
               v-model="newGoal"
               @keyup.enter="handleAddGoal"
               :placeholder="t('profile.goalPlaceholder')"
-              class="flex-1 bg-input-bg border-input-border focus:border-secondary focus:ring-0 text-white placeholder-text-muted text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition-all"
+              class="flex-1 bg-slate-50 dark:bg-input-bg border border-slate-200 dark:border-input-border focus:border-secondary focus:ring-0 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition-all"
             />
             <button
               @click="handleAddGoal"
@@ -173,7 +173,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { INTEREST_TAGS } from '@/types/members'
+import { INTEREST_TAGS, TAG_KEYS } from '@/types/members'
 
 const { t } = useI18n()
 
@@ -225,6 +225,11 @@ function handleRemoveGoal(index: number) {
   newGoals.splice(index, 1)
   emit('update:goals', newGoals)
 }
+
+function getTagLabel(tag: string) {
+  const key = TAG_KEYS[tag]
+  return key ? t(`interests.${key}`) : tag
+}
 </script>
 
 <style scoped>
@@ -232,14 +237,23 @@ function handleRemoveGoal(index: number) {
   width: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 4px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 </style>

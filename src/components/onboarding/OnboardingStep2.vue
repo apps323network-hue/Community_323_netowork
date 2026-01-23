@@ -15,8 +15,8 @@
           :value="country"
           @change="handleCountryChange"
           :class="[
-            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border text-sm sm:text-base text-white transition-all appearance-none cursor-pointer',
-            countryError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
+            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border text-sm sm:text-base text-slate-900 dark:text-white transition-all appearance-none cursor-pointer',
+            countryError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 dark:border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
             'focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]'
           ]"
           required
@@ -40,8 +40,8 @@
           @change="handleStateChange"
           :disabled="!hasCountrySelected || loadingCities"
           :class="[
-            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border text-sm sm:text-base text-white transition-all appearance-none cursor-pointer',
-            stateError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
+            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border text-sm sm:text-base text-slate-900 dark:text-white transition-all appearance-none cursor-pointer',
+            stateError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 dark:border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
             'focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]',
             (!hasCountrySelected || loadingCities) ? 'opacity-60 cursor-not-allowed' : ''
           ]"
@@ -58,8 +58,8 @@
           :disabled="!hasCountrySelected || loadingCities"
           :placeholder="hasCountrySelected ? t('profile.typeState') : t('profile.selectCountryFirst')"
           :class="[
-            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border text-sm sm:text-base text-white placeholder-text-muted/50 transition-all',
-            stateError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
+            'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted/50 transition-all',
+            stateError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 dark:border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
             'focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]',
             (!hasCountrySelected || loadingCities) ? 'opacity-60 cursor-not-allowed' : ''
           ]"
@@ -80,8 +80,8 @@
             @change="$emit('update:city', ($event.target as HTMLSelectElement).value)"
             :disabled="!hasStateSelected || loadingCities"
             :class="[
-              'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border text-sm sm:text-base text-white transition-all appearance-none cursor-pointer',
-              cityError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
+              'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border text-sm sm:text-base text-slate-900 dark:text-white transition-all appearance-none cursor-pointer',
+              cityError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 dark:border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
               'focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]',
               (!hasStateSelected || loadingCities) ? 'opacity-60 cursor-not-allowed' : ''
             ]"
@@ -98,8 +98,8 @@
             :disabled="!hasStateSelected || loadingCities"
             :placeholder="loadingCities ? t('profile.loadingCities') : (hasStateSelected ? t('profile.typeCity') : (hasCountrySelected ? t('profile.selectStateFirst') : t('profile.selectCountryFirst')))"
             :class="[
-              'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-input-bg border text-sm sm:text-base text-white placeholder-text-muted/50 transition-all',
-              cityError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
+              'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-input-bg border text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-text-muted/50 transition-all',
+              cityError ? 'border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500' : 'border-slate-200 dark:border-input-border focus:border-secondary focus:ring-1 focus:ring-secondary',
               'focus:shadow-[0_0_10px_rgba(0,240,255,0.2)]',
               (!hasStateSelected || loadingCities) ? 'opacity-60 cursor-not-allowed' : ''
             ]"
@@ -216,14 +216,23 @@ onMounted(() => {
 
 <style scoped>
 select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff80' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
 }
 
+.dark select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff80' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
 select option {
+  background-color: white;
+  color: #1e293b;
+}
+
+.dark select option {
   background-color: #1a151a;
   color: white;
 }

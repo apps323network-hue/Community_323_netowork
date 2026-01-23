@@ -13,7 +13,7 @@
         :key="index"
         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 dark:bg-primary/15 border border-primary/30 dark:border-primary/40 text-primary text-xs font-black shadow-sm hover:bg-primary/20 transition-all cursor-pointer transform hover:-translate-y-0.5"
       >
-        #{{ tag }}
+        #{{ getTagLabel(tag) }}
         <button v-if="!readonly" @click="$emit('remove-tag', index)" class="hover:text-primary-dark ml-1 flex items-center">
           <span class="material-symbols-outlined text-[14px] font-black">close</span>
         </button>
@@ -34,7 +34,7 @@
               : 'bg-slate-50 dark:bg-input-bg border-slate-200 dark:border-input-border text-slate-400 dark:text-gray-400 hover:border-primary/50 hover:text-primary dark:hover:text-white'
           ]"
         >
-          {{ tag }}
+          {{ getTagLabel(tag) }}
         </button>
       </div>
     </div>
@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { INTEREST_TAGS } from '@/types/members'
+import { INTEREST_TAGS, TAG_KEYS } from '@/types/members'
 
 const { t } = useI18n()
 
@@ -69,6 +69,11 @@ function toggleTag(tag: string) {
   } else {
     emit('add-tag', tag)
   }
+}
+
+function getTagLabel(tag: string) {
+  const key = TAG_KEYS[tag]
+  return key ? t(`interests.${key}`) : tag
 }
 </script>
 

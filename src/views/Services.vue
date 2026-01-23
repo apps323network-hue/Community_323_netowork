@@ -47,7 +47,7 @@
       </div>
 
       <!-- Filters -->
-      <div class="flex gap-2 sm:gap-3 overflow-x-auto p-2 sm:p-3 md:p-4 no-scrollbar pb-1">
+      <div id="services-filters" class="flex gap-2 sm:gap-3 overflow-x-auto p-2 sm:p-3 md:p-4 no-scrollbar pb-1">
         <button
           v-for="filter in filters"
           :key="filter.id"
@@ -688,8 +688,17 @@ onMounted(async () => {
 })
 
 function exploreServices() {
-  const el = document.querySelector('.grid')
-  el?.scrollIntoView({ behavior: 'smooth' })
+  const el = document.getElementById('services-filters')
+  if (el) {
+    const offset = 80 // Ajuste para compensar header fixo
+    const elementPosition = el.getBoundingClientRect().top
+    const offsetPosition = elementPosition + window.pageYOffset - offset
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
+    })
+  }
 }
 
 
@@ -697,7 +706,7 @@ function exploreServices() {
 async function handlePublishService() {
   // Check if user is logged in
   if (!authStore.user) {
-    toast.error('Faça login para publicar um serviço')
+    toast.error(t('common.mustBeLoggedInToPublish'))
     router.push('/login?redirect=/servicos')
     return
   }

@@ -10,7 +10,7 @@
       </div>
       
       <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4 max-w-md mx-auto px-2 font-medium">
-        Conectando a comunidade brasileira através de negócios, cultura e inovação.
+        {{ t('footer.description') }}
       </p>
 
       <!-- Legal Links -->
@@ -41,13 +41,13 @@
         <a href="#" class="text-gray-500 hover:text-primary transition-colors transform hover:-translate-y-1">
           <span class="material-icons-outlined text-lg sm:text-xl">photo_camera</span>
         </a>
-        <a href="#" class="text-gray-500 hover:text-white transition-colors transform hover:-translate-y-1">
+        <RouterLink :to="{ name: 'ContactUs' }" class="text-gray-500 hover:text-white transition-colors transform hover:-translate-y-1">
           <span class="material-icons-outlined text-lg sm:text-xl">email</span>
-        </a>
+        </RouterLink>
       </div>
       
       <p class="text-gray-600 dark:text-gray-500 text-xs px-2">
-        © 2025 323 Network. Todos os direitos reservados.
+        © 2025 (323) Network. {{ t('footer.copyright') }}
       </p>
     </div>
   </footer>

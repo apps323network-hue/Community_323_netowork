@@ -1,6 +1,6 @@
 <template>
   <AppLayout hideSidebars fluid>
-    <div class="min-h-[calc(100vh-80px)] bg-background-dark flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-x-hidden">
+    <div class="min-h-[calc(100vh-80px)] bg-white dark:bg-background-dark flex flex-col items-center justify-center px-4 py-12 md:py-20 relative overflow-x-hidden transition-colors duration-500">
       <!-- Decorative Background Elements -->
       <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
@@ -16,13 +16,13 @@
         </div>
 
         <div class="space-y-4 mb-10">
-          <h1 class="text-4xl md:text-5xl font-black text-white leading-tight tracking-tighter uppercase">
+          <h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight tracking-tighter uppercase">
             {{ t('subscriptions.alreadySubscribed.title').split(' ')[0] }} {{ t('subscriptions.alreadySubscribed.title').split(' ')[1] }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">{{ t('subscriptions.alreadySubscribed.title').split(' ').slice(2).join(' ') }}</span>
           </h1>
-          <p class="text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+          <p class="text-slate-600 dark:text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
             {{ t('subscriptions.alreadySubscribed.description') }}
           </p>
-          <div v-if="subscriptionEndDate" class="text-sm text-slate-500">
+          <div v-if="subscriptionEndDate" class="text-sm text-slate-500 dark:text-slate-500">
             {{ t('subscriptions.alreadySubscribed.nextRenewal', { date: formatDate(subscriptionEndDate) }) }}
           </div>
         </div>
@@ -43,33 +43,33 @@
       <div v-else class="flex flex-col items-center text-center max-w-4xl relative z-10 w-full">
         <!-- Header -->
         <div class="space-y-4 mb-12">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 backdrop-blur-sm">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/5 dark:bg-secondary/10 border border-secondary/20 backdrop-blur-sm">
             <span class="material-icons text-secondary text-lg">workspace_premium</span>
             <span class="text-secondary text-xs font-bold uppercase tracking-widest">{{ t('subscriptions.plans.premium.badge') }}</span>
           </div>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tighter">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-tight tracking-tighter">
             {{ t('subscriptions.plans.premium.title').split(' ').slice(0, -1).join(' ') }} <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">{{ t('subscriptions.plans.premium.title').split(' ').slice(-1)[0] }}</span>
           </h1>
-          <p class="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
+          <p class="text-slate-600 dark:text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
             {{ t('subscriptions.plans.premium.description') }}
           </p>
         </div>
 
         <!-- Canceled Notice -->
-        <div v-if="route.query.canceled" class="mb-8 px-6 py-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-sm">
+        <div v-if="route.query.canceled" class="mb-8 px-6 py-4 rounded-2xl bg-yellow-500/5 dark:bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-sm">
           <span class="material-icons text-base align-middle mr-2">info</span>
           {{ t('subscriptions.canceledNotice') }}
         </div>
 
         <!-- Pricing Card -->
         <div class="w-full max-w-md mb-10">
-          <div class="group relative p-1 rounded-[32px] bg-gradient-to-r from-primary/50 via-secondary/50 to-primary/50 hover:from-primary hover:via-secondary hover:to-primary transition-all duration-500">
-            <div class="bg-slate-900/95 backdrop-blur-xl rounded-[30px] p-8 border border-white/5">
+          <div class="group relative p-1 rounded-[32px] bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 hover:from-primary hover:via-secondary hover:to-primary transition-all duration-500 shadow-xl shadow-slate-200/50 dark:shadow-none">
+            <div class="bg-white dark:bg-slate-900/95 backdrop-blur-xl rounded-[30px] p-8 border border-slate-100 dark:border-white/5">
               <!-- Price -->
               <div class="text-center mb-8">
                 <div class="flex items-baseline justify-center gap-1 mb-1">
-                  <span class="text-5xl md:text-6xl font-black text-white">{{ displayBasePrice }}</span>
-                  <span class="text-slate-400 text-lg">{{ t('subscriptions.plans.premium.monthly') }}</span>
+                  <span class="text-5xl md:text-6xl font-black text-slate-900 dark:text-white">{{ displayBasePrice }}</span>
+                  <span class="text-slate-500 dark:text-slate-400 text-lg">{{ t('subscriptions.plans.premium.monthly') }}</span>
                 </div>
                 <div class="flex flex-col items-center gap-1">
                   <p class="text-primary text-sm font-bold uppercase tracking-widest">{{ t('subscriptions.plans.premium.totalValue', { total: displayTotalWithFees }) }}</p>
@@ -77,16 +77,16 @@
                     {{ t('subscriptions.plans.premium.feesNote', { fees: displayStripeFee }) }}
                   </p>
                 </div>
-                <p class="text-slate-500 text-sm mt-4">{{ t('subscriptions.plans.premium.cancelAnytime') }}</p>
+                <p class="text-slate-500 dark:text-slate-500 text-sm mt-4">{{ t('subscriptions.plans.premium.cancelAnytime') }}</p>
               </div>
 
               <!-- Benefits -->
               <ul class="space-y-4 mb-8">
                 <li v-for="benefit in benefitsList" :key="benefit" class="flex items-start gap-3">
-                  <div class="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center shrink-0 mt-0.5">
+                  <div class="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center shrink-0 mt-0.5 shadow-light-secondary dark:shadow-none">
                     <span class="material-icons text-black text-sm">check</span>
                   </div>
-                  <span class="text-slate-300 text-left">{{ benefit }}</span>
+                  <span class="text-slate-600 dark:text-slate-300 text-left font-medium">{{ benefit }}</span>
                 </li>
               </ul>
 
@@ -130,22 +130,22 @@
 
         <!-- FAQ Section -->
         <div class="mt-16 w-full max-w-2xl">
-          <h3 class="text-xl font-black text-white mb-6 uppercase tracking-wider">{{ t('subscriptions.faq.title') }}</h3>
+          <h3 class="text-xl font-black text-slate-900 dark:text-white mb-6 uppercase tracking-wider">{{ t('subscriptions.faq.title') }}</h3>
           <div class="space-y-4">
             <div 
               v-for="faq in faqsList" 
               :key="faq.q"
-              class="bg-slate-900/50 backdrop-blur-sm rounded-2xl border border-white/5 overflow-hidden"
+              class="bg-slate-50 dark:bg-slate-900/50 backdrop-blur-sm rounded-2xl border border-slate-200 dark:border-white/5 overflow-hidden transition-all hover:border-secondary/30"
             >
               <button 
                 @click="toggleFaq(faq.q)"
-                class="w-full px-6 py-4 flex items-center justify-between text-left"
+                class="w-full px-6 py-4 flex items-center justify-between text-left group"
               >
-                <span class="font-bold text-white">{{ faq.q }}</span>
+                <span class="font-bold text-slate-800 dark:text-white group-hover:text-secondary transition-colors">{{ faq.q }}</span>
                 <span class="material-icons text-slate-400 transition-transform" :class="{ 'rotate-180': openFaq === faq.q }">expand_more</span>
               </button>
               <Transition name="faq">
-                <div v-if="openFaq === faq.q" class="px-6 pb-4 text-slate-400 text-sm leading-relaxed">
+                <div v-if="openFaq === faq.q" class="px-6 pb-4 text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                   {{ faq.a }}
                 </div>
               </Transition>

@@ -127,7 +127,7 @@
     <div class="space-y-4">
       <div>
         <div class="flex justify-between items-center mb-2">
-          <label class="block text-sm font-semibold text-gray-300">{{ t('programs.title') }} *</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('programs.title') }} *</label>
           <router-link to="/programs" class="text-xs text-primary hover:underline flex items-center gap-1">
             {{ t('programs.viewPrograms') }} <span class="material-symbols-outlined text-xs">open_in_new</span>
           </router-link>
@@ -144,28 +144,28 @@
       </div>
 
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.eventTitle') }} *</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('events.eventTitle') }} *</label>
         <input
           v-model="eventForm.titulo"
           type="text"
           required
-          class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           :placeholder="t('events.eventTitlePlaceholder')"
         />
       </div>
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('common.description') }}</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('common.description') }}</label>
         <textarea
           v-model="eventForm.descricao"
           rows="3"
-          class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           :placeholder="t('events.eventDescriptionPlaceholder')"
         ></textarea>
       </div>
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.eventBanner') }}</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('events.eventBanner') }}</label>
         <div class="space-y-3">
-          <label class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-700 rounded-xl bg-slate-900/30 hover:border-secondary transition-colors cursor-pointer group">
+          <label class="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/30 hover:border-secondary transition-colors cursor-pointer group">
             <input
               type="file"
               accept="image/*"
@@ -194,7 +194,7 @@
       <!-- Data -->
       <div>
         <div class="flex justify-between items-center mb-2">
-          <label class="block text-sm font-semibold text-gray-300">{{ t('events.date') }} *</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('events.date') }} *</label>
           <div v-if="selectedProgram" class="text-xs">
             <span v-if="isProgramExpired(selectedProgram)" class="text-red-400 font-medium flex items-center gap-1">
               <span class="material-symbols-outlined text-[14px]">warning</span>
@@ -212,7 +212,7 @@
               <select
                 v-model="dateTime.day"
                 required
-                class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
                 <option value="">{{ t('events.day') }}</option>
                 <option v-for="d in 31" :key="d" :value="d.toString().padStart(2, '0')">
@@ -230,7 +230,7 @@
               <select
                 v-model="dateTime.month"
                 required
-                class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
                 <option value="">{{ t('events.month') }}</option>
                 <option v-for="m in 12" :key="m" :value="m.toString().padStart(2, '0')">
@@ -248,7 +248,7 @@
               <select
                 v-model="dateTime.year"
                 required
-                class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
                 <option value="">{{ t('events.year') }}</option>
                 <option v-for="y in getYearOptions()" :key="y" :value="y">
@@ -265,11 +265,11 @@
 
       <!-- Tipo de Evento -->
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.eventType') }} *</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('events.eventType') }} *</label>
         <select
           v-model="eventForm.tipo"
           required
-          class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
         >
           <option value="presencial">{{ t('events.inPerson') }}</option>
           <option value="webinar">{{ t('events.online') }}</option>
@@ -278,7 +278,7 @@
 
       <!-- Hora -->
       <div>
-        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.time') }} *</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('events.time') }} *</label>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs text-gray-400 mb-1">{{ t('events.hour') }}</label>
@@ -286,7 +286,7 @@
               <select
                 v-model="dateTime.hour"
                 required
-                class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
                 <option value="">{{ t('events.hour') }}</option>
                 <option v-for="h in 24" :key="h - 1" :value="(h - 1).toString().padStart(2, '0')">
@@ -304,7 +304,7 @@
               <select
                 v-model="dateTime.minute"
                 required
-                class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all appearance-none cursor-pointer pr-10"
               >
                 <option value="">{{ t('events.minute') }}</option>
                 <option value="00">00</option>
@@ -318,11 +318,11 @@
         </div>
       </div>
       <div v-if="eventForm.tipo === 'presencial'">
-        <label class="block text-sm font-semibold text-gray-300 mb-2">{{ t('events.eventLocation') }}</label>
+        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('events.eventLocation') }}</label>
         <input
           v-model="eventForm.local"
           type="text"
-          class="w-full px-3 py-2 border border-slate-700 rounded-xl bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           :placeholder="t('events.eventLocationPlaceholder')"
         />
       </div>

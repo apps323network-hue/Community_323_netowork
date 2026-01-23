@@ -22,24 +22,27 @@
         <div class="flex gap-2">
           <button
             v-if="isOwnComment && canEditComment"
-            class="text-gray-400 hover:text-primary dark:hover:text-secondary text-sm transition-colors"
+            class="text-gray-400 hover:text-primary dark:hover:text-secondary transition-colors p-1 rounded-full hover:bg-slate-100 dark:hover:bg-white/5"
             @click="handleEdit"
+            :title="t('posts.editComment')"
           >
-            {{ t('posts.editComment') }}
+            <span class="material-icons-outlined text-[18px]">edit</span>
           </button>
           <button
             v-if="isOwnComment"
-            class="text-gray-400 hover:text-red-500 text-sm transition-colors"
-            @click="emit('delete', comment.id)"
+            class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-500/10"
+            @click="handleDelete"
+            :title="t('common.delete')"
           >
-            {{ t('common.delete') }}
+            <span class="material-icons-outlined text-[18px]">delete</span>
           </button>
           <button
             v-if="!isOwnComment"
-            class="text-gray-400 hover:text-orange-500 text-sm transition-colors"
+            class="text-gray-400 hover:text-orange-500 transition-colors p-1 rounded-full hover:bg-orange-50 dark:hover:bg-orange-500/10"
             @click="handleReport"
+            :title="t('posts.report')"
           >
-            {{ t('posts.report') }}
+            <span class="material-icons-outlined text-[18px]">flag</span>
           </button>
         </div>
       </div>
@@ -64,6 +67,32 @@
     :comment="comment"
     @saved="handleEditSaved"
   />
+
+  <!-- Delete Confirmation Modal -->
+  <Modal v-model="showDeleteConfirm" :title="t('posts.deleteCommentTitle')" size="sm">
+    <div class="space-y-4">
+      <p class="text-sm text-slate-600 dark:text-slate-300">
+        {{ t('posts.deleteCommentConfirm') }}
+      </p>
+      <div class="flex justify-end gap-3 pt-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          @click="showDeleteConfirm = false"
+        >
+          {{ t('common.cancel') }}
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          class="!bg-red-500 hover:!bg-red-600 !text-white !border-red-500"
+          @click="confirmDelete"
+        >
+          {{ t('common.delete') }}
+        </Button>
+      </div>
+    </div>
+  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -72,6 +101,8 @@ import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import Avatar from '@/components/ui/Avatar.vue'
 import Badge from '@/components/ui/Badge.vue'
+import Modal from '@/components/ui/Modal.vue'
+import Button from '@/components/ui/Button.vue'
 import ReportModal from './ReportModal.vue'
 import EditCommentModal from './EditCommentModal.vue'
 import { formatMentions } from '@/lib/mentionParser'
@@ -93,6 +124,7 @@ const emit = defineEmits<{
 const authStore = useAuthStore()
 const showReportModal = ref(false)
 const showEditModal = ref(false)
+const showDeleteConfirm = ref(false)
 
 const isOwnComment = computed(() => {
   return authStore.user?.id === props.comment.user_id
@@ -151,6 +183,15 @@ function handleEdit() {
 function handleEditSaved() {
   showEditModal.value = false
   // Comment will be updated in store automatically
+}
+
+function handleDelete() {
+  showDeleteConfirm.value = true
+}
+
+function confirmDelete() {
+  emit('delete', props.comment.id)
+  showDeleteConfirm.value = false
 }
 </script>
 

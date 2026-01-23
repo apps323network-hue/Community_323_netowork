@@ -76,7 +76,7 @@
       <div class="flex items-center justify-between text-sm group/stat cursor-default">
         <span class="text-slate-500 dark:text-text-muted font-bold flex items-center gap-2 group-hover/stat:text-primary transition-colors">
           <span class="material-symbols-outlined text-[18px]">article</span>
-          Publicações
+          {{ t('profile.posts') }}
         </span>
         <span class="text-slate-900 dark:text-white font-black">{{ posts }}</span>
       </div>

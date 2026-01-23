@@ -143,7 +143,7 @@ export function useBookmarks() {
 
       // Depois buscar os perfis dos membros, excluindo o próprio usuário
       const memberIds = bookmarksData.map((b) => b.member_id).filter((id) => id !== authStore.user?.id)
-      
+
       if (memberIds.length === 0) {
         return []
       }

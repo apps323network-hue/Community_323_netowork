@@ -157,7 +157,7 @@ const calendarOptions = computed(() => {
     headerToolbar: {
       left: 'prev,next',
       center: 'title',
-      right: window.innerWidth < 640 ? 'today' : 'today dayGridMonth,timeGridWeek,timeGridDay',
+      right: 'today dayGridMonth,timeGridWeek,timeGridDay',
     },
     locale: locale.value.startsWith('pt') ? ptBrLocale : enUsLocale,
     events: calendarEvents,
@@ -387,187 +387,157 @@ onMounted(async () => {
 /* Mobile Responsive Fixes */
 @media (max-width: 640px) {
   :deep(.fc-header-toolbar) {
-    margin-bottom: 1.5rem;
-    padding: 0.75rem 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0.5rem 0;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 1rem !important;
   }
 
-  /* Create a wrapper for the first row buttons */
-  :deep(.fc-header-toolbar)::before {
-    content: '';
-    display: block;
-    width: 100%;
-    order: 0;
-  }
-
-  /* First row: navigation buttons on left */
-  :deep(.fc-toolbar-chunk:first-child) {
+  /* Navigation (Prev/Next) */
+  :deep(.fc-toolbar-chunk:nth-child(1)) {
     order: 1;
-    justify-content: flex-start !important;
+    width: auto !important;
+    display: flex;
+    justify-content: flex-start;
   }
 
-  /* First row: today button on right */
-  :deep(.fc-toolbar-chunk:last-child) {
+  /* View Selection (Today/Month/Week/Day) */
+  :deep(.fc-toolbar-chunk:nth-child(3)) {
     order: 2;
-    justify-content: flex-end !important;
+    width: auto !important;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
   }
 
-  /* Second row: title */
+  /* Title (Month/Year) - Now at the bottom */
   :deep(.fc-toolbar-chunk:nth-child(2)) {
     order: 3;
-    width: 100%;
-    text-align: center;
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 0.75rem !important;
   }
 
-  /* Position buttons in a row */
-  :deep(.fc-toolbar-chunk) {
-    display: flex;
-    align-items: center;
-  }
-
-  /* Create space between left and right buttons */
-  :deep(.fc-header-toolbar) {
-    position: relative;
-  }
-
+  /* Reset absolute positioning from previous implementation */
   :deep(.fc-toolbar-chunk:first-child),
   :deep(.fc-toolbar-chunk:last-child) {
-    position: absolute;
-    top: 0.75rem;
-  }
-
-  :deep(.fc-toolbar-chunk:first-child) {
-    left: 0;
-  }
-
-  :deep(.fc-toolbar-chunk:last-child) {
-    right: 0;
-  }
-
-  :deep(.fc-toolbar-chunk:nth-child(2)) {
-    margin-top: 3.5rem;
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
   }
 
   :deep(.fc-toolbar-title) {
-    font-size: 1.375rem !important;
+    font-size: 1.5rem !important;
     font-weight: 800 !important;
-    width: 100%;
-    text-align: center;
+    background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding: 0 1rem;
+    text-transform: capitalize;
   }
 
   :deep(.fc-button) {
-    padding: 0.625rem 1rem !important;
-    font-size: 0.9rem !important;
-    min-height: 44px;
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.8rem !important;
+    min-height: 38px;
     border-radius: 10px !important;
     font-weight: 600 !important;
   }
 
   :deep(.fc-prev-button),
   :deep(.fc-next-button) {
-    padding: 0.625rem !important;
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 38px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
   :deep(.fc-today-button) {
-    padding: 0.625rem 1.25rem !important;
+    margin-right: 0 !important;
     font-weight: 700 !important;
   }
 
-  /* Improve day header visibility */
-  :deep(.fc-col-header-cell-cushion) {
-    padding: 0.5rem 0.25rem !important;
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
+  /* Better styling for the segmented views on mobile */
+  :deep(.fc-toolbar-chunk:last-child .fc-button-group) {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: 2px;
   }
 
-  /* Make day numbers more visible */
-  :deep(.fc-daygrid-day-number) {
-    font-size: 0.875rem !important;
-    padding: 0.375rem !important;
-    font-weight: 600 !important;
+  :deep(.fc-toolbar-chunk:last-child .fc-button) {
+    border: none !important;
+    background: transparent !important;
+    border-radius: 8px !important;
+    flex: 1 1 auto;
+    white-space: nowrap;
   }
 
-  /* Better event styling */
-  :deep(.fc-event) {
-    font-size: 0.7rem !important;
-    padding: 0.25rem 0.375rem !important;
-    margin: 2px 1px !important;
-    border-radius: 4px !important;
-    font-weight: 500 !important;
+  :deep(.fc-toolbar-chunk:last-child .fc-button-active) {
+    background: linear-gradient(135deg, #f425f4 0%, #00f0ff 100%) !important;
+    color: black !important;
+    box-shadow: 0 4px 12px rgba(244, 37, 244, 0.3);
   }
 
-  :deep(.fc-event-title) {
-    font-weight: 600 !important;
+  /* List theme adjustments */
+  :deep(.fc-toolbar-chunk:last-child .fc-button-group):not(.dark *) {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
   }
 
-  /* Make calendar cells taller for better touch */
+  /* Fix cell heights and visibility */
   :deep(.fc-daygrid-day-frame) {
     min-height: 3.5rem !important;
   }
 
-  /* Better spacing */
-  :deep(.fc-daygrid-day-top) {
-    padding: 0.25rem !important;
-  }
-
-  /* Reduce button spacing */
-  :deep(.fc-button-group) {
-    gap: 4px;
-  }
-
-  :deep(.fc-toolbar-chunk) {
-    gap: 0.5rem;
+  :deep(.fc-col-header-cell-cushion) {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    padding: 0.5rem 0.25rem !important;
   }
 }
 
 /* Extra small screens */
-@media (max-width: 380px) {
+@media (max-width: 480px) {
+  :deep(.fc-header-toolbar) {
+    gap: 0.75rem !important;
+  }
+
   :deep(.fc-toolbar-title) {
-    font-size: 1rem !important;
+    font-size: 1.25rem !important;
   }
 
   :deep(.fc-button) {
-    padding: 0.375rem 0.625rem !important;
+    padding: 0.3rem 0.5rem !important;
     font-size: 0.7rem !important;
-    min-height: 32px;
+    min-height: 34px;
   }
 
   :deep(.fc-prev-button),
   :deep(.fc-next-button) {
-    width: 32px;
-    height: 32px;
-  }
-
-  :deep(.fc-today-button) {
-    padding: 0.375rem 0.75rem !important;
-  }
-
-  :deep(.fc-col-header-cell-cushion) {
-    font-size: 0.65rem !important;
-    padding: 0.375rem 0.125rem !important;
-  }
-
-  :deep(.fc-daygrid-day-number) {
-    font-size: 0.75rem !important;
-    padding: 0.25rem !important;
-  }
-
-  :deep(.fc-event) {
-    font-size: 0.625rem !important;
-    padding: 0.125rem 0.25rem !important;
+    width: 36px;
+    height: 34px;
   }
 
   :deep(.fc-daygrid-day-frame) {
     min-height: 3rem !important;
   }
+
+  :deep(.fc-col-header-cell-cushion) {
+    font-size: 0.65rem !important;
+  }
 }
+
+
 
 
 .bg-neon-gradient {
