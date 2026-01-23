@@ -125,7 +125,8 @@ class ParcelowClient {
                     email: params.client_email,
                     cpf: params.client_cpf
                 },
-                redirectUrls: params.redirectUrls,
+                // CORREÇÃO: Mudar de redirectUrls para redirect para garantir funcionamento na API Internacional
+                redirect: params.redirectUrls,
                 // Passando ambos para garantir compatibilidade
                 notify_url: notifyUrl,
                 webhook_url: notifyUrl

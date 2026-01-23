@@ -132,18 +132,8 @@
             </a>
         </div>
       </div>
-      <!-- Floating Scroll Indicator -->
-      <Transition name="fade">
-        <div 
-          v-if="(paymentStatus === 'completed' || paymentStatus === 'paid') && showScrollArrow"
-          class="fixed bottom-20 right-8 z-[100] pointer-events-none opacity-40 hover:opacity-100 transition-opacity"
-        >
-          <div class="animate-bounce-slow">
-            <span class="material-icons text-slate-900 dark:text-white text-2xl">expand_more</span>
-          </div>
-        </div>
-      </Transition>
-    </div>
+
+      </div>
   </AppLayout>
 </template>
 
@@ -162,19 +152,13 @@ const itemName = ref('')
 const programId = ref('')
 const paymentType = ref<'service' | 'program'>((route.query.type as any) || 'service')
 const paymentMethod = ref<'card' | 'pix' | null>(null)
-const showScrollArrow = ref(true)
+
 
 let pollInterval: any = null
 let attempts = 0
 const MAX_ATTEMPTS = 30 // 30 tentativas x 2s = 60 segundos de espera máxima
 
-function handleScroll() {
-  if (window.scrollY > 50) {
-    showScrollArrow.value = false
-  } else {
-    showScrollArrow.value = true
-  }
-}
+
 
 async function checkPaymentStatus() {
   const sessionId = (route.query.session_id || route.query.order_id) as string
@@ -193,7 +177,7 @@ async function checkPaymentStatus() {
         .from('program_enrollments')
         .select(`
           *,
-          programs:program_id (title_pt)
+          programs (title_pt)
         `)
       
       if (paymentId) {
@@ -208,7 +192,7 @@ async function checkPaymentStatus() {
         .from('service_payments')
         .select(`
           *,
-          services:service_id (nome)
+          services (nome_pt, nome_en)
         `)
       
       if (paymentId) {
@@ -234,7 +218,7 @@ async function checkPaymentStatus() {
       paymentMethod.value = (payment as any).payment_method
       paymentStatus.value = (payment as any).payment_status
     } else {
-      itemName.value = (payment as any).services?.nome || ''
+      itemName.value = (payment as any).services?.nome_pt || (payment as any).services?.nome_en || ''
       paymentMethod.value = (payment as any).payment_method
       paymentStatus.value = (payment as any).status
     }
@@ -253,7 +237,6 @@ async function checkPaymentStatus() {
 
 onMounted(() => {
   checkPaymentStatus()
-  window.addEventListener('scroll', handleScroll)
 
   pollInterval = setInterval(async () => {
     attempts++
@@ -264,26 +247,33 @@ onMounted(() => {
       const sessionId = route.query.session_id || route.query.order_id || route.query.payment_id
       console.log('🔄 Triggering check-payment-status self-healing...')
       
-      try {
-        const { data, error } = await supabase.functions.invoke('check-payment-status', { 
-          body: { session_id: sessionId } 
-        })
-        
-        if (error) {
-          console.error('❌ Error invoking check-payment-status:', error)
-        } else {
-          console.log('✅ check-payment-status response:', data)
+      // Só aciona o self-healing se for um ID do Stripe (começa com cs_)
+      const isStripeId = typeof sessionId === 'string' && (sessionId.startsWith('cs_test_') || sessionId.startsWith('cs_live_'))
+      
+      if (isStripeId) {
+        try {
+          const { data, error } = await supabase.functions.invoke('check-payment-status', { 
+            body: { session_id: sessionId } 
+          })
           
-          // Se foi confirmado no Stripe, força recarregar do banco
-          if (data?.status === 'completed') {
-            console.log('🎉 Payment confirmed by Stripe! Reloading from database...')
-            // Aguarda 1 segundo para garantir que o banco foi atualizado
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            await checkPaymentStatus()
+          if (error) {
+            console.error('❌ Error invoking check-payment-status:', error)
+          } else {
+            console.log('✅ check-payment-status response:', data)
+            
+            // Se foi confirmado no Stripe, força recarregar do banco
+            if (data?.status === 'completed') {
+              console.log('🎉 Payment confirmed by Stripe! Reloading from database...')
+              // Aguarda 1 segundo para garantir que o banco foi atualizado
+              await new Promise(resolve => setTimeout(resolve, 1000))
+              await checkPaymentStatus()
+            }
           }
+        } catch (err) {
+          console.error('❌ Failed to invoke check-payment-status:', err)
         }
-      } catch (err) {
-        console.error('❌ Failed to invoke check-payment-status:', err)
+      } else {
+        console.log('ℹ️ Skipping self-healing: ID is not from Stripe (likely Parcelow/Internal)')
       }
     }
 
@@ -295,7 +285,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
-  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
