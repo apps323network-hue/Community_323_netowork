@@ -369,9 +369,13 @@ function restoreOriginal() {
 
 function setLink() {
   const previousUrl = editor.getAttributes('link').href
-  const url = window.prompt('URL do Link:', previousUrl)
+  let url = window.prompt('URL do Link:', previousUrl)
   
   if (url === null) return
+  
+  // Remove aspas que o usuário possa ter colado/digitado por engano
+  url = url.trim().replace(/^["'](.+)["']$/, '$1')
+
   if (url === '') {
     editor.chain().focus().extendMarkRange('link').unsetLink().run()
     return
