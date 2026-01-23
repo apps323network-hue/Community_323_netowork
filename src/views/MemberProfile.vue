@@ -409,18 +409,6 @@ async function handleConnect() {
     if (success) {
       connectionStatus.value = 'pending'
       
-      // 1. Notificação In-App
-      await supabase.from('notifications').insert({
-        user_id: member.value.id,
-        type: 'connection_request',
-        title: t('profile.newConnectionRequest'),
-        content: `${authStore.user.user_metadata?.nome || t('members.someMember')} ${t('profile.wantsToConnect')}`,
-        metadata: { 
-          requester_id: authStore.user.id,
-          actor_name: authStore.user.user_metadata?.nome || t('members.someMember')
-        }
-      })
-
       // 2. Notificação Email
       const { data: profile } = await supabase
         .from('profiles')

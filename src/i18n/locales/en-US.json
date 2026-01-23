@@ -644,6 +644,8 @@
         "instagram": "Instagram",
         "linkedinPlaceholder": "LinkedIn Profile URL",
         "instagramPlaceholder": "Your Instagram @handle",
+        "documentNumber": "CPF / ID (Required for Installments)",
+        "documentNumberPlaceholder": "000.000.000-00",
         "availableTags": "Available Tags",
         "recentPosts": "Recent Posts",
         "noPostsYet": "No posts yet.",
@@ -820,7 +822,15 @@
         "certificateIssuedTitle": "Certificate Available",
         "certificateIssuedContent": "Your certificate for {programTitle} is now available for download.",
         "progressMilestoneTitle": "Great Progress!",
-        "progressMilestoneContent": "You've already completed {percentage}% of {programTitle}. Keep going!"
+        "progressMilestoneContent": "You've already completed {percentage}% of {programTitle}. Keep going!",
+        "paymentSuccessTitle": "Payment Confirmed!",
+        "paymentSuccessContent": "Your payment has been processed successfully. The partner will contact you soon.",
+        "paymentFailedTitle": "Payment Failed",
+        "paymentFailedContent": "There was a problem with your payment. Please try again.",
+        "enrollmentPaymentFailedTitle": "Enrollment Payment Failed",
+        "enrollmentPaymentFailedContent": "We couldn't process your enrollment payment. Please try again.",
+        "subscriptionActivatedTitle": "Subscription Activated! 🎉",
+        "subscriptionActivatedContent": "Your subscription has been activated successfully. Enjoy all Premium benefits!"
     },
     "sidebar": {
         "joinTitle": "Join the 323 Network",

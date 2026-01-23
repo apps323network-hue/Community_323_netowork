@@ -243,7 +243,7 @@ import { useProfileCompletion } from '@/composables/useProfileCompletion'
 import Modal from '@/components/ui/Modal.vue'
 
 const router = useRouter()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const {
   notifications,
   groupedNotifications,
@@ -302,6 +302,12 @@ async function handleNotificationClick(notification: any) {
     router.push(`/eventos/${notification.metadata.event_id}`)
   } else if ((notification.type === 'new_lesson' || notification.type === 'program_starting' || notification.type === 'program_expiring' || notification.type === 'enrollment_confirmed' || notification.type === 'program_completed' || notification.type === 'certificate_issued' || notification.type === 'progress_milestone') && notification.metadata?.program_id) {
     router.push(`/programas/${notification.metadata.program_id}`)
+  } else if (notification.type === 'payment_success' || notification.type === 'payment_failed') {
+    router.push('/meus-servicos')
+  } else if (notification.type === 'subscription_activated') {
+    router.push('/perfil')
+  } else if (notification.type === 'program_payment_failed' && notification.metadata?.program_id) {
+    router.push(`/programas/${notification.metadata.program_id}`)
   }
 }
 
@@ -332,6 +338,10 @@ function getIcon(type: string) {
     case 'certificate_issued': return 'card_membership'
     case 'progress_milestone': return 'trending_up'
     case 'profile_incomplete': return 'person_alert'
+    case 'payment_success': return 'monetization_on'
+    case 'payment_failed': return 'payment'
+    case 'program_payment_failed': return 'credit_card_off'
+    case 'subscription_activated': return 'star'
     default: return 'notifications'
   }
 }
@@ -352,6 +362,10 @@ function getIconBg(type: string) {
     case 'certificate_issued': return 'bg-indigo-500/10 text-indigo-500'
     case 'progress_milestone': return 'bg-cyan-500/10 text-cyan-500'
     case 'profile_incomplete': return 'bg-yellow-500/10 text-yellow-500'
+    case 'payment_success': return 'bg-green-500/10 text-green-500'
+    case 'payment_failed': return 'bg-red-500/10 text-red-500'
+    case 'program_payment_failed': return 'bg-red-500/10 text-red-500'
+    case 'subscription_activated': return 'bg-purple-500/10 text-purple-500'
     default: return 'bg-primary/10 text-primary'
   }
 }
@@ -361,11 +375,11 @@ function formatTime(date: string) {
   const postDate = new Date(date)
   const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000)
 
-  if (diffInSeconds < 60) return 'now'
+  if (diffInSeconds < 60) return t('common.now')
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`
   if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`
-  return postDate.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' })
+  return postDate.toLocaleDateString(locale.value === 'pt-BR' ? 'pt-BR' : 'en-US', { day: '2-digit', month: '2-digit' })
 }
 
 function handleClickOutside(event: MouseEvent) {

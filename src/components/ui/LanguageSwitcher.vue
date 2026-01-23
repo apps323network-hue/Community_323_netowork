@@ -1,5 +1,24 @@
 <template>
-  <div class="relative" ref="languageMenuContainer">
+  <!-- Toggle Variant -->
+  <div v-if="variant === 'toggle'" class="flex items-center bg-slate-100 dark:bg-surface-lighter p-1 rounded-xl w-full">
+    <button
+      v-for="language in availableLanguages"
+      :key="language.code"
+      @click="handleLocaleChange(language.code)"
+      class="flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-bold transition-all duration-300"
+      :class="[
+        language.isActive
+          ? 'bg-white dark:bg-surface-dark text-primary dark:text-secondary shadow-sm'
+          : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-200'
+      ]"
+    >
+      <span>{{ language.flag }}</span>
+      <span>{{ language.code.split('-')[0].toUpperCase() }}</span>
+    </button>
+  </div>
+
+  <!-- Dropdown Variant -->
+  <div v-else class="relative" ref="languageMenuContainer">
     <button
       @click.stop="toggleLanguageMenu"
       class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-surface-lighter transition-colors"
@@ -50,6 +69,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useLanguageDetection } from '@/composables/useLanguageDetection'
+
+const props = withDefaults(defineProps<{
+  variant?: 'dropdown' | 'toggle'
+}>(), {
+  variant: 'dropdown'
+})
 
 const {
   availableLanguages,

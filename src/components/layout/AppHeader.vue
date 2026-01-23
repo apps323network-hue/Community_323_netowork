@@ -283,7 +283,9 @@
                     <!-- Language Switcher -->
                     <div class="relative flex items-center justify-center px-4 py-2.5 rounded-lg">
                       <span class="material-symbols-outlined text-[20px] text-slate-600 dark:text-gray-400 absolute left-4">translate</span>
-                      <LanguageSwitcher />
+                      <div class="w-full ml-9">
+                        <LanguageSwitcher variant="toggle" />
+                      </div>
                     </div>
                   </div>
 

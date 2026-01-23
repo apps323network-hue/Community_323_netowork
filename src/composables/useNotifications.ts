@@ -26,7 +26,7 @@ export function useNotifications() {
     const unreadCount = ref(0)
     const hasMore = ref(true)
     const authStore = useAuthStore()
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
     const PAGE_SIZE = 15
 
     const groupedNotifications = computed(() => {
@@ -173,6 +173,22 @@ export function useNotifications() {
                             percentage: group.metadata?.percentage
                         })
                         break
+                    case 'payment_success':
+                        group.title = t('notifications.paymentSuccessTitle')
+                        group.content = t('notifications.paymentSuccessContent')
+                        break
+                    case 'payment_failed':
+                        group.title = t('notifications.paymentFailedTitle')
+                        group.content = t('notifications.paymentFailedContent')
+                        break
+                    case 'program_payment_failed':
+                        group.title = t('notifications.enrollmentPaymentFailedTitle')
+                        group.content = t('notifications.enrollmentPaymentFailedContent')
+                        break
+                    case 'subscription_activated':
+                        group.title = t('notifications.subscriptionActivatedTitle')
+                        group.content = t('notifications.subscriptionActivatedContent')
+                        break
                 }
             }
             return group
@@ -272,6 +288,18 @@ export function useNotifications() {
 
     function updateUnreadCount() {
         unreadCount.value = notifications.value.filter(n => !n.read).length
+    }
+
+    function formatTime(date: string) {
+        const now = new Date()
+        const postDate = new Date(date)
+        const diffInSeconds = Math.floor((now.getTime() - postDate.getTime()) / 1000)
+
+        if (diffInSeconds < 60) return t('common.now')
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`
+        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`
+        return postDate.toLocaleDateString(locale.value === 'pt-BR' ? 'pt-BR' : 'en-US', { day: '2-digit', month: '2-digit' })
     }
 
     // Real-time subscription

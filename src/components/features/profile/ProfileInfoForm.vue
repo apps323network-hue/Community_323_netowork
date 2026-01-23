@@ -132,7 +132,7 @@
 
       <!-- Document Number (CPF) -->
       <label class="block space-y-2 group">
-        <span class="text-sm font-bold text-slate-500 dark:text-text-muted group-hover:text-secondary transition-colors">CPF / Identidade (Obrigatório para Parcelar)</span>
+        <span class="text-sm font-bold text-slate-500 dark:text-text-muted group-hover:text-secondary transition-colors">{{ t('profile.documentNumber') }}</span>
         <div class="relative">
           <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-text-muted text-lg">badge</span>
           <input
@@ -140,7 +140,7 @@
             @input="handleDocumentInput"
             type="text"
             :disabled="readonly"
-            placeholder="000.000.000-00"
+            :placeholder="t('profile.documentNumberPlaceholder')"
             class="form-input w-full pl-11 pr-4 rounded-xl bg-slate-50 dark:bg-input-bg border border-slate-300 dark:border-input-border text-slate-900 dark:text-white focus:bg-white dark:focus:bg-input-bg focus:border-secondary focus:ring-1 focus:ring-secondary h-12 transition-all shadow-sm font-medium"
           />
         </div>
