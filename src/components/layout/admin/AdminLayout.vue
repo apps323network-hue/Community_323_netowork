@@ -7,15 +7,15 @@
 
     <div class="flex flex-1 pt-16">
       <!-- Sidebar -->
-      <div class="hidden lg:block fixed left-0 top-16 bottom-0 z-40">
+      <div class="hidden xl:block fixed left-0 top-16 bottom-0 z-40">
         <AdminSidebar />
       </div>
 
       <!-- Main Content -->
-      <div class="flex-1 lg:pl-64 flex flex-col min-h-[calc(100vh-4rem)] w-full pb-16 lg:pb-0">
+      <div class="flex-1 xl:pl-64 flex flex-col min-h-[calc(100vh-4rem)] w-full pb-16 xl:pb-0">
 
         <!-- Main Content Area -->
-        <main class="flex-1 p-6 lg:p-8 w-full">
+        <main class="flex-1 p-6 xl:p-8 w-full">
           <div class="max-w-7xl mx-auto w-full">
             <slot />
           </div>
@@ -25,7 +25,7 @@
 
     <!-- Mobile Menu - Sempre visível na parte inferior -->
     <div
-      class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-lg dark:shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden"
+      class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-lg dark:shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md xl:hidden"
     >
       <nav class="flex justify-around items-center h-20 px-2">
         <RouterLink

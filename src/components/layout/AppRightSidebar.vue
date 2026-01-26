@@ -1,5 +1,5 @@
 <template>
-  <aside class="lg:sticky lg:top-24 h-fit space-y-8">
+  <aside class="xl:sticky xl:top-24 h-fit space-y-8">
     <!-- Próximos Eventos Card -->
     <div class="rounded-2xl p-5 shadow-premium dark:shadow-2xl relative overflow-hidden bg-white dark:bg-surface-dark border border-slate-200 dark:border-none neon-border-card">
       <div class="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full blur-xl"></div>

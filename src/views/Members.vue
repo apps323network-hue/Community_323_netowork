@@ -115,7 +115,7 @@ import type { MemberFilters as MemberFiltersType, Member } from '@/types/members
 const router = useRouter()
 const { t } = useI18n()
 const { members, loading, pagination, totalPages, fetchMembers } = useMembers()
-const { fetchBookmarks } = useBookmarks()
+const { fetchBookmarks, bookmarks, fetchBookmarkedMembers } = useBookmarks()
 const { isAuthenticated, showAuthModal, getContentLimit } = usePublicAccess()
 import { useDynamicMeta } from '@/composables/useDynamicMeta'
 
@@ -185,9 +185,38 @@ const filters = ref<MemberFiltersType>({})
 
 
 const guestLimit = getContentLimit('community')
+const savedMembers = ref<Member[]>([])
 
 // All members
-const allMembers = computed(() => members.value)
+const allMembers = computed(() => {
+  if (!isAuthenticated.value) return members.value
+  
+  // Combine saved members with paginated members (deduplicate by ID)
+  const combined = new Map<string, Member>()
+  
+  // Add saved members first
+  savedMembers.value.forEach(m => combined.set(m.id, m))
+  
+  // Add paginated members (overwrites if exists, which is fine, or keeps saved version)
+  // Actually, to preserve "saved" status if needed, but here objects are same structure.
+  // We want to ensure we have all unique members.
+  members.value.forEach(m => {
+    if (!combined.has(m.id)) {
+      combined.set(m.id, m)
+    }
+  })
+  
+  const uniqueMembers = Array.from(combined.values())
+  
+  return uniqueMembers.sort((a, b) => {
+    const aBookmarked = bookmarks.value.has(a.id)
+    const bBookmarked = bookmarks.value.has(b.id)
+    
+    if (aBookmarked && !bBookmarked) return -1
+    if (!aBookmarked && bBookmarked) return 1
+    return 0
+  })
+})
 
 const displayMembers = computed(() => {
   if (isAuthenticated.value) {
@@ -200,8 +229,11 @@ const displayMembers = computed(() => {
 const hasMore = computed(() => pagination.value.page < totalPages.value)
 
 onMounted(async () => {
-  await fetchMembers()
-  await fetchBookmarks()
+  const [_, saved] = await Promise.all([
+    fetchMembers(),
+    fetchBookmarks().then(() => fetchBookmarkedMembers())
+  ])
+  if (saved) savedMembers.value = saved
 })
 
 
@@ -230,8 +262,14 @@ function loadMore() {
   fetchMembers(filters.value, nextPage, true)
 }
 
-async function handleBookmarkChanged(_memberId: string, _isBookmarked: boolean) {
-  // Bookmark changed - no action needed since we removed featured members
+async function handleBookmarkChanged(memberId: string, isBookmarked: boolean) {
+  if (isBookmarked) {
+    bookmarks.value.add(memberId)
+  } else {
+    bookmarks.value.delete(memberId)
+  }
+  // Trigger reactivity for computed property
+  bookmarks.value = new Set(bookmarks.value)
 }
 </script>
 

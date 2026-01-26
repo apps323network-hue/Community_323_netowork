@@ -425,6 +425,86 @@
             </div>
           </div>
 
+          <!-- Service Icon -->
+          <div class="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Service Icon</h3>
+                <p class="text-xs text-slate-500 dark:text-gray-400">Select or upload an icon for your service (optional).</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 border-b border-slate-200 dark:border-white/10">
+              <button
+                type="button"
+                @click="iconUploadType = 'select'"
+                class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+                :class="iconUploadType === 'select' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200'"
+              >
+                Select Icon
+              </button>
+              <button
+                type="button"
+                @click="iconUploadType = 'upload'"
+                class="px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+                :class="iconUploadType === 'upload' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200'"
+              >
+                Upload Icon
+              </button>
+            </div>
+
+            <!-- Tab: Select Icon -->
+            <div v-if="iconUploadType === 'select'" class="animate-in fade-in slide-in-from-top-2">
+              <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-40 overflow-y-auto p-2 border border-slate-200 dark:border-white/10 rounded-lg custom-scrollbar">
+                <button
+                  v-for="icon in availableIcons"
+                  :key="icon"
+                  type="button"
+                  @click="formData.icon = icon"
+                  class="aspect-square flex items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 transition-all border-2"
+                  :class="formData.icon === icon ? 'border-primary bg-primary/10 text-primary' : 'border-transparent text-slate-500 dark:text-gray-400'"
+                >
+                  <span class="material-symbols-outlined text-2xl">{{ icon }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab: Upload Icon -->
+            <div v-else class="animate-in fade-in slide-in-from-top-2">
+              <label class="block w-full border-2 border-dashed border-slate-300 dark:border-white/20 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors">
+                <input type="file" accept="image/*" class="hidden" @change="handleIconUpload">
+                <div v-if="uploadingIcon" class="flex flex-col items-center">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
+                  <span class="text-sm text-slate-500">Uploading icon...</span>
+                </div>
+                <div v-else class="flex flex-col items-center">
+                  <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">cloud_upload</span>
+                  <p class="text-sm font-medium text-slate-900 dark:text-white">Click to upload icon</p>
+                  <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">SVG, PNG, JPG (Square recommended)</p>
+                </div>
+              </label>
+            </div>
+            
+            <!-- Selected Preview -->
+            <div v-if="formData.icon" class="flex items-center gap-2 pt-2 border-t border-slate-200 dark:border-white/10">
+              <span class="text-xs text-slate-500 dark:text-gray-400">Selected:</span>
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10">
+                <!-- If it's a URL (contains /) render image, else render symbol -->
+                <img v-if="formData.icon.includes('/')" :src="formData.icon" class="w-6 h-6 object-contain" />
+                <span v-else class="material-symbols-outlined text-lg text-primary">{{ formData.icon }}</span>
+                
+                <span class="text-xs font-medium text-slate-900 dark:text-white truncate max-w-[150px]">{{ formData.icon.split('/').pop() }}</span>
+                <button 
+                  type="button" 
+                  @click="formData.icon = ''"
+                  class="ml-1 text-slate-400 hover:text-red-400 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-base">close</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- External Service Config -->
           <div class="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4">
             <div class="flex items-center justify-between">
@@ -547,6 +627,51 @@ const serviceToReject = ref<string | null>(null)
 // Image Upload State
 const imageUploadType = ref<'file' | 'url'>('file')
 const uploadingImage = ref(false)
+const iconUploadType = ref<'select' | 'upload'>('select')
+const uploadingIcon = ref(false)
+
+async function handleIconUpload(event: Event) {
+  const input = event.target as HTMLInputElement
+  if (!input.files || input.files.length === 0) return
+
+  const file = input.files[0]
+  if (!file.type.startsWith('image/')) {
+    toast.error('Please upload an image file')
+    return
+  }
+
+  // 1MB limit for icons
+  if (file.size > 1024 * 1024) {
+    toast.error('Icon must be less than 1MB')
+    return
+  }
+
+  try {
+    uploadingIcon.value = true
+    const fileExt = file.name.split('.').pop()
+    const fileName = `icon-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+    const filePath = `${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('service-images')
+      .upload(filePath, file)
+
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('service-images')
+      .getPublicUrl(filePath)
+
+    formData.value.icon = publicUrl
+    toast.success('Icon uploaded successfully')
+  } catch (error: any) {
+    console.error('Error uploading icon:', error)
+    toast.error('Error uploading icon')
+  } finally {
+    uploadingIcon.value = false
+    input.value = ''
+  }
+}
 
 async function handleImageUpload(event: Event) {
   const input = event.target as HTMLInputElement
@@ -653,6 +778,7 @@ const formData = ref<Partial<AdminService>>({
   is_external: false,
   external_url: '',
   image_url: '',
+  icon: '',
 })
 
 function formatPrice(cents: number, currency: string = 'USD'): string {
@@ -685,9 +811,22 @@ function editService(service: AdminService) {
     is_external: service.is_external || false,
     external_url: service.external_url || '',
     image_url: service.image_url || '',
+    icon: service.icon || '',
   }
   showEditModal.value = true
 }
+
+const availableIcons = [
+  'rocket_launch', 'star', 'diamond', 'favorite', 'public', 
+  'business', 'store', 'school', 'gavel', 'balance',
+  'account_balance', 'payments', 'work', 'handshake', 'groups',
+  'person', 'psychology', 'medical_services', 'health_and_safety', 'fitness_center',
+  'home', 'apartment', 'construction', 'engineering', 'science',
+  'computer', 'terminal', 'memory', 'wifi', 'security',
+  'lock', 'vpn_key', 'shield', 'verified', 'policy',
+  'local_shipping', 'flight', 'directions_car', 'map', 'explore',
+  'restaurant', 'local_cafe', 'celebration', 'event', 'calendar_month'
+]
 
 async function handleSubmit() {
   try {
@@ -780,6 +919,8 @@ function closeModal() {
 
     is_external: false,
     external_url: '',
+    image_url: '',
+    icon: '',
   }
 }
 

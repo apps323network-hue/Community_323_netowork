@@ -2,14 +2,14 @@
   <header
     class="sticky top-0 z-50 bg-white/95 dark:bg-surface-dark/95 backdrop-blur-md border-b border-slate-200/60 dark:border-white/10 shadow-premium dark:shadow-none w-full"
   >
-    <nav class="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-[1440px]">
+    <nav class="w-full mx-auto px-4 sm:px-6 xl:px-8 max-w-[1440px]">
       <div class="flex items-center justify-between h-20">
         <!-- Logo -->
         <RouterLink v-if="props.showLogo" to="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
           <div
             :class="[
               'font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform',
-              props.showNavigation ? 'text-2xl md:text-3xl' : 'text-2xl'
+              props.showNavigation ? 'text-2xl xl:text-3xl' : 'text-2xl'
             ]"
           >
             <span class="text-primary dark:text-secondary">(323</span>
@@ -27,7 +27,7 @@
         <div v-else class="flex-shrink-0"></div>
 
         <!-- Navigation Links - Desktop -->
-        <div v-if="props.showNavigation" class="hidden md:flex flex-1 items-center justify-start ml-12 px-0">
+        <div v-if="props.showNavigation" class="hidden xl:flex flex-1 items-center justify-start ml-12 px-0">
           <div class="flex items-baseline space-x-6">
             <RouterLink
               to="/"
@@ -150,14 +150,14 @@
 
 
         <!-- Mobile Menu - Not Authenticated with Navigation -->
-        <div v-if="!isAuthenticated && props.showNavigation" class="md:hidden flex items-center gap-3">
+        <div v-if="!isAuthenticated && props.showNavigation" class="xl:hidden flex items-center gap-3">
           <AnimatedThemeToggler />
           
           <LanguageSwitcher />
         </div>
 
         <!-- Mobile Menu - User -->
-        <div v-if="isAuthenticated && props.showNavigation" class="md:hidden flex items-center gap-3">
+        <div v-if="isAuthenticated && props.showNavigation" class="xl:hidden flex items-center gap-3">
           <NotificationsDropdown />
           
           <!-- User Menu Mobile -->
@@ -327,13 +327,13 @@
         </div>
 
         <!-- Mobile Menu - Theme and Language (when not logged in) -->
-        <div v-if="!props.showNavigation" class="md:hidden flex items-center gap-3">
+        <div v-if="!props.showNavigation" class="xl:hidden flex items-center gap-3">
           <AnimatedThemeToggler />
           <LanguageSwitcher />
         </div>
 
         <!-- User Menu -->
-        <div class="hidden md:flex items-center gap-5">
+        <div class="hidden xl:flex items-center gap-5">
           <AnimatedThemeToggler />
           <NotificationsDropdown v-if="isAuthenticated" />
           

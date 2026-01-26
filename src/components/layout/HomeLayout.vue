@@ -2,20 +2,20 @@
   <div class="min-h-screen bg-background-light dark:bg-background-dark flex flex-col">
     <AppHeader />
     
-    <main class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 pb-20 lg:pb-8 min-h-[calc(100vh-200px)] w-full">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <main class="max-w-[1440px] mx-auto px-4 sm:px-6 xl:px-8 py-8 flex-1 pb-20 xl:pb-8 min-h-[calc(100vh-200px)] w-full">
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <!-- Sidebar Esquerda -->
-        <div class="hidden lg:block lg:col-span-3 xl:col-span-2">
+        <div class="hidden xl:block xl:col-span-3 xl:col-span-2">
           <AppSidebar @edit-profile="handleEditProfile" />
         </div>
         
         <!-- Conteúdo Principal -->
-        <div class="lg:col-span-6 xl:col-span-8">
+        <div class="xl:col-span-6 xl:col-span-8">
           <slot />
         </div>
         
         <!-- Sidebar Direita -->
-        <div class="hidden lg:block lg:col-span-3 xl:col-span-2">
+        <div class="hidden xl:block xl:col-span-3 xl:col-span-2">
           <AppRightSidebar />
         </div>
       </div>
@@ -24,7 +24,7 @@
     <AppFooter />
     
     <!-- Mobile Menu - Sempre visível -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md lg:hidden">
+    <div class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-slate-200 dark:border-white/10 shadow-[0_-4px_20px_rgba(244,37,244,0.2)] backdrop-blur-md xl:hidden">
       <nav class="flex justify-around items-center h-20 px-2">
         <RouterLink
           v-for="item in mobileMenuItems"

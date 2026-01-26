@@ -96,6 +96,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
         preco: serviceData.preco && serviceData.preco > 0 ? serviceData.preco : null,
         moeda: serviceData.moeda && (serviceData.moeda === 'USD' || serviceData.moeda === 'BRL') ? serviceData.moeda : 'USD',
         image_url: serviceData.image_url || null,
+        icon: serviceData.icon || null,
       }
 
       const { data, error: insertError } = await supabase
@@ -177,6 +178,7 @@ export const useAdminServicesStore = defineStore('admin-services', () => {
         cleanData.moeda = updates.moeda && (updates.moeda === 'USD' || updates.moeda === 'BRL') ? updates.moeda : 'USD'
       }
       if (updates.image_url !== undefined) cleanData.image_url = updates.image_url
+      if (updates.icon !== undefined) cleanData.icon = updates.icon
 
       const { data, error: updateError } = await supabase
         .from('services')

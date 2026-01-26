@@ -21,13 +21,14 @@
     </div>
 
     <!-- Service Image -->
-    <div v-if="service.image_url" class="-mx-3 -mt-3 sm:-mx-4 sm:-mt-4 md:-mx-6 md:-mt-6 mb-3 sm:mb-4 md:mb-5 rounded-t-xl overflow-hidden h-32 sm:h-40 relative group-hover:h-36 sm:group-hover:h-44 transition-all duration-300">
+    <div v-if="service.image_url" class="-mx-3 -mt-3 sm:-mx-4 sm:-mt-4 md:-mx-6 md:-mt-6 mb-3 sm:mb-4 md:mb-5 rounded-t-xl overflow-hidden h-32 sm:h-40 relative transition-all duration-300">
       <img :src="service.image_url" :alt="service.nome_en || service.nome_pt" class="w-full h-full object-cover">
       <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
       
-      <!-- Category Icon Overlay -->
-      <div class="absolute bottom-3 left-3 z-20 inline-flex items-center justify-center rounded-lg border border-white/10 bg-black/40 backdrop-blur-md p-2 text-secondary shadow-[0_0_10px_rgba(0,243,255,0.2)] group-hover:bg-secondary group-hover:text-black transition-all duration-300">
-        <span class="material-symbols-outlined text-xl sm:text-2xl">{{ getIcon(service.categoria) }}</span>
+      <!-- Category/Custom Icon Overlay -->
+      <div class="absolute bottom-3 left-3 z-20 inline-flex items-center justify-center rounded-lg border border-white/10 backdrop-blur-md text-secondary shadow-[0_0_10px_rgba(0,243,255,0.2)] group-hover:bg-secondary group-hover:text-black group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-300 overflow-hidden" :class="service.icon?.includes('/') ? 'bg-white p-0' : 'bg-black/40 p-1.5 sm:p-2 md:p-3'">
+        <img v-if="service.icon?.includes('/')" :src="service.icon" class="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 object-cover" />
+        <span v-else class="material-symbols-outlined text-xl sm:text-2xl md:text-[28px] lg:text-[32px]">{{ service.icon || getIcon(service.categoria) }}</span>
       </div>
     </div>
 
@@ -36,8 +37,9 @@
     <div>
       <!-- Icon based on category or default -->
       <!-- Icon based on category or default (Only if no image) -->
-      <div v-if="!service.image_url" class="mb-2.5 sm:mb-3 md:mb-4 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 p-1.5 sm:p-2 md:p-3 text-slate-900 dark:text-secondary shadow-[0_0_10px_rgba(0,243,255,0.1)] group-hover:bg-secondary group-hover:text-black group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-300">
-        <span class="material-symbols-outlined text-xl sm:text-2xl md:text-[28px] lg:text-[32px]">{{ getIcon(service.categoria) }}</span>
+      <div v-if="!service.image_url" class="mb-2.5 sm:mb-3 md:mb-4 inline-flex items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-900 dark:text-secondary shadow-[0_0_10px_rgba(0,243,255,0.1)] group-hover:bg-secondary group-hover:text-black group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-300 overflow-hidden" :class="service.icon?.includes('/') ? 'bg-white p-0' : 'bg-slate-100 dark:bg-white/5 p-1.5 sm:p-2 md:p-3'">
+        <img v-if="service.icon?.includes('/')" :src="service.icon" class="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 object-cover" />
+        <span v-else class="material-symbols-outlined text-xl sm:text-2xl md:text-[28px] lg:text-[32px]">{{ service.icon || getIcon(service.categoria) }}</span>
       </div>
 
       <!-- Title -->
@@ -141,6 +143,7 @@ interface Service {
   created_by?: string
   is_user_service?: boolean
   image_url?: string
+  icon?: string
 }
 
 const props = defineProps<{

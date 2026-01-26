@@ -4,7 +4,7 @@
     <header
       class="sticky top-0 z-50 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-sm w-full"
     >
-      <nav class="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+      <nav class="w-full mx-auto px-4 sm:px-6 xl:px-8 max-w-7xl">
         <div class="flex items-center justify-between h-20">
           <!-- Logo -->
           <RouterLink to="/parceiros" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
@@ -23,13 +23,13 @@
           <!-- Right Side - Theme and Language -->
           <div class="flex items-center gap-4">
             <!-- Desktop: Theme and Language -->
-            <div class="hidden md:flex items-center gap-5">
+            <div class="hidden xl:flex items-center gap-5">
               <AnimatedThemeToggler />
               <LanguageSwitcher />
             </div>
 
             <!-- Mobile: Theme and Language -->
-            <div class="md:hidden flex items-center gap-3">
+            <div class="xl:hidden flex items-center gap-3">
               <AnimatedThemeToggler />
               <LanguageSwitcher />
             </div>

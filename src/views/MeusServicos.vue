@@ -53,8 +53,9 @@
           >
             <!-- (Mantendo o layout existente do card de serviço contratado) -->
             <div class="flex items-start gap-3 sm:gap-4">
-              <div class="size-10 sm:size-12 md:size-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shrink-0">
-                <span class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">{{ getIcon(item.service?.categoria) }}</span>
+              <div class="size-10 sm:size-12 md:size-14 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all shrink-0 overflow-hidden">
+                <img v-if="item.service?.icon?.includes('/')" :src="item.service.icon" class="w-full h-full object-contain p-1" />
+                <span v-else class="material-symbols-outlined text-lg sm:text-xl md:text-2xl">{{ item.service?.icon || getIcon(item.service?.categoria) }}</span>
               </div>
               <div class="flex-1 flex flex-col gap-1.5 sm:gap-2 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
@@ -435,7 +436,9 @@ async function fetchHiredServices() {
           id,
           nome_pt,
           descricao_pt,
-          categoria
+          categoria,
+          icon,
+          image_url
         ),
         service_requests!service_payments_service_request_id_fkey (
           id,

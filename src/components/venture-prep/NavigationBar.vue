@@ -1,10 +1,10 @@
 <template>
   <header class="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border">
-    <nav class="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-[1440px]">
+    <nav class="w-full mx-auto px-4 sm:px-6 xl:px-8 max-w-[1440px]">
       <div class="flex items-center justify-between h-20">
         <!-- Logo 323 Network -->
         <a href="/" class="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
-          <div class="font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform text-2xl md:text-3xl">
+          <div class="font-display font-extrabold tracking-tighter flex items-center transform group-hover:scale-105 transition-transform text-2xl xl:text-3xl">
             <span class="text-primary">(323</span>
             <span class="material-icons-outlined text-primary mx-1 animate-pulse" style="font-size: 1.2em">
               play_arrow
@@ -16,7 +16,7 @@
         </a>
 
         <!-- Navigation Links - Desktop -->
-        <div class="hidden md:flex items-center gap-8">
+        <div class="hidden xl:flex items-center gap-8">
           <a href="#journey" class="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">
             The Journey
           </a>

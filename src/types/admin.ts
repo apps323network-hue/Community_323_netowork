@@ -152,6 +152,7 @@ export interface AdminService {
   terms_content_pt?: string;
   terms_content_en?: string;
   image_url?: string;
+  icon?: string;
 }
 
 export interface ServiceStats {

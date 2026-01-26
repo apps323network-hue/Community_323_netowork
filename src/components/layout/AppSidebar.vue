@@ -1,5 +1,5 @@
 <template>
-  <aside class="lg:sticky lg:top-24 h-fit space-y-8">
+  <aside class="xl:sticky xl:top-24 h-fit space-y-8">
     <!-- Profile Card (Authenticated) -->
     <div v-if="isAuthenticated" class="bg-white dark:bg-surface-dark rounded-2xl p-6 relative overflow-hidden shadow-premium dark:shadow-2xl border border-slate-200 dark:border-white/5 group">
       <!-- Neon glow effects -->
