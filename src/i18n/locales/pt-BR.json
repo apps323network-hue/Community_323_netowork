@@ -1936,6 +1936,34 @@
             "instagramInstructionsDesc": "Agora abra o Instagram e cole o link onde quiser (Stories, DM, Bio)"
         },
         "payment": {
+            "cancel": {
+                "title": "Pagamento Cancelado",
+                "description": "O processo de pagamento foi cancelado. Nenhuma cobrança foi realizada. Você pode tentar novamente quando quiser.",
+                "tryAgain": "Tentar Novamente",
+                "backToHome": "Voltar ao Início"
+            },
+            "success": {
+                "title": "Pagamento Confirmado!",
+                "subtitle": "Sua jornada começa agora. Preparamos tudo para que você tenha a melhor experiência possível.",
+                "validating": "Validando Transação",
+                "pleaseWait": "Aguarde um instante enquanto confirmamos tudo...",
+                "programEnrolled": "Programa Matriculado",
+                "serviceContracted": "Serviço Contratado",
+                "activeImmediately": "Ativo Imediatamente",
+                "startWatching": "Começar a Assistir agora",
+                "viewMyPrograms": "Ver Meus Programas",
+                "followOrder": "Acompanhar Pedido",
+                "backToExploration": "Voltar para a Exploração",
+                "processingPurchase": "Processando sua compra",
+                "waitingPix": "Aguardando confirmação do PIX...",
+                "validatingTransaction": "Estamos validando sua transação com a operadora.",
+                "dontClosePage": "Isso geralmente leva menos de um minuto. Não feche esta página.",
+                "errorTitle": "Ops! Algo não saiu como o esperado",
+                "failedDescription": "O pagamento foi recusado. Verifique os dados do cartão ou tente um novo método.",
+                "notFoundDescription": "Não conseguimos localizar seu pagamento. Se o valor foi debitado, entre em contato com nosso suporte.",
+                "tryAgain": "Tentar Novamente",
+                "whatsappSupport": "Suporte via WhatsApp"
+            },
             "parcelow": {
                 "title": "Parcelow em até 21x",
                 "buttonLabel": "Parcelow",

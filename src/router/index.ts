@@ -224,6 +224,15 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/PaymentCancel.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/payment/success',
+    redirect: (to: { query: any }) => ({ path: '/pagamento/sucesso', query: to.query }),
+  },
+  {
+    path: '/payment/cancel',
+    redirect: (to: { query: any }) => ({ path: '/pagamento/cancelado', query: to.query }),
+  },
+
 
   {
     path: '/desafios',

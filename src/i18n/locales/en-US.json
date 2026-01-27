@@ -1923,6 +1923,34 @@
         "instagramInstructionsDesc": "Now open Instagram and paste the link wherever you want (Stories, DM, Bio)"
     },
     "payment": {
+        "cancel": {
+            "title": "Payment Canceled",
+            "description": "The payment process has been canceled. No charges have been made. You can try again whenever you want.",
+            "tryAgain": "Try Again",
+            "backToHome": "Back to Home"
+        },
+        "success": {
+            "title": "Payment Confirmed!",
+            "subtitle": "Your journey starts now. We've prepared everything for you to have the best experience possible.",
+            "validating": "Validating Transaction",
+            "pleaseWait": "Please wait a moment while we confirm everything...",
+            "programEnrolled": "Program Enrolled",
+            "serviceContracted": "Service Contracted",
+            "activeImmediately": "Active Immediately",
+            "startWatching": "Start Watching Now",
+            "viewMyPrograms": "View My Programs",
+            "followOrder": "Track Order",
+            "backToExploration": "Back to Exploration",
+            "processingPurchase": "Processing your purchase",
+            "waitingPix": "Waiting for PIX confirmation...",
+            "validatingTransaction": "We are validating your transaction with the provider.",
+            "dontClosePage": "This usually takes less than a minute. Do not close this page.",
+            "errorTitle": "Oops! Something didn't go as expected",
+            "failedDescription": "Payment was declined. Check your card details or try a new method.",
+            "notFoundDescription": "We couldn't locate your payment. If the amount was debited, please contact our support.",
+            "tryAgain": "Try Again",
+            "whatsappSupport": "Support via WhatsApp"
+        },
         "parcelow": {
             "title": "Parcelow up to 21x",
             "buttonLabel": "Parcelow",
