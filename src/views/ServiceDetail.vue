@@ -353,7 +353,7 @@ import ParcelowService from '@/lib/parcelowService'
 import { useUserStore } from '@/stores/user'
 import { computed } from 'vue'
 
-import { isLocalhost } from '@/utils/localhost'
+
 
 const route = useRoute()
 const router = useRouter()
@@ -375,7 +375,7 @@ const {
   error: parcelowError
 } = useParcelowCheckout()
 
-const showParcelow = computed(() => isLocalhost())
+const showParcelow = computed(() => true)
 
 // CPF validation for Parcelow
 const isMissingCpf = computed(() => {

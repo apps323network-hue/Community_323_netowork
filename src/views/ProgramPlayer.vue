@@ -24,6 +24,18 @@
           </div>
 
           <div class="flex items-center gap-2 md:gap-4 shrink-0">
+            <!-- Share Button -->
+            <ShareButton
+              v-if="program"
+              :options="{
+                url: `/programs/${$route.params.id}`,
+                title: getProgramTitle(program),
+                description: getProgramDescription(program)?.substring(0, 160) || '',
+                imageUrl: program.banner_url
+              }"
+              variant="icon"
+            />
+
             <!-- Theme Toggler -->
             <AnimatedThemeToggler />
 
@@ -281,6 +293,7 @@ import type { ProgramLesson, ProgramMaterial } from '@/types/modules'
 import YouTubePlayer from '@/components/features/programs/YouTubePlayer.vue'
 import ModulesList from '@/components/features/programs/ModulesList.vue'
 import GuestBlocker from '@/components/common/GuestBlocker.vue'
+import ShareButton from '@/components/ui/ShareButton.vue'
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue'
 import { usePublicAccess } from '@/composables/usePublicAccess'
@@ -349,6 +362,10 @@ const getProgramTitle = (program: any) => {
 
 const getLessonTitle = (lesson: ProgramLesson) => {
   return currentLocale.value === 'pt-BR' ? lesson.title_pt : lesson.title_en
+}
+
+const getProgramDescription = (program: any) => {
+  return currentLocale.value === 'pt-BR' ? program.description_pt : program.description_en
 }
 
 const getLessonDescription = (lesson: ProgramLesson) => {

@@ -699,7 +699,7 @@ const {
   error: parcelowError
 } = useParcelowCheckout()
 
-const showParcelow = computed(() => isLocalhost())
+const showParcelow = computed(() => true)
 
 // CPF validation for Parcelow
 const isMissingCpf = computed(() => {

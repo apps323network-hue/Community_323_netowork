@@ -272,8 +272,8 @@ function scrollToSection(id: string) {
       behavior: 'smooth'
     })
     
-    // Update hash without jump
-    history.pushState(null, '', `#${id}`)
+    // Update hash without jump and without adding to history
+    history.replaceState(null, '', `#${id}`)
     activeHeadingId.value = id
   }
 }

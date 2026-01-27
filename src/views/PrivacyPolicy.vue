@@ -69,6 +69,7 @@
             ref="contentContainer"
             class="prose prose-slate dark:prose-invert max-w-none"
             v-html="sanitizedContent"
+            @click="handleContentClick"
           ></article>
 
           <!-- Accept Button (only if coming from registration) -->
@@ -113,6 +114,7 @@ import { useTermsAcceptance, type TermType } from '@/composables/useTermsAccepta
 import AnimatedThemeToggler from '@/components/ui/AnimatedThemeToggler.vue'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue'
 import Button from '@/components/ui/Button.vue'
+import { toast } from 'vue-sonner'
 import DOMPurify from 'dompurify'
 import { useAuthStore } from '@/stores/auth'
 
@@ -131,11 +133,39 @@ let scrollHandler: (() => void) | null = null
 
 const sanitizedContent = computed(() => {
   if (!term.value?.content) return ''
-  return DOMPurify.sanitize(term.value.content, {
+  const sanitized = DOMPurify.sanitize(term.value.content, {
     ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'blockquote', 'hr'],
     ALLOWED_ATTR: ['href', 'target', 'rel']
   })
+
+  // Limpeza de aspas residuais para garantir que o texto fique limpo
+  return sanitized.replace(/&quot;/g, '')
 })
+
+function handleContentClick(event: MouseEvent) {
+  const target = event.target as HTMLElement
+  const link = target.closest('a')
+  
+  if (link) {
+    const href = link.getAttribute('href') || ''
+    const text = link.innerText.trim()
+    
+    // Se o link contiver mailto ou o texto parecer um email
+    if (href.includes('mailto') || text.includes('@')) {
+      event.preventDefault()
+      event.stopPropagation()
+      
+      // Limpa aspas ou caracteres extras do email
+      const email = text.replace(/["']/g, '')
+      
+      navigator.clipboard.writeText(email).then(() => {
+        toast.success(t('common.emailCopied') || 'E-mail copiado para a área de transferência!')
+      }).catch(err => {
+        console.error('Erro ao copiar:', err)
+      })
+    }
+  }
+}
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
